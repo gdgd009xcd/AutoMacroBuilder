@@ -1,0 +1,87 @@
+
+1. Cookie
+
+   Extender起因のリクエストでは、cookie.jarで追跡不可。
+   別途レスポンスから、Set-Cookie抽出が必要。
+   
+   現状の回避策
+   
+   １）Sessions
+       Open cookie jar に保管する対象にExtenderチェック
+       
+   ２）Session handling macroの
+   　　Use cookies from Burp's cookie jar
+   　　ScopeにExtenderチェック
+   　　
+   ３）Session handlingに追加するRule Action
+   
+       Invoke the extension handler: ParmGenStartAction
+       Use cookies from the session handling cookie.jar
+       ScopeにExtenderチェック
+       
+2. カレントリクエストのレスポンス更新
+　　post macro実行結果のレスポンスでカレントリクエストを更新
+　　カレントリクエストのレスポンスでエラーが発生しても、
+　　ポストマクロのレスポンスが正常終了で更新されると、
+　　カレントリクエストのエラーに気が付かない。
+　　
+　　カレントリクエストのレスポンスをポストマクロのレスポンスで
+　　更新するかどうかは、選択可能とする。
+　　
+　　
+3. 本機能のON/OFF設定を可能にする FIXED
+   Session handlingのRule ActionマクロをOFFに設定しても、
+   下記のコードが有効なので、ツール実行のレスポンスが更新されてしまう。
+   ON/OFF設定で、レスポンス更新を無効にできるようにする。
+   あるいは、初期化ボタンでParmGenMacroTrace.PMT_POSTMACRO_NULLに。
+   
+　　case ParmGenMacroTrace.PMT_POSTMACRO_END:
+         //カレントリクエストをpostマクロレスポンスの内容で更新
+         messageInfo.setResponse(pmt.getPostMacroResponse());
+         
+4. 正規表現　^ $ 等行開始終了の正規表現がヒットしない。
+
+5. 正規表現 token=(\w+) がコンパイルエラー　？　ゴミがまざった？
+
+6. 引き継ぎパラメータの確認
+　　引き継ぎに失敗したリクエストをマークする機能が必要。
+　　例：　responsebodyの追跡を誤って requestbodyで追跡。
+7. Macrobuilder画面でリクエストを選択し、各ツールにsendできるように。
+
+8. intruderのみ、全角文字列UTF-8 文字化け。脆弱性の「性」のみ文字化け。
+
+
+9. 追跡リクエスト指定機能
+
+fromStepNo : 指定したstepnoのレスポンス追跡
+responseStepNo: 追跡したレスポンスのstepno
+toStepNo: 指定したstepnoのリクエスト更新
+currentStepNo: 実行中のstepno
+
+1) 追跡From 指定したfromStepNoのレスポンスを追跡
+
+    -1 無条件
+
+　　0～　currentStepNo == fromStepNo のレスポンスのみ追跡
+
+2) 追跡To 指定したtoStepNoのリクエストを更新
+
+   -n～    currentStepNo == responseStepNo - toStepNo
+           
+    0　　　無条件
+
+　　～+n:  　currentStepNo == toStepNo
+
+
+10. カレントリクエストのSet-Cookie値が以降のPOST処理に引き継がれない。
+　　原因：burp の　preマクロを使用しているため、POST処理にCookie値が引き継がれない。（burpの仕様）
+　　対策：別途引き継ぎ処理が必要。マクロレスポンスにSet-Cookieが出現したら、以降のマクロに引き継ぐ。
+
+11. 無効なsession　Cookieを指定すると常にエラーになる画面がある。
+　　一旦無効なCookie値がCookie.jarに保管されると以降常にエラー。
+　　原因：アプリの仕様で、無効なCookie値指定時エラー画面。
+　　対策：１）リクエストの編集機能で、無効なCookieをあらかじめ削除する機能。
+　　　　　２）指定したCookie値をリクエストから削除する機能。
+
+12. Set-CookieされるCookie値をリクエストから削除する機能
+　　例： camlabo 等、無効なCookie値が指定されると、常にエラー画面に遷移。

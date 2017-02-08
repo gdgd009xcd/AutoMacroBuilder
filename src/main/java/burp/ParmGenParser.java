@@ -99,6 +99,7 @@ public class ParmGenParser {
     public HashMap<String,String> fetchNameValue(String name, int fcnt){
             HashMap<String, String> map = null;
             if(name ==null)return map;//name nullは不可。
+            HashMap<String,String> lastmap = null;
             try {
                 for(Element vtag : elems){
                     String n = vtag.attr("name");
@@ -106,9 +107,19 @@ public class ParmGenParser {
                     if(name.toLowerCase().equals(n.toLowerCase())){//指定したname値発見
                         if(fcnt> 0){//fcnt　指定したnameをfcnt回スキップ
                             fcnt--;
+                            if ( v != null && !v.isEmpty()){
+                                if(lastmap==null){
+                                    lastmap = new HashMap<String, String>();
+                                }
+                                lastmap.clear();
+                                lastmap.put(n,v);
+                            }
                         }else if ( v != null && !v.isEmpty()){//valueに値がある場合のみfetch
                             //ParmVars.plog.AppendPrint("<" + vtag.tagName() + " name=\"" + n + "\" value=\"" + v + "\">");
-                            map = new HashMap<String, String>();
+                            if(map==null){
+                                map = new HashMap<String, String>();
+                            }
+                            map.clear();
                             map.put(n, v);
                             break;
                         }
@@ -117,6 +128,9 @@ public class ParmGenParser {
             } catch (Exception e) {
                     // TODO Auto-generated catch block
                     ParmVars.plog.printException(e);
+            }
+            if(map==null&&lastmap!=null){
+                map = lastmap;
             }
             return map;
     }

@@ -85,3 +85,6 @@ currentStepNo: 実行中のstepno
 
 12. Set-CookieされるCookie値をリクエストから削除する機能
 　　例： camlabo 等、無効なCookie値が指定されると、常にエラー画面に遷移。
+
+13. responseの追跡位置指定。　パラメータ数 < 指定位置　の場合、パラメータ数
+　　で追跡。

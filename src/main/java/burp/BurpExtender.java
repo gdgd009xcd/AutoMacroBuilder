@@ -496,7 +496,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
         // obtain our output and error streams
         PrintWriter stdout = new PrintWriter(callbacks.getStdout(), true);
         PrintWriter stderr = new PrintWriter(callbacks.getStderr(), true);
-        ParmVars.plog.SetBurpPrintStreams(stdout, stderr);
+        //ParmVars.plog.SetBurpPrintStreams(stdout, stderr);
         pmt = new ParmGenMacroTrace(callbacks);
         //セッション管理
         callbacks.registerSessionHandlingAction(new BurpMacroStartAction(pmt));

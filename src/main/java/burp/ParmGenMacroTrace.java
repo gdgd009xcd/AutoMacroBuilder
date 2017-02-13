@@ -121,14 +121,17 @@ public class ParmGenMacroTrace {
                     if(s[0].equals(k)){
                         name = s[0];
                         value = s[1];
-                    }else if(s[0].equals("path")){
+                    }else if(s[0].toLowerCase().equals("path")){
                         path = s[1];
-                    }else if(s[0].equals("domain")){
+                    }else if(s[0].toLowerCase().equals("domain")){
                         domain = s[1];
                     }
                 }
                 if(domain==null){
                    domain = pqrs.request.getHost();
+                }
+                if(path==null){
+                    path = "/";//root path
                 }
                 ParmVars.plog.debuglog(0, "Set-Cookie: " +  name + "=" + value + "; domain=" +  domain +  "; path=" + path);
                 BurpICookie bicookie = new BurpICookie(domain, path, name, value, null);// delete cookie.

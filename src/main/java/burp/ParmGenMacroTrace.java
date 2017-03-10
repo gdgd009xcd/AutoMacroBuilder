@@ -301,10 +301,12 @@ public class ParmGenMacroTrace {
                         String cvalue = cookie.getValue();
                         
                         String dcookiename = null;
-                        if(cvalue.toLowerCase().indexOf("delete")!=-1){//xxxx=delete or deleted
-                            dcookiename = cname;
-                        }else if(cvalue.equals("0")){// xxxx=0
-                            dcookiename = cname;
+                        if(cvalue!=null){
+                            if(cvalue.toLowerCase().indexOf("delete")!=-1){//xxxx=delete or deleted
+                                dcookiename = cname;
+                            }else if(cvalue.equals("0")){// xxxx=0
+                                dcookiename = cname;
+                            }
                         }
                         if(dcookiename!=null){
                             if(delcookies==null){

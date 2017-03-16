@@ -1047,16 +1047,21 @@ class AppValue {
         
 	String  setURLencodedVal(String _value){
 		String exerr = null;
+                valueregex = null;
 		try{
 			value = URLDecoder.decode(_value, ParmVars.enc);
 			valueregex = Pattern.compile(value);
 		}catch(Exception e){
 			exerr = e.toString();
+                        valueregex = null;
 		}
 		if ( valpart.length()<=0){
 			exerr = "valpart is empty";
 		}
-		return exerr;
+                if(exerr!=null){
+                    ParmVars.plog.debuglog(0, "ERROR: setURLencodedVal [" + value+  "] ERR:"  + exerr);
+                }
+		return null;
 	}
 	/***
 	void updateCount(AppParmsIni pini){
@@ -1075,6 +1080,7 @@ class AppValue {
 	
 	String replaceContents(int currentStepNo, AppParmsIni pini, String contents){
                 if(contents==null)return null;
+                if(valueregex==null)return null;
                 
 		Matcher m = valueregex.matcher(contents);
 

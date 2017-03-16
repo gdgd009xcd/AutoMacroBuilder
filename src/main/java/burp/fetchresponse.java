@@ -124,13 +124,21 @@ class LocVal {
 
 	void setRegex(String pattern, int r, int c){
             if(isValid(r,c) && pattern != null && !pattern.isEmpty()){
-		regexes[r][c] = Pattern.compile(pattern);
+                try{
+                    regexes[r][c] = Pattern.compile(pattern);
+                }catch(Exception e){
+                    ParmVars.plog.debuglog(0, "ERROR: setRegex " + e.toString());
+                }
             }
 	}
 	void setURLRegex(String pattern, int r, int c){
             if(isValid(r,c)&& pattern != null && !pattern.isEmpty()){
                 printlog("setURLRegex:r,c,url=" + strrowcol(r,c) + "," + pattern);
-		urlregexes[r][c] = Pattern.compile(pattern);
+                try{
+                    urlregexes[r][c] = Pattern.compile(pattern);
+                }catch(Exception e){
+                    printlog("ERROR: setURLRegex " + e.toString());
+                }
             }
 	}
 

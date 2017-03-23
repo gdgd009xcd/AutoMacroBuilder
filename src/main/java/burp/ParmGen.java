@@ -39,6 +39,8 @@ import java.io.RandomAccessFile;
 import java.io.StringReader;
 import java.math.BigInteger;
 import java.util.logging.Level;
+import javax.json.Json;
+import javax.json.stream.JsonParser;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -1812,6 +1814,7 @@ class AppParmsIni {
 class ParmGen {
 
 	public static ArrayList<AppParmsIni> parmcsv = null;
+        public static ArrayList<AppParmsIni> parmjson = null;
         public static ArrayList<AppParmsIni> trackcsv = null;// response tracking
         public static boolean hasTrackRequest=false;//==true: リクエストを追跡
         public static ParmGenTop twin = null;
@@ -1829,6 +1832,82 @@ class ParmGen {
             twin = null;
         }
        
+        //
+        //
+        //
+        ArrayList<AppParmsIni> loadJSON(){
+			//
+			int i = 0;
+			int j = 0;
+			String pfile = ParmVars.parmfile + ".json";
+			ArrayList<AppParmsIni> rlist = new ArrayList<AppParmsIni>();
+			String token;
+			
+			ParmVars.plog.debuglog(1, "---------AppPermGen.json----------");
+                        
+			try{
+				
+				String rdata;
+                                String jsondata=new String("");
+                                FileReader fr = new FileReader(pfile);
+                                try{
+                                    
+                                    BufferedReader br = new BufferedReader(fr);
+                                    while((rdata = br.readLine()) != null) {
+                                            jsondata += rdata;
+                                    }//end of while((rdata = br.readLine()) != null)
+                                    fr.close();
+                                    fr = null;
+                                }catch(Exception e){
+                                    throw new RuntimeException(e.toString());
+                                }finally{
+                                    if(fr!=null){
+                                        try{
+                                            fr.close();
+                                        }catch (Exception e){
+                                            
+                                        }
+                                        fr = null;
+                                    }
+                                }
+                                
+                                JsonParser parser = Json.createParser(new StringReader(jsondata));
+                                String keyname = null;
+				while (parser.hasNext()) {
+                                    JsonParser.Event event = parser.next();
+                                    
+                                    switch(event) {
+                                       case START_ARRAY:
+                                       case END_ARRAY:
+                                       case START_OBJECT:
+                                       case END_OBJECT:
+                                       case VALUE_FALSE:
+                                       case VALUE_NULL:
+                                       case VALUE_TRUE:
+                                          ParmVars.plog.debuglog(0,   event.toString() );
+                                          break;
+                                       case KEY_NAME:
+                                          keyname = parser.getString();
+                                          ParmVars.plog.debuglog(0, event.toString() + " " +
+                                                           parser.getString() + " - ");
+                                          break;
+                                       case VALUE_STRING:
+                                       case VALUE_NUMBER:
+                                          ParmVars.plog.debuglog(0, keyname + ":" +event.toString() + " " +
+                                                             parser.getString());
+                                          break;
+                                    }
+                                 }	
+				
+                        }catch(java.io.FileNotFoundException e){//設定ファイル無し。
+                            //ParmVars.plog.printlog(e.toString(), true);
+                            rlist = null;
+
+			}
+			ParmVars.plog.debuglog(1, "---------AppPermGen.json END ----------");
+			return rlist;
+	}
+        
 	//
 	// 
 	//
@@ -2336,6 +2415,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 		if ( parmcsv == null ){
 			parmcsv = loadCSV();
                         if(parmcsv==null)return;
+                        parmjson = loadJSON();
                         FetchResponse.loc = new LocVal(parmcsv.size());
                         Iterator<AppParmsIni> api = parmcsv.iterator();
                         while(api.hasNext()){

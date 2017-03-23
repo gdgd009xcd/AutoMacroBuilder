@@ -445,7 +445,7 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
                 wholeval = true;
                 break;
         }
-        String prefix = "[^&]*?";
+        String prefix = "";
         if(ispath){
             if(iswholepath){
                 prefix = "";

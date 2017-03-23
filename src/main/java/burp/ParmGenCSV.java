@@ -188,6 +188,8 @@ public class ParmGenCSV {
                 AppValue_rec.add("resRegexPos", param.resRegexPos);
                 AppValue_rec.add("token", param.token==null?"":param.token);
                 AppValue_rec.add("urlencode", param.urlencode);
+                AppValue_rec.add("fromStepNo", param.fromStepNo);
+                AppValue_rec.add("toStepNo", param.toStepNo);
                 AppValue_List.add(AppValue_rec);
             }
             

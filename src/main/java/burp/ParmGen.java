@@ -1837,8 +1837,7 @@ class ParmGen {
         //
         ArrayList<AppParmsIni> loadJSON(){
 			//
-			int i = 0;
-			int j = 0;
+			int arraylevel = 0;
 			String pfile = ParmVars.parmfile + ".json";
 			ArrayList<AppParmsIni> rlist = new ArrayList<AppParmsIni>();
 			String token;
@@ -1878,23 +1877,25 @@ class ParmGen {
                                     
                                     switch(event) {
                                        case START_ARRAY:
+                                           arraylevel++;
+                                           break;
                                        case END_ARRAY:
+                                           arraylevel--;
+                                           break;
                                        case START_OBJECT:
                                        case END_OBJECT:
+                                           break;
                                        case VALUE_FALSE:
                                        case VALUE_NULL:
                                        case VALUE_TRUE:
-                                          ParmVars.plog.debuglog(0,   event.toString() );
+                                          //ParmVars.plog.debuglog(0,   event.toString() );
                                           break;
                                        case KEY_NAME:
                                           keyname = parser.getString();
-                                          ParmVars.plog.debuglog(0, event.toString() + " " +
-                                                           parser.getString() + " - ");
                                           break;
                                        case VALUE_STRING:
+                                          break;
                                        case VALUE_NUMBER:
-                                          ParmVars.plog.debuglog(0, keyname + ":" +event.toString() + " " +
-                                                             parser.getString());
                                           break;
                                     }
                                  }	

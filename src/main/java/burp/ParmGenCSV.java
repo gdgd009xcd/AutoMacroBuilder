@@ -167,7 +167,7 @@ public class ParmGenCSV {
             AppParmsIni_prec.add("inival", prec.inival);
             AppParmsIni_prec.add("maxval", prec.maxval);
             AppParmsIni_prec.add("csvname", prec.typeval==AppParmsIni.T_CSV?escapeDelimiters(prec.frl.getFileName(), "UTF-8"):"");
-            AppParmsIni_prec.add("enabled", true);
+            AppParmsIni_prec.add("pause", prec.pause);
             
             JsonArrayBuilder AppValue_List =Json.createArrayBuilder();
             

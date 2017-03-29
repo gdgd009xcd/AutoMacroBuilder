@@ -198,7 +198,12 @@ class PLog {
          } catch (IOException ignore){}
 	}
 
-       
+       public void printError(String v){
+           if(v==null){
+               v = "";
+           }
+           printlog("ERROR: " + v, true);
+       }
         
 	public void debuglog(int l, String v){
 		if ( l <= LogLevel ){
@@ -1368,6 +1373,7 @@ class AppParmsIni {
 	public int inival = 0;
 	int maxval = 2147483646;
 	FileReadLine frl = null;
+        String csvname = null;
 	String exerr = "";
 	String cntfile = "";
 	String cstrcnt = null;
@@ -1838,10 +1844,9 @@ class ParmGen {
         ArrayList<AppParmsIni> loadJSON(){
 			//
 			int arraylevel = 0;
-			String pfile = ParmVars.parmfile + ".json";
-			ArrayList<AppParmsIni> rlist = new ArrayList<AppParmsIni>();
-			String token;
 			
+			ArrayList<AppParmsIni> rlist = null;
+                        String pfile = ParmVars.parmfile + ".json";
 			ParmVars.plog.debuglog(1, "---------AppPermGen.json----------");
                         
 			try{
@@ -1864,7 +1869,7 @@ class ParmGen {
                                         try{
                                             fr.close();
                                         }catch (Exception e){
-                                            
+                                            throw new RuntimeException(e.toString());
                                         }
                                         fr = null;
                                     }
@@ -1872,9 +1877,15 @@ class ParmGen {
                                 
                                 JsonParser parser = Json.createParser(new StringReader(jsondata));
                                 String keyname = null;
+                                boolean errflg = false;
+                                ParmGenJSON gjson = new ParmGenJSON();
 				while (parser.hasNext()) {
                                     JsonParser.Event event = parser.next();
-                                    
+                                    boolean bval = false;
+                                    Object obj = null;
+                                    if(keyname==null){
+                                        keyname ="";
+                                    }
                                     switch(event) {
                                        case START_ARRAY:
                                            arraylevel++;
@@ -1882,30 +1893,37 @@ class ParmGen {
                                        case END_ARRAY:
                                            arraylevel--;
                                            break;
-                                       case START_OBJECT:
-                                       case END_OBJECT:
-                                           break;
-                                       case VALUE_FALSE:
-                                       case VALUE_NULL:
-                                       case VALUE_TRUE:
-                                          //ParmVars.plog.debuglog(0,   event.toString() );
-                                          break;
                                        case KEY_NAME:
                                           keyname = parser.getString();
                                           break;
+                                       case START_OBJECT:
+                                       case END_OBJECT:
+                                           errflg = gjson.Parse(arraylevel, event, keyname, null);
+                                           break;
+                                       case VALUE_TRUE:
+                                           bval = true;
+                                       case VALUE_FALSE:
+                                           errflg = gjson.Parse(arraylevel, event, keyname, bval);
+                                           break;
                                        case VALUE_STRING:
-                                          break;
                                        case VALUE_NUMBER:
+                                           obj = parser.getString();
+                                       case VALUE_NULL:                                           
+                                          errflg = gjson.Parse(arraylevel, event, keyname, obj);
                                           break;
                                     }
                                  }	
-				
-                        }catch(java.io.FileNotFoundException e){//設定ファイル無し。
-                            //ParmVars.plog.printlog(e.toString(), true);
+				if(errflg){
+                                   rlist = gjson.Getrlist();
+                                }else{
+                                    ParmVars.plog.printError("JSON load failed.");
+                                }
+                        }catch(Exception e){//設定ファイル無し。
+                            ParmVars.plog.printException(e);
                             rlist = null;
 
 			}
-			ParmVars.plog.debuglog(1, "---------AppPermGen.json END ----------");
+			ParmVars.plog.debuglog(1, "---------AppPermGen JSON load END ----------");
 			return rlist;
 	}
         
@@ -2414,9 +2432,10 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 		// csv load
 		// parmcsvはローカル
 		if ( parmcsv == null ){
-			parmcsv = loadCSV();
+			parmcsv = loadJSON();
+                        //ArrayList<AppParmsIni> parmjson = loadJSON();
+
                         if(parmcsv==null)return;
-                        parmjson = loadJSON();
                         FetchResponse.loc = new LocVal(parmcsv.size());
                         Iterator<AppParmsIni> api = parmcsv.iterator();
                         while(api.hasNext()){

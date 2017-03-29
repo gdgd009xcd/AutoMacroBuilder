@@ -52,7 +52,7 @@ public class ParmGenTop extends javax.swing.JFrame {
         csv.rewindAppParmsIni();
         int ri = 0;
         while((pini=csv.getNextAppParmsIni())!=null){
-            model.addRow(new Object[] {false, pini.url, pini.getIniValDsp(), pini.getLenDsp(), pini.getTypeValDsp(),pini.getAppValuesDsp(),pini.getCurrentValue()});
+            model.addRow(new Object[] {pini.pause, pini.url, pini.getIniValDsp(), pini.getLenDsp(), pini.getTypeValDsp(),pini.getAppValuesDsp(),pini.getCurrentValue()});
             ParamTopList.setRowHeight(ri++, default_rowheight * pini.getAppValuesLineCnt());
         }
         current_row = 0;
@@ -136,7 +136,7 @@ public class ParmGenTop extends javax.swing.JFrame {
         int ri = 0;
         cleartables();
         while((pini=csv.getNextAppParmsIni())!=null){
-            model.addRow(new Object[] {false, pini.url, pini.getIniValDsp(), pini.getLenDsp(), pini.getTypeValDsp(),pini.getAppValuesDsp(),pini.getCurrentValue()});
+            model.addRow(new Object[] {pini.pause, pini.url, pini.getIniValDsp(), pini.getLenDsp(), pini.getTypeValDsp(),pini.getAppValuesDsp(),pini.getCurrentValue()});
             ParamTopList.setRowHeight(ri++, default_rowheight * pini.getAppValuesLineCnt());
         }
     }

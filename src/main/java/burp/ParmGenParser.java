@@ -51,6 +51,8 @@ public class ParmGenParser {
                 ParmVars.plog.AppendPrint("<" + vtag.tagName() + " name=\"" + n + "\" value=\"" + v + "\">");
             }else if(vtag.tagName().toLowerCase().indexOf("a")!=-1){//<A 
                 ParmVars.plog.AppendPrint("<" + vtag.tagName() + " href=\"" + h + "\">");
+            }else{
+                ParmVars.plog.AppendPrint("<" + vtag.tagName()  + "\">");
             }
         }
     }
@@ -58,15 +60,15 @@ public class ParmGenParser {
     //
     // 引き継ぎパラメータ一覧
     //
-    public ArrayList<HashMap<ParmGenToken,String>>  getNameValues(){
-            HashMap<ParmGenToken, String> map = null;
-            ArrayList<HashMap<ParmGenToken,String>> lst = new ArrayList<HashMap<ParmGenToken,String>>();
+    public ArrayList<HashMap<ParmGenTokenKey,String>>  getNameValues(){
+            HashMap<ParmGenTokenKey, String> map = null;
+            ArrayList<HashMap<ParmGenTokenKey,String>> lst = new ArrayList<HashMap<ParmGenTokenKey,String>>();
            
             try {
 			
                     for(Element vtag : elems){
                             
-                            ParmGenToken ptk = null;
+                            ParmGenTokenKey ptk = null;
                             if(vtag.tagName().toLowerCase().indexOf("input")!=-1){//<input
                                 String n = vtag.attr("name");
                                 String v = vtag.attr("value");
@@ -80,8 +82,8 @@ public class ParmGenParser {
                                     v = "";
                                 }
                                 if(n != null){
-                                    ptk = new ParmGenToken(AppValue.T_HIDDEN, n);
-                                    map = new HashMap<ParmGenToken, String>();
+                                    ptk = new ParmGenTokenKey(AppValue.T_HIDDEN, n);
+                                    map = new HashMap<ParmGenTokenKey, String>();
                                     map.put(ptk, v);
                                     lst.add(map);
                                 }
@@ -98,9 +100,9 @@ public class ParmGenParser {
                                         if(nvp.length>1){
                                             value = nvp[1];
                                         }
-                                        if(name!=null&&name.length()>0){
-                                            ptk = new ParmGenToken(AppValue.T_HREF, name);
-                                            map = new HashMap<ParmGenToken, String>();
+                                        if(name!=null&&name.length()>0&&value!=null){
+                                            ptk = new ParmGenTokenKey(AppValue.T_HREF, name);
+                                            map = new HashMap<ParmGenTokenKey, String>();
                                             map.put(ptk, value);
                                             lst.add(map);
                                         }
@@ -119,11 +121,11 @@ public class ParmGenParser {
     //
     // レスポンスパラメータ抽出
     //
-    public HashMap<ParmGenToken,String> fetchNameValue(String name, int fcnt, int _tokentype){
-            HashMap<ParmGenToken, String> map = null;
+    public HashMap<ParmGenTokenKey,String> fetchNameValue(String name, int fcnt, int _tokentype){
+            HashMap<ParmGenTokenKey, String> map = null;
             if(name ==null)return map;//name nullは不可。
-            HashMap<ParmGenToken,String> lastmap = null;
-            ParmGenToken ptk = null;
+            HashMap<ParmGenTokenKey,String> lastmap = null;
+            ParmGenTokenKey ptk = null;
             try {
                 for(Element vtag : elems){
                     String n = vtag.attr("name");
@@ -136,19 +138,19 @@ public class ParmGenParser {
                                     fcnt--;
                                     if ( v != null && !v.isEmpty()){
                                         if(lastmap==null){
-                                            lastmap = new HashMap<ParmGenToken, String>();
+                                            lastmap = new HashMap<ParmGenTokenKey, String>();
                                         }
                                         lastmap.clear();
-                                        ptk = new ParmGenToken(AppValue.T_HIDDEN, n);
+                                        ptk = new ParmGenTokenKey(AppValue.T_HIDDEN, n);
                                         lastmap.put(ptk,v);
                                     }
                                 }else if ( v != null && !v.isEmpty()){//valueに値がある場合のみfetch
                                     //ParmVars.plog.AppendPrint("<" + vtag.tagName() + " name=\"" + n + "\" value=\"" + v + "\">");
                                     if(map==null){
-                                        map = new HashMap<ParmGenToken, String>();
+                                        map = new HashMap<ParmGenTokenKey, String>();
                                     }
                                     map.clear();
-                                    ptk = new ParmGenToken(AppValue.T_HIDDEN, n);
+                                    ptk = new ParmGenTokenKey(AppValue.T_HIDDEN, n);
                                     map.put(ptk, v);
                                     break;
                                 }

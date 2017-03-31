@@ -10,12 +10,12 @@ import java.util.Objects;
  *
  * @author chikara_1.daike
  */
-public class ParmGenToken {
+public class ParmGenTokenKey {
     private int tokentype;
     private String name;
     
    
-    ParmGenToken(int _tokentype, String _name){
+    ParmGenTokenKey(int _tokentype, String _name){
         tokentype = _tokentype;
         name = new String(_name);
     }
@@ -27,8 +27,8 @@ public class ParmGenToken {
     // HashMap
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof ParmGenToken) {
-            ParmGenToken key = (ParmGenToken) obj;
+        if (obj instanceof ParmGenTokenKey) {
+            ParmGenTokenKey key = (ParmGenTokenKey) obj;
             return this.tokentype == key.tokentype && this.name.equals(key.name);
         } else {
             return false;

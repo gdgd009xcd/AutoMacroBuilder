@@ -280,16 +280,16 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
             //responseパラメータ取得
             ParmGenParser pgser = new ParmGenParser(body);
             HashMap<String,Integer> namepos = new HashMap<String,Integer>();
-            ArrayList<HashMap<ParmGenToken,String>> lst = pgser.getNameValues();
+            ArrayList<HashMap<ParmGenTokenKey,String>> lst = pgser.getNameValues();
             AppValue ap = new AppValue();
-            for(Iterator<HashMap<ParmGenToken,String>> it = lst.iterator();it.hasNext();){
-                HashMap<ParmGenToken,String> map = (HashMap<ParmGenToken,String>) it.next();
+            for(Iterator<HashMap<ParmGenTokenKey,String>> it = lst.iterator();it.hasNext();){
+                HashMap<ParmGenTokenKey,String> map = (HashMap<ParmGenTokenKey,String>) it.next();
                 
-                Set<Entry<ParmGenToken,String>> entryset = map.entrySet();
-                Iterator<Map.Entry<ParmGenToken,String>> mit = entryset.iterator();
+                Set<Entry<ParmGenTokenKey,String>> entryset = map.entrySet();
+                Iterator<Map.Entry<ParmGenTokenKey,String>> mit = entryset.iterator();
                 if(mit.hasNext()){
-                    Map.Entry<ParmGenToken, String> mobj = mit.next();
-                    ParmGenToken ptk = mobj.getKey();
+                    Map.Entry<ParmGenTokenKey, String> mobj = mit.next();
+                    ParmGenTokenKey ptk = mobj.getKey();
                     String name = ptk.GetName();
                     String value = mobj.getValue();
                     //重複nameの検査

@@ -280,7 +280,7 @@ class LocVal {
                         
                         if(autotrack){
                             ParmGenParser parser = new ParmGenParser(body);
-                            HashMap<ParmGenToken, String> map = parser.fetchNameValue(name, fcnt, _tokentype);
+                            HashMap<ParmGenTokenKey, String> map = parser.fetchNameValue(name, fcnt, _tokentype);
                             if ( map != null ){
                                         String v = map.get(name);
                                         if(v!=null&&!v.isEmpty()){//value null値は追跡しない。

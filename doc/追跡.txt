@@ -1,0 +1,67 @@
+1. レスポンスから次のtoken（と思われる）下記のパラメータを取得
+
+1-1.hidden値のtokenと思われるパラメータ。(追跡箇所responsebody tokentype=0)
+・nameにキーワード"token"（大文字小文字）を含む
+　　　　 キーワード "SesID", "PHPSESSID", "jsessionid"等セッション値
+
+
+1-2.Locationヘッダー(追跡箇所header tokentype=1)
+    Location ヘッダーのGETパラメータ引き継ぎ
+　　GETパラメータの内、次ページのリクエストに渡している（name=valueが一致する）もの。
+    
+
+1-3.hrefリンク(追跡箇所responsebody tokentype=2)
+　　hrefリンクの内、次ページのリクエストに渡している（name=valueが一致する）GETパラメータ。
+
+1-4.railsのリクエストヘッダーToken
+    1) hidden値　authenticity_token をGET/POSTパラメータで引き継ぐ。－＞1-1で対応済み(tokentype=0)
+    2) リクエストヘッダーにX-CSRF-Tokenを追加。内容はauthenticity_tokenの値。(追跡箇所 header tokentype=3)
+
+1-5.その他
+　　　特になし。
+
+2. 取得した引き継ぎ値を次ページのリクエストのGET/POSTパラメータ、リクエストヘッダーに設定。
+2-1. GET/POSTパラメータ引き継ぎ
+　　　次ページのリクエストのGET/POSTパラメータを抽出。
+
+      tokentype, nameが一致、value値が(\w+)に完全マッチする値
+
+　　　正規表現　name=(\w+)
+
+　　　tokenxxx=0234asjkfs123442jkl'||'&n=2....
+
+      (\w+) == 0234asjkfs123442jkl
+
+　　　form-dataも同様。
+
+2-2. railsのtoken
+
+     tokentype, nameが一致、
+     +/=は、urlencodeされる。/はエンコードされない場合あり。
+　　 value値が一致またはurldecodeした値が一致
+
+　　　正規表現　([0-9a-zA-Z%/]+)
+
+
+3.手順
+
+下記をマクロ昇順に繰り返す。
+
+1) マクロのレスポンスをパースし、tokenを取り出す。
+    1-1) responsebody　
+2) 次ページのリクエストに、1)のtokenがマッチするパラメータがある場合は、
+　　引き継ぎパラメータを作成。
+
+4.備考
+・生成した引き継ぎパラメータ未保存のチェックが無い。
+・マクロの保存機能が無い。
+
+
+
+
+
+
+
+
+
+          

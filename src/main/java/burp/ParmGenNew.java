@@ -932,17 +932,17 @@ private void setAppParmsIni(){
 
         trackTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "置換箇所", "置換しない", "置換正規表現", "追跡URL", "追跡正規表現", "追跡箇所", "追跡位置", "追跡NAME値", "URLencodeする", "追跡from", "追跡to"
+                "置換箇所", "置換しない", "置換正規表現", "追跡URL", "追跡正規表現", "追跡箇所", "追跡位置", "追跡NAME値", "URLencodeする", "追跡from", "追跡to", "tokentype"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.Boolean.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Boolean.class, java.lang.Integer.class, java.lang.Integer.class
+                java.lang.Object.class, java.lang.Boolean.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Boolean.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -1444,7 +1444,14 @@ private void setAppParmsIni(){
                         //
                         toStepNo = 0;
                     }
-                    app = new AppValue(type, nomodify, value, _resURL, _resRegex, _resPartType, _resRegexPos, _token, _trackreq, fromStepNo, toStepNo);
+                    int tktype;
+                    try{
+                        tktype = (int)model.getValueAt(i, 11);
+                    }catch(Exception e){
+                        //
+                        tktype = AppValue.T_HIDDEN;
+                    }
+                    app = new AppValue(type, nomodify, value, _resURL, _resRegex, _resPartType, _resRegexPos, _token, _trackreq, fromStepNo, toStepNo,tktype);
                     break;
                 case P_RANDOMMODEL:
                     value = (String)model.getValueAt(i, 2);

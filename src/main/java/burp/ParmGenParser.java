@@ -32,7 +32,7 @@ public class ParmGenParser {
 
             try {
                     doc = Jsoup.parse(htmltext);//パース実行
-                    elems = doc.select("[name]");//name属性を持つタグ全部
+                    elems = doc.select("[name],a");//name属性を持つタグ全部、Aタグ
                     //elemsprint(htmltext);
             } catch (Exception e) {
                     // TODO Auto-generated catch block
@@ -41,52 +41,72 @@ public class ParmGenParser {
 
     }
     
-    ParmGenParser(String htmltext, String selector){
-            init();
-
-            try {
-                    doc = Jsoup.parse(htmltext);//パース実行
-                    elems = doc.select(selector);//selecterで指定したタグ
-                    //elemsprint(htmltext);
-            } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    ParmVars.plog.printException(e);
-            }
-
-    }
-    
+      
     void elemsprint(String _t){
         for(Element vtag : elems){
             String n = vtag.attr("name");
             String v = vtag.attr("value");
-            ParmVars.plog.AppendPrint("<" + vtag.tagName() + " name=\"" + n + "\" value=\"" + v + "\">");
+            String h = vtag.attr("href");
+            if(vtag.tagName().toLowerCase().indexOf("input")!=-1){//<input
+                ParmVars.plog.AppendPrint("<" + vtag.tagName() + " name=\"" + n + "\" value=\"" + v + "\">");
+            }else if(vtag.tagName().toLowerCase().indexOf("a")!=-1){//<A 
+                ParmVars.plog.AppendPrint("<" + vtag.tagName() + " href=\"" + h + "\">");
+            }
         }
     }
     
-    public ArrayList<HashMap<String,String>>  getNameValues(){
-            HashMap<String, String> map = null;
-            ArrayList<HashMap<String,String>> lst = new ArrayList<HashMap<String,String>>();
+    //
+    // 引き継ぎパラメータ一覧
+    //
+    public ArrayList<HashMap<ParmGenToken,String>>  getNameValues(){
+            HashMap<ParmGenToken, String> map = null;
+            ArrayList<HashMap<ParmGenToken,String>> lst = new ArrayList<HashMap<ParmGenToken,String>>();
            
             try {
 			
                     for(Element vtag : elems){
-                            String n = vtag.attr("name");
-                            String v = vtag.attr("value");
-
-
-                            //if ( v != null && !v.isEmpty()){//value値の存在するパラメータを抽出
+                            
+                            ParmGenToken ptk = null;
+                            if(vtag.tagName().toLowerCase().indexOf("input")!=-1){//<input
+                                String n = vtag.attr("name");
+                                String v = vtag.attr("value");
+                                // <inputタグのnameパラメータ
                                 if(n == null){
-                                    n = "";
+                                    n = null;
+                                }else if(n.isEmpty()){
+                                    n = null;
                                 }
                                 if(v == null){
                                     v = "";
                                 }
-                                //ParmVars.plog.AppendPrint("<" + vtag.tagName() + " name=\"" + n + "\" value=\"" + v + "\">");
-                                map = new HashMap<String, String>();
-                                map.put(n, v);
-                                
-                                lst.add(map);
-                            //}
+                                if(n != null){
+                                    ptk = new ParmGenToken(AppValue.T_HIDDEN, n);
+                                    map = new HashMap<ParmGenToken, String>();
+                                    map.put(ptk, v);
+                                    lst.add(map);
+                                }
+                            }else if(vtag.tagName().toLowerCase().indexOf("a")!=-1){//<A 
+                                String h = vtag.attr("href");
+                                //href属性から、GETパラメータを抽出。
+                                //?name=value&....
+                                if(h!=null){
+                                    String []nvpairs = h.split("[?&]");
+                                    for(String nv:nvpairs){
+                                        String[] nvp = nv.split("=");
+                                        String name = nvp[0];
+                                        String value = "";
+                                        if(nvp.length>1){
+                                            value = nvp[1];
+                                        }
+                                        if(name!=null&&name.length()>0){
+                                            ptk = new ParmGenToken(AppValue.T_HREF, name);
+                                            map = new HashMap<ParmGenToken, String>();
+                                            map.put(ptk, value);
+                                            lst.add(map);
+                                        }
+                                    }
+                                }
+                            }
                     }
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -96,34 +116,46 @@ public class ParmGenParser {
             return lst;
     }
     
-    public HashMap<String,String> fetchNameValue(String name, int fcnt){
-            HashMap<String, String> map = null;
+    //
+    // レスポンスパラメータ抽出
+    //
+    public HashMap<ParmGenToken,String> fetchNameValue(String name, int fcnt, int _tokentype){
+            HashMap<ParmGenToken, String> map = null;
             if(name ==null)return map;//name nullは不可。
-            HashMap<String,String> lastmap = null;
+            HashMap<ParmGenToken,String> lastmap = null;
+            ParmGenToken ptk = null;
             try {
                 for(Element vtag : elems){
                     String n = vtag.attr("name");
                     String v = vtag.attr("value");
-                    if(name.toLowerCase().equals(n.toLowerCase())){//指定したname値発見
-                        if(fcnt> 0){//fcnt　指定したnameをfcnt回スキップ
-                            fcnt--;
-                            if ( v != null && !v.isEmpty()){
-                                if(lastmap==null){
-                                    lastmap = new HashMap<String, String>();
+                    String h = vtag.attr("href");
+                    switch(_tokentype){
+                        case AppValue.T_HIDDEN:
+                            if(name.toLowerCase().equals(n.toLowerCase())){//指定したname値発見
+                                if(fcnt> 0){//fcnt　指定したnameをfcnt回スキップ
+                                    fcnt--;
+                                    if ( v != null && !v.isEmpty()){
+                                        if(lastmap==null){
+                                            lastmap = new HashMap<ParmGenToken, String>();
+                                        }
+                                        lastmap.clear();
+                                        ptk = new ParmGenToken(AppValue.T_HIDDEN, n);
+                                        lastmap.put(ptk,v);
+                                    }
+                                }else if ( v != null && !v.isEmpty()){//valueに値がある場合のみfetch
+                                    //ParmVars.plog.AppendPrint("<" + vtag.tagName() + " name=\"" + n + "\" value=\"" + v + "\">");
+                                    if(map==null){
+                                        map = new HashMap<ParmGenToken, String>();
+                                    }
+                                    map.clear();
+                                    ptk = new ParmGenToken(AppValue.T_HIDDEN, n);
+                                    map.put(ptk, v);
+                                    break;
                                 }
-                                lastmap.clear();
-                                lastmap.put(n,v);
                             }
-                        }else if ( v != null && !v.isEmpty()){//valueに値がある場合のみfetch
-                            //ParmVars.plog.AppendPrint("<" + vtag.tagName() + " name=\"" + n + "\" value=\"" + v + "\">");
-                            if(map==null){
-                                map = new HashMap<String, String>();
-                            }
-                            map.clear();
-                            map.put(n, v);
                             break;
-                        }
                     }
+                    
                 }
             } catch (Exception e) {
                     // TODO Auto-generated catch block

@@ -28,7 +28,7 @@ public class ParmGenMacroTrace {
     
     ArrayList <PRequestResponse> rlist = null;//マクロ実行後の全リクエストレスポンス
     ArrayList <PRequestResponse> originalrlist = null; //オリジナルリクエストレスポンス
-    ArrayList <ParmGenParser> csrflist = null;//引き継ぎhidden値リスト
+    //ArrayList <ParmGenParser> csrflist = null;//引き継ぎhidden値リスト
     ArrayList<String> set_cookienames = null;//レスポンスのSet-Cookie値の名前リスト
     int selected_request = 0;//現在選択しているカレントのリクエスト
     int stepno = -1;//実行中のリクエスト番号
@@ -445,15 +445,15 @@ public class ParmGenMacroTrace {
    
    void ParseResponse(){
        cit = rlist.listIterator();
-       csrflist = new ArrayList<ParmGenParser> ();
+       //csrflist = new ArrayList<ParmGenParser> ();
        set_cookienames = new ArrayList<String>();
        HashMap<String,String> uniquecookies = new HashMap<String, String>();
        while(cit.hasNext()){
            PRequestResponse prr = cit.next();
            ParmVars.plog.debuglog(0, "body lenght=" + prr.response.getBodyLength());
-           ParmGenParser pgparser = new ParmGenParser(prr.response.getBody(), "[type=\"hidden\"],[type=\"HIDDEN\"]");
+           //ParmGenParser pgparser = new ParmGenParser(prr.response.getBody(), "[type=\"hidden\"],[type=\"HIDDEN\"]");
            
-           csrflist.add(pgparser);
+           //csrflist.add(pgparser);
            HashMap<String,ArrayList<String[]>> setcookieparams = prr.response.set_cookieparams;
             for(Map.Entry<String, ArrayList<String[]>> e : setcookieparams.entrySet()) {
                 String k = e.getKey();
@@ -493,9 +493,9 @@ public class ParmGenMacroTrace {
         return rlist;
     }
     
-    ParmGenParser getParmGenParser(int _p){
+    /**ParmGenParser getParmGenParser(int _p){
         return csrflist.get(_p);
-    }
+    }**/
     
     boolean isMBFinalResponse(){
         return MBFinalResponse;

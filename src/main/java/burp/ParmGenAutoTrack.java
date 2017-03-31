@@ -280,16 +280,17 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
             //responseパラメータ取得
             ParmGenParser pgser = new ParmGenParser(body);
             HashMap<String,Integer> namepos = new HashMap<String,Integer>();
-            ArrayList<HashMap<String,String>> lst = pgser.getNameValues();
+            ArrayList<HashMap<ParmGenToken,String>> lst = pgser.getNameValues();
             AppValue ap = new AppValue();
-            for(Iterator<HashMap<String,String>> it = lst.iterator();it.hasNext();){
-                HashMap<String,String> map = (HashMap<String,String>) it.next();
+            for(Iterator<HashMap<ParmGenToken,String>> it = lst.iterator();it.hasNext();){
+                HashMap<ParmGenToken,String> map = (HashMap<ParmGenToken,String>) it.next();
                 
-                Set<Entry<String,String>> entryset = map.entrySet();
-                Iterator<Map.Entry<String,String>> mit = entryset.iterator();
+                Set<Entry<ParmGenToken,String>> entryset = map.entrySet();
+                Iterator<Map.Entry<ParmGenToken,String>> mit = entryset.iterator();
                 if(mit.hasNext()){
-                    Map.Entry<String, String> mobj = mit.next();
-                    String name = mobj.getKey();
+                    Map.Entry<ParmGenToken, String> mobj = mit.next();
+                    ParmGenToken ptk = mobj.getKey();
+                    String name = ptk.GetName();
                     String value = mobj.getValue();
                     //重複nameの検査
                     int npos = 0;

@@ -763,6 +763,13 @@ class AppValue {
         public int resPartType;
         public int resRegexPos = -1;
         public String token;//追跡token　Name
+        
+        public int tokentype;
+        public static final int T_HIDDEN = 0;
+        public static final int T_LOCATION = 1;
+        public static final int T_HREF = 2;
+        public static final int T_XCSRF_TOKEN = 3;
+        
         public String tamattack;
         public int tamadvance;
         public int payloadposition;//I_APPEND, I_INSERT, I_REPLACE
@@ -805,6 +812,7 @@ class AppValue {
                 };
                 payloadposition = I_APPEND;
             }
+            tokentype = T_HIDDEN;
         }
         
         AppValue(){
@@ -854,7 +862,7 @@ class AppValue {
         }
         
         AppValue(String _Type, boolean _nomodify, String _value,
-                String _resURL, String _resRegex, String _resPartType, String _resRegexPos, String _token, boolean _urlenc, int _fromStepNo, int _toStepNo){
+                String _resURL, String _resRegex, String _resPartType, String _resRegexPos, String _token, boolean _urlenc, int _fromStepNo, int _toStepNo, int _tokentype){
             initctype();
             setValPart(_Type);
             if(_nomodify){
@@ -869,6 +877,7 @@ class AppValue {
             urlencode = _urlenc;
             fromStepNo = _fromStepNo;
             toStepNo = _toStepNo;
+            tokentype = _tokentype;
         }
         
         AppValue(String _Type, boolean _nomodify,  String _value,String _name,
@@ -977,7 +986,8 @@ class AppValue {
                     + (resRegexPos!=-1?QUOTE_PREFCOMMA(Integer.toString(resRegexPos)):"") +
                     QUOTE_PREFCOMMA(token) + (_typeval==AppParmsIni.T_TRACK?QUOTE_PREFCOMMA(urlencode==true?"true":"false"):"") 
                     + (_typeval==AppParmsIni.T_TRACK?QUOTE_PREFCOMMA(Integer.toString(fromStepNo)):"")
-                    + (_typeval==AppParmsIni.T_TRACK?QUOTE_PREFCOMMA(Integer.toString(toStepNo)):"");
+                    + (_typeval==AppParmsIni.T_TRACK?QUOTE_PREFCOMMA(Integer.toString(toStepNo)):"")
+                    + QUOTE_PREFCOMMA(Integer.toString(tokentype));
             
             return avrec;
         }
@@ -1799,7 +1809,7 @@ class AppParmsIni {
                         app.resRegex,
                         app.getResValPart(),
                         Integer.toString(app.resRegexPos),
-                    app.token, app.urlencode, app.fromStepNo, app.toStepNo};
+                    app.token, app.urlencode, app.fromStepNo, app.toStepNo, app.tokentype};
                 case T_TAMPER:
                     return new Object[] {app.getValPart(), (app.isModify()?false:true), app.value, 
                         app.token,
@@ -1927,274 +1937,7 @@ class ParmGen {
 			return rlist;
 	}
         
-	//
-	// 
-	//
-	ArrayList<AppParmsIni> loadCSV(){
-			//
-			int i = 0;
-			int j = 0;
-			String pfile = ParmVars.parmfile;
-			ArrayList<AppParmsIni> rlist = new ArrayList<AppParmsIni>();
-			String token;
-			
-			ParmVars.plog.debuglog(1, "---------AppPermGen.csv----------");
-			try{
-				FileReader fr = new FileReader(pfile);
-				BufferedReader br = new BufferedReader(fr);
-				String rdata;
-				
-				while((rdata = br.readLine()) != null) {
-					rdata = rdata.replace("\r","");
-					rdata = rdata.replace("\n","");
-					
-					if ( rdata.equals("") || rdata.substring(0, 1).equals("#")){
-						continue;
-					}
-					CSVParser.Parse(rdata);
-					j = 1;
-					AppParmsIni aparms = new AppParmsIni();
-					aparms.parmlist = new ArrayList<AppValue>();
-					int pflg = 0;
-					String valpart = new String("");
-					String value = new String("");
-					String lno = Integer.toString(i);
-					boolean pxauth = false;
-					boolean mylang = false;
-
-                                        int avmaxcnt=0;
-                                        AppValue av = null;
-					CSVFields csvf = new CSVFields();
-					while(CSVParser.getField(csvf)){
-						token = csvf.field;
-						String exerr = null;
-                                                int trkplen = 0;
-						switch(j){
-						case 1://URL
-							if ( token.equals("ProxyAuth")){
-								pxauth = true;
-							}else if(token.equals("LANG")){
-								mylang = true;
-                                                                ParmVars.enc = "";
-							
-							}else{
-								exerr = aparms.setUrl(token);
-								ParmVars.plog.debuglog(1, lno + " URL regex[" + token + "]");
-							}
-							break;
-						case 2://length
-							if ( pxauth ){
-								ParmVars.ProxyAuth = token.trim();
-								ParmVars.plog.debuglog(1, lno + "ProxyAuth[" + ParmVars.ProxyAuth + "]");
-							}else if(mylang){
-								ParmVars.enc = token.trim();
-								//WebScarab.myencoding = _enc;
-                                                                if(ParmVars.enc.isEmpty()){
-                                                                    ParmVars.enc = "UTF-8";
-                                                                }
-								ParmVars.plog.debuglog(1, lno + "LANG[" + ParmVars.enc + "]");
-							
-							}else{
-								aparms.len = Integer.parseInt(token.trim());
-								ParmVars.plog.debuglog(1, lno + " length[" + Integer.toString(aparms.len) + "]");
-							}
-							break;
-						case 3://type
-                                                        if(mylang){
-                                                            //Scope setting
-                                                            String []ivals = token.split(":");
-                                                            int scope;
-                                                            for (int si = 0; si < ivals.length; si++){
-                                                                scope = Integer.parseInt(ivals[si]);
-                                                                switch(si){
-                                                                    case 0://proxy
-                                                                        if (scope==0){
-                                                                            ParmGen.ProxyInScope =false;
-                                                                        }else{
-                                                                            ParmGen.ProxyInScope =true;
-                                                                        }
-                                                                        break;
-                                                                    case 1://intruder
-                                                                        if (scope==0){
-                                                                            ParmGen.IntruderInScope =false;
-                                                                        }else{
-                                                                            ParmGen.IntruderInScope =true;
-                                                                        }
-                                                                        break;
-                                                                    case 2://repeater
-                                                                        if (scope==0){
-                                                                            ParmGen.RepeaterInScope =false;
-                                                                        }else{
-                                                                            ParmGen.RepeaterInScope =true;
-                                                                        }
-                                                                        break;
-                                                                    case 3://scanner
-                                                                        if (scope==0){
-                                                                            ParmGen.ScannerInScope =false;
-                                                                        }else{
-                                                                            ParmGen.ScannerInScope =true;
-                                                                        }
-                                                                        break;
-                                                                }
-                                                            }
-                                                        }else{
-                                                            aparms.setType(token);
-                                                            ParmVars.plog.debuglog(1, lno + " type[" + token + "]");
-                                                        }
-							break;
-						case 4://init value
-                                                    trkplen = 0;
-                                                    if( aparms.getType()==AppParmsIni.T_NUMBER){
-                                                            String []ivals = token.split(":");
-                                                            token = ivals[0];
-                                                            aparms.inival = Integer.parseInt(token.trim());
-                                                            ParmVars.plog.debuglog(1, lno + " inival[" + Integer.toString(aparms.inival) + "]");
-                                                            if(ivals.length > 1 ){
-                                                                    String mval = ivals[1];
-                                                                    aparms.maxval = Integer.parseInt(mval.trim());
-                                                            }
-                                                            ParmVars.plog.debuglog(1, lno + " maxval[" + Integer.toString(aparms.maxval) + "]");
-                                                    }else if(aparms.getType()==AppParmsIni.T_CSV){//CSV file
-                                                            String csvname = token.trim();
-                                                            String decodedname = "";
-                                                            try{
-                                                                    decodedname = URLDecoder.decode(csvname, "UTF-8");
-                                                            }catch(Exception e){
-                                                                    ParmVars.plog.printException(e);
-                                                            }
-                                                            aparms.frl = new FileReadLine(decodedname, true);
-                                                            ParmVars.plog.debuglog(1, lno + " csvfile[" + decodedname + "]");
-                                                    }else{//AppParmsIni.T_TRACK
-                                                        trkplen = Integer.parseInt(token.trim());
-                                                        if(aparms.getType()==AppParmsIni.T_TRACK){
-                                                            aparms.inival = AppParmsIni.T_TRACK_AVCNT;
-                                                        }else{//Tamper
-                                                            aparms.inival = AppParmsIni.T_TAMPER_AVCNT;
-                                                        }
-                                                    }
-
-                                                    avmaxcnt = aparms.getReadAVCnt(trkplen);//AppValue読み込みパラメータ数
-                                                    pflg = 0;
-                                                    av = null;
-                                                    break;
-						default:
-                                                    //ParmVars.plog.debuglog(0, "token:" + token + " plfg:" + Integer.toString(pflg));
-                                                        switch(pflg++){
-                                                            case 0:
-                                                                //parameter valpart
-                                                                valpart = token;
-                                                                break;
-                                                            case 1:
-                                                                //parameter value
-                                                                if ( token != "" && token != null){
-                                                                        value = token;
-                                                                        av = new AppValue();
-                                                                        ParmVars.plog.debuglog(1, lno + " type[" + valpart + "]");
-                                                                        av.setValPart(valpart);
-                                                                        exerr = av.setURLencodedVal(value);
-                                                                        ParmVars.plog.debuglog(1, lno + " parm regex[" + token + "]");
-                                                                }
-                                                                break;
-                                                            case 2:
-                                                                if(av!=null){
-                                                                    switch(aparms.getType()){
-                                                                        case AppParmsIni.T_TRACK:
-                                                                            av.setresURL(token.trim());
-                                                                            break;
-                                                                        default:
-                                                                            av.token = token.trim();//Name
-                                                                            break;
-                                                                    }
-                                                                }
-                                                                break;
-                                                            case 3:
-                                                                if (av!=null){
-                                                                    switch(aparms.getType()){
-                                                                        case AppParmsIni.T_TRACK:
-                                                                            av.setresRegexURLencoded(token.trim());
-                                                                            break;
-                                                                        default:
-                                                                            break;
-                                                                    }
-                                                                }
-                                                                break;
-                                                            case 4:
-                                                                if(av!=null){
-                                                                    av.setresPartType(token.trim());
-                                                                }
-                                                                break;
-                                                            case 5:
-                                                                if(av!=null){
-                                                                    av.resRegexPos = Integer.parseInt(token.trim());
-                                                                }
-                                                                break;
-                                                            case 6:
-                                                                if(av!=null){
-                                                                    av.token = token.trim();
-                                                                }
-                                                                break;
-                                                            case 7:
-                                                                if(av!=null){
-                                                                    av.urlencode = Boolean.parseBoolean(token.trim());
-                                                                }
-                                                                break;
-                                                            default:
-                                                                break;
-							}
-                                                        
-                                                        if(pflg>=avmaxcnt){
-                                                            if ( exerr == null && av != null){
-                                                                    av.col = aparms.parmlist.size();
-                                                                    aparms.parmlist.add(av);
-                                                                    av = null;
-                                                            }else{
-                                                                    ParmVars.plog.debuglog(1, lno + "av.setVal error:" + exerr);
-                                                            }
-                                                            pflg = 0;
-                                                        }
-							break;
-						}//end of switch(j)
-						if ( exerr != null){
-							//print error message and exit
-							ParmVars.plog.printlog("AppPermGen.csv エラー LINE:" + Integer.toString(j) + " ERR:" + exerr, true);
-							return null;
-						}
-						if ( pxauth && ParmVars.ProxyAuth.length() > 0 ){
-							break;
-						}
-						j++;
-					}//end of while(CSVParser.getField(csvf))
-					if ( pxauth || mylang){
-						continue;
-					}
-                                        if(av!=null){//パラメータ読み込みが途中で終了
-                                            av.col = aparms.parmlist.size();
-                                            aparms.parmlist.add(av);
-                                            av = null;
-                                        }
-					//aparms.cntfile = ParmVars.projectdir + "\\AppGenParmCnt" + Integer.toString(i) + ".txt";
-                                        aparms.setRowAndCntFile(i);i++;
-					aparms.crtGenFormat(true);
-					//aparms.row = i++;
-					rlist.add(aparms);
-					
-				}//end of while((rdata = br.readLine()) != null)
-				if ( ParmVars.enc.length() <= 0 ){//default encoding
-					ParmVars.enc = "UTF-8";
-				}
-				fr.close();
-                        }catch(java.io.FileNotFoundException e){//設定ファイル無し。
-                            //ParmVars.plog.printlog(e.toString(), true);
-                            rlist = null;
-			}catch(Throwable e){
-				ParmVars.plog.printlog("AppPermGen.csv エラー LINE:" + Integer.toString(j) + " ERR:" + e.toString(), true);
-				rlist = null;
-				throw new RuntimeException(e.toString());
-
-			}
-			ParmVars.plog.debuglog(1, "---------AppPermGen.csv END ----------");
-			return rlist;
-	}
+	
 
 	PRequest ParseRequest(PRequest prequest,  ByteArrayUtil boundaryarray, ByteArrayUtil _contarray, AppParmsIni pini, AppValue av)  {
 
@@ -2411,7 +2154,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                         try {
                             //body
                             //ParmVars.plog.debuglog(0, "ParseResponse: V_BODY " + rowcolstr);
-                            rflag = FetchResponse.loc.bodymatch(pmt.getStepNo(),av.fromStepNo,url, presponse, row, col, true, autotrack, av.resRegexPos, av.token, av.urlencode);
+                            rflag = FetchResponse.loc.bodymatch(pmt.getStepNo(),av.fromStepNo,url, presponse, row, col, true, autotrack, av.resRegexPos, av.token, av.urlencode, av.tokentype);
                         } catch (UnsupportedEncodingException ex) {
                             Logger.getLogger(ParmGen.class.getName()).log(Level.SEVERE, null, ex);
                         }

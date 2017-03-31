@@ -273,14 +273,14 @@ class LocVal {
 	//
 	// body match
 	//
-	boolean bodymatch(int currentStepNo, int fromStepNo, String url, PResponse presponse, int r, int c, boolean overwrite, boolean autotrack, int fcnt, String name, boolean _uencode) throws UnsupportedEncodingException{
+	boolean bodymatch(int currentStepNo, int fromStepNo, String url, PResponse presponse, int r, int c, boolean overwrite, boolean autotrack, int fcnt, String name, boolean _uencode, int _tokentype) throws UnsupportedEncodingException{
 		if (urlmatch(url, r, c )){
 
                         String body = presponse.getBody();
                         
                         if(autotrack){
                             ParmGenParser parser = new ParmGenParser(body);
-                            HashMap<String, String> map = parser.fetchNameValue(name, fcnt);
+                            HashMap<ParmGenToken, String> map = parser.fetchNameValue(name, fcnt, _tokentype);
                             if ( map != null ){
                                         String v = map.get(name);
                                         if(v!=null&&!v.isEmpty()){//value null値は追跡しない。

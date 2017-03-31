@@ -60,8 +60,7 @@
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
                               <Component id="jButton2" alignment="0" pref="111" max="32767" attributes="0"/>
                               <Component id="jButton3" alignment="0" max="32767" attributes="0"/>
-                              <Component id="jButton5" alignment="0" max="32767" attributes="0"/>
-                              <Component id="jButton4" alignment="0" max="32767" attributes="0"/>
+                              <Component id="jButton1" alignment="0" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                       <Component id="jSeparator1" alignment="0" max="32767" attributes="0"/>
@@ -138,10 +137,8 @@
                       <Component id="jButton2" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="jButton3" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="jButton5" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="jButton4" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="9" max="-2" attributes="0"/>
+                      <Component id="jButton1" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Component id="jScrollPane1" max="-2" attributes="0"/>
               </Group>
@@ -336,16 +333,6 @@
         <Property name="text" type="java.lang.String" value="&#x524a;&#x9664;"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JButton" name="jButton4">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="&#x25bc;"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JButton" name="jButton5">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="&#x25b2;"/>
-      </Properties>
-    </Component>
     <Component class="javax.swing.JCheckBox" name="MBExec">
       <Properties>
         <Property name="text" type="java.lang.String" value="&#x5b9f;&#x884c;"/>
@@ -442,6 +429,7 @@
     </Component>
     <Component class="javax.swing.JCheckBox" name="FinalResponse">
       <Properties>
+        <Property name="selected" type="boolean" value="true"/>
         <Property name="text" type="java.lang.String" value="final response"/>
       </Properties>
       <Events>
@@ -450,6 +438,7 @@
     </Component>
     <Component class="javax.swing.JCheckBox" name="MBResetToOriginal">
       <Properties>
+        <Property name="selected" type="boolean" value="true"/>
         <Property name="text" type="java.lang.String" value="&#x30aa;&#x30ea;&#x30b8;&#x30ca;&#x30eb;&#x306b;&#x30ea;&#x30bb;&#x30c3;&#x30c8;"/>
       </Properties>
       <Events>
@@ -458,10 +447,19 @@
     </Component>
     <Component class="javax.swing.JCheckBox" name="MBdeleteSetCookies">
       <Properties>
+        <Property name="selected" type="boolean" value="true"/>
         <Property name="text" type="java.lang.String" value="delete setcookies from Request"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="MBdeleteSetCookiesActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="jButton1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="&#x8ffd;&#x8de1;"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

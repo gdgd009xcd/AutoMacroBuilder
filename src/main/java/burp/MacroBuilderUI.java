@@ -46,6 +46,9 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         pmt.setMBExec(MBExec.isSelected());
         pmt.setMBCookieUpdate(MBCookieUpdate.isSelected());
         pmt.setMBCookieFromJar(MBCookieFromJar.isSelected());
+        pmt.setMBFinalResponse(FinalResponse.isSelected());
+        pmt.setMBResetToOriginal(MBResetToOriginal.isSelected());
+        pmt.setMBdeletesetcookies(MBdeleteSetCookies.isSelected());
         
     }
     
@@ -124,8 +127,6 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         MacroComments = new javax.swing.JTextArea();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
         MBExec = new javax.swing.JCheckBox();
         MBCookieUpdate = new javax.swing.JCheckBox();
         MBCookieFromJar = new javax.swing.JCheckBox();
@@ -143,6 +144,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         FinalResponse = new javax.swing.JCheckBox();
         MBResetToOriginal = new javax.swing.JCheckBox();
         MBdeleteSetCookies = new javax.swing.JCheckBox();
+        jButton1 = new javax.swing.JButton();
 
         targetRequest.setText("targetRequest");
         targetRequest.addActionListener(new java.awt.event.ActionListener() {
@@ -254,10 +256,6 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
         jButton3.setText("削除");
 
-        jButton4.setText("▼");
-
-        jButton5.setText("▲");
-
         MBExec.setText("実行");
         MBExec.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -315,6 +313,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             }
         });
 
+        FinalResponse.setSelected(true);
         FinalResponse.setText("final response");
         FinalResponse.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -322,6 +321,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             }
         });
 
+        MBResetToOriginal.setSelected(true);
         MBResetToOriginal.setText("オリジナルにリセット");
         MBResetToOriginal.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -329,10 +329,18 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             }
         });
 
+        MBdeleteSetCookies.setSelected(true);
         MBdeleteSetCookies.setText("delete setcookies from Request");
         MBdeleteSetCookies.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 MBdeleteSetCookiesActionPerformed(evt);
+            }
+        });
+
+        jButton1.setText("追跡");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
             }
         });
 
@@ -350,8 +358,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)
                                 .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                         .addComponent(jSeparator1)
                         .addGroup(layout.createSequentialGroup()
                             .addComponent(jCheckBox2)
@@ -411,10 +418,8 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                         .addComponent(jButton2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jButton3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton4))
+                        .addGap(9, 9, 9)
+                        .addComponent(jButton1))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -444,6 +449,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
     private void RequestListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_RequestListValueChanged
         // TODO add your handling code here:
+        /***************
         int pos = RequestList.getSelectedIndex();
         if (pos != -1){
             
@@ -473,6 +479,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                 
             }
         }
+        * **********/
     }//GEN-LAST:event_RequestListValueChanged
 
     private void MBCookieUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MBCookieUpdateActionPerformed
@@ -584,6 +591,11 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         pmt.setMBdeletesetcookies(MBdeleteSetCookies.isSelected());
     }//GEN-LAST:event_MBdeleteSetCookiesActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        //token追跡自動設定。。
+    }//GEN-LAST:event_jButton1ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JList CSRFList;
@@ -602,10 +614,9 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     private javax.swing.JList RequestList;
     private javax.swing.JMenuItem disableRequest;
     private javax.swing.JMenuItem enableRequest;
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
     private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

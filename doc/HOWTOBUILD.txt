@@ -1,0 +1,23 @@
+コンパイルリンク
+
+１．チェックアウト
+１）NetBeansをインストール
+２）チーム
+　　　リモート
+　　　　　クローン。。　でチェックアウト。
+　　　　　https://github.com/gdgd009xcd/MacroBuilder
+　　　　　の clone or downloadボタンをクリック。下記がリポジトリＵＲＬ
+　　　　　　　　https://github.com/gdgd009xcd/MacroBuilder.git
+
+２．コンパイル
+２．１　pom.xmlファイル
+下記のエントリーのpathにburpsuite.jarをコピーする。
+${basedir} == projectディレクトリ。
+プロジェクト下にlibフォルダを作成する
+そのフォルダにjarをコピー。ファイル名のバージョン番号違う場合はpom.xmlを編集する。
+<systemPath>${basedir}/lib/burpsuite_free_v1.7.15.jar</systemPath>
+
+２．２ビルドする。
+
+
+

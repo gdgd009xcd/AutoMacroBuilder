@@ -1,21 +1,21 @@
 1. レスポンスから次のtoken（と思われる）下記のパラメータを取得
 
-1-1.hidden値のtokenと思われるパラメータ。(追跡箇所responsebody tokentype=0)
+1-1.hidden値のtokenと思われるパラメータ。(追跡箇所responsebody tokentype=1)
 ・nameにキーワード"token"（大文字小文字）を含む
 　　　　 キーワード "SesID", "PHPSESSID", "jsessionid"等セッション値
 
 
-1-2.Locationヘッダー(追跡箇所header tokentype=1)
+1-2.Locationヘッダー(追跡箇所header tokentype=2)
     Location ヘッダーのGETパラメータ引き継ぎ
 　　GETパラメータの内、次ページのリクエストに渡している（name=valueが一致する）もの。
     
 
-1-3.hrefリンク(追跡箇所responsebody tokentype=2)
+1-3.hrefリンク(追跡箇所responsebody tokentype=3)
 　　hrefリンクの内、次ページのリクエストに渡している（name=valueが一致する）GETパラメータ。
 
 1-4.railsのリクエストヘッダーToken
-    1) hidden値　authenticity_token をGET/POSTパラメータで引き継ぐ。－＞1-1で対応済み(tokentype=0)
-    2) リクエストヘッダーにX-CSRF-Tokenを追加。内容はauthenticity_tokenの値。(追跡箇所 header tokentype=3)
+    1) hidden値　authenticity_token をGET/POSTパラメータで引き継ぐ。－＞1-1で対応済み(tokentype=1)
+    2) リクエストヘッダーにX-CSRF-Tokenを追加。内容はauthenticity_tokenの値。(追跡箇所 header tokentype=4)
 
 1-5.その他
 　　　特になし。

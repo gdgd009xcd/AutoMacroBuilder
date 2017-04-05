@@ -176,6 +176,8 @@ public class ParmGenJSON {
                             }else if(name.toUpperCase().equals("ISNOCOUNT")){
                                 if(Getboolean(ev, value, true)==true){
                                     apv.setNoCount();
+                                }else{
+                                    apv.clearNoCount();
                                 }
                             }else if(name.toUpperCase().equals("CSVPOS")){
                                 apv.csvpos = GetNumber(ev, value, 0);

@@ -449,7 +449,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
     private void RequestListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_RequestListValueChanged
         // TODO add your handling code here:
-        /***************
+
         int pos = RequestList.getSelectedIndex();
         if (pos != -1){
             
@@ -461,6 +461,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                 MacroRequest.setText(pqr.request.getMessage());
                 MacroResponse.setText(pqr.response.getMessage());
                 MacroComments.setText(pqr.getComments());
+                /**************
                 ParmGenParser parser = pmt.getParmGenParser(pos);
                 ArrayList<HashMap<String,String>> lst = parser.getNameValues();
                 for(Iterator<HashMap<String,String>> it = lst.iterator();it.hasNext();){
@@ -476,10 +477,11 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                     }
                 }
                 CSRFList.setModel(lmodel);
+                * ************/
                 
             }
         }
-        * **********/
+
     }//GEN-LAST:event_RequestListValueChanged
 
     private void MBCookieUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MBCookieUpdateActionPerformed

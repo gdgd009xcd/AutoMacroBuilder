@@ -21,6 +21,9 @@ import java.util.logging.Logger;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 
 //<?xml version="1.0" encoding="utf-8"?>
@@ -282,7 +285,11 @@ class LocVal {
                             ParmGenParser parser = new ParmGenParser(body);
                             HashMap<ParmGenTokenKey, String> map = parser.fetchNameValue(name, fcnt, _tokentype);
                             if ( map != null ){
-                                        String v = map.get(name);
+                                Set<Entry<ParmGenTokenKey,String>> entryset = map.entrySet();
+                                Iterator<Map.Entry<ParmGenTokenKey,String>> mit = entryset.iterator();
+                                   if(mit.hasNext()){
+                                        Map.Entry<ParmGenTokenKey, String> mobj = mit.next();
+                                        String v = mobj.getValue();
                                         if(v!=null&&!v.isEmpty()){//value null値は追跡しない。
                                             printlog("*****FETCHRESPONSE auto track body r,c,p:value:" + r + "," + c + "," + fcnt + ":" +  v );
                                             if(_uencode==true){
@@ -301,6 +308,7 @@ class LocVal {
                                         }else{
                                             printlog("xxxxx IGNORED FETCHRESPONSE auto track body r,c,p:value:" + r + "," + c + "," + fcnt + ":" +  "null" );
                                         }
+                                   }
                             }
                             return false;
                         }

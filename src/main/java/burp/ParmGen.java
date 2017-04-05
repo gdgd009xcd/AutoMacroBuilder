@@ -1798,11 +1798,11 @@ class AppParmsIni {
                 app = it.next();
                 switch(typeval){
                 case T_NUMBER:
-                     return new Object[] {app.getValPart(), (app.isModify()?false:true), app.value, !app.isNoCount()};
+                     return new Object[] {app.getValPart(), (app.isModify()?false:true), app.value, app.isNoCount()?false:true};
                 case T_RANDOM:
                     break;
                 case T_CSV:
-                    return new Object[] {app.getValPart(), (app.isModify()?false:true), app.csvpos, app.value, !app.isNoCount()};
+                    return new Object[] {app.getValPart(), (app.isModify()?false:true), app.csvpos, app.value, app.isNoCount()?false:true};
                 case T_TRACK:
                     return new Object[] {app.getValPart(), (app.isModify()?false:true), app.value, 
                         app.resURL,

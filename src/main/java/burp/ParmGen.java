@@ -765,10 +765,11 @@ class AppValue {
         public String token;//追跡token　Name
         
         public int tokentype;
-        public static final int T_HIDDEN = 0;
-        public static final int T_LOCATION = 1;
-        public static final int T_HREF = 2;
-        public static final int T_XCSRF_TOKEN = 3;
+        public static final int T_DEFAULT = 0;
+        public static final int T_HIDDEN = 1;
+        public static final int T_LOCATION = 2;
+        public static final int T_HREF = 3;
+        public static final int T_XCSRF_TOKEN = 4;
         
         public String tamattack;
         public int tamadvance;

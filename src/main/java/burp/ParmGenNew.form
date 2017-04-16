@@ -751,7 +751,7 @@
                         <Column editable="true" title="URLencode&#x3059;&#x308b;" type="java.lang.Boolean"/>
                         <Column editable="true" title="&#x8ffd;&#x8de1;from" type="java.lang.Integer"/>
                         <Column editable="true" title="&#x8ffd;&#x8de1;to" type="java.lang.Integer"/>
-                        <Column editable="true" title="tokentype" type="java.lang.Integer"/>
+                        <Column editable="true" title="tokentype" type="java.lang.String"/>
                       </Table>
                     </Property>
                     <Property name="autoResizeMode" type="int" value="0"/>
@@ -808,12 +808,12 @@
                           <Renderer/>
                         </Column>
                         <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
+                          <Title noResource="true"/>
                           <Editor/>
                           <Renderer/>
                         </Column>
                         <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
+                          <Title noResource="true"/>
                           <Editor/>
                           <Renderer/>
                         </Column>

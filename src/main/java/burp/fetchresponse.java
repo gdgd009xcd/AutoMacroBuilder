@@ -283,13 +283,11 @@ class LocVal {
                         
                         if(autotrack){
                             ParmGenParser parser = new ParmGenParser(body);
-                            HashMap<ParmGenTokenKey, String> map = parser.fetchNameValue(name, fcnt, _tokentype);
-                            if ( map != null ){
-                                Set<Entry<ParmGenTokenKey,String>> entryset = map.entrySet();
-                                Iterator<Map.Entry<ParmGenTokenKey,String>> mit = entryset.iterator();
-                                   if(mit.hasNext()){
-                                        Map.Entry<ParmGenTokenKey, String> mobj = mit.next();
-                                        String v = mobj.getValue();
+                            ParmGenToken tkn = parser.fetchNameValue(name, fcnt, _tokentype);
+                            if ( tkn != null ){
+                                ParmGenTokenValue tval = tkn.getTokenValue();
+                                if(tval!=null){
+                                        String v = tval.getValue();
                                         if(v!=null&&!v.isEmpty()){//value null値は追跡しない。
                                             printlog("*****FETCHRESPONSE auto track body r,c,p:value:" + r + "," + c + "," + fcnt + ":" +  v );
                                             if(_uencode==true){

@@ -12,16 +12,26 @@ import java.util.Objects;
  */
 public class ParmGenTokenKey {
     private int tokentype;
+    private int fcnt;
     private String name;
     
    
-    ParmGenTokenKey(int _tokentype, String _name){
+    ParmGenTokenKey(int _tokentype, String _name, int _fcnt){
         tokentype = _tokentype;
         name = new String(_name);
+        fcnt = _fcnt;
     }
     
     public String GetName(){
         return name;
+    }
+    
+    public int GetTokenType(){
+        return tokentype;
+    }
+    
+    public int GetFcnt(){
+        return fcnt;
     }
     
     // HashMap
@@ -29,7 +39,7 @@ public class ParmGenTokenKey {
     public boolean equals(Object obj) {
         if (obj instanceof ParmGenTokenKey) {
             ParmGenTokenKey key = (ParmGenTokenKey) obj;
-            return this.tokentype == key.tokentype && this.name.equals(key.name);
+            return this.tokentype == key.tokentype && this.name.toLowerCase().equals(key.name.toLowerCase()) && this.fcnt == key.fcnt;
         } else {
             return false;
         }
@@ -37,6 +47,6 @@ public class ParmGenTokenKey {
 
     @Override
     public int hashCode() {
-        return Objects.hash(tokentype, name);
+        return Objects.hash(tokentype, name.toLowerCase(),fcnt);
     }
 }

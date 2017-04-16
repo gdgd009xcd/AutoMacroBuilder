@@ -304,7 +304,7 @@ private void setAppParmsIni(){
                     ParmVars.session.get(ParmGenSession.K_RESPONSEPART),
                     ParmVars.session.get(ParmGenSession.K_RESPONSEPOSITION),
                     ParmVars.session.get(ParmGenSession.K_TOKEN),
-                    urlencode,-1,0
+                    urlencode,-1,ParmVars.session.get(ParmGenSession.K_TOKENTYPE)
                     };
                 }else{
                     String _token;
@@ -321,7 +321,7 @@ private void setAppParmsIni(){
                         ParmVars.session.get(ni, ParmGenSession.K_RESPONSEPART),
                         ParmVars.session.get(ni, ParmGenSession.K_RESPONSEPOSITION),
                         ParmVars.session.get(ni, ParmGenSession.K_TOKEN),
-                        urlencode,-1,0
+                        urlencode,-1,ParmVars.session.get(ni, ParmGenSession.K_TOKENTYPE)
                         };
                     }
                 }
@@ -942,7 +942,7 @@ private void setAppParmsIni(){
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.Boolean.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Boolean.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class
+                java.lang.Object.class, java.lang.Boolean.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Boolean.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -1445,13 +1445,11 @@ private void setAppParmsIni(){
                         toStepNo = 0;
                     }
                     int tktype;
-                    try{
-                        tktype = (int)model.getValueAt(i, 11);
-                    }catch(Exception e){
-                        //
-                        tktype = AppValue.T_HIDDEN;
-                    }
-                    app = new AppValue(type, nomodify, value, _resURL, _resRegex, _resPartType, _resRegexPos, _token, _trackreq, fromStepNo, toStepNo,tktype);
+
+                    String tktypename = (String)model.getValueAt(i, 11);
+                    
+
+                    app = new AppValue(type, nomodify, value, _resURL, _resRegex, _resPartType, _resRegexPos, _token, _trackreq, fromStepNo, toStepNo,tktypename);
                     break;
                 case P_RANDOMMODEL:
                     value = (String)model.getValueAt(i, 2);

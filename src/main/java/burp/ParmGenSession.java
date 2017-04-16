@@ -22,6 +22,7 @@ public class ParmGenSession {
     public static final String K_HEADERLENGTH = "headerLength";
     public static final String K_COLUMN = "column";
     public static final String K_TOKEN = "token";
+    public static final String K_TOKENTYPE = "tokentype";
     public static final String K_URLENCODE = "urlencode";//boolean "true"|"false"
     public static final String K_TAMPERATTACKFILE = "tamperattackfile";//診断パターンファイル
     public static final String K_TAMPERADVANCE = "tamperadvance";

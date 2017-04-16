@@ -59,11 +59,11 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
 
             },
             new String [] {
-                "種類", "出現順序", "name", "value"
+                "種類", "tokentype", "出現順序", "name", "value"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -161,13 +161,16 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
         DefaultTableModel model = (DefaultTableModel)TokenTable.getModel();
         for (int i = 0;i < rowsSelected.length;i++ ){
             String respart = (String)model.getValueAt(rowsSelected[i], 0);//種類
-            String num = (String)model.getValueAt(rowsSelected[i], 1);//出現順序
-            String name = (String)model.getValueAt(rowsSelected[i], 2);//name
-            String value = (String)model.getValueAt(rowsSelected[i], 3);//value
+            String tktype = (String)model.getValueAt(rowsSelected[i], 1);//token種類
+            String num = (String)model.getValueAt(rowsSelected[i], 2);//出現順序
+            String name = (String)model.getValueAt(rowsSelected[i], 3);//name
+            String value = (String)model.getValueAt(rowsSelected[i], 4);//value
             ParmVars.session.put(i, ParmGenSession.K_RESPONSEREGEX, "");
             ParmVars.session.put(i, ParmGenSession.K_RESPONSEPART, respart);
             ParmVars.session.put(i, ParmGenSession.K_RESPONSEPOSITION, num);
             ParmVars.session.put(i, ParmGenSession.K_TOKEN, name);
+            ParmVars.session.put(i, ParmGenSession.K_TOKENTYPE, tktype);
+            
             int parsedrespart = ap.parseValPartType(respart);
             if (parsedrespart==AppValue.V_AUTOTRACKBODY) {
                 //引き継ぎ元レスポンスのボディを引き継ぐ場合は,リクエストセット時URLENCODEする。
@@ -280,31 +283,23 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
             //responseパラメータ取得
             ParmGenParser pgser = new ParmGenParser(body);
             HashMap<String,Integer> namepos = new HashMap<String,Integer>();
-            ArrayList<HashMap<ParmGenTokenKey,String>> lst = pgser.getNameValues();
+            ArrayList<ParmGenToken> lst = pgser.getNameValues();
             AppValue ap = new AppValue();
-            for(Iterator<HashMap<ParmGenTokenKey,String>> it = lst.iterator();it.hasNext();){
-                HashMap<ParmGenTokenKey,String> map = (HashMap<ParmGenTokenKey,String>) it.next();
+            for(Iterator<ParmGenToken> it = lst.iterator();it.hasNext();){
+                ParmGenToken tkn = it.next();
                 
-                Set<Entry<ParmGenTokenKey,String>> entryset = map.entrySet();
-                Iterator<Map.Entry<ParmGenTokenKey,String>> mit = entryset.iterator();
-                if(mit.hasNext()){
-                    Map.Entry<ParmGenTokenKey, String> mobj = mit.next();
-                    ParmGenTokenKey ptk = mobj.getKey();
-                    String name = ptk.GetName();
-                    String value = mobj.getValue();
-                    //重複nameの検査
-                    int npos = 0;
-                    if(namepos.containsKey(name)){
-                        npos = namepos.get(name);
-                        npos++;
-                        namepos.put(name, npos);
-                    }else{
-                        namepos.put(name, npos);
-                    }
+
+                if(tkn!=null){
+                    ParmGenTokenKey tkey = tkn.getTokenKey();
+                    ParmGenTokenValue tval = tkn.getTokenValue();
+                    String name = tkey.GetName();
+                    String value = tval.getValue();
+                    int _tktype = tkey.GetTokenType();
+                    int npos = tkey.GetFcnt();
                     if(valueexistonly==true&&(value==null||value.isEmpty())){
                         //value値の無いパラメータは対象外
                     }else{
-                        model.addRow(new Object[]{ap.getValPart(AppValue.V_AUTOTRACKBODY), Integer.toString(npos), name, value});
+                        model.addRow(new Object[]{ap.getValPart(AppValue.V_AUTOTRACKBODY),ap.getTokentypeName(_tktype) ,Integer.toString(npos), name, value});
                     }
                 }
             }
@@ -322,7 +317,7 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
                 }else{
                     namepos.put(name, npos);
                 }
-                model.addRow(new Object[]{ap.getValPart(AppValue.V_REQTRACKPATH), Integer.toString(npos),Integer.toString(ppos), pit.next()});
+                model.addRow(new Object[]{ap.getValPart(AppValue.V_REQTRACKPATH), ap.getTokentypeName(ap.T_DEFAULT), Integer.toString(npos),Integer.toString(ppos), pit.next()});
                 ppos++;
             }
         
@@ -341,7 +336,7 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
                 }else{
                     namepos.put(name, npos);
                 }
-                model.addRow(new Object[]{ap.getValPart(AppValue.V_REQTRACKQUERY), Integer.toString(npos),nv[0], nv[1]});
+                model.addRow(new Object[]{ap.getValPart(AppValue.V_REQTRACKQUERY),ap.getTokentypeName(ap.T_DEFAULT) ,Integer.toString(npos),nv[0], nv[1]});
             }
             Iterator<String[]> itb = rs.request.getBodyParams().iterator();
 
@@ -358,7 +353,7 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
                 }else{
                     namepos.put(name, npos);
                 }
-                model.addRow(new Object[]{ap.getValPart(AppValue.V_REQTRACKBODY), Integer.toString(npos),nv[0], nv[1]});
+                model.addRow(new Object[]{ap.getValPart(AppValue.V_REQTRACKBODY), ap.getTokentypeName(ap.T_DEFAULT),Integer.toString(npos),nv[0], nv[1]});
             }
 
          }

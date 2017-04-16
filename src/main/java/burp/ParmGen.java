@@ -771,6 +771,15 @@ class AppValue {
         public static final int T_HREF = 3;
         public static final int T_XCSRF_TOKEN = 4;
         
+        private static String[] TokenTypeNames = {
+            "",
+            "hidden",
+            "location",
+            "href",
+            "xcsrf",
+            null
+        };
+        
         public String tamattack;
         public int tamadvance;
         public int payloadposition;//I_APPEND, I_INSERT, I_REPLACE
@@ -863,7 +872,7 @@ class AppValue {
         }
         
         AppValue(String _Type, boolean _nomodify, String _value,
-                String _resURL, String _resRegex, String _resPartType, String _resRegexPos, String _token, boolean _urlenc, int _fromStepNo, int _toStepNo, int _tokentype){
+                String _resURL, String _resRegex, String _resPartType, String _resRegexPos, String _token, boolean _urlenc, int _fromStepNo, int _toStepNo, String _tokentypename){
             initctype();
             setValPart(_Type);
             if(_nomodify){
@@ -878,7 +887,7 @@ class AppValue {
             urlencode = _urlenc;
             fromStepNo = _fromStepNo;
             toStepNo = _toStepNo;
-            tokentype = _tokentype;
+            tokentype = parseTokenTypeName(_tokentypename);
         }
         
         AppValue(String _Type, boolean _nomodify,  String _value,String _name,
@@ -1004,6 +1013,22 @@ class AppValue {
                     return ctypestr[i];
             }
             return "";
+        }
+        
+        public String getTokentypeName(int _tktype){
+            if(TokenTypeNames.length>_tktype&&_tktype>=0){
+                return TokenTypeNames[_tktype];
+            }
+            return "";
+        }
+        
+        public  int parseTokenTypeName(String tkname){
+            for(int i=0; i<TokenTypeNames.length;i++){
+                if(tkname.toLowerCase().equals(TokenTypeNames[i])){
+                    return i;
+                }
+            }
+            return 0;
         }
         
         String getResValPart(){
@@ -1810,7 +1835,7 @@ class AppParmsIni {
                         app.resRegex,
                         app.getResValPart(),
                         Integer.toString(app.resRegexPos),
-                    app.token, app.urlencode, app.fromStepNo, app.toStepNo, app.tokentype};
+                    app.token, app.urlencode, app.fromStepNo, app.toStepNo, app.getTokentypeName(app.tokentype)};
                 case T_TAMPER:
                     return new Object[] {app.getValPart(), (app.isModify()?false:true), app.value, 
                         app.token,

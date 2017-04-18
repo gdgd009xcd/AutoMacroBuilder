@@ -304,7 +304,7 @@ private void setAppParmsIni(){
                     ParmVars.session.get(ParmGenSession.K_RESPONSEPART),
                     ParmVars.session.get(ParmGenSession.K_RESPONSEPOSITION),
                     ParmVars.session.get(ParmGenSession.K_TOKEN),
-                    urlencode,-1,ParmVars.session.get(ParmGenSession.K_TOKENTYPE)
+                    urlencode,-1,0,ParmVars.session.get(ParmGenSession.K_TOKENTYPE)
                     };
                 }else{
                     String _token;
@@ -321,7 +321,7 @@ private void setAppParmsIni(){
                         ParmVars.session.get(ni, ParmGenSession.K_RESPONSEPART),
                         ParmVars.session.get(ni, ParmGenSession.K_RESPONSEPOSITION),
                         ParmVars.session.get(ni, ParmGenSession.K_TOKEN),
-                        urlencode,-1,ParmVars.session.get(ni, ParmGenSession.K_TOKENTYPE)
+                        urlencode,-1,0,ParmVars.session.get(ni, ParmGenSession.K_TOKENTYPE)
                         };
                     }
                 }

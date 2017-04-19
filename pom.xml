@@ -61,7 +61,29 @@
             </execution>
         </executions>
     </plugin>
-    
+    <plugin>
+    <artifactId>maven-resources-plugin</artifactId>
+    <executions>
+      <execution>
+        <id>copy-resources</id>
+        <phase>validate</phase>
+        <goals>
+          <goal>copy-resources</goal>
+        </goals>
+        <configuration>
+          <outputDirectory>${project.build.directory}/classes/burp/</outputDirectory>
+          <resources>          
+            <resource>
+              <directory>${project.basedir}/src/main/java/burp/</directory>
+              <includes>
+                <include>Bundle*</include>
+              </includes>
+            </resource>
+          </resources>              
+        </configuration>            
+      </execution>
+    </executions>
+  </plugin>
     </plugins>
 </build>
 </project>

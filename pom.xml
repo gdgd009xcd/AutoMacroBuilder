@@ -38,7 +38,7 @@
     <artifactId>bjarfile</artifactId>
     <version>1.0</version>
     <scope>system</scope>
-    <systemPath>${basedir}/lib/burpsuite_free_v1.7.15.jar</systemPath>
+    <systemPath>${basedir}/lib/burpsuite_free.jar</systemPath>
 </dependency>
 
 </dependencies>

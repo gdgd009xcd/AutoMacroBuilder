@@ -1023,11 +1023,13 @@ class AppValue {
         }
         
         public  int parseTokenTypeName(String tkname){
+        	if(tkname!=null){
             for(int i=0; i<TokenTypeNames.length;i++){
                 if(tkname.toLowerCase().equals(TokenTypeNames[i])){
                     return i;
                 }
             }
+        	}
             return 0;
         }
         

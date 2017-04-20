@@ -21,13 +21,13 @@ public class ParmGenParser {
     Document doc;
     Elements elems;
     HashMap<ParmGenTokenKey, ParmGenTokenValue> map;
-    
+
     void init(){
         doc = null;
         elems = null;
         map = null;
     }
-    
+
     //tokenらしき値を自動引継ぎ
     ParmGenParser(String htmltext){
             init();
@@ -42,8 +42,8 @@ public class ParmGenParser {
             }
 
     }
-    
-      
+
+
     void elemsprint(String _t){
         for(Element vtag : elems){
             String n = vtag.attr("name");
@@ -51,17 +51,18 @@ public class ParmGenParser {
             String h = vtag.attr("href");
             if(vtag.tagName().toLowerCase().indexOf("input")!=-1){//<input
                 ParmVars.plog.AppendPrint("<" + vtag.tagName() + " name=\"" + n + "\" value=\"" + v + "\">");
-            }else if(vtag.tagName().toLowerCase().indexOf("a")!=-1){//<A 
+            }else if(vtag.tagName().toLowerCase().indexOf("a")!=-1){//<A
                 ParmVars.plog.AppendPrint("<" + vtag.tagName() + " href=\"" + h + "\">");
             }else{
                 ParmVars.plog.AppendPrint("<" + vtag.tagName()  + "\">");
             }
         }
     }
-    
-    public ParmGenToken getParmGenToken(Element vtag, HashMap<String, Integer> namepos){
+
+    public ArrayList<ParmGenToken> getParmGenTokens(Element vtag, HashMap<String, Integer> namepos){
         String[] nv = null;
         ParmGenToken tk = null;
+        ArrayList<ParmGenToken> tklist = new ArrayList<ParmGenToken>();
         if(vtag.tagName().toLowerCase().indexOf("input")!=-1){//<input
             String n = vtag.attr("name");
             String v = vtag.attr("value");
@@ -85,8 +86,9 @@ public class ParmGenParser {
                     namepos.put(n, npos);
                 }
                 tk = new ParmGenToken(AppValue.T_HIDDEN, "", n, v, npos);
+                tklist.add(tk);
             }
-        }else if(vtag.tagName().toLowerCase().indexOf("a")!=-1){//<A 
+        }else if(vtag.tagName().toLowerCase().indexOf("a")!=-1){//<A
             String h = vtag.attr("href");
             //href属性から、GETパラメータを抽出。
             //?name=value&....
@@ -99,52 +101,50 @@ public class ParmGenParser {
                     String value = new String("");
                     if(nvp.length>1){
                         value = nvp[1];
-                    }
-                    if(name!=null&&name.length()>0&&value!=null){
-                        //重複nameの検査
-                        int npos = 0;
-                        if(namepos.containsKey(name)){
-                            npos = namepos.get(name);
-                            npos++;
-                            namepos.put(name, npos);
-                        }else{
-                            namepos.put(name, npos);
-                        }
-                        tk = new ParmGenToken(AppValue.T_HREF,url, name, value, npos);
-                        break;
+                    
+	                    if(name!=null&&name.length()>0&&value!=null){
+	                        //重複nameの検査
+	                        int npos = 0;
+	                        if(namepos.containsKey(name)){
+	                            npos = namepos.get(name);
+	                            npos++;
+	                            namepos.put(name, npos);
+	                        }else{
+	                            namepos.put(name, npos);
+	                        }
+	                        tk = new ParmGenToken(AppValue.T_HREF,url, name, value, npos);
+	                        tklist.add(tk);
+	                    }
                     }
                 }
             }
         }
-        return tk;
+        return tklist;
     }
     //
     // 引き継ぎパラメータ一覧
     //
     public ArrayList<ParmGenToken>  getNameValues(){
-            
+
             HashMap<String,Integer> namepos = new HashMap<String,Integer>();
             ArrayList<ParmGenToken> lst = new ArrayList<ParmGenToken>();
-           
+
             try {
-			
+
                     for(Element vtag : elems){
 
-                            ParmGenToken tk = getParmGenToken(vtag, namepos);
-                            if(tk!=null){
-                                lst.add(tk);
-                            }
-
+                            ArrayList<ParmGenToken> tklist = getParmGenTokens(vtag, namepos);
+                            lst.addAll(tklist);
                     }
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			ParmVars.plog.printException(e);
 		}
-            
-            return lst;
+
+        return lst;
     }
-    
+
     //
     // レスポンスパラメータ抽出
     //
@@ -152,12 +152,12 @@ public class ParmGenParser {
             if(name ==null)return null;//name nullは不可。
             ParmGenTokenKey tkey = null;
             HashMap<String,Integer> namepos = new HashMap<String,Integer>();
-            
+
             if(map==null){
                 map = new HashMap<ParmGenTokenKey, ParmGenTokenValue>();
                 for(Element vtag : elems){
-                    ParmGenToken tkn = getParmGenToken(vtag, namepos);
-                    if(tkn!=null){
+                    ArrayList<ParmGenToken> tklist = getParmGenTokens(vtag, namepos);
+                    for(ParmGenToken tkn: tklist){
                         map.put(tkn.getTokenKey(), tkn.getTokenValue());
                     }
                 }
@@ -177,5 +177,5 @@ public class ParmGenParser {
             }
             return null;
     }
-    
+
 }

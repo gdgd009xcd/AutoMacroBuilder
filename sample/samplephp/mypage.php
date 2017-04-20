@@ -24,6 +24,15 @@ if ( $user === "daike" && $pass === "test1234"){
 	exit();
 }
 
+if(isset($_GET['token1'])){
+    if ( isset($_SESSION['token1'])){
+        if($_GET['token1'] === $_SESSION['token1']){
+            header('location: inquiry.php?token1=' . $_GET['token1']);
+            exit();
+        }
+    }
+}
+
 $randomval = sha1(uniqid(rand(), true));
 
 $_SESSION['token1'] = $randomval;
@@ -44,6 +53,8 @@ MYPAGE
 <input type="submit"  value="お問い合わせ">
 </form>
 
+<P>
+<A HREF="mypage.php?token1=<?php echo $randomval; ?>">ロケーションでお問い合わせに遷移</A>
 <P>
 <A HREF="logout.php">logout</A>
 </body>

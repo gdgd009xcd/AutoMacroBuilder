@@ -158,7 +158,11 @@ public class ParmGenParser {
                 for(Element vtag : elems){
                     ArrayList<ParmGenToken> tklist = getParmGenTokens(vtag, namepos);
                     for(ParmGenToken tkn: tklist){
-                        map.put(tkn.getTokenKey(), tkn.getTokenValue());
+                    	tkey = tkn.getTokenKey();
+                    	if(_tokentype==AppValue.T_DEFAULT){
+                    		tkey.SetTokenType(AppValue.T_DEFAULT);
+                    	}
+                        map.put(tkey, tkn.getTokenValue());
                     }
                 }
             }

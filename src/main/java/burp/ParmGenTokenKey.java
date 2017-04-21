@@ -34,6 +34,10 @@ public class ParmGenTokenKey {
         return fcnt;
     }
     
+    public void SetTokenType(int _tktype){
+    	tokentype = _tktype;
+    }
+    
     // HashMap
     @Override
     public boolean equals(Object obj) {

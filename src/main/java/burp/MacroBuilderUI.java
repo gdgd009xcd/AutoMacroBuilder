@@ -12,6 +12,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.DefaultListModel;
 import javax.swing.ListModel;
 
@@ -144,7 +146,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         FinalResponse = new javax.swing.JCheckBox();
         MBResetToOriginal = new javax.swing.JCheckBox();
         MBdeleteSetCookies = new javax.swing.JCheckBox();
-        jButton1 = new javax.swing.JButton();
+        ParamTracking = new javax.swing.JButton();
 
         targetRequest.setText("targetRequest");
         targetRequest.addActionListener(new java.awt.event.ActionListener() {
@@ -337,10 +339,10 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             }
         });
 
-        jButton1.setText("追跡");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        ParamTracking.setText("追跡");
+        ParamTracking.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                ParamTrackingActionPerformed(evt);
             }
         });
 
@@ -358,7 +360,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)
                                 .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                .addComponent(ParamTracking, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                         .addComponent(jSeparator1)
                         .addGroup(layout.createSequentialGroup()
                             .addComponent(jCheckBox2)
@@ -419,7 +421,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jButton3)
                         .addGap(9, 9, 9)
-                        .addComponent(jButton1))
+                        .addComponent(ParamTracking))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -593,10 +595,51 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         pmt.setMBdeletesetcookies(MBdeleteSetCookies.isSelected());
     }//GEN-LAST:event_MBdeleteSetCookiesActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void ParamTrackingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ParamTrackingActionPerformed
         // TODO add your handling code here:
         //token追跡自動設定。。
-    }//GEN-LAST:event_jButton1ActionPerformed
+        ArrayList<ParmGenToken> tracktokenlist = new ArrayList<ParmGenToken>();
+        Pattern patternw32 = Pattern.compile("\\w{32}");
+        for(PRequestResponse pqrs : rlist){
+            if(tracktokenlist!=null&&tracktokenlist.size()>0){//直前のレスポンスに追跡パラメータあり
+                
+            }
+            //レスポンストークン解析
+            String body = pqrs.response.getBody();
+            //レスポンスから追跡パラメータ抽出
+            ParmGenParser pgparser = new ParmGenParser(body);
+            ArrayList<ParmGenToken> tokenlist = pgparser.getNameValues();
+            for(ParmGenToken token : tokenlist){
+                //PHPSESSID, token, SesID, jsessionid
+                String tknames[] = {
+                    "PHPSESSID",
+                    "JSESSIONID",
+                    "SESID",
+                    "TOKEN",
+                    "_CSRF_TOKEN",
+                };
+                String tokenname = token.getTokenKey().GetName();
+                boolean namematched = false;
+                for(String tkn : tknames){
+                    if(tokenname.equalsIgnoreCase(tkn)){
+                        tracktokenlist.add(token);
+                        namematched = true;
+                        break;
+                    }
+                }
+                
+                // value値が \w{32}に一致
+                if(!namematched){//nameはtknamesに一致しない
+                    String tokenvalue = token.getTokenValue().getValue();
+                    Matcher matcher = patternw32.matcher(tokenvalue);
+                    if(matcher.matches()){
+                        tracktokenlist.add(token);
+                    }
+                }
+                
+            }
+        }
+    }//GEN-LAST:event_ParamTrackingActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -613,10 +656,10 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     private javax.swing.JTextArea MacroComments;
     private javax.swing.JTextArea MacroRequest;
     private javax.swing.JTextArea MacroResponse;
+    private javax.swing.JButton ParamTracking;
     private javax.swing.JList RequestList;
     private javax.swing.JMenuItem disableRequest;
     private javax.swing.JMenuItem enableRequest;
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JCheckBox jCheckBox2;

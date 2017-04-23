@@ -1,8 +1,9 @@
 1. レスポンスから次のtoken（と思われる）下記のパラメータを取得
-
+   stepno 0～ の各レスポンスとその次のリクエストから下記のパラメータを抽出
 1-1.hidden値のtokenと思われるパラメータ。(追跡箇所responsebody tokentype=1)
 ・nameにキーワード"token"（大文字小文字）を含む
 　　　　 キーワード "SesID", "PHPSESSID", "jsessionid"等セッション値
+　のうち、次ページのPOST/GETパラメータに渡している(name=value)が一致する。
 
 
 1-2.Locationヘッダー(追跡箇所header tokentype=2)
@@ -48,11 +49,11 @@
 下記をマクロ昇順に繰り返す。
 
 1) マクロのレスポンスをパースし、tokenを取り出す。
-    1-1) responsebody　
 2) 次ページのリクエストに、1)のtokenがマッチするパラメータがある場合は、
 　　引き継ぎパラメータを作成。
-3) CSRFlistに、作成したトークンのうち、
-　　・nameとtokentypeが同じものは、集約して１トークンとして表示。
+3) CSRFlistに、作成したトークンのname=valueパラメータを追加
+　　Enable　置換場所　tokentype 追跡位置　name  value
+　  ☑　　  body      hidden       0     token 38Jlxxiespe
 　　・チェックボックスでトークンの引き継ぎ有効無効が設定できる。
 
 4.備考

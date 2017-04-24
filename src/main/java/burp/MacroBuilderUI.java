@@ -7,15 +7,11 @@
 package burp;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.swing.DefaultListModel;
-import javax.swing.ListModel;
 
 /**
  *
@@ -25,10 +21,10 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
     ArrayList <PRequestResponse> rlist = null;
     ParmGenMacroTrace pmt = null;
-    
+
     DefaultListModel<String> CSRFListModel = null;
     DefaultListModel<String> RequestListModel = null;
-    
+
     /**
      * Creates new form MacroBuilderUI
      */
@@ -42,24 +38,24 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         RequestListModel = new DefaultListModel();
         RequestListModel.clear();
         RequestList.setModel(RequestListModel);
-        
+
         pmt.setUI(this);
-        
+
         pmt.setMBExec(MBExec.isSelected());
         pmt.setMBCookieUpdate(MBCookieUpdate.isSelected());
         pmt.setMBCookieFromJar(MBCookieFromJar.isSelected());
         pmt.setMBFinalResponse(FinalResponse.isSelected());
         pmt.setMBResetToOriginal(MBResetToOriginal.isSelected());
         pmt.setMBdeletesetcookies(MBdeleteSetCookies.isSelected());
-        
+
     }
-    
+
     ParmGenMacroTrace getParmGenMacroTrace(){
         return pmt;
     }
 
     void addNewRequests(ArrayList <PRequestResponse> _rlist){
-        DefaultListModel  lmodel = new DefaultListModel(); 
+        DefaultListModel  lmodel = new DefaultListModel();
         AppParmsIni pini;
         if(_rlist!=null){
             rlist = _rlist;
@@ -69,7 +65,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             }
             Iterator<PRequestResponse> it = _rlist.iterator();
             while(it.hasNext()){
-                
+
                 //model.addRow(new Object[] {false, pini.url, pini.getIniValDsp(), pini.getLenDsp(), pini.getTypeValDsp(),pini.getAppValuesDsp(),pini.getCurrentValue()});
                 PRequestResponse pqr = it.next();
                 String url = pqr.request.url;
@@ -77,9 +73,9 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             }
             RequestList.setModel(lmodel);
         }
-        
+
     }
-    
+
     void updateCurrentReqRes(){
         int cpos = pmt.getCurrentRequest();
         if(rlist!=null){
@@ -89,19 +85,19 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             MacroComments.setText(pqr.getComments());
         }
     }
-    
-    
-        
-        
-        
 
-    
+
+
+
+
+
+
     public void Redraw(){
         //ListModel cmodel = RequestList.getModel();
         //RequestList.setModel(cmodel);
         RequestList.repaint();
     }
-            
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -446,7 +442,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
-        
+
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void RequestListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_RequestListValueChanged
@@ -454,11 +450,11 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
         int pos = RequestList.getSelectedIndex();
         if (pos != -1){
-            
+
             if(rlist!=null&&rlist.size()>pos){
                 //
-                
-                DefaultListModel  lmodel = new DefaultListModel(); 
+
+                DefaultListModel  lmodel = new DefaultListModel();
                 PRequestResponse pqr = rlist.get(pos);
                 MacroRequest.setText(pqr.request.getMessage());
                 MacroResponse.setText(pqr.response.getMessage());
@@ -480,7 +476,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                 }
                 CSRFList.setModel(lmodel);
                 * ************/
-                
+
             }
         }
 
@@ -521,7 +517,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             sidx = 0;
         }
         CSRFListModel.insertElementAt(pattern, sidx);
-        
+
         if(sidx+2 < maxidx){
             CSRFListModel.remove(sidx+1);
         }
@@ -597,12 +593,20 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
     private void ParamTrackingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ParamTrackingActionPerformed
         // TODO add your handling code here:
+    	String tknames[] = {
+                "PHPSESSID",
+                "JSESSIONID",
+                "SESID",
+                "TOKEN",
+                "_CSRF_TOKEN",
+                "authenticity_token"
+        };
         //token追跡自動設定。。
         ArrayList<ParmGenToken> tracktokenlist = new ArrayList<ParmGenToken>();
         Pattern patternw32 = Pattern.compile("\\w{32}");
         for(PRequestResponse pqrs : rlist){
             if(tracktokenlist!=null&&tracktokenlist.size()>0){//直前のレスポンスに追跡パラメータあり
-                
+
             }
             //レスポンストークン解析
             String body = pqrs.response.getBody();
@@ -611,13 +615,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             ArrayList<ParmGenToken> tokenlist = pgparser.getNameValues();
             for(ParmGenToken token : tokenlist){
                 //PHPSESSID, token, SesID, jsessionid
-                String tknames[] = {
-                    "PHPSESSID",
-                    "JSESSIONID",
-                    "SESID",
-                    "TOKEN",
-                    "_CSRF_TOKEN",
-                };
+                
                 String tokenname = token.getTokenKey().GetName();
                 boolean namematched = false;
                 for(String tkn : tknames){
@@ -627,7 +625,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                         break;
                     }
                 }
-                
+
                 // value値が \w{32}に一致
                 if(!namematched){//nameはtknamesに一致しない
                     String tokenvalue = token.getTokenValue().getValue();
@@ -636,7 +634,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                         tracktokenlist.add(token);
                     }
                 }
-                
+
             }
         }
     }//GEN-LAST:event_ParamTrackingActionPerformed

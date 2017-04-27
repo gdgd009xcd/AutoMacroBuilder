@@ -4,46 +4,38 @@ package burp;
 //
 //　仕様：設定ファイル(AppParmGen.csv)に指定したＵＲＬの指定したパラメータに指定した形式で
 //　　　　実行毎に異なる値（乱数または昇順の数値）を設定する。
-//        
 //
 //
-//        
+//
+//
 
 
 
-import flex.messaging.util.URLDecoder;
-import java.io.File;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStreamReader;
-import java.io.FileWriter;
-import java.io.StringWriter;
-import java.io.PrintWriter;
-import java.io.FileReader;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.Random;
-import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.StringTokenizer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.Date;
-import java.text.Format;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.logging.Logger;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.io.StringReader;
-import java.math.BigInteger;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Random;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.json.Json;
 import javax.json.stream.JsonParser;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
+
+import flex.messaging.util.URLDecoder;
 
 
 
@@ -74,14 +66,14 @@ class PLog {
         PrintWriter Stderr = null;
 
 	PLog(String projectdir){
-	
+
 		// 設定ファイル
 		//    ファイルフォーマット
 		//    "パス（正規表現）", 桁数(number)|位置(csv), 値の種類rand（乱数）/number（昇順数値）/csv（ファイル）/track(レスポンス), 初期値(昇順数値)[:最大値]/csvファイルパス（ＣＳＶ）,"path/query/body/loc[-]","値[正規表現(\w+)で指定する]"....
-		//    
+		//
 		//    例：".*/project/index.php.*", 4, number, 1,"body", "myname(\w+)","query", "myvalue(\w+)", "path", "id/\/(\w+)\/"
-		//        
-		
+		//
+
 		logname = projectdir + "\\AppScanPermGen.log";
                 LogfileOn = false;// default disable file output
 		File logfile = new File(logname);
@@ -98,7 +90,7 @@ class PLog {
             Stdout = stdout;
             Stderr = stderr;
         }
-  
+
         private void StdoutPrintln(String v){
             if(Stdout!=null){
                 Stdout.println(v);
@@ -111,7 +103,7 @@ class PLog {
             }
             System.err.println(v);
         }
-        
+
 	public String getLogname() { return logname; }
 
 	private String getDateTimeStr(){
@@ -120,14 +112,14 @@ class PLog {
 		return sdf1.format(date1);
 	}
 
-  
+
 	public void printLF(){
 		try {
                         String v = "";
                         String line = "";
                         boolean append = true;
 			if (LogLevel >= 0){
-				
+
                                 line = v + "\n";
                                 StdoutPrintln(line);
                                 if(LogfileOn){
@@ -140,13 +132,13 @@ class PLog {
                     printException(e);
                 }
 	}
-        
+
         public void printlog(String v, boolean append){
 		try {
 			v = getDateTimeStr() + " " + v;
 			if (LogLevel >= 0){
-				
-                                
+
+
                                 StdoutPrintln(v);
                                 if(LogfileOn){
                                     FileWriter filewriter = new FileWriter(logname, append);
@@ -158,39 +150,39 @@ class PLog {
                     printException(e);
                 }
 	}
-	
+
         public void InitPrint(String v){
             printlog(v, false);
         }
-        
+
         public void AppendPrint(String v){
             printlog(v, true);
         }
-        
+
         boolean isLogfileOn(){
             return LogfileOn;
         }
-        
+
         public void LogfileOn(boolean _on){
             LogfileOn = _on;
         }
-        
+
 	public void printException(Exception e){
 		 StringWriter sw = null;
          PrintWriter  pw = null;
-         
+
          sw = new StringWriter();
          pw = new PrintWriter(sw);
          e.printStackTrace(pw);
          String trace = sw.toString();
          printlog(e.toString(), true);
          printlog(trace, true);
-         
-         try { 
+
+         try {
              if ( sw != null ) {
                  sw.flush();
                  sw.close();
-             } 
+             }
              if ( pw != null ) {
                  pw.flush();
                  pw.close();
@@ -204,33 +196,33 @@ class PLog {
            }
            printlog("ERROR: " + v, true);
        }
-        
+
 	public void debuglog(int l, String v){
 		if ( l <= LogLevel ){
 			printlog(v, true);
 		}
 	}
-        
+
         void clearComments(){
             comments = "";//no null
         }
-        
+
         void addComments(String _v){
             comments += _v;
         }
-        
+
         void setComments(String _v){
             comments = _v;
         }
-        
+
         String getComments(){
             return comments;
         }
-        
+
         void setError(boolean _b){
             iserror = _b;
         }
-        
+
         boolean isError(){
             return iserror;
         }
@@ -253,7 +245,7 @@ class ParmVars {
 	static PLog plog;
 	static String enc;
         static String formdataenc;//iso8859-1 encoding is fully  mapped binaries for form-data binaries.
-	// Proxy Authentication 
+	// Proxy Authentication
 	// Basic username:password(base64 encoded)
 	//String ProxyAuth = "Basic Y2hpa2FyYV8xLmRhaWtlOjdyOXR5QDRxMQ==";
 	static String ProxyAuth;
@@ -276,7 +268,7 @@ class ParmVars {
                 }
 		desktop = null;
                 File newdir = new File(projectdir + "\\ParmGenParms");
-                
+
                 if (! newdir.exists()){
                     if(newdir.mkdirs()){
                         projectdir =newdir.getAbsolutePath();
@@ -285,7 +277,7 @@ class ParmVars {
                     projectdir =newdir.getAbsolutePath();
                 }
                 newdir = null;
-                
+
 		parmfile = projectdir + "\\AppParmGen.csv";
 		plog = new PLog(projectdir);
 		enc = "UTF-8";// default encoding.
@@ -321,7 +313,7 @@ class CSVParser {
 		rdata = rdata.replaceAll("(?:\\x0D\\x0A|[\\x0D\\x0A])?$", ",")  + term;
 		matcher = pattern.matcher(rdata);
 	}
-	
+
 	static boolean getField(CSVFields csvf){
 		if(matcher.find()) {
 			csvf.field = matcher.group(1);
@@ -333,7 +325,7 @@ class CSVParser {
 			}
 			return true;
 		}
-		
+
 		return false;
 	}
 }
@@ -342,49 +334,49 @@ class CSVParser {
 // ByteArray
 //
 class ByteArrayUtil {
-	
+
 //	private Logger log= BaseLogger.getLogger(BaseLogger.TYPE_SYSTEM);	// ログ
 	private ByteArrayOutputStream stream= null;						// 保持しているbyte配列ストリーム
-	
+
 	/**
 	 * 空のByteArrayUtilオブジェクトを生成する
 	 */
 	public ByteArrayUtil(){
 		initByteArrayUtil(null);
 	}
-	
+
 	/**
 	 * 指定データを内部に保持するByteArrayUtilオブジェクトを生成する
-	 * 
+	 *
 	 * @param newByteArray 保持するbyte配列
 	 */
 	public ByteArrayUtil(byte[] newByteArray){
 		initByteArrayUtil(newByteArray);
 	}
-	
+
 	/**
 	 * 指定データを内部に保持するByteArrayUtilオブジェクトを生成する
 	 * 指定データが`null`の場合は空のByteArrayUtilオブジェクトを生成する
-	 * 
+	 *
 	 * @param newByteArray 保持するbyte配列
 	 */
 	void initByteArrayUtil(byte[] newByteArray){
 		stream= new ByteArrayOutputStream();
 		concat(newByteArray);
 	}
-	
+
 	/**
 	 * 内部保持しているbyte配列の長さを返します
-	 * 
+	 *
 	 * @return 内部保持しているbyte配列の長さ
 	 */
 	public int length(){
 		return stream.size();
 	}
-	
+
 	/**
 	 * 指定されたインデックス位置にあるbyte値を返します
-	 * 
+	 *
 	 * @param index 取得したいインデックス
 	 * @return byte値
 	 * @throws OutOfMemoryError 内部保持している配列の長さ以上を指定した場合
@@ -393,22 +385,22 @@ class ByteArrayUtil {
 		byte[] b= getBytes();
 		return b[index];
 	}
-	
+
 	/**
 	 * 保持データに指定したbyte配列を追加します<br>
 	 * `ByteArrayUtil#insert()`でも同様の動作が可能だが
 	 * ストリームの性質上こっちの実装が適しているため単独実装した。
-	 * 
+	 *
 	 * @param addBytes 新規に追加したいbyte配列
 	 * @return 追加成功:true / 失敗:false
 	 */
 	public boolean concat(byte[] addBytes){
-		
+
 		// 評価以前の問題
 		if ((stream== null)||(addBytes== null)){
 			return false;
 		}
-		
+
 		// 保持データに追加
 		try {
 			stream.write(addBytes);
@@ -420,7 +412,7 @@ class ByteArrayUtil {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * `fromIndex`で指定するbyte配列`org`の位置に
 	 * 配列`dest`を挿入する。
@@ -428,9 +420,9 @@ class ByteArrayUtil {
 	 * Ex.
 	 * 	内部保持データ= {0, 1, 2, 3};
 	 * 	byte[] dest= {4, 5};
-	 * 
+	 *
 	 * 	とした時…
-	 * 	
+	 *
 	 * 	insert(dest, 0)実行後の配列イメージ	: {4, 5, 0, 1, 2, 3}
 	 * 	insert(dest, 1)実行後の配列イメージ	: {0, 4, 5, 1, 2, 3}
 	 * 	insert(dest, 4)実行後の配列イメージ	: {0, 1, 2, 3, 4, 5}
@@ -443,9 +435,9 @@ class ByteArrayUtil {
 	 * @throws OutOfMemoryError - `org`の長さを超える`fromIndex`を指定した時(org.length < fromIndex)
 	 */
 	public void insert(byte[] dest, int fromIndex){
-		
+
 		byte[] org= getBytes();
-		
+
 		// 評価以前の問題
 		if ((org== null)||(dest== null)||(fromIndex< 0)){	// 引数がおかしい
 			throw new IllegalArgumentException();
@@ -453,9 +445,9 @@ class ByteArrayUtil {
 		if (org.length< fromIndex){							// 配列長を超えた値指定(OutOfBounds)
 			throw new OutOfMemoryError("`fromIndex` is larger than length `org` of the specified array.");
 		}
-		
+
 		ByteArrayOutputStream out= new ByteArrayOutputStream();		// 戻り値用ストリーム
-		
+
 		// ストリーム上で配列を結合
 		if (fromIndex!= 0){
 			out.write(org, 0, fromIndex);
@@ -466,10 +458,10 @@ class ByteArrayUtil {
                     ParmVars.plog.printException(e);
 		}
 		out.write(org, fromIndex, org.length - fromIndex);
-		
+
 		// 一度保持データを破棄して
 		initByteArrayUtil(null);
-		
+
 		// 書き直す
 		try {
 			out.writeTo(stream);
@@ -478,10 +470,10 @@ class ByteArrayUtil {
                         ParmVars.plog.printException(e);
 		}
 	}
-	
+
 	/**
 	 * 内部に保持するデータをbyte配列形式で返す
-	 * 
+	 *
 	 * @return byte配列
 	 */
 	public byte[] getBytes(){
@@ -490,12 +482,12 @@ class ByteArrayUtil {
 		}
 		return stream.toByteArray();
 	}
-	
+
 	/**
 	 * この配列の部分配列を返します<br>
 	 * 部分配列は、指定された `beginIndex` から `endIndex` - 1 にある byte要素 までです<br>
 	 * したがって、部分配列の長さは `endIndex`-`beginIndex` になります。
-	 * 
+	 *
 	 * @param beginIndex 開始インデックス(この要素を含む)
 	 * @param endIndex 終了インデックス(この要素を含まない)
 	 * @return 指定された部分配列
@@ -504,28 +496,28 @@ class ByteArrayUtil {
 	 * 				`beginIndex>= endIndex` が成立する場合。
 	 */
 	public byte[] subBytes(int beginIndex, int endIndex){
-		
+
 		// 評価以前の問題
 		if ((beginIndex< 0)||(endIndex> length())||(beginIndex>= endIndex)){
 			throw new OutOfMemoryError();
 		}
-		
+
 		int count= endIndex - beginIndex;		// 戻り値配列の要素数
 		byte[] org= getBytes();
 		byte[] result= new byte[count];
-		
+
 		for (int i= 0; i< count; i++){
 			result[i]= org[beginIndex + i];
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * この配列の部分配列を返します<br>
 	 * 部分配列は、指定された `beginIndex` から終端までです<br>
 	 * したがって、部分配列の長さは `endIndex - (内部配列の長さ)` になります。
-	 * 
+	 *
 	 * @param beginIndex 開始インデックス(この要素を含む)
 	 * @return 指定された部分配列
 	 * @throws OutOfMemoryError
@@ -534,21 +526,21 @@ class ByteArrayUtil {
 	public byte[] subBytes(int beginIndex){
 		return subBytes(beginIndex, length());
 	}
-	
+
 	/**
 	 * この配列が`fromIndex`以降において、
 	 * `dest`が最初に出現する位置を返します。<br>
 	 * <br>
 	 * 見つからない場合は -1 を返します
-	 * 
+	 *
 	 * @param dest 検索したいbyte配列
 	 * @param fromIndex 検索開始位置
 	 * @return 見つかったインデックス
 	 */
 	public int indexOf(byte[] dest, int fromIndex){
-		
+
 		byte[] org= getBytes();
-		
+
 		// 評価以前の問題
 		if ((org== null)||(dest== null)||(fromIndex< 0)){
 			throw new IllegalArgumentException("`dest` or `fromIndex` is null.");
@@ -561,10 +553,10 @@ class ByteArrayUtil {
 		{
 			return -1;
 		}
-		
+
 		// 評価する限界値
 		int limitIndex= org.length - dest.length + 1;
-		
+
 		for (int i= fromIndex; i< limitIndex; i++){
 			for (int j= 0; j< dest.length; j++){
 				if (org[i + j]== dest[j]){
@@ -581,24 +573,24 @@ class ByteArrayUtil {
 		// 最後まで見つからなかった
 		return -1;
 	}
-	
+
 	/**
 	 * この配列内において、配列`dest`が最初に出現する位置を返します。<br>
 	 * <br>
 	 * 見つからない場合は -1 を返します
-	 * 
+	 *
 	 * @param dest 検索したいbyte
 	 * @return 見つかったインデックス
 	 */
 	public int indexOf(byte[] dest){
 		return indexOf(dest, 0);
 	}
-	
+
 	/**
 	 * この配列内において、`dest`が最初に出現する位置を返します。<br>
 	 * <br>
 	 * 見つからない場合は -1 を返します
-	 * 
+	 *
 	 * @param dest 検索したいbyte
 	 * @return 見つかったインデックス
 	 */
@@ -606,104 +598,104 @@ class ByteArrayUtil {
 		byte[] b= {dest};
 		return indexOf(b, 0);
 	}
-	
+
 	/**
 	 * この内部配列が、指定された配列`regex`で始まるかどうかを判定する
-	 * 
+	 *
 	 * @param regex 接頭配列
 	 * @return `regex`で始まる:true / 始まらない:false
 	 * @throws IllegalArgumentException `regex`が`null`の時
 	 */
 	public boolean startsWith(byte[] regex){
-		
+
 		if (regex== null){
 			throw new IllegalArgumentException("`regex` is null.");
 		}
-		
+
 		if (indexOf(regex)!= 0){
 			return false;
 		}
 		return true;
 	}
-	
+
 	/**
 	 * この内部配列と指定したbyte配列が等しいかどうかを判定する
-	 * 
+	 *
 	 * @param dest 比較したいbyte配列
 	 * @return 等しい:true / 等しくない:false
 	 * @throws IllegalArgumentException `dest`が`null`の時
 	 */
 	public boolean equals(byte[] dest){
-		
+
 		if (dest== null){
 			throw new IllegalArgumentException("`dest` is null.");
 		}
-		
+
 		if ((length()!= dest.length)||(indexOf(dest)!= 0)){
 			return false;
 		}
 		return true;
 	}
-	
+
 	/**
 	 * この配列内において配列`target`に一致する部分配列を
 	 * 配列`replacement`に置換したbyte配列を返します。
-	 * 
+	 *
 	 * @param target ターゲット配列(置換したいbyte配列)
 	 * @param replacement 置換後の部分配列
 	 * @return 全体を置換した配列
 	 */
 	public byte[] replace(byte[] target, byte[] replacement){
-		
+
 		// 評価以前の問題
 		if ((target== null)||(replacement== null)){
 			throw new IllegalArgumentException("`target` or `replacement` is null.");
 		}
-		
+
 		int index= indexOf(target);
 		byte[] org= getBytes();
-		
+
 		// 見つからないので分解生成は不要
 		if (index== -1){
 			return org;
 		}
-		
+
 		ByteArrayOutputStream out= new ByteArrayOutputStream();
 		int beforeIndex= 0;
 		int skipCount= target.length;							// 要素発見時の配列スキップ数
-		
+
 		// `target`が見つかる間は書き込み続ける
 		while(index!= -1){
-			
+
 			out.write(org, beforeIndex, index - beforeIndex);	// 直前まで書き込む
 			out.write(replacement, 0, replacement.length);		// 置換配列を書き込む
 			beforeIndex= index + skipCount;						// 見つけたターゲット分飛ばす
-			
+
 			if (length()< index + skipCount){					// 残りの探索幅より`target`が大きければ終了
 				break;
 			}
 			index= indexOf(target, index + skipCount);
 		}
-		
+
 		// 残りの要素を書き込む
 		out.write(org, beforeIndex, org.length - beforeIndex);
-		
+
 		return out.toByteArray();
 	}
-	
+
 	/**
 	 * この配列内にある全ての`oldByte`を`newByte`に置換した
 	 * byte配列を返します。
-	 * 
+	 *
 	 * @param oldByte 置換したいbyte
 	 * @param newByte 置換後のbyte
 	 * @return 置換後のbyte配列
 	 */
 	public byte[] replace(byte oldByte, byte newByte){
-		
+
 		byte[] org= getBytes();
 		int count= org.length;
-		
+
 		for (int i= 0; i< count; i++){
 			if (org[i]== oldByte){
 				org[i]= newByte;
@@ -711,15 +703,15 @@ class ByteArrayUtil {
 		}
 		return org;
 	}
-	
+
 	/**
 	 * この配列内に含まれる部分配列`target`の個数を返す
-	 * 
+	 *
 	 * @param target 探し出す部分配列
 	 * @return 見つかった部分配列の個数
 	 */
 	public int countOf(byte[] target){
-		
+
 		// 評価以前の問題
 		if (target== null){
 			throw new IllegalArgumentException("`target` is null.");
@@ -727,19 +719,19 @@ class ByteArrayUtil {
 		if (length()< target.length){
 			return 0;
 		}
-		
+
 		int count= 0;
 		int skip= target.length;
 		int index= indexOf(target);
 		while(index!= -1){
 			count++;
-			
+
 			if (length()< index + skip){
 				break;
 			}
 			index= indexOf(target, index + skip);
 		}
-		
+
 		return count;
 	}
 }
@@ -763,23 +755,25 @@ class AppValue {
         public int resPartType;
         public int resRegexPos = -1;
         public String token;//追跡token　Name
-        
+
         public int tokentype;
         public static final int T_DEFAULT = 0;
         public static final int T_HIDDEN = 1;
         public static final int T_LOCATION = 2;
         public static final int T_HREF = 3;
         public static final int T_XCSRF_TOKEN = 4;
-        
+        public static final int T_TEXT = 5;
+
         private static String[] TokenTypeNames = {
             "",
             "hidden",
             "location",
             "href",
             "xcsrf",
+            "text",
             null
         };
-        
+
         public String tamattack;
         public int tamadvance;
         public int payloadposition;//I_APPEND, I_INSERT, I_REPLACE
@@ -792,19 +786,19 @@ class AppValue {
         public static final int V_HEADER = 3;
         public static final int V_PATH = 4;
         public static final int V_AUTOTRACKBODY = 5;//  response body tracking
-        public static final int V_REQTRACKBODY = 6;// password(request body) tracking  
-        public static final int V_REQTRACKQUERY = 7;// password(request query) tracking  
+        public static final int V_REQTRACKBODY = 6;// password(request body) tracking
+        public static final int V_REQTRACKQUERY = 7;// password(request query) tracking
         public static final int V_REQTRACKPATH = 8;//password (request path) tracking
 	public static final int C_NOCOUNT = 16;
 	public static final int C_NOMODIFY = 32;
 	public static final int C_VTYPE = 15;
         public static String[] ctypestr = null;
-	
+
         public static final int I_APPEND = 0;
         public static final int I_INSERT = 1;
         public static final int I_REPLACE = 2;
         public static final int I_REGEX = 3;
-        
+
         private static String[] payloadpositionnames = {
             //診断パターン挿入位置
             // append 値末尾に追加
@@ -813,7 +807,7 @@ class AppValue {
             // regex   埋め込み箇所正規表現指定
             "append", "insert", "replace", "regex", null
         };
-        
+
         private void initctype(){
             if(ctypestr==null){
                 ctypestr = new String[] {
@@ -824,12 +818,12 @@ class AppValue {
             }
             tokentype = T_HIDDEN;
         }
-        
+
         AppValue(){
             initctype();
             resRegexPos = -1;
         }
-        
+
         AppValue(String _Type, boolean _nomodify, String _value){
             initctype();
             setValPart(_Type);
@@ -839,7 +833,7 @@ class AppValue {
             value = _value;
             resRegexPos = -1;
         }
-        
+
         AppValue(String _Type, boolean _nomodify, int _csvpos, String _value, boolean increment){
             initctype();
             setValPart(_Type);
@@ -855,7 +849,7 @@ class AppValue {
                 setNoCount();
             }
         }
-        
+
         AppValue(String _Type, boolean _nomodify, String _value, boolean increment){
             initctype();
             setValPart(_Type);
@@ -870,7 +864,7 @@ class AppValue {
                 setNoCount();
             }
         }
-        
+
         AppValue(String _Type, boolean _nomodify, String _value,
                 String _resURL, String _resRegex, String _resPartType, String _resRegexPos, String _token, boolean _urlenc, int _fromStepNo, int _toStepNo, String _tokentypename){
             initctype();
@@ -889,7 +883,7 @@ class AppValue {
             toStepNo = _toStepNo;
             tokentype = parseTokenTypeName(_tokentypename);
         }
-        
+
         AppValue(String _Type, boolean _nomodify,  String _value,String _name,
                 String _tamattack, int _tamadvance, int _payloadposition,  boolean _urlenc){
             initctype();
@@ -911,16 +905,16 @@ class AppValue {
             }
             return "";
         }
-        
+
         public static String[] makePayloadPositionNames(){
             return new String[] {payloadpositionnames[I_APPEND], payloadpositionnames[I_INSERT], payloadpositionnames[I_REPLACE], payloadpositionnames[I_REGEX]};
         }
-        
+
         // ParmGenNew 数値、追跡テーブル用　ターゲットリクエストパラメータタイプリスト
         public static String[] makeTargetRequestParamTypes(){
             return new String[] {ctypestr[V_PATH], ctypestr[V_QUERY], ctypestr[V_BODY], ctypestr[V_HEADER]};
         }
-        
+
         //
         //
         String QUOTE(String t){
@@ -929,15 +923,15 @@ class AppValue {
             }
             return "\"" + t + "\"";
         }
-        
+
         String QUOTE_PREFCOMMA(String t){
             String q = QUOTE(t);
             if(q!=null&&!q.isEmpty()){
-                return "," + q; 
+                return "," + q;
             }
             return "";
         }
-        
+
         String URLdecode(String _encoded){
                 String exerr = null;
                 String _raw = "";
@@ -948,64 +942,64 @@ class AppValue {
 			exerr = e.toString();
                         _raw = "";
 		}
-		
+
 		return _raw;
         }
-        
+
         public void setresURL(String _url){
             if(_url==null)_url = "";
             resURL = _url.trim();
         }
-        
+
         public void setresRegexURLencoded(String _regex){
             if(_regex==null)_regex = "";
             resRegex = URLdecode(_regex);
         }
-        
+
         public void setresRegex(String _regex){
             if(_regex==null)_regex="";
             resRegex = _regex;
         }
-        
+
         public void setresPartType(String respart){
             if(respart==null)respart = "";
             resPartType = parseValPartType(respart);
         }
-        
+
         public void setresRegexPos(String _resregexpos){
             resRegexPos = Integer.parseInt(_resregexpos);
         }
-        
+
         public int getTypeInt(){
             return valparttype & C_VTYPE;
         }
-        
+
         public void setTypeInt(int t){
             valparttype = t;
         }
-        
+
         public int getResTypeInt(){
             return resPartType & C_VTYPE;
         }
-        
+
         public String getAppValueDsp(int _typeval){
             String avrec = QUOTE(getValPart() + (isModify()?"":"-") +(isNoCount()?"":"+")+ (_typeval==AppParmsIni.T_CSV?":"+Integer.toString(csvpos):"")) +","+ QUOTE(value)
                     + QUOTE_PREFCOMMA(resURL)
                     + QUOTE_PREFCOMMA(resRegex)
                     + QUOTE_PREFCOMMA(getResValPart())
                     + (resRegexPos!=-1?QUOTE_PREFCOMMA(Integer.toString(resRegexPos)):"") +
-                    QUOTE_PREFCOMMA(token) + (_typeval==AppParmsIni.T_TRACK?QUOTE_PREFCOMMA(urlencode==true?"true":"false"):"") 
+                    QUOTE_PREFCOMMA(token) + (_typeval==AppParmsIni.T_TRACK?QUOTE_PREFCOMMA(urlencode==true?"true":"false"):"")
                     + (_typeval==AppParmsIni.T_TRACK?QUOTE_PREFCOMMA(Integer.toString(fromStepNo)):"")
                     + (_typeval==AppParmsIni.T_TRACK?QUOTE_PREFCOMMA(Integer.toString(toStepNo)):"")
                     + QUOTE_PREFCOMMA(Integer.toString(tokentype));
-            
+
             return avrec;
         }
-        
+
         String getValPart(){
             return getValPart(valparttype);
         }
-        
+
         String getValPart(int _valparttype){
             int i = _valparttype & C_VTYPE;
             if(i<C_VTYPE){
@@ -1014,14 +1008,14 @@ class AppValue {
             }
             return "";
         }
-        
+
         public String getTokentypeName(int _tktype){
             if(TokenTypeNames.length>_tktype&&_tktype>=0){
                 return TokenTypeNames[_tktype];
             }
             return "";
         }
-        
+
         public  int parseTokenTypeName(String tkname){
         	if(tkname!=null){
             for(int i=0; i<TokenTypeNames.length;i++){
@@ -1032,11 +1026,11 @@ class AppValue {
         	}
             return 0;
         }
-        
+
         String getResValPart(){
             return getValPart(resPartType);
         }
-        
+
         int parseValPartType(String _valtype){
             int _valparttype = 0;
             String []ivals = _valtype.split(":");
@@ -1053,7 +1047,7 @@ class AppValue {
             }
             return _valparttype;
         }
-        
+
 	void setValPart(String _valtype){
                 valparttype = parseValPartType(_valtype);
 		//
@@ -1069,27 +1063,27 @@ class AppValue {
 			csvpos = Integer.parseInt(ivals[1].trim());
 		}
 	}
-	
+
 	boolean isModify(){
 		return ((valparttype & C_NOMODIFY)==0);
 	}
-	
+
         public void setNoModify(){
             valparttype |= C_NOMODIFY;
         }
-        
+
 	void setNoCount(){
 		valparttype = valparttype | C_NOCOUNT;
 	}
-	
+
 	void clearNoCount(){
 		valparttype = valparttype & ~C_NOCOUNT;
 	}
-	
+
         public boolean isNoCount(){
             return ((valparttype & C_NOCOUNT) == C_NOCOUNT?true:false);
         }
-        
+
 	String  setURLencodedVal(String _value){
 		String exerr = null;
                 valueregex = null;
@@ -1122,11 +1116,11 @@ class AppValue {
 
 	}
         * ***/
-	
+
 	String replaceContents(int currentStepNo, AppParmsIni pini, String contents){
                 if(contents==null)return null;
                 if(valueregex==null)return null;
-                
+
 		Matcher m = valueregex.matcher(contents);
 
 		String newcontents = "";
@@ -1147,7 +1141,7 @@ class AppValue {
 				strcnt = pini.getStrCnt(currentStepNo, toStepNo,valparttype, col, csvpos);
                                 ParmVars.plog.printLF();
                                 boolean isnull=false;
-                                
+
 				if (isModify()){
                                         if(strcnt!=null){
                                             ParmVars.plog.debuglog(0, "******パラメータ正規表現[" + value + "]マッチパターン[" + matchval + "]値[" + strcnt + "]\n");
@@ -1163,7 +1157,7 @@ class AppValue {
                                             ParmVars.plog.debuglog(0, "######無修正パラメータ正規表現[" + value + "]マッチパターン[" + matchval + "]値[" + strcnt + "]\n");
                                         }else{
                                             ParmVars.plog.debuglog(0, "ERROR#無修正パラメータ正規表現[" + value + "]マッチパターン[" + matchval + "]値が取得できません。\n");
-                                            
+
                                             isnull = true;
                                         }
 				}
@@ -1195,7 +1189,7 @@ class FileReadLine {
         int current_line;
         boolean saveseekp;
         ArrayList<String> columns;
-	
+
 	FileReadLine (String _filepath, boolean _saveseekp){
 		csvfile = _filepath;
 		seekfile =  csvfile + "_L_";
@@ -1205,11 +1199,11 @@ class FileReadLine {
                 current_line = 0;
                 columns = null;
 	}
-        
+
         String getFileName(){
             return csvfile;
         }
-        
+
         public void rewind(){
             if(saveseekp){
                 try {
@@ -1225,7 +1219,7 @@ class FileReadLine {
             seekp = 0;
             current_line = 0;
         }
-        
+
 	/**
  	* <code>RandomAccessFile.read</code>で読み込んだバイト配列を
 	 * _encエンコードした<code>String</code>で返します。
@@ -1234,7 +1228,7 @@ class FileReadLine {
  	* @return
  	* @throws IOException
  	*/
-	String readLineRandomAccessFileCharset(RandomAccessFile f) 
+	String readLineRandomAccessFileCharset(RandomAccessFile f)
 	  throws IOException {
 	  ByteArrayUtil barray = new ByteArrayUtil();
 	  byte[] onebyte = new byte[1];
@@ -1266,8 +1260,8 @@ class FileReadLine {
 	  }
 
 	  return new String(barray.getBytes(), ParmVars.enc);
-	}	
-	
+	}
+
         ArrayList<String> readColumns(){
             if(columns == null){
                 columns = new ArrayList<String>();
@@ -1279,7 +1273,7 @@ class FileReadLine {
             }
             return null;
         }
-        
+
         int  skipLine(int l){
             if (l >=0){
                 rewind();
@@ -1295,7 +1289,7 @@ class FileReadLine {
             }
             return current_line;
         }
-        
+
 	String readLine(int _valparttype, int _pos, AppParmsIni _parent){
                 if(saveseekp){
                     seekp = 0;
@@ -1328,23 +1322,23 @@ class FileReadLine {
 
 			//csvファイルseek
 			raf = new RandomAccessFile( csvfile, "r" );
-			
+
 			if (raf.length() <= seekp ){
 				ParmVars.plog.debuglog(1, "seekp reached EOF\n");
 				raf.close();
 				raf = null;
 				return null;
 			}
-			
+
 			raf.seek( seekp );
-			
+
 			//csvファイル１レコード読み込み
 			//line = raf.readLine();
 			line = readLineRandomAccessFileCharset(raf);
 			String _col = line;
-    		
+
     		CSVParser.Parse(line);
-    		
+
     		CSVFields csvf = new CSVFields();
     		while(CSVParser.getField(csvf)){
 				_col = csvf.field;
@@ -1398,7 +1392,7 @@ class FileReadLine {
 
 //
 //
-//	
+//
 class AppParmsIni {
 
 	public String url;
@@ -1418,7 +1412,7 @@ class AppParmsIni {
 	int rndval = 1;
 	int row;
         Boolean pause =false;
-	
+
         public static final int T_NUMBER = 0;//数値昇順
         public static final int T_RANDOM = 1;//乱数
         public static final int T_CSV = 2;//CSV入力
@@ -1435,11 +1429,11 @@ class AppParmsIni {
         public static final int T_TRACK_AVCNT = 8;//csvファイルの旧フォーマットinival==0時は読み込み時のみ6
         public static final int T_TRACK_OLD_AVCNT = 6;
         public static final int T_TAMPER_AVCNT = 8;
-                
+
         public boolean ispaused() {
             return pause;
         }
-        
+
         public void setPause(boolean b){
             pause = b;
             String _c = getCurrentValue();
@@ -1463,11 +1457,11 @@ class AppParmsIni {
                     break;
                 }
         }
-        
+
 	int getRow(){
 		return row;
 	}
-	
+
         public void clearAppValues(){
             parmlist = null;
             parmlist = new ArrayList<AppValue>();
@@ -1475,7 +1469,7 @@ class AppParmsIni {
         public void addAppValue(AppValue app){
             parmlist.add(app);
         }
-        
+
         public String getIniValDsp(){
             switch(typeval){
                 case T_NUMBER:
@@ -1489,7 +1483,7 @@ class AppParmsIni {
             }
             return "";
         }
-        
+
         public String getTypeValDsp(){
             switch(typeval){
                 case T_NUMBER:
@@ -1505,7 +1499,7 @@ class AppParmsIni {
             }
             return "";
         }
-        
+
         public void setType(String _type){
             type = _type;
             if ( type.indexOf(T_RANDOM_NAME)!=-1){//random
@@ -1523,11 +1517,11 @@ class AppParmsIni {
                     typeval = T_CSV;
             }
         }
-        
+
         public int getType(){
             return typeval;
         }
-        
+
         public int getReadAVCnt(int _plen){
             switch(typeval){
                 case T_NUMBER:
@@ -1546,11 +1540,11 @@ class AppParmsIni {
             }
             return 0;
         }
-        
+
         public String getLenDsp(){
             return Integer.toString(len);
         }
-        
+
         public int getAppValuesLineCnt(){
             if(parmlist !=null) {
                 int l =  parmlist.size();
@@ -1559,7 +1553,7 @@ class AppParmsIni {
             }
             return 1;
         }
-        
+
         public String getAppValuesDsp(){
             it = parmlist.iterator();
             String appvalues = "";
@@ -1572,19 +1566,19 @@ class AppParmsIni {
             }
             return appvalues;
         }
-        
+
 	String  setUrl(String _url){
 		exerr = null;
 		try{
 			url = _url;
 			urlregex = Pattern.compile(url);
-	
+
 		}catch(Exception e){
 			exerr = e.toString();
 		}
 		return exerr;
 	}
-	
+
         AppParmsIni(String _URL, String _initval, String _type, String _len, ArrayList<AppValue> _apps, int _row){
             setUrl(_URL);
             inival = Integer.parseInt(_initval);
@@ -1594,14 +1588,14 @@ class AppParmsIni {
             parmlist = _apps;
             crtGenFormat(false);
             rewindAppValues();
-            
-            
+
+
         }
 
         AppParmsIni(){
             rewindAppValues();
         }
-	
+
         public String getTypeVal(){
             switch(typeval){
                 case T_NUMBER:
@@ -1619,20 +1613,20 @@ class AppParmsIni {
             }
             return "";
         }
-        
+
         void setCntFileName(){
             if(cntfile==null||cntfile.length()==0){
                 cntfile = ParmVars.projectdir + "\\AppGenParmCnt" + Integer.toString(row) + ".txt";
             }
         }
-        
+
         void setRowAndCntFile(int _r){
             row = _r;
             setCntFileName();
         }
-        
+
 	void crtGenFormat(Boolean lastEntryNoCount){
-		
+
 		if ( parmlist != null){
 			int plast = parmlist.size() - 1;
 			if ( plast >= 0 ){
@@ -1642,7 +1636,7 @@ class AppParmsIni {
 			}
 		}
 	}
-	
+
 	String getFillZeroInt(int v){
 		String nval = Integer.toString(v);
 		int zero = len - nval.length();
@@ -1669,7 +1663,7 @@ class AppParmsIni {
 			return  getFillZeroInt(n);
 		case T_TRACK://loc
 			//if ( global.Location != void ){
-			
+
 				return FetchResponse.loc.getLocVal(currentStepNo, toStepNo, row, col);
 			//}
 		default://csv
@@ -1686,20 +1680,20 @@ class AppParmsIni {
 		}
 		return null;
 	}
-	
+
 	String getStrCnt(int currentStepNo, int toStepNo,int _valparttype, int col, int csvpos){
 		//if ( cstrcnt == null|| typeval == 3){
 				cstrcnt = getGenValue(currentStepNo,toStepNo,_valparttype, col, csvpos);
 		//}
 		return cstrcnt;
 	}
-	
+
 	int countUp(int _valparttype, AppParmsIni _parent){
 		//counter file open
 		int cnt = inival;
                 try {
-			
-			
+
+
 			FileReader fr = new FileReader(cntfile);
 			BufferedReader br = new BufferedReader(fr);
 			String rdata;
@@ -1710,17 +1704,17 @@ class AppParmsIni {
 				alldata += rdata;
 			}
 			cnt =Integer.valueOf(alldata).intValue();
-       	
+
 			fr.close();
-			
-			
+
+
 		} catch(Exception e) {
 			ParmVars.plog.printlog("read file:" + cntfile + " " + e.toString(), true);
                         cnt = inival;
 		}
-		
+
 		int ncnt = cnt + 1;
-		
+
 		if ( ((_valparttype & AppValue.C_NOCOUNT ) ==  AppValue.C_NOCOUNT) || _parent.ispaused()){
 			ncnt = cnt;//no countup
 		}else if(ncnt > maxval){
@@ -1729,8 +1723,8 @@ class AppParmsIni {
 		}else{
 			ParmVars.plog.debuglog(1, "CountUp ncnt:" + Integer.toString(ncnt));
 		}
-		
-		
+
+
 		if ( (_valparttype & AppValue.C_NOCOUNT ) !=  AppValue.C_NOCOUNT){
                     try {
                             FileWriter filewriter = new FileWriter(cntfile, false);
@@ -1744,7 +1738,7 @@ class AppParmsIni {
                 }
 		return cnt;
 	}
-        
+
         int updateCounter(int i){
             if (i >=0){
                 try {
@@ -1760,11 +1754,11 @@ class AppParmsIni {
             }
             return i;
         }
-        
+
         int updateCSV(int i){
             return frl.skipLine(i);
         }
-        
+
         public String getCurrentValue(){
             String rval = null;
             switch(typeval){
@@ -1785,7 +1779,7 @@ class AppParmsIni {
             }
             return rval;
         }
-        
+
         public String updateCurrentValue(int i){
             int r = -1;
             String rval = null;;
@@ -1811,7 +1805,7 @@ class AppParmsIni {
             }
             return rval;
         }
-        
+
         public final void rewindAppValues(){
             if (parmlist!=null){
                 it = parmlist.iterator();
@@ -1819,7 +1813,7 @@ class AppParmsIni {
                 it = null;
             }
         }
-        
+
         public Object[] getNextAppValuesRow(){
             AppValue app;
             if(it!=null && it.hasNext()){
@@ -1832,14 +1826,14 @@ class AppParmsIni {
                 case T_CSV:
                     return new Object[] {app.getValPart(), (app.isModify()?false:true), app.csvpos, app.value, app.isNoCount()?false:true};
                 case T_TRACK:
-                    return new Object[] {app.getValPart(), (app.isModify()?false:true), app.value, 
+                    return new Object[] {app.getValPart(), (app.isModify()?false:true), app.value,
                         app.resURL,
                         app.resRegex,
                         app.getResValPart(),
                         Integer.toString(app.resRegexPos),
                     app.token, app.urlencode, app.fromStepNo, app.toStepNo, app.getTokentypeName(app.tokentype)};
                 case T_TAMPER:
-                    return new Object[] {app.getValPart(), (app.isModify()?false:true), app.value, 
+                    return new Object[] {app.getValPart(), (app.isModify()?false:true), app.value,
                         app.token,
                         app.tamattack,
                         app.tamadvance,
@@ -1848,7 +1842,7 @@ class AppParmsIni {
                 default:
                     break;
                 }
-                
+
             }
             return null;
         }
@@ -1867,33 +1861,33 @@ class ParmGen {
         public static boolean RepeaterInScope = true;
         public static boolean ScannerInScope = true;
         ParmGenMacroTrace pmt;
-        
-       
+
+
         void disposeTop(){
             if(twin!=null){
                 twin.dispose();
             }
             twin = null;
         }
-       
+
         //
         //
         //
         ArrayList<AppParmsIni> loadJSON(){
 			//
 			int arraylevel = 0;
-			
+
 			ArrayList<AppParmsIni> rlist = null;
                         String pfile = ParmVars.parmfile + ".json";
 			ParmVars.plog.debuglog(1, "---------AppPermGen.json----------");
-                        
+
 			try{
-				
+
 				String rdata;
                                 String jsondata=new String("");
                                 FileReader fr = new FileReader(pfile);
                                 try{
-                                    
+
                                     BufferedReader br = new BufferedReader(fr);
                                     while((rdata = br.readLine()) != null) {
                                             jsondata += rdata;
@@ -1912,7 +1906,7 @@ class ParmGen {
                                         fr = null;
                                     }
                                 }
-                                
+
                                 JsonParser parser = Json.createParser(new StringReader(jsondata));
                                 String keyname = null;
                                 boolean errflg = false;
@@ -1946,11 +1940,11 @@ class ParmGen {
                                        case VALUE_STRING:
                                        case VALUE_NUMBER:
                                            obj = parser.getString();
-                                       case VALUE_NULL:                                           
+                                       case VALUE_NULL:
                                           errflg = gjson.Parse(arraylevel, event, keyname, obj);
                                           break;
                                     }
-                                 }	
+                                 }
 				if(errflg){
                                    rlist = gjson.Getrlist();
                                 }else{
@@ -1964,8 +1958,8 @@ class ParmGen {
 			ParmVars.plog.debuglog(1, "---------AppPermGen JSON load END ----------");
 			return rlist;
 	}
-        
-	
+
+
 
 	PRequest ParseRequest(PRequest prequest,  ByteArrayUtil boundaryarray, ByteArrayUtil _contarray, AppParmsIni pini, AppValue av)  {
 
@@ -1985,7 +1979,7 @@ class ParmGen {
 		String url = prequest.getURL();
 		String path = new String(url);
 		ParmVars.plog.debuglog(1, "method[" + method + "] request[" + url + "]");
-		int qpos = -1;	
+		int qpos = -1;
 		switch(av.valparttype & AppValue.C_VTYPE){
 		case AppValue.V_PATH://path
 			// path = url
@@ -2006,7 +2000,7 @@ class ParmGen {
 				String n_query = av.replaceContents(pmt.getStepNo(),pini, query);
                                 ParmVars.plog.debuglog(1, query);
                                 ParmVars.plog.debuglog(1, n_query);
-				if ( n_query!=null && !query.equals(n_query) && av.isModify()){ 
+				if ( n_query!=null && !query.equals(n_query) && av.isModify()){
 					url = path + '?' + n_query;
 					ParmVars.plog.debuglog(1, " Original query[" + query + "]");
 					ParmVars.plog.debuglog(1, " Modified path[" + n_query + "]");
@@ -2034,8 +2028,8 @@ class ParmGen {
 				}
 				i++;
 			}
-			
-			break;		
+
+			break;
 		default://body
 	        if (_contarray != null) {
 	        	if ( boundaryarray == null ){//www-url-encoded
@@ -2121,7 +2115,7 @@ class ParmGen {
 	        				n_array.concat(_contarray.subBytes(0, cpos));
 	        			}
 	        		}
-	        		
+
 	        		if ( partupdt ){
 	        			//_contarray = n_array;
 	        			_contarray.initByteArrayUtil(n_array.getBytes());
@@ -2152,7 +2146,7 @@ boolean FetchRequest(PRequest prequest,   AppParmsIni pini, AppValue av){
 }
 
 boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppValue av)  {
-	
+
                 int row,col;
                 row = pini.row;
                 col = av.col;
@@ -2160,7 +2154,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                 boolean autotrack = false;
                 String rowcolstr = Integer.toString(row) + "," + Integer.toString(col);
 		//String path = new String(url);
-		int qpos = -1;	
+		int qpos = -1;
 		switch(av.resPartType & AppValue.C_VTYPE){
 		case AppValue.V_PATH://path
                         //ParmVars.plog.debuglog(0, "ParseResponse: V_PATH " + rowcolstr);
@@ -2197,7 +2191,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                 pmt = _pmt;
 		initMain();
 	}
-	
+
 	void initMain(){
 		//main start.
 		// csv load
@@ -2222,7 +2216,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                                     if(apval.getResTypeInt()>=AppValue.V_REQTRACKBODY){
                                         hasTrackRequest =true;
                                     }
-                                    
+
                                     int col = apval.col;
                                     //loc.setURLRegex(".*test.kurashi-research.jp:(\\d+)/top.php.*", 0,0);
                                     //ParmVars.plog.debuglog(0, "r,c,resURL:" + Integer.toString(row) + "," + Integer.toString(col) + ","+ apval.resURL);
@@ -2231,7 +2225,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                                     FetchResponse.loc.setRegex(apval.resRegex, row, col);
                                 }
                                 trackcsv.add(pini);
-                                
+
                             }
                         }
 			//debuglog(0, "loadCSV executed.");
@@ -2239,44 +2233,44 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 	}
 
         public void reset(){
-            parmcsv = null;trackcsv=null; 
+            parmcsv = null;trackcsv=null;
             FetchResponse.loc = null;
             hasTrackRequest = false;
             initMain();
         }
-        
+
 	byte[] Run(byte[] requestbytes){
                 String request_string = null;
                 try{
-                    request_string = new String(requestbytes, ParmVars.enc); 
+                    request_string = new String(requestbytes, ParmVars.enc);
                 }catch(Exception e){
                     ParmVars.plog.printException(e);
                 }
 		ByteArrayUtil boundaryarray = null;
 		ByteArrayUtil contarray = null;
-                
-                
+
+
 		if( parmcsv == null){
                     //NOP
 		}else{
 			// main loop
 			//Request request = connection.getRequest();
 			PRequest prequest = new PRequest(request_string);
-                        
+
 			// check if we have parameters
 			// Construct a new HttpUrl object, since they are immutable
 			// This is a bit of a cheat!
 			//String url = request.getURL().toString();
 			String url = prequest.getURL();
-			
+
 			String content_type =prequest.getHeader("Content-Type");
-			
+
 
                         boolean hasboundary = false;
 			PRequest tempreq = null;
 			PRequest modreq = null;
 			if ( url != null ){
-				
+
 				AppParmsIni pini = null;
 				Iterator<AppParmsIni> it = parmcsv.iterator();
 				while(it.hasNext()) {
@@ -2290,7 +2284,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                                                         if ( ctypematcher.find()){
                                                                 String Boundary = ctypematcher.group(1);
                                                                 ParmVars.plog.debuglog(1, "boundary=" + Boundary);
-                                                                Boundary = "--" + Boundary;// 
+                                                                Boundary = "--" + Boundary;//
                                                                 boundaryarray = new ByteArrayUtil(Boundary.getBytes());
 
                                                         }
@@ -2321,9 +2315,9 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                                                     }catch(Exception e ){
                                                         //contarray is null . No Body...
                                                     }
-                                                    
+
 						}
-                                                
+
 						ArrayList<AppValue> parmlist = pini.parmlist;
 						Iterator<AppValue> pt = parmlist.iterator();
 						if (parmlist == null || parmlist.isEmpty()){
@@ -2344,7 +2338,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 			}
                         byte[] retval = null;
                         //ここで、prequestでexpiredしたcookie値を削除する。
-                        
+
 			if ( modreq != null){
 				// You have to use connection.setRequest() to make any changes take effect!
 				if (contarray != null){
@@ -2363,7 +2357,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 				retval = prequest.getByteMessage();
                         }
                         if(hasTrackRequest){
-                           
+
                             AppParmsIni pini = null;
                             Iterator<AppParmsIni> it = trackcsv.iterator();
                             while(it.hasNext()){
@@ -2376,24 +2370,24 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                                         fetched = FetchRequest(prequest,  pini, av);
                                 }
                             }
-                            
+
                         }
                         return retval;
 		}
 
                 return null;
 	}
-		
+
     int ResponseRun(String url,  byte[] response_bytes, String _enc){
 
         int updtcnt = 0;
-        
+
 		if( trackcsv == null){
 			//ParmVars.plog.printlog("loadCSV failed. program has aborted\n", true);
 		}else{
 			// main loop
 			//Request request = connection.getRequest();
-			
+
                         String response_string = null;
                         try{
                             response_string = new String(response_bytes, _enc);
@@ -2432,7 +2426,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 		return updtcnt;
 	}
 
-	
+
 /****
 	void ResponseCountUpdate(int r, int c){
 		AppParmsIni pini = null;

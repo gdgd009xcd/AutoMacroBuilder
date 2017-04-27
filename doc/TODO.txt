@@ -101,3 +101,9 @@ currentStepNo: 実行中のstepno
 　　対応としては、先頭リクエストのCookie値を事前にCookieストアに格納しておく。
 　　＝＞以降のリクエストがCookieストアを参照し、リクエスト毎にCookie値が異なり、エラーとなる
 　　　　現象を回避。
+18. Session Handling ruleの順序
+　  ◎MacroBuilder
+    　User Cookies from jar
+    逆の順序だと、カレントリクエストにCookie値が引き継がれない現象あり。
+19. input type="text" も パラメータ解析し追跡したい。
+     

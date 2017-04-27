@@ -5,6 +5,7 @@
 package burp;
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -34,7 +35,7 @@ public class ParmGenParser {
 
             try {
                     doc = Jsoup.parse(htmltext);//パース実行
-                    elems = doc.select("input[type=hidden],a[href]");//name属性を持つHIDDENタグ全部、A HREFタグ
+                    elems = doc.select("input[type=hidden],input[type=text],a[href]");//name属性を持つHIDDENタグ全部、A HREFタグ
                     //elemsprint(htmltext);
             } catch (Exception e) {
                     // TODO Auto-generated catch block
@@ -66,6 +67,7 @@ public class ParmGenParser {
         if(vtag.tagName().toLowerCase().indexOf("input")!=-1){//<input
             String n = vtag.attr("name");
             String v = vtag.attr("value");
+            String t = vtag.attr("type");
             // <inputタグのnameパラメータ
             if(n == null){
                 n = null;
@@ -85,7 +87,13 @@ public class ParmGenParser {
                 }else{
                     namepos.put(n, npos);
                 }
-                tk = new ParmGenToken(AppValue.T_HIDDEN, "", n, v, npos);
+                int ttype= AppValue.T_HIDDEN;
+                if(t!=null){
+                	if(t.toLowerCase().equals("text")){
+                		ttype = AppValue.T_TEXT;
+                	}
+                }
+                tk = new ParmGenToken(ttype, "", n, v, npos);
                 tklist.add(tk);
             }
         }else if(vtag.tagName().toLowerCase().indexOf("a")!=-1){//<A

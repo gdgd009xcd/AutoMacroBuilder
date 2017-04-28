@@ -5,8 +5,7 @@
 package burp;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Vector;
+
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -262,7 +261,7 @@ private void setAppParmsIni(){
     private void addParam(int m, String reqplace, String name, int ni, String value, boolean target_req_isformdata){
         DefaultTableModel model = ParamTableModels[m];
         //name=valueにデフォルトの正規表現を生成してセット
-        String nval =  (name!=null?(name + "="):"") + value;
+        String nval =  (name!=null?("(?:[&=?]+|^)" + name + "="):"") + value;
         String _reqplace = reqplace;
         if ( reqplace.toLowerCase().equals("formdata")){
             nval = "(?:[A-Z].* name=\"" + ParmGenUtil.escapeRegexChars(name) + "\".*(?:\\r|\\n|\\r\\n))(?:[A-Z].*(?:\\r|\\n|\\r\\n)){0,}(?:\\r|\\n|\\r\\n)(?:.*?)" + value + "(?:.*?)(?:\\r|\\n|\\r\\n)";

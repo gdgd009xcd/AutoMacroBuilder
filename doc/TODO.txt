@@ -105,5 +105,12 @@ currentStepNo: 実行中のstepno
 　  ◎MacroBuilder
     　User Cookies from jar
     逆の順序だと、カレントリクエストにCookie値が引き継がれない現象あり。
-19. input type="text" も パラメータ解析し追跡したい。
+19. input type="text" も パラメータ解析し追跡したい。=>対応済み。
+20. 追跡パラメータ名の名前が複数のパラメータに一致する。
+　　PARAM1=1234,...
+    NEWPARAM1=123432xdsf
+    両方マッチし、両方おきかわってしまう。
+    (?:[&=?]+|^)PARAM1=(\d+)
+    とする。
+    
      

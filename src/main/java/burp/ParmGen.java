@@ -278,7 +278,7 @@ class ParmVars {
                 }
                 newdir = null;
 
-		parmfile = projectdir + "\\AppParmGen.csv";
+		parmfile = projectdir + "\\AppParmGen.json";
 		plog = new PLog(projectdir);
 		enc = "UTF-8";// default encoding.
 		ProxyAuth = "";
@@ -1878,7 +1878,7 @@ class ParmGen {
 			int arraylevel = 0;
 
 			ArrayList<AppParmsIni> rlist = null;
-                        String pfile = ParmVars.parmfile + ".json";
+            String pfile = ParmVars.parmfile;
 			ParmVars.plog.debuglog(1, "---------AppPermGen.json----------");
 
 			try{

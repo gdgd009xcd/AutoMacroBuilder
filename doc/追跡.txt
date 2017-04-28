@@ -9,7 +9,7 @@
 1-2.Locationヘッダー(追跡箇所header tokentype=2)
     Location ヘッダーのGETパラメータ引き継ぎ
 　　GETパラメータの内、次ページのリクエストに渡している（name=valueが一致する）もの。
-    
+
 
 1-3.hrefリンク(追跡箇所responsebody tokentype=3)
 　　hrefリンクの内、次ページのリクエストに渡している（name=valueが一致する）GETパラメータ。
@@ -25,13 +25,13 @@
 2-1. GET/POSTパラメータ引き継ぎ
 　　　次ページのリクエストのGET/POSTパラメータを抽出。
 
-      tokentype, nameが一致、value値が(\w+)に完全マッチする値
+      tokentype, nameが一致、value値が(固定値)に完全マッチする値
 
-　　　正規表現　name=(\w+)
+　　　正規表現　name=(固定値)
 
 　　　tokenxxx=0234asjkfs123442jkl'||'&n=2....
 
-      (\w+) == 0234asjkfs123442jkl
+      tokenxxx=(0234asjkfs123442jkl)
 
 　　　form-dataも同様。
 
@@ -45,8 +45,17 @@
 
 
 3.手順
+3.1 プロジェクトディレクトリ、マクロ名指定
+ParmVars.projectdirを基準とする。
+ParmVars.projectdirの選択ボタン（FileChooser DIRECTORY_ONLY）と
+projectdir下のマクロ一覧(JSONファイル一覧)を表示。
+マクロ名入力テキストフィールドを表示。
+一覧と同一マクロ名を指定した場合は、上書き確認ダイアログ表示。
+実行ボタンで以降の手順でマクロ作成し、
+ParmVars.parmfile = ParmVars.projectdir + "\\" + マクロ名.json
+にマクロ、追跡パラメータを保存。
 
-下記をマクロ昇順に繰り返す。
+3.2 下記をマクロ昇順に繰り返す。
 
 1) マクロのレスポンスをパースし、tokenを取り出す。
 2) 次ページのリクエストに、1)のtokenがマッチするパラメータがある場合は、
@@ -56,7 +65,10 @@
 　  ☑　　  body      hidden       0     token 38Jlxxiespe
 　　・チェックボックスでトークンの引き継ぎ有効無効が設定できる。
 
-4.備考
+
+
+
+9.備考
 ・生成した引き継ぎパラメータ未保存のチェックが無い。
 ・マクロの保存機能が無い。
 
@@ -68,4 +80,3 @@
 
 
 
-          

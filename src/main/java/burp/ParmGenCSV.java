@@ -4,20 +4,20 @@
  */
 package burp;
 
-import flex.messaging.util.URLEncoder;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonWriter;
-import javax.json.stream.*;
+import javax.json.stream.JsonGenerator;
+
+import flex.messaging.util.URLEncoder;
 
 
 /**
@@ -31,7 +31,7 @@ public class ParmGenCSV {
     ParmGenWriteFile pfile;
     public static ArrayList<PRequestResponse> selected_messages;
     public static ArrayList<PRequestResponse> proxy_messages;
-    
+
     ParmGenCSV(ParmGenMacroTrace _pmt, String _lang, ArrayList<PRequestResponse> _selected_messages){
        setLang(_lang);
        reloadParmGen(_pmt);
@@ -41,7 +41,7 @@ public class ParmGenCSV {
        pfile = null;
 
     }
-    
+
     public void reloadParmGen(ParmGenMacroTrace _pmt){
        ParmGen pgen = new ParmGen(_pmt);
        records = pgen.parmcsv;
@@ -50,11 +50,11 @@ public class ParmGenCSV {
        }
        rewindAppParmsIni();
     }
-    
+
     public void setParms(ArrayList<AppParmsIni> _records){
         records = _records;//reference
     }
-    
+
     public void setLang(String _lang){
          if ( _lang == null || _lang.isEmpty()){
             lang = "UTF-8";
@@ -62,11 +62,11 @@ public class ParmGenCSV {
             lang = _lang;
         }
     }
-    
+
     public String getLang(){
         return lang;
     }
-    
+
 
 
     public void add(String URL, String initval, String valtype, String incval, ArrayList<AppValue> apps){
@@ -77,20 +77,20 @@ public class ParmGenCSV {
     public void add(AppParmsIni pini){
         records.add(pini);
     }
-    
+
     public void mod(int i, String URL, String initval, String valtype, String incval, ArrayList<AppValue> apps){
         int rowcnt = records.get(i).getRow();
         records.set(i, new AppParmsIni(URL, initval, valtype, incval, apps, rowcnt));
     }
-    
+
     public void mod(int i, AppParmsIni pini){
         records.set(i, pini);
     }
-    
+
     public void del(int i){
         records.remove(i);
     }
-    
+
     private String escapeDelimiters(String _d, String code) {
         //String _dd = _d.replaceAll("\\\\", "\\\\");
         String _dd = _d;
@@ -107,30 +107,30 @@ public class ParmGenCSV {
         }
         return encoded;
     }
-    
+
     private String QUOTE(String val, boolean comma){
         return "\"" + (val==null?"":val) + "\"" + ( comma ? "," : "" );
     }
-    
+
     public void jsonsave(){
         //ファイル初期化
         try{
-            pfile = new ParmGenWriteFile(ParmVars.parmfile + ".json");
+            pfile = new ParmGenWriteFile(ParmVars.parmfile);
         }catch(Exception ex){
             ParmVars.plog.printException(ex);
             return;
         }
-        
+
         //JSON pretty print
         Map<String, Object> properties = new HashMap<>(1);
         properties.put(JsonGenerator.PRETTY_PRINTING, true);
-        
-        
+
+
         pfile.truncate();
         JsonObjectBuilder builder = Json.createObjectBuilder();
-        
+
         builder.add("LANG", lang);
-        
+
         if(ParmGen.ProxyInScope){
             builder.add("ProxyInScope", true);
         }else{
@@ -151,11 +151,11 @@ public class ParmGenCSV {
         }else{
             builder.add("ScannerInScope", false);
         }
-        
+
         JsonArrayBuilder AppParmsIni_List =Json.createArrayBuilder();
-        
-        
-        
+
+
+
         Iterator<AppParmsIni> it = records.iterator();
         while(it.hasNext()){
             AppParmsIni prec = it.next();
@@ -168,20 +168,20 @@ public class ParmGenCSV {
             AppParmsIni_prec.add("maxval", prec.maxval);
             AppParmsIni_prec.add("csvname", prec.typeval==AppParmsIni.T_CSV?escapeDelimiters(prec.frl.getFileName(), "UTF-8"):"");
             AppParmsIni_prec.add("pause", prec.pause);
-            
+
             JsonArrayBuilder AppValue_List =Json.createArrayBuilder();
-            
+
             Iterator<AppValue> pt = prec.parmlist.iterator();
             String paramStr = "";
             while(pt.hasNext()){
                 AppValue param = pt.next();
                 JsonObjectBuilder AppValue_rec = Json.createObjectBuilder();
-                
+
                 AppValue_rec.add("valpart", param.getValPart());
                 AppValue_rec.add("isModify", param.isModify());
                 AppValue_rec.add("isNoCount", param.isNoCount());
                 AppValue_rec.add("csvpos", param.csvpos);
-                AppValue_rec.add("value", escapeDelimiters(param.value, null));               
+                AppValue_rec.add("value", escapeDelimiters(param.value, null));
                 AppValue_rec.add("resURL", param.resURL==null?"":param.resURL);
                 AppValue_rec.add("resRegex", (escapeDelimiters(param.resRegex, null)==null?"":escapeDelimiters(param.resRegex, null)));
                 AppValue_rec.add("resValpart", param.getResValPart());
@@ -193,17 +193,17 @@ public class ParmGenCSV {
                 AppValue_rec.add("TokenType", param.tokentype);
                 AppValue_List.add(AppValue_rec);
             }
-            
+
             AppParmsIni_prec.add("AppValue_List", AppValue_List);
-            
+
             AppParmsIni_List.add(AppParmsIni_prec);
-            
- 
+
+
         }
-        
+
         builder.add("AppParmsIni_List", AppParmsIni_List);
         JsonObject model = builder.build();
-         
+
         //StringWriter stWriter = new StringWriter();
         //JsonWriter jsonWriter = Json.createWriter(stWriter);
         JsonWriter jsonWriter = Json.createWriterFactory(properties).createWriter(pfile.getPrintWriter());
@@ -211,13 +211,13 @@ public class ParmGenCSV {
         jsonWriter.close();
 
         //String jsonData = stWriter.toString();
-    
+
         //pfile.print(jsonData);
-        
+
         pfile.close();
         pfile = null;
     }
-    
+
     public void save(){
         //ファイル初期化
         try{
@@ -226,7 +226,7 @@ public class ParmGenCSV {
             ParmVars.plog.printException(ex);
             return;
         }
-        
+
         pfile.truncate();
         String scopelist = new String();
         if(ParmGen.ProxyInScope){
@@ -249,11 +249,11 @@ public class ParmGenCSV {
         }else{
             scopelist += "0";
         }
-        
-            
+
+
         pfile.print("LANG," + lang + "," + scopelist);
         //pfile.print("");
-        
+
         Iterator<AppParmsIni> it = records.iterator();
         while(it.hasNext()){
             AppParmsIni prec = it.next();
@@ -266,7 +266,7 @@ public class ParmGenCSV {
                     paramStr += ",";
                 }
                 paramStr += QUOTE(param.getValPart() + (param.isModify()?"":"-") + (param.isNoCount()?"":"+") +
-                        (param.csvpos == -1?"":(":" +Integer.toString(param.csvpos))) 
+                        (param.csvpos == -1?"":(":" +Integer.toString(param.csvpos)))
                         , true) ;
                 if (prec.typeval != AppParmsIni.T_TRACK){
                         paramStr += QUOTE(escapeDelimiters(param.value, null), false);
@@ -280,7 +280,7 @@ public class ParmGenCSV {
                             QUOTE(param.urlencode==true?"true":"false", false);
                 }
 
-                        
+
             }
             pfile.print(QUOTE(prec.url, true) +
                     QUOTE(Integer.toString(prec.len), true) +
@@ -290,32 +290,32 @@ public class ParmGenCSV {
                     );
             //pfile.print("");
         }
-        
+
         pfile.close();
         pfile = null;
-        
+
     }
-   
+
     public AppParmsIni getAppParmsIni(int i){
         if ( records.size() > i){
             return records.get(i);
         }
         return null;
     }
-    
+
     public void rewindAppParmsIni(){
         it = records.iterator();
     }
-    
+
     public AppParmsIni getNextAppParmsIni(){
         if(it.hasNext()){
             return it.next();
         }
         return null;
     }
-    
+
     public int sizeAppParmsIni(){
         return records.size();
     }
-    
+
 }

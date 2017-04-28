@@ -3,22 +3,22 @@
 
    Extender起因のリクエストでは、cookie.jarで追跡不可。
    別途レスポンスから、Set-Cookie抽出が必要。
-   
+
    現状の回避策
-   
+
    １）Sessions
        Open cookie jar に保管する対象にExtenderチェック
-       
+
    ２）Session handling macroの
    　　Use cookies from Burp's cookie jar
    　　ScopeにExtenderチェック
    　　
    ３）Session handlingに追加するRule Action
-   
+
        Invoke the extension handler: ParmGenStartAction
        Use cookies from the session handling cookie.jar
        ScopeにExtenderチェック
-       
+
 2. カレントリクエストのレスポンス更新
 　　post macro実行結果のレスポンスでカレントリクエストを更新
 　　カレントリクエストのレスポンスでエラーが発生しても、
@@ -34,11 +34,11 @@
    下記のコードが有効なので、ツール実行のレスポンスが更新されてしまう。
    ON/OFF設定で、レスポンス更新を無効にできるようにする。
    あるいは、初期化ボタンでParmGenMacroTrace.PMT_POSTMACRO_NULLに。
-   
+
 　　case ParmGenMacroTrace.PMT_POSTMACRO_END:
          //カレントリクエストをpostマクロレスポンスの内容で更新
          messageInfo.setResponse(pmt.getPostMacroResponse());
-         
+
 4. 正規表現　^ $ 等行開始終了の正規表現がヒットしない。
 
 5. 正規表現 token=(\w+) がコンパイルエラー　？　ゴミがまざった？
@@ -67,7 +67,7 @@ currentStepNo: 実行中のstepno
 2) 追跡To 指定したtoStepNoのリクエストを更新
 
    -n～    currentStepNo == responseStepNo - toStepNo
-           
+
     0　　　無条件
 
 　　～+n:  　currentStepNo == toStepNo
@@ -112,5 +112,6 @@ currentStepNo: 実行中のstepno
     両方マッチし、両方おきかわってしまう。
     (?:[&=?]+|^)PARAM1=(\d+)
     とする。
-    
-     
+
+ 21. csv保存を止める。以降はjson保存のみ。
+

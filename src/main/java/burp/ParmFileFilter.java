@@ -5,6 +5,7 @@
 package burp;
 
 import java.io.File;
+
 import javax.swing.filechooser.FileFilter;
 
 /**
@@ -23,7 +24,7 @@ public class ParmFileFilter extends FileFilter{
     /* 拡張子を取り出し、csvだったら表示する */
     String ext = getExtension(f);
     if (ext != null){
-      if (ext.equals("csv") ){
+      if (ext.equals("json") ){
         return true;
       }else{
         return false;

@@ -7,13 +7,11 @@ package burp;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.FileFilter;
-import java.util.Iterator;
+
 import javax.swing.JFileChooser;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
 
 /**
  *
@@ -29,7 +27,7 @@ public class ParmGenTop extends javax.swing.JFrame {
     boolean ParmGenNew_Modified = false;
     ParmGenMacroTrace pmt;
 
-    
+
     /**
      * Creates new form ParmGenTop
      */
@@ -44,8 +42,8 @@ public class ParmGenTop extends javax.swing.JFrame {
         ParamTopList.setColumnModel(tcm);
         default_rowheight = ParamTopList.getRowHeight();
         model = (DefaultTableModel)ParamTopList.getModel();
-        
-        
+
+
         cleartables();
         LANGUAGE.setSelectedItem(csv.getLang());
         AppParmsIni pini;
@@ -104,7 +102,7 @@ public class ParmGenTop extends javax.swing.JFrame {
             }
           });
     }
-    
+
     public void refreshRowDisp(boolean reloadcsv){
         if(reloadcsv){
             csv.reloadParmGen(pmt);
@@ -140,7 +138,7 @@ public class ParmGenTop extends javax.swing.JFrame {
             ParamTopList.setRowHeight(ri++, default_rowheight * pini.getAppValuesLineCnt());
         }
     }
-    
+
     public void updateRowDisp(AppParmsIni pini){
 
         if(pini != null){//新規
@@ -170,15 +168,15 @@ public class ParmGenTop extends javax.swing.JFrame {
             model.removeRow(0);//0行目を削除。
         }
     }
-    
+
     public int getRowSize(){
         if(model==null)return 0;
         return model.getRowCount();
     }
     //
-    // 
+    //
     //　
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -430,27 +428,27 @@ public class ParmGenTop extends javax.swing.JFrame {
 
     private void SaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveActionPerformed
         // TODO add your handling code here:
-        
+
         File cfile = new File(ParmVars.parmfile);
         String dirname = cfile.getParent();
         JFileChooser jfc = new JFileChooser(dirname);
         jfc.setSelectedFile(cfile);
         ParmFileFilter pFilter=new ParmFileFilter();
         jfc.setFileFilter(pFilter);
-        if(jfc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) { 
-            //code to handle choosed file here. 
+        if(jfc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            //code to handle choosed file here.
             File file = jfc.getSelectedFile();
             String name = file.getAbsolutePath().replaceAll("\\\\", "\\\\\\\\");
             ParmVars.parmfile = name;
-             csv.save();
+             //csv.save();
              csv.jsonsave();
             //reset ParmGen
             ParmGen pgen = new ParmGen(pmt);
 
             pgen.reset();
             pgen.disposeTop();
-        } 
-       
+        }
+
     }//GEN-LAST:event_SaveActionPerformed
 
     private void ModActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ModActionPerformed
@@ -554,19 +552,19 @@ public class ParmGenTop extends javax.swing.JFrame {
         jfc.setSelectedFile(cfile);
         ParmFileFilter pFilter=new ParmFileFilter();
         jfc.setFileFilter(pFilter);
-        if(jfc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) { 
-            //code to handle choosed file here. 
+        if(jfc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            //code to handle choosed file here.
             File file = jfc.getSelectedFile();
             String name = file.getAbsolutePath().replaceAll("\\\\", "\\\\\\\\");
             ParmVars.parmfile = name;
             ParmGen pgen = new ParmGen(pmt);
             pgen.reset();//再読み込み
             refreshRowDisp(true);//表示更新
-        } 
-        
+        }
+
     }//GEN-LAST:event_LoadActionPerformed
 
-   
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Add;
     private javax.swing.JButton Cancel;

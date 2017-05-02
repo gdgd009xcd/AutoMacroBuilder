@@ -22,11 +22,13 @@ public class ParmGenParser {
     Document doc;
     Elements elems;
     HashMap<ParmGenTokenKey, ParmGenTokenValue> map;
+    HashMap<ParmGenTokenKey, ParmGenTokenValue> defmap;//T_DEFAULT
 
     void init(){
         doc = null;
         elems = null;
         map = null;
+        defmap = null;
     }
 
     //tokenらしき値を自動引継ぎ
@@ -109,7 +111,7 @@ public class ParmGenParser {
                     String value = new String("");
                     if(nvp.length>1){
                         value = nvp[1];
-                    
+
 	                    if(name!=null&&name.length()>0&&value!=null){
 	                        //重複nameの検査
 	                        int npos = 0;
@@ -163,25 +165,33 @@ public class ParmGenParser {
 
             if(map==null){
                 map = new HashMap<ParmGenTokenKey, ParmGenTokenValue>();
+                defmap = new HashMap<ParmGenTokenKey, ParmGenTokenValue>();
                 for(Element vtag : elems){
                     ArrayList<ParmGenToken> tklist = getParmGenTokens(vtag, namepos);
                     for(ParmGenToken tkn: tklist){
                     	tkey = tkn.getTokenKey();
-                    	if(_tokentype==AppValue.T_DEFAULT){
-                    		tkey.SetTokenType(AppValue.T_DEFAULT);
-                    	}
+
                         map.put(tkey, tkn.getTokenValue());
+
+                    	tkey.SetTokenType(AppValue.T_DEFAULT);
+
+                    	defmap.put(tkey, tkn.getTokenValue());
                     }
                 }
             }
+            HashMap<ParmGenTokenKey, ParmGenTokenValue> selectmap = map;
+            if(_tokentype==AppValue.T_DEFAULT){
+            	selectmap = defmap;
+            }
+
             tkey = new ParmGenTokenKey(_tokentype, name, fcnt);
-            ParmGenTokenValue tval = map.get(tkey);
+            ParmGenTokenValue tval = selectmap.get(tkey);
             if(tval!=null){
                 return new ParmGenToken(tkey, tval);
             }else if(fcnt>0){
                 while(fcnt-->0){
                     tkey = new ParmGenTokenKey(_tokentype, name, fcnt);
-                    tval = map.get(tkey);
+                    tval = selectmap.get(tkey);
                     if(tval!=null){
                         return new ParmGenToken(tkey, tval);
                     }

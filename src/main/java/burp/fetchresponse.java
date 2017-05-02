@@ -2,28 +2,13 @@ package burp;
 
 
 
-import flex.messaging.util.URLEncoder;
-import java.io.File;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.Random;
-import java.util.Iterator;
 import java.util.ArrayList;
-import java.util.StringTokenizer;
+import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.Date;
-import java.text.Format;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.logging.Logger;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
+
+import flex.messaging.util.URLEncoder;
 
 
 //<?xml version="1.0" encoding="utf-8"?>
@@ -66,14 +51,14 @@ class LocVal {
 	String _enc = null;
 	int rpos = 0;
 	int cpos = 0;
-	
+
 	//
 	LocVal (int _rmax){
 		_logger = ParmVars.plog;
-	
+
 		//pattern = "<AuthUpload>(?:.|\r|\n|\t)*?<password>([a-zA-Z0-9]+)</password>";
                 allocLocVal(_rmax);
-                
+
 		_enc = ParmVars.enc;
                 if(_enc == null || _enc.length() <=0 ){
 			_enc = "UTF-8";
@@ -82,11 +67,11 @@ class LocVal {
 
 
 	}
-	
+
         private String strrowcol(int r, int c){
             return Integer.toString(r) + "," + Integer.toString(c);
         }
-        
+
 	void setSticky(){
 		sticky = true;
 		//printlog("***fetchresponse sticky***");
@@ -107,7 +92,7 @@ class LocVal {
                 responseStepNos = null;
             }
         }
-        
+
 	void initLocVal(){
 		for(int i = 0; i< rmax; i++){
 			for(int j = 0 ; j<cmax ; j++){
@@ -151,7 +136,7 @@ class LocVal {
 
 	String getLocVal(int currentStepNo, int toStepNo, int r, int c){
 		if(isValid(r,c)){
-                    
+
                     String v = locarray[r][c];
                     int responseStepNo = responseStepNos[r][c];
                     //toStepNo <0 :currentStepNo == responseStepNo - toStepNo
@@ -166,11 +151,11 @@ class LocVal {
                     }else if(toStepNo==0){
                         return v;
                     }
-		
+
                 }
                 return null;
 	}
-        
+
         int getStepNo(int r, int c){
             if(isValid(r,c)){
                 return responseStepNos[r][c];
@@ -201,11 +186,11 @@ class LocVal {
 		setLocVal(stepno, -1, tr, tc, v, true);
             }
 	}
-        
+
         boolean isValid(int r, int c){
             if(rmax > 0 && r >= 0 && r < rmax && c >= 0 && c < COLMAX){
 		return true;
-            
+
             }
             return false;
 	}
@@ -260,13 +245,13 @@ class LocVal {
 					}
 
 					if ( matchval != null ){
-                                            if(!matchval.isEmpty()){// value値nullは追跡しない
-						printlog("*****FETCHRESPONSE header r,c/ header: value" + r + "," + c + "/" + hval + " => " + matchval );
-						setLocVal(currentStepNo,fromStepNo, r,c, matchval, overwrite);
-						return true;
-                                            }else{
-                                                printlog("xxxxxIGNORED FETCHRESPONSE header r,c/ header: value" + r + "," + c + "/" + hval + " => null"  );
-                                            }
+                        if(!matchval.isEmpty()){// value値nullは追跡しない
+							printlog("*****FETCHRESPONSE header r,c/ header: value" + r + "," + c + "/" + hval + " => " + matchval );
+							setLocVal(currentStepNo,fromStepNo, r,c, matchval, overwrite);
+							return true;
+                        }else{
+                            printlog("xxxxxIGNORED FETCHRESPONSE header r,c/ header: value" + r + "," + c + "/" + hval + " => null"  );
+                        }
 					}
 				}
 			}
@@ -279,41 +264,41 @@ class LocVal {
 	boolean bodymatch(int currentStepNo, int fromStepNo, String url, PResponse presponse, int r, int c, boolean overwrite, boolean autotrack, int fcnt, String name, boolean _uencode, int _tokentype) throws UnsupportedEncodingException{
 		if (urlmatch(url, r, c )){
 
-                        String body = presponse.getBody();
-                        
-                        if(autotrack){
-                            ParmGenParser parser = new ParmGenParser(body);
-                            ParmGenToken tkn = parser.fetchNameValue(name, fcnt, _tokentype);
-                            if ( tkn != null ){
-                                ParmGenTokenValue tval = tkn.getTokenValue();
-                                if(tval!=null){
-                                        String v = tval.getValue();
-                                        if(v!=null&&!v.isEmpty()){//value null値は追跡しない。
-                                            printlog("*****FETCHRESPONSE auto track body r,c,p:value:" + r + "," + c + "," + fcnt + ":" +  v );
-                                            if(_uencode==true){
-                                                String venc = v;
-                                                try{
-                                                    venc = URLEncoder.encode(v, ParmVars.enc);
-                                                }catch (UnsupportedEncodingException e){
-                                                    //NOP
-                                                }
-                                                v = venc;
-                                            }
-                                            String ONETIMEPASSWD = v.replaceAll(",", "%2C");
+            String body = presponse.getBody();
 
-                                            setLocVal(currentStepNo,fromStepNo, r,c,ONETIMEPASSWD, overwrite);
-                                            return true;
-                                        }else{
-                                            printlog("xxxxx IGNORED FETCHRESPONSE auto track body r,c,p:value:" + r + "," + c + "," + fcnt + ":" +  "null" );
-                                        }
-                                   }
+            if(autotrack){
+                ParmGenParser parser = new ParmGenParser(body);
+                ParmGenToken tkn = parser.fetchNameValue(name, fcnt, _tokentype);
+                if ( tkn != null ){
+                    ParmGenTokenValue tval = tkn.getTokenValue();
+                    if(tval!=null){
+                            String v = tval.getValue();
+                            if(v!=null&&!v.isEmpty()){//value null値は追跡しない。
+                                printlog("*****FETCHRESPONSE auto track body r,c,p:value:" + r + "," + c + "," + fcnt + ":" +  v );
+                                if(_uencode==true){
+                                    String venc = v;
+                                    try{
+                                        venc = URLEncoder.encode(v, ParmVars.enc);
+                                    }catch (UnsupportedEncodingException e){
+                                        //NOP
+                                    }
+                                    v = venc;
+                                }
+                                String ONETIMEPASSWD = v.replaceAll(",", "%2C");
+
+                                setLocVal(currentStepNo,fromStepNo, r,c,ONETIMEPASSWD, overwrite);
+                                return true;
+                            }else{
+                                printlog("xxxxx IGNORED FETCHRESPONSE auto track body r,c,p:value:" + r + "," + c + "," + fcnt + ":" +  "null" );
                             }
-                            return false;
-                        }
-                        
+                       }
+                }
+                return false;
+            }
+
 			Matcher matcher = null;
 
-                       
+
 			try {
 				matcher = regexes[r][c].matcher(body);
 			}catch (Exception e) {
@@ -330,19 +315,19 @@ class LocVal {
 
 				if ( matchval != null ){
 					String ONETIMEPASSWD = matchval.replaceAll(",", "%2C");
-                                        if(ONETIMEPASSWD!=null&&!ONETIMEPASSWD.isEmpty()){// value値nullは追跡しない
-                                            printlog("*****FETCHRESPONSE body r,c:value:" + r + "," + c + ":" +  ONETIMEPASSWD );
-                                            setLocVal(currentStepNo,fromStepNo, r,c,ONETIMEPASSWD, overwrite);
-                                            return true;
-                                        }else{
-                                            printlog("xxxxxx IGNORED FETCHRESPONSE body r,c:value:" + r + "," + c + ":" +  "null" );
-                                        }
+                    if(ONETIMEPASSWD!=null&&!ONETIMEPASSWD.isEmpty()){// value値nullは追跡しない
+                        printlog("*****FETCHRESPONSE body r,c:value:" + r + "," + c + ":" +  ONETIMEPASSWD );
+                        setLocVal(currentStepNo,fromStepNo, r,c,ONETIMEPASSWD, overwrite);
+                        return true;
+                    }else{
+                        printlog("xxxxxx IGNORED FETCHRESPONSE body r,c:value:" + r + "," + c + ":" +  "null" );
+                    }
 				}
 			}
 		}
 		return false;
 	}
-        
+
         boolean reqbodymatch(int currentStepNo, int fromStepNo,String url, PRequest prequest, int r, int c, boolean overwrite, int fcnt, String name){
             if (urlmatch(url, r, c )){
                 ArrayList<String[]> namelist = prequest.getBodyParams();
@@ -376,7 +361,7 @@ class LocVal {
                                             return true;
                                     }
                                     //printlog("urlmatch find failed:r,c,url, rmax=" + strrowcol(r,c) + "," + url + "," + Integer.toString(rmax));
-                            
+
                             }
                     }catch (Exception e){
                             printlog("matcher例外：" + e.toString());
@@ -385,7 +370,7 @@ class LocVal {
 		return false;
 	}
 
-   
+
 }
 
 //
@@ -401,10 +386,10 @@ class FetchResponse {
 	// static変数初期化
 	//
 	static {
-		
+
 
 		//loc.setSticky();
-		
+
 		//１）指定したポジションr,cの正規表現グループを指定
 		//発注取消用
 		//global.Location.setRegex("新規保存完了しました.*?\\<rr:Target name=\"OrderInfo\">\\<rr:Key name=\"ID\" value=\"([0-9A-Za-z,]+?)\"/>\\</rr:Target>\\<rr:Contents>\\<o:OrderInfo xmlns:o=\"http://animate\\.es-presso.jp/OrderInfo\" xmlns:lnk=\"http://esp\\.es-presso.jp/Link\">(?:\\r|\\n|\\t|[ ])*?<o:ID>\\<\\!\\[CDATA\\[(?:[0-9A-Za-z,]+?)\\]\\]\\>\\</o\\:ID\\>(?:\\r|\\n|\\t|[ ])*?<o:Cart>(?:\\r|\\n|\\t|[ ])*?<lnk:Link target=\"Cart\">(?:\\r|\\n|\\t|[ ])*?<lnk:Key name=\"ID\" value=\"(?:[0-9A-Za-z,]+?)\"/>", 0, 0);
@@ -428,7 +413,7 @@ class FetchResponse {
 
 		//loc.setURLRegex(".*test.kurashi-research.jp:(\\d+)/top.php.*", 0,0);
 		//loc.setRegex("'PU31', '00', 'exchange', '([a-z0-9]+)'",0,0);
-		
+
 		// for test
 		//global.Location.setURLRegex(".*hello.php.*", 0,0);
 		//global.Location.setRegex("(Hello,world)",0,0);
@@ -450,7 +435,7 @@ class FetchResponse {
 
 
 // ２）指定したポジションr,cのレスポンスマッチを指定
-//カートＩＤ 削除 
+//カートＩＤ 削除
 //if(global.Location.bodymatch(url, response, 0, 0, false)){
 //	global.Location.copyLocVal(0, 0, 0, 1, false);
 //	global.Location.copyLocVal(0, 0, 0, 2, false);

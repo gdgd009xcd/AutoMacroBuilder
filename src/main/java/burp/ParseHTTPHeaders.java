@@ -4,8 +4,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,7 +32,7 @@ class ParseHTTPHeaders {
         int port;
         public ArrayList<String> pathparams;
         public ArrayList<String[]> cookieparams;
-        
+
         public ArrayList<String[]> queryparams;
         private ArrayList<String[]> bodyparams;
 	ArrayList<String []> headers;
@@ -46,10 +44,10 @@ class ParseHTTPHeaders {
         boolean isHeaderModified;//==true parsedheaderlengthは再計算。
         int content_length;
         boolean formdata;
-        
+
 	String body;
         byte[] bytebody;
-        
+
 	String message;// when update method(Ex. setXXX) is called, then this value must set to null;
 	boolean isrequest;// == true - request, false - response
 
@@ -58,7 +56,7 @@ class ParseHTTPHeaders {
                 //formdataregex = Pattern.compile("-{4,}[a-zA-Z0-9]+(?:\r\n)(?:[A-Z].* name=\"(.*?)\".*(?:\r\n))(?:[A-Z].*(?:\r\n)){0,}(?:\r\n)((?:.|\r|\n)*?)(?:\r\n)-{4,}[a-zA-Z0-9]+");
                 formdataheader = "(?:[A-Z].* name=\"(.*?)\".*(?:\r\n))(?:[A-Z].*(?:\r\n)){0,}(?:\r\n)";
                 formdatafooter = "(?:\r\n)";
-                
+
                 isSSL = false;
 		crlf = false;
 		isrequest = false;
@@ -66,7 +64,7 @@ class ParseHTTPHeaders {
                 pathparams = new ArrayList<String>();
                 cookieparams = new ArrayList<String[]>();
                 set_cookieparams = new HashMap<String,ArrayList<String[]>>();
-                
+
                 queryparams = new ArrayList<String[]>();
                 bodyparams = null;
                 boundary = null;
@@ -106,22 +104,22 @@ class ParseHTTPHeaders {
                 } catch (UnsupportedEncodingException ex) {
                     ParmVars.plog.printException(ex);
                 }
-		
-                
+
+
 	}
-        
+
         public String getHost() {
             return host;
         }
-        
+
         public int getPort(){
             return port;
         }
-        
+
         public boolean isSSL(){
             return isSSL;
         }
-        
+
         public String getPathPrefURL(){
             return path_pref_url;
         }
@@ -164,7 +162,7 @@ class ParseHTTPHeaders {
             }
             return parsedheaderlength;
         }
-        
+
 	ArrayList<String []> Parse(String httpmessage){//request or response
                 parsedheaderlength = 0;
 		Matcher m = valueregex.matcher(httpmessage);
@@ -200,10 +198,10 @@ class ParseHTTPHeaders {
 					//request nv[0] method nv[1] url nv[2] protocol
 					if ( nv.length > 2){
 						method = nv[0];
-						
+
                                                 String lowerline = method.toLowerCase();
-                                                
-						if ( lowerline.startsWith("http") ){//response 
+
+						if ( lowerline.startsWith("http") ){//response
 							isrequest = false;
 							protocol = nv[0];
 							status = nv[1];
@@ -253,7 +251,7 @@ class ParseHTTPHeaders {
                                                                     nvpair[1] = new String("");
                                                                 }
                                                                 queryparams.add(nvpair);
-                                                                
+
                                                             }
                                                         }
 							protocol = nv[2];
@@ -269,16 +267,16 @@ class ParseHTTPHeaders {
                                         if (nv[0].toLowerCase().startsWith("host")) {
                                             String[] hasport = nv[1].split("[:]");
                                             if(hasport.length>1){
-                                                port = Integer.parseInt(hasport[1]); 
+                                                port = Integer.parseInt(hasport[1]);
                                             }
                                             if(hasport.length>0){
                                                host = hasport[0];
                                             }
-                                            
+
                                         }
                                         if (nv[0].toLowerCase().startsWith("content-type")) {
                                             String[] types = nv[1].split("[ ;]");
-                                            
+
                                             for(int i = 0;i<types.length;i++){
                                                 int slpos = types[i].indexOf("/");
                                                 if ( slpos > 0){// type/subtype
@@ -346,19 +344,19 @@ class ParseHTTPHeaders {
                                                 set_cookieparams.put(setckey, setclist);
                                             }
                                         }
-                                            
-                                        
-                                }        
-                                        
+
+
+                                }
+
                          }
-                                        
+
                    }
-                                        
+
                 isHeaderModified = false;
 		return headers;
 	}
-        
-        
+
+
         public ArrayList<String[]> getBodyParams(){
             if ( isrequest==true&&bodyparams==null){
                 bodyparams = new ArrayList<String[]>();
@@ -440,9 +438,9 @@ class ParseHTTPHeaders {
 		message = null;
                 isHeaderModified = true;
 	}
-	
 
-	
+
+
 	void setHeader(int i, String name, String value){
 		String[] nv = new String[2];
 		nv[0] = new String(name);
@@ -451,7 +449,7 @@ class ParseHTTPHeaders {
 		message = null;
                 isHeaderModified = true;
 	}
-	
+
 	void setHeader(String name, String value){
 		int i = findHeader(name);
 		if (i >= 0){
@@ -464,14 +462,14 @@ class ParseHTTPHeaders {
                 }
                 isHeaderModified = true;
 	}
-        
+
         void removeHeader(String name){
             int i = findHeader(name);
 		if (i >= 0){
 			headers.remove(i);
 		}
         }
-	
+
 	void setBody(byte[] _bval){
                 bytebody = _bval;
                 try {
@@ -481,13 +479,13 @@ class ParseHTTPHeaders {
                 }
 		message = null;
 	}
-	
-        
-        
+
+
+
         void setCookie(String name, String value){
             int len = cookieparams.size();
             boolean isCookieUpdated = false;
-            
+
             for(int i = 0; i<len; i++){
                 String[] pair = cookieparams.get(i);
                 if(pair[0].equals(name)){
@@ -521,7 +519,7 @@ class ParseHTTPHeaders {
             ParmVars.plog.debuglog(0, "Cookie:" + cookiedata);
             isHeaderModified = true;
         }
-        
+
         boolean removeCookies(ArrayList<String> names){
             Iterator<String[]> it = cookieparams.iterator();
             String cookiedata = "";
@@ -533,7 +531,7 @@ class ParseHTTPHeaders {
                         cookiedata += "; ";
                     }
                     String[] nv = it.next();
-                    
+
                     isdeleted = false;
                     for(int i = 0; i<names.size();i++){
                         if(nv[0].equals(names.get(i))){// Cookie name is case sensitive..
@@ -562,7 +560,7 @@ class ParseHTTPHeaders {
             }
             return cookie_deleted;
         }
-        
+
 	//
 	// getter
 	//
@@ -570,57 +568,57 @@ class ParseHTTPHeaders {
 	String getMethod(){
 		return method;
 	}
-	
+
 	String getURL(){
 		return url;
 	}
-	
+
         String getPath(){
             return path;
         }
-        
+
 	String getBody(){
 		return body;
 	}
-	
+
 	boolean isRequest(){
 		return isrequest;
 	}
-	
+
 	String getStartline(){
 		if ( isrequest ){
 			return method + " " + url + " " + protocol;
 		}
 		return protocol + " " + status + " " + reason;
 	}
-	
+
         String getStatus(){
             return status;
         }
-        
+
 	String getMessage(){
 
 		if ( message != null ){
 			return message;
 		}
-                
+
                 int blen = getBodyLength();
                 setHeader("Content-Length", Integer.toString(blen));
-		
+
 		StringBuilder sb = new StringBuilder();
-		
+
 		sb.append(getStartline() + "\r\n");
 		for(int i = 0; i< headers.size(); i++){
 			sb.append(getHeaderLine(i) + "\r\n");
 		}
 		sb.append("\r\n");
 		sb.append(getBody());
-		
+
 		message = new String(sb);
-		
+
 		return message;
 	}
-	
+
     byte[] getByteMessage(){
 
 
@@ -660,7 +658,7 @@ class ParseHTTPHeaders {
 
         String getHeaderOnly(){
             StringBuilder sb = new StringBuilder();
-		
+
             sb.append(getStartline() + "\r\n");
             for(int i = 0; i< headers.size(); i++){
                     sb.append(getHeaderLine(i) + "\r\n");
@@ -675,7 +673,7 @@ class ParseHTTPHeaders {
 	int getHeadersCnt(){
 		return headers.size();
 	}
-	
+
 	String getHeaderLine(int i){
 		String result = null;
 		if ( i >= 0 && headers.size() > i){
@@ -684,8 +682,8 @@ class ParseHTTPHeaders {
 		}
 		return result;
 	}
-	
-	String getHeader(String name){
+
+	public String getHeader(String name){
 		int i = findHeader(name);
 		if ( i >= 0) {
 			String[] nv = (String[])headers.get(i);
@@ -693,20 +691,22 @@ class ParseHTTPHeaders {
 		}
 		return null;
 	}
-	
+
 	ArrayList<String []> getHeaders(){
 		return headers;
 	}
-	
+
+	// RFC 2616 - "Hypertext Transfer Protocol -- HTTP/1.1", Section 4.2, "Message Headers":
+	//Each header field consists of a name followed by a colon (":") and the field value. Field names are case-insensitive.
 	int findHeader(String name){
 		Iterator ite = headers.iterator();
 		String[] nv;
 		int i = 0;
 		while(ite.hasNext()){
-			Object obj = ite.next(); 
+			Object obj = ite.next();
 			if (obj instanceof String[]) {
 				nv = (String[])obj;
-				if(name.equals(nv[0])){
+				if(name.toLowerCase().equals(nv[0].toLowerCase())){
 					return i;
 				}
 			}
@@ -714,11 +714,11 @@ class ParseHTTPHeaders {
 		}
 		return -1;
 	}
-        
+
         String getContent_Type(){
             return content_type;
         }
-        
+
         String getContent_Subtype(){
             return content_subtype;
         }

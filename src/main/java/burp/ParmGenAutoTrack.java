@@ -6,11 +6,8 @@ package burp;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
+
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -20,15 +17,15 @@ import javax.swing.table.DefaultTableModel;
 public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceRegex, interfaceParmGenWin{
     ParmGenNew parentwin;
     boolean valueexistonly = false;
-    
+
     /**
      * Creates new form ParmGenAutoTrack
      */
     public ParmGenAutoTrack(ParmGenNew _pwin) {
         parentwin = _pwin;//親ウィンドウ
         initComponents();
-        
-        
+
+
     }
 
     /**
@@ -170,7 +167,7 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
             ParmVars.session.put(i, ParmGenSession.K_RESPONSEPOSITION, num);
             ParmVars.session.put(i, ParmGenSession.K_TOKEN, name);
             ParmVars.session.put(i, ParmGenSession.K_TOKENTYPE, tktype);
-            
+
             int parsedrespart = ap.parseValPartType(respart);
             if (parsedrespart==AppValue.V_AUTOTRACKBODY) {
                 //引き継ぎ元レスポンスのボディを引き継ぐ場合は,リクエストセット時URLENCODEする。
@@ -212,7 +209,7 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -280,14 +277,35 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
             }
             PRequestResponse rs = ParmGenCSV.selected_messages.get(0);
             String body = rs.response.getBody();
+            AppValue ap = new AppValue();
+            //Locationパラメータ取得
+            ArrayList<ParmGenToken> tklist = rs.response.getLocationTokens();
+            if(tklist!=null){
+            	for(ParmGenToken tkn : tklist){
+            		if(tkn!=null){
+            			ParmGenTokenKey tkey = tkn.getTokenKey();
+                        ParmGenTokenValue tval = tkn.getTokenValue();
+                        String name = tkey.GetName();
+                        String value = tval.getValue();
+                        int _tktype = tkey.GetTokenType();
+                        int npos = 0;
+                        if(valueexistonly==true&&(value==null||value.isEmpty())){
+                            //value値の無いパラメータは対象外
+                        }else{
+                            model.addRow(new Object[]{ap.getValPart(AppValue.V_HEADER),ap.getTokentypeName(_tktype) ,Integer.toString(npos), name, value});
+                        }
+            		}
+
+            	}
+            }
             //responseパラメータ取得
             ParmGenParser pgser = new ParmGenParser(body);
             HashMap<String,Integer> namepos = new HashMap<String,Integer>();
             ArrayList<ParmGenToken> lst = pgser.getNameValues();
-            AppValue ap = new AppValue();
+
             for(Iterator<ParmGenToken> it = lst.iterator();it.hasNext();){
                 ParmGenToken tkn = it.next();
-                
+
 
                 if(tkn!=null){
                     ParmGenTokenKey tkey = tkn.getTokenKey();
@@ -320,7 +338,7 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
                 model.addRow(new Object[]{ap.getValPart(AppValue.V_REQTRACKPATH), ap.getTokentypeName(ap.T_DEFAULT), Integer.toString(npos),Integer.toString(ppos), pit.next()});
                 ppos++;
             }
-        
+
             namepos.clear();
             Iterator<String[]> it = rs.request.queryparams.iterator();
             int rcnt = 0;

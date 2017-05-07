@@ -279,11 +279,12 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
             String body = rs.response.getBody();
             AppValue ap = new AppValue();
             //Locationパラメータ取得
-            ArrayList<ParmGenToken> tklist = rs.response.getLocationTokens();
-            if(tklist!=null){
-            	for(ParmGenToken tkn : tklist){
+            ParmGenArrayList tklist = new ParmGenArrayList();
+            InterfaceCollection<ParmGenToken> ic = rs.response.getLocationTokens(tklist);
+            if(ic!=null){
+            	for(ParmGenToken tkn : ic){
             		if(tkn!=null){
-            			ParmGenTokenKey tkey = tkn.getTokenKey();
+            		ParmGenTokenKey tkey = tkn.getTokenKey();
                         ParmGenTokenValue tval = tkn.getTokenValue();
                         String name = tkey.GetName();
                         String value = tval.getValue();

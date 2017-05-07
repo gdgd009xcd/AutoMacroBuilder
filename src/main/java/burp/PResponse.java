@@ -1,44 +1,58 @@
 package burp;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 class PResponse extends ParseHTTPHeaders {
+        private ParmGenHashMap map;
+    
 	//PResponse(){
 	//	super();
 	//}
-	ArrayList<ParmGenToken> tklist;//Locationヘッダーのパラメータ一覧
 
 	PResponse(String httpmessage){
 		super(httpmessage);
+                map = null;
 	}
 
+        
 	//Location headerのパラメータ取得
-	public ArrayList<ParmGenToken> getLocationTokens(){
+	public  <T> InterfaceCollection<T> getLocationTokens(InterfaceCollection<T> tklist){
 		String locheader = getHeader("Location");
-		ArrayList<ParmGenToken> tklist = null;
+		
 		if(locheader!=null){
-			String []nvpairs = locheader.split("[?&]");
-            String url = nvpairs[0];
-            for(String tnv:nvpairs){
-                String[] nvp = tnv.split("=");
-                String name = nvp[0];
-                String value = new String("");
-                if(nvp.length>1){
-                    value = nvp[1];
+                    String []nvpairs = locheader.split("[?&]");
+                    String url = nvpairs[0];
+                    for(String tnv:nvpairs){
+                        String[] nvp = tnv.split("=");
+                        String name = nvp[0];
+                        String value = new String("");
+                        if(nvp.length>1){
+                            value = nvp[1];
 
-                    if(name!=null&&name.length()>0&&value!=null){
-                    	if(tklist==null){
-                    		tklist = new ArrayList<ParmGenToken>();
-                    	}
-                        ParmGenToken tk = new ParmGenToken(AppValue.T_LOCATION,url, name, value, 0);
-                        tklist.add(tk);
+                            if(name!=null&&name.length()>0&&value!=null){
+                                tklist.addToken(AppValue.T_LOCATION,url, name, value, 0);
+                            }
+                        }
                     }
-                }
-            }
-            if(tklist!=null){
-            	return tklist;
-            }
+                    if(tklist!=null&&tklist.size()>0){
+                        return tklist;
+                    }
 		}
 		return null;
 	}
+        
+        public ParmGenToken fetchNameValue(String name, int _tokentype){
+            if(map==null){
+                map = new ParmGenHashMap();
+                InterfaceCollection<Entry<ParmGenTokenKey, ParmGenTokenValue>> ic = getLocationTokens(map);             
+            }
+            ParmGenTokenKey tkey = new ParmGenTokenKey(_tokentype, name, 0);
+            ParmGenTokenValue tval = map.get(tkey);
+            if(tval!=null){
+                return new ParmGenToken(tkey, tval);
+            }
+            return null;
+        }
 }

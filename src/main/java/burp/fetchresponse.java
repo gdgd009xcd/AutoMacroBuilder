@@ -221,8 +221,24 @@ class LocVal {
 	//
 	// header match
 	//
-	boolean headermatch(int currentStepNo, int fromStepNo, String url, PResponse presponse, int r, int c, boolean overwrite){
+	boolean headermatch(int currentStepNo, int fromStepNo, String url, PResponse presponse, int r, int c, boolean overwrite, String name, int _tokentype){
 		if (urlmatch(url, r, c )){
+                    if(_tokentype==AppValue.T_LOCATION){
+                        ParmGenToken tkn = presponse.fetchNameValue(name, _tokentype);
+                        if(tkn!=null){
+                            ParmGenTokenValue tval = tkn.getTokenValue();
+                            if(tval!=null){// value値nullは追跡しない
+                                String matchval = tval.getValue();
+                                if(matchval!=null&&!matchval.isEmpty()){
+                                    printlog("*****FETCHRESPONSE header r,c/ header: value" + r + "," + c   + " => " + matchval );
+                                    setLocVal(currentStepNo,fromStepNo, r,c, matchval, overwrite);
+                                    return true;
+                                }
+                            }else{
+                                printlog("xxxxxIGNORED FETCHRESPONSE header r,c/ header: value" + r + "," + c  + " => null"  );
+                            }
+                        }
+                    }else if(regexes[r][c]!=null){
 			//
                         int size = presponse.getHeadersCnt();
 			for(int i=0; i < size; i++)
@@ -245,17 +261,18 @@ class LocVal {
 					}
 
 					if ( matchval != null ){
-                        if(!matchval.isEmpty()){// value値nullは追跡しない
-							printlog("*****FETCHRESPONSE header r,c/ header: value" + r + "," + c + "/" + hval + " => " + matchval );
-							setLocVal(currentStepNo,fromStepNo, r,c, matchval, overwrite);
-							return true;
-                        }else{
-                            printlog("xxxxxIGNORED FETCHRESPONSE header r,c/ header: value" + r + "," + c + "/" + hval + " => null"  );
-                        }
+                                            if(!matchval.isEmpty()){// value値nullは追跡しない
+                                                printlog("*****FETCHRESPONSE header r,c/ header: value" + r + "," + c + "/" + hval + " => " + matchval );
+                                                setLocVal(currentStepNo,fromStepNo, r,c, matchval, overwrite);
+                                                return true;
+                                            }else{
+                                                printlog("xxxxxIGNORED FETCHRESPONSE header r,c/ header: value" + r + "," + c + "/" + hval + " => null"  );
+                                            }
 					}
 				}
 			}
-		}
+                    }
+                }
 		return false;
 	}
 	//

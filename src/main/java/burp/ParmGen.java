@@ -2166,7 +2166,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                         //ParmVars.plog.debuglog(0, "ParseResponse: V_HEADER " + rowcolstr);
 			//String[] headers=request.getHeaderNames();
 			//for(String header : headers){
-			rflag = FetchResponse.loc.headermatch(pmt.getStepNo(), av.fromStepNo,url, presponse, row, col, true);
+			rflag = FetchResponse.loc.headermatch(pmt.getStepNo(), av.fromStepNo,url, presponse, row, col, true,av.token, av.tokentype);
 			break;
                 case AppValue.V_REQTRACKBODY://request追跡なのでNOP.
                     break;

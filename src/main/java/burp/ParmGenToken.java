@@ -24,6 +24,11 @@ ParmGenToken(ParmGenTokenKey tkey, ParmGenTokenValue tval){
     ptv = tval;
 }
 
+ParmGenToken(ParmGenToken tkn){
+	ptk = new ParmGenTokenKey(tkn.ptk);
+	ptv = new ParmGenTokenValue(tkn.ptv);
+}
+
 public ParmGenTokenKey getTokenKey(){
     return ptk;
 }

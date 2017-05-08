@@ -173,9 +173,11 @@ public class ParmGenParser {
 
                         map.put(tkey, tkn.getTokenValue());
 
-                    	tkey.SetTokenType(AppValue.T_DEFAULT);
+                        ParmGenTokenKey dkey = new ParmGenTokenKey(tkey);//copy
+                        
+                    	dkey.SetTokenType(AppValue.T_DEFAULT);
 
-                    	defmap.put(tkey, tkn.getTokenValue());
+                    	defmap.put(dkey, tkn.getTokenValue());
                     }
                 }
             }

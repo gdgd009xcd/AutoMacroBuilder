@@ -22,6 +22,12 @@ public class ParmGenTokenKey {
         fcnt = _fcnt;
     }
     
+    ParmGenTokenKey(ParmGenTokenKey tk){
+    	tokentype = tk.tokentype;
+    	name = new String(tk.name);
+    	fcnt = tk.fcnt;
+    }
+    
     public String GetName(){
         return name;
     }

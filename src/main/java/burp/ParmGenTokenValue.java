@@ -16,6 +16,10 @@ public class ParmGenTokenValue {
         url = _url;
         value = _value;
     }
+    ParmGenTokenValue(ParmGenTokenValue tv){
+    	url = new String(tv.url);
+    	value = new String(tv.value);
+    }
     
     public String getValue(){
         return value;

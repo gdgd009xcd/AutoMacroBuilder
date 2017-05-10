@@ -59,11 +59,11 @@ class PLog {
 
 	int LogLevel = C_INFO;
 	String logname = null;
-        String comments = "";
-        boolean LogfileOn;
-        boolean iserror=false;
-        PrintWriter Stdout = null;
-        PrintWriter Stderr = null;
+	String comments = "";
+	boolean LogfileOn;
+	boolean iserror=false;
+	PrintWriter Stdout = null;
+	PrintWriter Stderr = null;
 
 	PLog(String projectdir){
 
@@ -81,8 +81,8 @@ class PLog {
 			debuglog(1, "started: projectdir=" + projectdir);
 		}
 		logfile = null;
-                comments = "";//no null
-                iserror = false;//==true then error
+		comments = "";//no null
+		iserror = false;//==true then error
 
 	}
 
@@ -255,34 +255,34 @@ class ParmVars {
 	// static変数初期化
 	//
 	static {
-                formdataenc = "ISO-8859-1";
-                File desktop = new File(System.getProperty("user.home"), "Desktop");
-                if (! desktop.exists()){
-                    projectdir = System.getenv("HOMEDRIVE") + "\\" + System.getenv("HOMEPATH") + "\\\u30c7\u30b9\u30af\u30c8\u30c3\u30d7";
-                    desktop = new File(projectdir);
-                    if (! desktop.exists()){
-                            projectdir = System.getenv("HOMEDRIVE") + "\\" + System.getenv("HOMEPATH") + "\\Desktop";
-                    }
-                }else{
-                    projectdir = desktop.getAbsolutePath();
-                }
+		formdataenc = "ISO-8859-1";
+		File desktop = new File(System.getProperty("user.home"), "Desktop");
+		if (! desktop.exists()){
+			projectdir = System.getenv("HOMEDRIVE") + "\\" + System.getenv("HOMEPATH") + "\\\u30c7\u30b9\u30af\u30c8\u30c3\u30d7";
+			desktop = new File(projectdir);
+			if (! desktop.exists()){
+				projectdir = System.getenv("HOMEDRIVE") + "\\" + System.getenv("HOMEPATH") + "\\Desktop";
+			}
+		}else{
+			projectdir = desktop.getAbsolutePath();
+		}
 		desktop = null;
-                File newdir = new File(projectdir + "\\ParmGenParms");
+		File newdir = new File(projectdir + "\\ParmGenParms");
 
-                if (! newdir.exists()){
-                    if(newdir.mkdirs()){
-                        projectdir =newdir.getAbsolutePath();
-                    }
-                }else{
-                    projectdir =newdir.getAbsolutePath();
-                }
-                newdir = null;
+		if (! newdir.exists()){
+			if(newdir.mkdirs()){
+				projectdir =newdir.getAbsolutePath();
+			}
+		}else{
+			projectdir =newdir.getAbsolutePath();
+		}
+		newdir = null;
 
 		parmfile = projectdir + "\\AppParmGen.json";
 		plog = new PLog(projectdir);
 		enc = "UTF-8";// default encoding.
 		ProxyAuth = "";
-                session = new ParmGenSession();
+		session = new ParmGenSession();
 	}
 	//
 	//

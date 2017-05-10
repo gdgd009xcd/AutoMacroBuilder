@@ -21,7 +21,7 @@ public class ParmFileFilter extends FileFilter{
       return true;
     }
 
-    /* 拡張子を取り出し、csvだったら表示する */
+    /* 拡張子を取り出し、jsonだったら表示する */
     String ext = getExtension(f);
     if (ext != null){
       if (ext.equals("json") ){

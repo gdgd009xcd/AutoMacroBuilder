@@ -47,7 +47,8 @@
 3.手順
 3.1 プロジェクトディレクトリ、マクロ名指定
 ParmVars.projectdirを基準とする。
-ParmVars.projectdirの選択ボタン（FileChooser DIRECTORY_ONLY）と
+FileChooserを起動。
+ParmVars.projectdirの選択ボタンと
 projectdir下のマクロ一覧(JSONファイル一覧)を表示。
 マクロ名入力テキストフィールドを表示。
 一覧と同一マクロ名を指定した場合は、上書き確認ダイアログ表示。

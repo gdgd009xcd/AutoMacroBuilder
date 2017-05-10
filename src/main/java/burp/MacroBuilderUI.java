@@ -6,12 +6,13 @@
 
 package burp;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -459,23 +460,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                 MacroRequest.setText(pqr.request.getMessage());
                 MacroResponse.setText(pqr.response.getMessage());
                 MacroComments.setText(pqr.getComments());
-                /**************
-                ParmGenParser parser = pmt.getParmGenParser(pos);
-                ArrayList<HashMap<String,String>> lst = parser.getNameValues();
-                for(Iterator<HashMap<String,String>> it = lst.iterator();it.hasNext();){
-                    HashMap<String,String> map = (HashMap<String,String>) it.next();
-                    Set<Entry<String,String>> entryset = map.entrySet();
-                    Iterator<Map.Entry<String,String>> mit = entryset.iterator();
-                    if(mit.hasNext()){
-                        Map.Entry<String, String> mobj = mit.next();
-                        String name = mobj.getKey();
-                        String value = mobj.getValue();
-                        String nv = name + "=" + value;
-                        lmodel.addElement((Object)nv);
-                    }
-                }
-                CSRFList.setModel(lmodel);
-                * ************/
+
 
             }
         }
@@ -593,6 +578,34 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
     private void ParamTrackingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ParamTrackingActionPerformed
         // TODO add your handling code here:
+    	//fileChooser起動
+    	JFileChooser jfc = new JFileChooser() {
+
+    		@Override public void approveSelection() {
+    			File f = getSelectedFile();
+    			if (f.exists() && getDialogType() == SAVE_DIALOG) {
+    				String m = String.format(
+    						"<html>%s already exists.<br>Do you want to replace it?",
+    						f.getAbsolutePath());
+    				int rv = JOptionPane.showConfirmDialog(
+    						this, m, "Save As", JOptionPane.YES_NO_OPTION);
+    				if (rv != JOptionPane.YES_OPTION) {
+    					return;
+    				}
+    			}
+    			super.approveSelection();
+    		}
+    	};
+    	ParmFileFilter pFilter=new ParmFileFilter();
+        jfc.setFileFilter(pFilter);
+    	if(jfc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+    		//code to handle choosed file here.
+    		File file = jfc.getSelectedFile();
+    		String name = file.getAbsolutePath().replaceAll("\\\\", "\\\\\\\\");
+
+    	}
+
+    	/*******************
     	String tknames[] = {
                 "PHPSESSID",
                 "JSESSIONID",
@@ -615,7 +628,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             ArrayList<ParmGenToken> tokenlist = pgparser.getNameValues();
             for(ParmGenToken token : tokenlist){
                 //PHPSESSID, token, SesID, jsessionid
-                
+
                 String tokenname = token.getTokenKey().GetName();
                 boolean namematched = false;
                 for(String tkn : tknames){
@@ -637,6 +650,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
             }
         }
+        **********/
     }//GEN-LAST:event_ParamTrackingActionPerformed
 
 

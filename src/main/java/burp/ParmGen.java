@@ -115,57 +115,57 @@ class PLog {
 
 	public void printLF(){
 		try {
-                        String v = "";
-                        String line = "";
-                        boolean append = true;
+			String v = "";
+			String line = "";
+			boolean append = true;
 			if (LogLevel >= 0){
 
-                                line = v + "\n";
-                                StdoutPrintln(line);
-                                if(LogfileOn){
-                                    FileWriter filewriter = new FileWriter(logname, append);
-                                    filewriter.write(v + "\r\n");
-                                    filewriter.close();
-                                }
-                        }
+				line = v + "\n";
+				StdoutPrintln(line);
+				if(LogfileOn){
+					FileWriter filewriter = new FileWriter(logname, append);
+					filewriter.write(v + "\r\n");
+					filewriter.close();
+				}
+			}
 		}catch (Exception e){
-                    printException(e);
-                }
+			printException(e);
+		}
 	}
 
-        public void printlog(String v, boolean append){
+	public void printlog(String v, boolean append){
 		try {
 			v = getDateTimeStr() + " " + v;
 			if (LogLevel >= 0){
 
 
-                                StdoutPrintln(v);
-                                if(LogfileOn){
-                                    FileWriter filewriter = new FileWriter(logname, append);
-                                    filewriter.write(v + "\r\n");
-                                    filewriter.close();
-                                }
-                        }
+				StdoutPrintln(v);
+				if(LogfileOn){
+					FileWriter filewriter = new FileWriter(logname, append);
+					filewriter.write(v + "\r\n");
+					filewriter.close();
+				}
+			}
 		}catch (Exception e){
-                    printException(e);
-                }
+			printException(e);
+		}
 	}
 
-        public void InitPrint(String v){
-            printlog(v, false);
-        }
+	public void InitPrint(String v){
+		printlog(v, false);
+	}
 
-        public void AppendPrint(String v){
-            printlog(v, true);
-        }
+	public void AppendPrint(String v){
+		printlog(v, true);
+	}
 
-        boolean isLogfileOn(){
-            return LogfileOn;
-        }
+	boolean isLogfileOn(){
+		return LogfileOn;
+	}
 
-        public void LogfileOn(boolean _on){
-            LogfileOn = _on;
-        }
+	public void LogfileOn(boolean _on){
+		LogfileOn = _on;
+	}
 
 	public void printException(Exception e){
 		 StringWriter sw = null;
@@ -1616,7 +1616,18 @@ class AppParmsIni {
 
         void setCntFileName(){
             if(cntfile==null||cntfile.length()==0){
-                cntfile = ParmVars.projectdir + "\\AppGenParmCnt" + Integer.toString(row) + ".txt";
+            	File cfile = new File(ParmVars.parmfile);
+                String dirname = cfile.getParent();
+                String filename = cfile.getName();
+                String []nvpairs = filename.split("[.]");
+                String name = nvpairs[0];
+                String ext = "";
+                if(!filename.equals(name)){
+	                for(String t: nvpairs){
+	                	ext = t;
+	                }
+                }
+                cntfile = dirname + "\\" + name + Integer.toString(row) + ".txt";
             }
         }
 

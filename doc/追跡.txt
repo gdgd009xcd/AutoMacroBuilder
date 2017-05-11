@@ -51,7 +51,6 @@ ParmVars.parmfileを基準とする。
 FileChooserを起動。
 ParmVars.parmfileの格納ディレクトリ
 下のマクロ一覧(JSONファイル一覧)を表示。
-マクロ名入力テキストフィールドを表示。
 一覧と同一マクロ名を指定した場合は、上書き確認ダイアログ表示。
 実行ボタンで以降の手順でマクロ作成し、
 ParmVars.parmfile

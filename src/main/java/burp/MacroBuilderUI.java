@@ -9,6 +9,8 @@ package burp;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
@@ -605,7 +607,10 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
     	}
 
-    	/*******************
+    	//エンコード、スコープの設定
+    	//ParmVars.encエンコードの決定
+    	//ツールスコープの設定
+
     	String tknames[] = {
                 "PHPSESSID",
                 "JSESSIONID",
@@ -619,6 +624,9 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         Pattern patternw32 = Pattern.compile("\\w{32}");
         for(PRequestResponse pqrs : rlist){
             if(tracktokenlist!=null&&tracktokenlist.size()>0){//直前のレスポンスに追跡パラメータあり
+            	//パラメータ生成
+
+
 
             }
             //レスポンストークン解析
@@ -650,7 +658,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
             }
         }
-        **********/
+
     }//GEN-LAST:event_ParamTrackingActionPerformed
 
 

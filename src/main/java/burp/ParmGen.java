@@ -75,7 +75,7 @@ class PLog {
 		//
 
 		logname = projectdir + "\\AppScanPermGen.log";
-                LogfileOn = false;// default disable file output
+		LogfileOn = false;// default disable file output
 		File logfile = new File(logname);
 		if ( ! logfile.exists()){
 			debuglog(1, "started: projectdir=" + projectdir);
@@ -86,23 +86,23 @@ class PLog {
 
 	}
 
-        public void SetBurpPrintStreams(PrintWriter stdout, PrintWriter stderr){
-            Stdout = stdout;
-            Stderr = stderr;
-        }
+	public void SetBurpPrintStreams(PrintWriter stdout, PrintWriter stderr){
+		Stdout = stdout;
+		Stderr = stderr;
+	}
 
-        private void StdoutPrintln(String v){
-            if(Stdout!=null){
-                Stdout.println(v);
-            }
-            System.out.println(v);
-        }
-        private void StderrPrintln(String v){
-            if(Stderr!=null){
-                Stderr.println(v);
-            }
-            System.err.println(v);
-        }
+	private void StdoutPrintln(String v){
+		if(Stdout!=null){
+			Stdout.println(v);
+		}
+		System.out.println(v);
+	}
+	private void StderrPrintln(String v){
+		if(Stderr!=null){
+			Stderr.println(v);
+		}
+		System.err.println(v);
+	}
 
 	public String getLogname() { return logname; }
 
@@ -244,12 +244,12 @@ class ParmVars {
 	static String parmfile;
 	static PLog plog;
 	static String enc;
-        static String formdataenc;//iso8859-1 encoding is fully  mapped binaries for form-data binaries.
+	static String formdataenc;//iso8859-1 encoding is fully  mapped binaries for form-data binaries.
 	// Proxy Authentication
 	// Basic username:password(base64 encoded)
 	//String ProxyAuth = "Basic Y2hpa2FyYV8xLmRhaWtlOjdyOXR5QDRxMQ==";
 	static String ProxyAuth;
-        static ParmGenSession session;
+	static ParmGenSession session;
 
 	//
 	// static変数初期化

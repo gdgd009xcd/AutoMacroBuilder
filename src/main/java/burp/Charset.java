@@ -1,6 +1,8 @@
 package burp;
 
-public enum Charset {
+
+
+public enum Charset  {
 	UTF8("UTF-8"),
 	EUCJP("EUC-JP"),
 	SJIS("SHIFT_JIS"),
@@ -34,3 +36,5 @@ public enum Charset {
         return null;
     }
 }
+
+

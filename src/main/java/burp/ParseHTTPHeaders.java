@@ -39,6 +39,7 @@ class ParseHTTPHeaders {
 	public HashMap<String,ArrayList<String[]>> set_cookieparams;//String Key, ArrayList name=value pair
 	String content_type; // Content-Type: image/gif
 	String content_subtype;
+	String charset;
 	String boundary;
 	int parsedheaderlength;
 	boolean isHeaderModified;//==true parsedheaderlengthは再計算。
@@ -64,7 +65,9 @@ class ParseHTTPHeaders {
 		pathparams = new ArrayList<String>();
 		cookieparams = new ArrayList<String[]>();
 		set_cookieparams = new HashMap<String,ArrayList<String[]>>();
-
+		charset = "";
+		content_type = "";
+		content_subtype = "";
 		queryparams = new ArrayList<String[]>();
 		bodyparams = null;
 		boundary = null;
@@ -275,25 +278,33 @@ class ParseHTTPHeaders {
 
         						}
         						if (nv[0].toLowerCase().startsWith("content-type")) {
-        							String[] types = nv[1].split("[ ;]");
+        							String[] types = nv[1].split("[ ;\t]");
 
         							for(int i = 0;i<types.length;i++){
-        								int slpos = types[i].indexOf("/");
-        								if ( slpos > 0){// type/subtype
-        									content_type = types[i].substring(0, slpos).toLowerCase();
-        									if(types[i].length() > slpos+1){
-        										content_subtype = types[i].substring(slpos+1, types[i].length()).toLowerCase();
+        								if(types[i].toLowerCase().startsWith("charset")){
+        									String[] csets = types[i].split("[ \t=]");
+        									charset = "";
+        									for(String v: csets){
+        										charset = v;
         									}
         								}else{
-        									if ( types[i].toLowerCase().startsWith("boundary=")){
-        										String[] boundaries = types[i].split("[=]");
-        										if(boundaries.length>1){
-        											boundary = boundaries[1];
-        											formdataheaderregex = Pattern.compile(formdataheader);
-        											formdatafooterregex = Pattern.compile(formdatafooter + "--" + boundary);
-        											formdata = true;
-        										}
-        									}
+	        								int slpos = types[i].indexOf("/");
+	        								if ( slpos > 0){// type/subtype
+	        									content_type = types[i].substring(0, slpos).toLowerCase();
+	        									if(types[i].length() > slpos+1){
+	        										content_subtype = types[i].substring(slpos+1, types[i].length()).toLowerCase();
+	        									}
+	        								}else{
+	        									if ( types[i].toLowerCase().startsWith("boundary=")){
+	        										String[] boundaries = types[i].split("[=]");
+	        										if(boundaries.length>1){
+	        											boundary = boundaries[1];
+	        											formdataheaderregex = Pattern.compile(formdataheader);
+	        											formdatafooterregex = Pattern.compile(formdatafooter + "--" + boundary);
+	        											formdata = true;
+	        										}
+	        									}
+	        								}
         								}
         							}
         						}else if(nv[0].toLowerCase().startsWith("content-length")){
@@ -721,6 +732,10 @@ class ParseHTTPHeaders {
 
         String getContent_Subtype(){
             return content_subtype;
+        }
+
+        String getCharset(){
+        	return charset;
         }
 }
 

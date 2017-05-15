@@ -264,7 +264,9 @@ private void setAppParmsIni(){
         String nval =  (name!=null?("(?:[&=?]+|^)" + name + "="):"") + value;
         String _reqplace = reqplace;
         if ( reqplace.toLowerCase().equals("formdata")){
-            nval = "(?:[A-Z].* name=\"" + ParmGenUtil.escapeRegexChars(name) + "\".*(?:\\r|\\n|\\r\\n))(?:[A-Z].*(?:\\r|\\n|\\r\\n)){0,}(?:\\r|\\n|\\r\\n)(?:.*?)" + value + "(?:.*?)(?:\\r|\\n|\\r\\n)";
+            //nval = "(?:[A-Z].* name=\"" + ParmGenUtil.escapeRegexChars(name) + "\".*(?:\\r|\\n|\\r\\n))(?:[A-Z].*(?:\\r|\\n|\\r\\n)){0,}(?:\\r|\\n|\\r\\n)(?:.*?)" + value + "(?:.*?)(?:\\r|\\n|\\r\\n)";
+            nval = "(?:[A-Z].* name=\"" + ParmGenUtil.escapeRegexChars(name) + "\".*(?:\\r|\\n|\\r\\n))(?:[A-Z].*(?:\\r|\\n|\\r\\n)){0,}(?:\\r|\\n|\\r\\n)(?:.*?)" + value ;
+            
             _reqplace = "body";
         }
         Object []row = null;

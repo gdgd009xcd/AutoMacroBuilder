@@ -151,13 +151,15 @@ public enum Encode  {
 
 
 	private final String name;
+	private final String uppercasename;
 
 	//コンストラクタ
     Encode(String _name) {
-        this.name = _name.toUpperCase();
+        this.name = _name;
+        this.uppercasename = _name.toUpperCase();
     }
 
-    public String GetName() {
+    public String getIANACharset() {
         return this.name;
     }
 
@@ -168,11 +170,11 @@ public enum Encode  {
         // 取得出来たenum型分ループします。
         for(Encode enumStr : enumArray) {
             // 引数とenum型の文字列部分を比較します。
-            if (str.toUpperCase().equals(enumStr.name.toString())){
+            if (str.toUpperCase().equals(enumStr.uppercasename.toString())){
                 return enumStr;
             }
         }
-        return null;
+        return Encode.UTF_8;//default
     }
 }
 

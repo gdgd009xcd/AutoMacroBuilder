@@ -5,9 +5,11 @@
  */
 package burp;
 
-import flex.messaging.util.URLDecoder;
 import java.util.ArrayList;
+
 import javax.json.stream.JsonParser;
+
+import flex.messaging.util.URLDecoder;
 
 /**
  *
@@ -19,19 +21,19 @@ public class ParmGenJSON {
     AppValue apv;
     String exerr = null;
     int row = 0;
-    
+
     ParmGenJSON(){
-        
+
 	rlist = new ArrayList<AppParmsIni>();
         aparms = null;
         apv = null;
-        
+
     }
-    
+
     ArrayList<AppParmsIni> Getrlist(){
         return rlist;
     }
-    
+
     private String GetString(JsonParser.Event ev, Object value, String defval){
         String v = "";
         switch(ev){
@@ -45,11 +47,11 @@ public class ParmGenJSON {
             default:
                 v = defval;
                 break;
-            
+
         }
         return v;
     }
-    
+
     private int GetNumber(JsonParser.Event ev, Object value, int defval){
         int i = 0;
         switch(ev){
@@ -64,11 +66,11 @@ public class ParmGenJSON {
             default:
                 i = defval;
                 break;
-            
+
         }
         return i;
     }
-    
+
     private boolean Getboolean(JsonParser.Event ev, Object value, boolean defval){
         boolean b = false;
         switch(ev){
@@ -82,16 +84,16 @@ public class ParmGenJSON {
                 b = defval;
                 break;
         }
-        
+
         return b;
     }
-    
+
     boolean Parse(int alevel, JsonParser.Event ev, String name, Object value ){
-       
+
         switch(alevel){
             case 0:
                 if(name.toUpperCase().equals("LANG")){
-                    ParmVars.enc = GetString(ev, value, "UTF-8");
+                    ParmVars.enc = Encode.getEnum(GetString(ev, value, "UTF-8"));
                 }else if(name.toUpperCase().equals("PROXYINSCOPE")){
                     ParmGen.ProxyInScope = Getboolean(ev, value, false);
                 }else if(name.toUpperCase().equals("INTRUDERINSCOPE")){
@@ -121,7 +123,7 @@ public class ParmGenJSON {
                                     }
                                     aparms.frl = new FileReadLine(decodedname, true);
                                 }
-                                
+
                                 aparms.setRowAndCntFile(row);row++;
                                 aparms.crtGenFormat(true);
                                 rlist.add(aparms);
@@ -139,7 +141,7 @@ public class ParmGenJSON {
                                 aparms.typeval = GetNumber(ev, value, 0);
                             }else if(name.toUpperCase().equals("INIVAL")){
                                 aparms.inival = GetNumber(ev, value, 0);
-                            }else if(name.toUpperCase().equals("MAXVAL")){   
+                            }else if(name.toUpperCase().equals("MAXVAL")){
                                 aparms.maxval = GetNumber(ev, value, 0);
                             }else if(name.toUpperCase().equals("CSVNAME")){
                                 aparms.csvname = GetString(ev, value, "");
@@ -149,7 +151,7 @@ public class ParmGenJSON {
                         }
                         break;
                 }
-                
+
                 break;
             case 2:
                 switch(ev){
@@ -209,13 +211,13 @@ public class ParmGenJSON {
             default:
                 break;
         }
-        
+
         if(exerr==null){
             return true;
         }else{
             ParmVars.plog.printError("ParmGenJSON::Parse " + exerr);
         }
         return false;
-        
+
     }
 }

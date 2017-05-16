@@ -48,7 +48,7 @@ class LocVal {
         //stepno
         int [][] responseStepNos;
 	PLog _logger = null;
-	String _enc = null;
+	Encode _enc = null;
 	int rpos = 0;
 	int cpos = 0;
 
@@ -57,13 +57,13 @@ class LocVal {
 		_logger = ParmVars.plog;
 
 		//pattern = "<AuthUpload>(?:.|\r|\n|\t)*?<password>([a-zA-Z0-9]+)</password>";
-                allocLocVal(_rmax);
+		allocLocVal(_rmax);
 
 		_enc = ParmVars.enc;
-                if(_enc == null || _enc.length() <=0 ){
-			_enc = "UTF-8";
+		if(_enc == null  ){
+			_enc = Encode.UTF_8;
 		}
-                initLocVal();
+		initLocVal();
 
 
 	}
@@ -295,7 +295,7 @@ class LocVal {
                                 if(_uencode==true){
                                     String venc = v;
                                     try{
-                                        venc = URLEncoder.encode(v, ParmVars.enc);
+                                        venc = URLEncoder.encode(v, ParmVars.enc.getIANACharset());
                                     }catch (UnsupportedEncodingException e){
                                         //NOP
                                     }

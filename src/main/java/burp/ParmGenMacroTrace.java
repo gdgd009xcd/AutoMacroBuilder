@@ -6,26 +6,21 @@
 
 package burp;
 
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author daike
  */
 public class ParmGenMacroTrace {
-    
+
     MacroBuilderUI ui = null;
     IBurpExtenderCallbacks callbacks;
-    
+
     ArrayList <PRequestResponse> rlist = null;//マクロ実行後の全リクエストレスポンス
     ArrayList <PRequestResponse> originalrlist = null; //オリジナルリクエストレスポンス
     //ArrayList <ParmGenParser> csrflist = null;//引き継ぎhidden値リスト
@@ -39,16 +34,16 @@ public class ParmGenMacroTrace {
     boolean MBResetToOriginal =false;//==true オリジナルリクエストを実行。
     boolean MBdeletesetcookies = false;//==true リクエストからSet-Cookie値全削除
     int waittimer = 1;//実行間隔(msec)
-    
+
     ListIterator<PRequestResponse> oit = null;//オリジナル
     ListIterator<PRequestResponse> cit = null;//実行
     ListIterator<ParmGenParser> pit = null;
-    
+
     IHttpRequestResponse postmacro_RequestResponse = null;
 
-    
+
     int state = PMT_POSTMACRO_NULL;//下記の値。
-    
+
     public static final int PMT_PREMACRO_BEGIN = 0;//前処理マクロ実行中
     public static final int PMT_PREMACRO_END = 1;//前処理マクロ実行中
     public static final int PMT_CURRENT_BEGIN = 2;//カレントリクエスト開始
@@ -56,19 +51,19 @@ public class ParmGenMacroTrace {
     public static final int PMT_POSTMACRO_BEGIN = 4;//後処理マクロ実行中
     public static final int PMT_POSTMACRO_END = 5;//後処理マクロ終了。
     public static final int PMT_POSTMACRO_NULL = 6; //後処理マクロレスポンスnull
-    
+
     ParmGenMacroTrace(IBurpExtenderCallbacks _callbacks){
         callbacks = _callbacks;
     }
-    
-    
+
+
     //
     // setter
     //
     void setUI(MacroBuilderUI _ui){
         ui = _ui;
     }
-    
+
     void setMBExec(boolean b){
         MBExec = b;
     }
@@ -87,7 +82,7 @@ public class ParmGenMacroTrace {
     void setMBResetToOriginal(boolean b){
         MBResetToOriginal = b;
     }
-    
+
     void setWaitTimer(String msec){
         try{
             waittimer = Integer.parseInt(msec);//msec
@@ -96,7 +91,7 @@ public class ParmGenMacroTrace {
             waittimer = 0;
         }
     }
-    
+
     void startCurrentRequest(){
         ParmVars.plog.clearComments();
         ParmVars.plog.setError(false);
@@ -136,13 +131,13 @@ public class ParmGenMacroTrace {
                 ParmVars.plog.debuglog(0, "Set-Cookie: " +  name + "=" + value + "; domain=" +  domain +  "; path=" + path);
                 BurpICookie bicookie = new BurpICookie(domain, path, name, value, null);// delete cookie.
                 callbacks.updateCookieJar(bicookie);
-                
+
             }
         }
         ui.updateCurrentReqRes();
         state = PMT_CURRENT_END;
     }
-    
+
     void setCurrentRequest(int _p){
         if(rlist!=null&& rlist.size() > _p){
             selected_request = _p;
@@ -150,14 +145,14 @@ public class ParmGenMacroTrace {
             ParmVars.plog.debuglog(0, "selected_request:" + selected_request + " rlist.size=" + rlist.size());
         }
     }
-    
+
     boolean isCurrentRequest(int _p){
         if(selected_request == _p){
             return true;
         }
         return false;
     }
-    
+
     void EnableRequest(int _idx){
         if(rlist!=null&&rlist.size() > _idx){
             PRequestResponse prr = rlist.get(_idx);
@@ -177,7 +172,7 @@ public class ParmGenMacroTrace {
         }
         return false;
     }
-    
+
     boolean isError(int _idx){
         if(rlist!=null&&rlist.size() > _idx){
             PRequestResponse prr = rlist.get(_idx);
@@ -185,7 +180,7 @@ public class ParmGenMacroTrace {
         }
         return false;
     }
-    
+
     synchronized void TWait(){
         if(waittimer>0){
             ParmVars.plog.debuglog(0, "....sleep Start:" + waittimer + "(msec)");
@@ -197,11 +192,11 @@ public class ParmGenMacroTrace {
             ParmVars.plog.debuglog(0, "....sleep End.");
         }
     }
-    
+
 
     //１）前処理マクロ開始
     void  startBeforePreMacro(){
-        state = PMT_PREMACRO_BEGIN;      
+        state = PMT_PREMACRO_BEGIN;
         ParmVars.plog.debuglog(0, "BEGIN PreMacro");
         //前処理マクロの0～selected_request-1まで実行。
         //開始時Cookieを参照しない。...cookie.jarから全削除
@@ -217,7 +212,7 @@ public class ParmGenMacroTrace {
         cit = null;
 
         stepno = 0;
-        
+
         try{
         if(rlist!=null&&selected_request>=0&& rlist.size() > selected_request){
             oit = originalrlist.listIterator();
@@ -231,16 +226,16 @@ public class ParmGenMacroTrace {
                 if(n++>=selected_request){
                     break;
                 }
-                
+
                 if(ppr.isDisabled()){
                     continue;
                 }
-                
+
                 if(MBResetToOriginal){
                     ppr = opr;//オリジナルにリセット
                 }
-                
-                
+
+
                 if(MBCookieUpdate){
                     for(ICookie cookie:iclist){
                         String cname = cookie.getName();
@@ -248,7 +243,7 @@ public class ParmGenMacroTrace {
                         ppr.request.setCookie(cname, cvalue);//cookie.jarから更新
                     }
                 }
-                
+
                 byte[] byterequest = ppr.request.getByteMessage();
                 if(byterequest!=null){
                     String host = ppr.request.getHost();
@@ -263,11 +258,11 @@ public class ParmGenMacroTrace {
                     byte[] bytereq = IHReqRes.getRequest();
                     byte[] byteres = IHReqRes.getResponse();
                     if(byteres!=null&&byteres.length>0){
-                        String res = new String(byteres, ParmVars.enc);
+                        String res = new String(byteres, ParmVars.enc.getIANACharset());
                         PResponse ppres = new PResponse(res);
                         ParmVars.plog.debuglog(0, "Response PreMacro:" + ppres.status);
                     }
-                    PRequestResponse pqrs = new PRequestResponse(new String(bytereq, ParmVars.enc),new String(byteres, ParmVars.enc));
+                    PRequestResponse pqrs = new PRequestResponse(new String(bytereq, ParmVars.enc.getIANACharset()),new String(byteres, ParmVars.enc.getIANACharset()));
                     pqrs.setComments(ParmVars.plog.getComments());
                     pqrs.setError(ParmVars.plog.isError());
                     cit.set(pqrs);//更新
@@ -280,16 +275,16 @@ public class ParmGenMacroTrace {
         }
         ParmVars.plog.debuglog(0, "END PreMacro");
         state = PMT_PREMACRO_END;
-        
+
     }
-    
+
     boolean isconfigurable(){
         if(MBdeletesetcookies&&set_cookienames!=null&&set_cookienames.size()>0){
             return true;
         }
         return false;
     }
-    
+
     PRequest configureRequest(PRequest preq){
         ArrayList<String> delcookies = null;
         if(MBdeletesetcookies){
@@ -299,7 +294,7 @@ public class ParmGenMacroTrace {
                      for(ICookie cookie:iclist){
                         String cname = cookie.getName();
                         String cvalue = cookie.getValue();
-                        
+
                         String dcookiename = null;
                         if(cvalue!=null){
                             if(cvalue.toLowerCase().indexOf("delete")!=-1){//xxxx=delete or deleted
@@ -315,12 +310,12 @@ public class ParmGenMacroTrace {
                             delcookies.add(dcookiename);
                         }else if(delcookies!=null&&delcookies.size()>0){
                             while(delcookies.remove(cname)){;//cookie.jarに値があるので削除しない
-                                //ParmVars.plog.debuglog(0, "configreq remove from delcookies : Cookie "+ cname + "=" + cvalue);                               
+                                //ParmVars.plog.debuglog(0, "configreq remove from delcookies : Cookie "+ cname + "=" + cvalue);
                             }
                         }
                     }
         }
-        
+
         if(delcookies!=null&&delcookies.size()>0){
             if(preq.removeCookies(delcookies)){
                 return preq;
@@ -328,11 +323,11 @@ public class ParmGenMacroTrace {
         }
         return null;
     }
-    
-   
-   
-    
-    //４）後処理マクロの開始 
+
+
+
+
+    //４）後処理マクロの開始
     void  startPostMacro(){
         state = PMT_POSTMACRO_BEGIN;
         postmacro_RequestResponse = null;
@@ -347,7 +342,7 @@ public class ParmGenMacroTrace {
                     stepno = n;
                     TWait();
                     n++;
-                    
+
                     PRequestResponse ppr = cit.next();
                     PRequestResponse opr = oit.next();
                     if(ppr.isDisabled()){
@@ -365,7 +360,7 @@ public class ParmGenMacroTrace {
                                 ppr.request.setCookie(cname, cvalue);//cookie.jarから更新
                             }
                     }
-                   
+
                     byte[] byterequest = ppr.request.getByteMessage();
                     if(byterequest!=null){
                         String host = ppr.request.getHost();
@@ -383,12 +378,12 @@ public class ParmGenMacroTrace {
 
                             if(byteres.length>0){
                                 String res;
-                                res = new String(byteres, ParmVars.enc);
+                                res = new String(byteres, ParmVars.enc.getIANACharset());
                                 PResponse ppres = new PResponse(res);
                                 ParmVars.plog.debuglog(0, "Response PostMacro: " + ppres.status);
                             }
                         }
-                        PRequestResponse pqrs = new PRequestResponse(new String(bytereq, ParmVars.enc),new String(byteres, ParmVars.enc));
+                        PRequestResponse pqrs = new PRequestResponse(new String(bytereq, ParmVars.enc.getIANACharset()),new String(byteres, ParmVars.enc.getIANACharset()));
                         pqrs.setComments(ParmVars.plog.getComments());
                         pqrs.setError(ParmVars.plog.isError());
                         cit.set(pqrs);//更新
@@ -407,42 +402,42 @@ public class ParmGenMacroTrace {
         }
         ParmVars.plog.debuglog(0, "END PostMacro");
     }
-    
+
     IHttpService getIHttpService() {
         if(postmacro_RequestResponse!=null){
             return postmacro_RequestResponse.getHttpService();
         }
         return null;
     }
-    
+
     byte[] getPostMacroRequest(){
         if(postmacro_RequestResponse!=null){
             return postmacro_RequestResponse.getRequest();
         }
         return null;
     }
-    
+
     byte[] getPostMacroResponse(){
         if(postmacro_RequestResponse!=null){
             return postmacro_RequestResponse.getResponse();
         }
        return null;
     }
-   
+
     int getCurrentRequest(){
         return selected_request;
     }
-    
+
    boolean isRunning(){
        return state<PMT_POSTMACRO_END?true:false;
    }
-   
+
    void setRecords(ArrayList <PRequestResponse> _rlist){
        //rlist = new ArrayList <PRequestResponse> (_rlist);//copy
        rlist = _rlist;//reference
        originalrlist = new ArrayList <PRequestResponse>(_rlist);//copy
    }
-   
+
    void ParseResponse(){
        cit = rlist.listIterator();
        //csrflist = new ArrayList<ParmGenParser> ();
@@ -452,7 +447,7 @@ public class ParmGenMacroTrace {
            PRequestResponse prr = cit.next();
            ParmVars.plog.debuglog(0, "body lenght=" + prr.response.getBodyLength());
            //ParmGenParser pgparser = new ParmGenParser(prr.response.getBody(), "[type=\"hidden\"],[type=\"HIDDEN\"]");
-           
+
            //csrflist.add(pgparser);
            HashMap<String,ArrayList<String[]>> setcookieparams = prr.response.set_cookieparams;
             for(Map.Entry<String, ArrayList<String[]>> e : setcookieparams.entrySet()) {
@@ -465,7 +460,7 @@ public class ParmGenMacroTrace {
                         uniquecookies.put(name, s[1]);//name, value
                     }
                 }
-  
+
             }
        }
        for(Map.Entry<String,String> e: uniquecookies.entrySet()){
@@ -473,34 +468,34 @@ public class ParmGenMacroTrace {
            set_cookienames.add(name);
            ParmVars.plog.debuglog(0, "ParseResponse: Set-Cookie: " + name);
        }
-       
+
 
    }
-   
+
    void nullState(){
        state = PMT_POSTMACRO_NULL;
        stepno = -1;
    }
-   
+
    //
    // getter
    //
    int getState(){
         return state;
     }
-    
+
     ArrayList <PRequestResponse> getRecords(){
         return rlist;
     }
-    
+
     /**ParmGenParser getParmGenParser(int _p){
         return csrflist.get(_p);
     }**/
-    
+
     boolean isMBFinalResponse(){
         return MBFinalResponse;
     }
-    
+
     int getStepNo(){
         return stepno;
     }

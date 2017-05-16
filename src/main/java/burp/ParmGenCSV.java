@@ -98,7 +98,7 @@ public class ParmGenCSV {
         String encoded = _d;
         try{
             if(code==null){
-                code = ParmVars.enc;
+                code = ParmVars.enc.getIANACharset();
             }
             encoded = URLEncoder.encode(_dd, code);
         }catch(UnsupportedEncodingException e){

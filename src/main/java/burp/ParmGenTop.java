@@ -126,7 +126,7 @@ public class ParmGenTop extends javax.swing.JFrame {
             }else{
                 ScannerScope.setSelected(false);
             }
-            csv.setLang(ParmVars.enc);
+            csv.setLang(ParmVars.enc.getIANACharset());
         }
         LANGUAGE.setSelectedItem(csv.getLang());
         AppParmsIni pini;
@@ -481,7 +481,7 @@ public class ParmGenTop extends javax.swing.JFrame {
         // TODO add your handling code here:
         int idx = LANGUAGE.getSelectedIndex();
         String str = (String)LANGUAGE.getSelectedItem();  //Object型で返された値をString型にｷｬｽﾄ
-        ParmVars.enc = str;
+        ParmVars.enc = Encode.getEnum(str);
         csv.setLang(str);
     }//GEN-LAST:event_LANGUAGEActionPerformed
 

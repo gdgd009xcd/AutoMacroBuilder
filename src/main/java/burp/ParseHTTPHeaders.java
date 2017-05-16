@@ -92,7 +92,7 @@ class ParseHTTPHeaders {
 		init();
                 String httpmessage;
                 try {
-                    httpmessage = new String(_binmessage, ParmVars.enc);
+                    httpmessage = new String(_binmessage, ParmVars.enc.getIANACharset());
                     ArrayList<String []> dummy = Parse(httpmessage);
                     int hlen = getParsedHeaderLength();
                     ByteArrayUtil warray = new ByteArrayUtil(_binmessage);
@@ -134,7 +134,7 @@ class ParseHTTPHeaders {
         public int getBodyLength() {
             if (body!=null){
                 try{
-                    int blen =  body.getBytes(ParmVars.enc).length;
+                    int blen =  body.getBytes(ParmVars.enc.getIANACharset()).length;
                     return blen;
                 }catch(UnsupportedEncodingException e){
                     ParmVars.plog.printException(e);
@@ -147,7 +147,7 @@ class ParseHTTPHeaders {
             String h = getHeaderOnly();
             if (h!=null){
                 try{
-                    int blen =  h.getBytes(ParmVars.enc).length;
+                    int blen =  h.getBytes(ParmVars.enc.getIANACharset()).length;
                     return blen;
                 }catch(UnsupportedEncodingException e){
                     ParmVars.plog.printException(e);
@@ -484,7 +484,7 @@ class ParseHTTPHeaders {
 	void setBody(byte[] _bval){
                 bytebody = _bval;
                 try {
-                    body = new String(bytebody, ParmVars.enc);
+                    body = new String(bytebody, ParmVars.enc.getIANACharset());
                 } catch (UnsupportedEncodingException ex) {
                     ParmVars.plog.printException(ex);
                 }
@@ -646,7 +646,7 @@ class ParseHTTPHeaders {
                     String headerpart = new String(sb);
                     ByteArrayUtil rawmessage = new ByteArrayUtil();
                     try {
-                        rawmessage = new ByteArrayUtil(headerpart.getBytes(ParmVars.enc));
+                        rawmessage = new ByteArrayUtil(headerpart.getBytes(ParmVars.enc.getIANACharset()));
                         if(bytebody!=null){
                             rawmessage.concat(bytebody);
                         }
@@ -658,7 +658,7 @@ class ParseHTTPHeaders {
                 }else{//String bodyから
                     String strmess = getMessage();
                     try{
-                        byte[] binmess =  strmess.getBytes(ParmVars.enc);
+                        byte[] binmess =  strmess.getBytes(ParmVars.enc.getIANACharset());
                         return binmess;
                     }catch(UnsupportedEncodingException e){
                         ParmVars.plog.printException(e);

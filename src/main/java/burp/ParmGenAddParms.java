@@ -37,8 +37,8 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
     public static final int VT_FIXED = 5;
     public static final int VT_PARAMVALUE = 6;
     private int[] ListSelectionModel;
-    
-    
+
+
     /**
      * Creates new form ParmGenAddParms
      */
@@ -47,18 +47,18 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
         isformdata = false;
         wholeval = _wholeval;
         initComponents();
-        
+
         this.setModal(true);
         update();
-        
+
     }
-    
+
     private void deleteRows(){
         for( int i = ReqParsedTableModel.getRowCount() - 1; i >= 0; i-- ){
             ReqParsedTableModel.removeRow(i);
         }
     }
-    
+
 
     public void update(){
         ReqParsedTableModel = (DefaultTableModel)ReqParsedTable.getModel();
@@ -76,20 +76,20 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
             }
         }
         deleteRows();
-        
+
         AppValue ap = new AppValue();
-        
+
         //path全体
         String wholepath = selected_request.getURL();
         ReqParsedTableModel.addRow(new Object[]{ap.getValPart(AppValue.V_PATH), Integer.toString(0), wholepath});
-        
+
         Iterator<String> pit = selected_request.pathparams.iterator();
         int ppos = 1;
         while(pit.hasNext()){
             ReqParsedTableModel.addRow(new Object[]{ap.getValPart(AppValue.V_PATH), Integer.toString(ppos), pit.next()});
             ppos++;
         }
-        
+
         Iterator<String[]> it = selected_request.queryparams.iterator();
         int rcnt = 0;
         while(it.hasNext()){
@@ -98,7 +98,7 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
             ReqParsedTableModel.addRow(new Object[]{"query", nv[0], nv[1]});
         }
         Iterator<String[]> itb = selected_request.getBodyParams().iterator();
-        
+
         while(itb.hasNext()){
             rcnt++;
             String[] nv = itb.next();
@@ -111,14 +111,14 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
         if (rcnt<=0){
             ReqParsedTableModel.addRow(new Object[]{"body", "null", "null"});
         }
-        
+
         //クッキー一覧
         Iterator<String[]> cit = selected_request.cookieparams.iterator();
         while(cit.hasNext()){
             String[] nv = cit.next();
             ReqParsedTableModel.addRow(new Object[]{"cookie", nv[0], nv[1]});
         }
-        
+
         //リクエストヘッダー覧
         ArrayList<String[]> hlist = selected_request.getHeaders();
         Iterator<String[]> hit = hlist.iterator();
@@ -129,7 +129,7 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
                     ReqParsedTableModel.addRow(new Object[]{"header", nv[0], nv[1]});
                 }
             }
-            
+
         }
         int i = 0;
         if(wholeval){
@@ -139,20 +139,20 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
         if(selected_request.isFormData()){
             isformdata = true;
         }
-        
+
         //パラメータを選択
         //追跡パラメータの一覧を取得
         int j = 0;
         ArrayList names = new ArrayList();
-        
+
         for(j=0; j<1000; j++){
             String n = ParmVars.session.get(j, ParmGenSession.K_TOKEN);
             if(n==null)break;
             names.add(n);
         }
-        
+
         //追跡パラメータ名,診断対象タイプに一致するテーブルのインデクスを選択
-        
+
         //診断対象タイプ
         String targetparam = ParmVars.session.get(ParmGenSession.K_TARGETPARAM);
         int targetpflag = 0;
@@ -172,7 +172,7 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
             String name = (String)ReqParsedTableModel.getValueAt(j, 1);//name
             String namedecoded = name;
             try {
-                namedecoded = URLDecoder.decode(name, ParmVars.enc);
+                namedecoded = URLDecoder.decode(name, ParmVars.enc.getIANACharset());
             } catch (UnsupportedEncodingException ex) {
                 Logger.getLogger(ParmGenAddParms.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -200,11 +200,11 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
                 }
             }
         }
-        
-        
-        
-                
-        
+
+
+
+
+
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -359,15 +359,15 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
         dispose();
     }//GEN-LAST:event_CancelActionPerformed
 
-   
-    
+
+
     private int parseValueType(String v, int defaultvaltype){
         Pattern pattern = Pattern.compile("([0-9]+)");
-        Matcher matcher = pattern.matcher(v); 
+        Matcher matcher = pattern.matcher(v);
         if (matcher.find()){
             String rv = matcher.group();
             //if( rv.equals(v)){//数値完全一致
-                return VT_NUMBERFIXED;              
+                return VT_NUMBERFIXED;
             //}else{//数値一部一致
             //    return VT_ALPHANUMFIXED;
             //}
@@ -377,7 +377,7 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
         }
         return defaultvaltype;
     }
-    
+
     private String getValueRegex(String v, boolean ispath, boolean iscookie, boolean isheader, int defaultvaltype, boolean iswholepath){
         wholeval = false;
         boolean fixed = true;
@@ -461,7 +461,7 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
         if (!wholeval){
             //Pattern pattern = Pattern.compile("([^0-9]*)(\\d+)([^0-9]*)");
             Pattern pattern = Pattern.compile(prepostpattern + "(" + regpattern+ "+)" + prepostpattern);
-            Matcher matcher = pattern.matcher(v); 
+            Matcher matcher = pattern.matcher(v);
             if (matcher.find()){
                     String prestr = null;
                     String poststr = null;
@@ -503,18 +503,18 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
         if(iswholepath){
             return ParmGenUtil.getPathsRegex(v);
         }
-        
+
         if ( isformdata){
             return "(" + ParmGenUtil.escapeRegexChars(v) + ")";
         }
         return prefix + "(" + ParmGenUtil.escapeRegexChars(v) + ")";
     }
-    
+
     private void AddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddActionPerformed
         // TODO add your handling code here:
         int[] rowsSelected = ReqParsedTable.getSelectedRows();
 
-        
+
         for (int k=0; k<rowsSelected.length; k++){
             String reqplace = (String)ReqParsedTableModel.getValueAt(rowsSelected[k], 0);//位置
             String pname = (String)ReqParsedTableModel.getValueAt(rowsSelected[k], 1);//name
@@ -530,7 +530,7 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
                 String headerpref ="";
                 if(reqplace.equals("path")){
                     String pathproto = selected_request.getPathPrefURL();
-                    
+
                     //if(!pathproto.isEmpty()){
                     //    pathpref = pathproto + "://[^/]+";
                     //}
@@ -556,7 +556,7 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
                     defaultvaltype = VT_NUMBERFIXED;
                 }
                 parentwin.addParamToSelectedModel(reqplace, pname, k, headerpref + cookiepref + pathpref + getValueRegex(pvalue, ispath, iscookie, isheader,defaultvaltype, iswholepath), isformdata);
-                
+
             }
         }
         String url = (String)Select_ReplaceTargetURL.getSelectedItem();
@@ -575,7 +575,7 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
     /**
      * @param args the command line arguments
      */
-    
+
  //   public static void main(String args[]) {
         /*
          * Set the Nimbus look and feel
@@ -603,7 +603,7 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(ParmGenAddParmsJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        
+
         */
         //</editor-fold>
 

@@ -243,7 +243,7 @@ class ParmVars {
 	static String projectdir;
 	static String parmfile;
 	static PLog plog;
-	static String enc;
+	static Encode enc;
 	static String formdataenc;//iso8859-1 encoding is fully  mapped binaries for form-data binaries.
 	// Proxy Authentication
 	// Basic username:password(base64 encoded)
@@ -280,7 +280,7 @@ class ParmVars {
 
 		parmfile = projectdir + "\\AppParmGen.json";
 		plog = new PLog(projectdir);
-		enc = "UTF-8";// default encoding.
+		enc = Encode.UTF_8;// default encoding.
 		ProxyAuth = "";
 		session = new ParmGenSession();
 	}
@@ -937,7 +937,7 @@ class AppValue {
                 String _raw = "";
                 if(_encoded==null)_encoded = "";
 		try{
-			_raw = URLDecoder.decode(_encoded, ParmVars.enc);
+			_raw = URLDecoder.decode(_encoded, ParmVars.enc.getIANACharset());
 		}catch(Exception e){
 			exerr = e.toString();
                         _raw = "";
@@ -1088,7 +1088,7 @@ class AppValue {
 		String exerr = null;
                 valueregex = null;
 		try{
-			value = URLDecoder.decode(_value, ParmVars.enc);
+			value = URLDecoder.decode(_value, ParmVars.enc.getIANACharset());
 			valueregex = Pattern.compile(value);
 		}catch(Exception e){
 			exerr = e.toString();
@@ -1259,7 +1259,7 @@ class FileReadLine {
 	    return null;
 	  }
 
-	  return new String(barray.getBytes(), ParmVars.enc);
+	  return new String(barray.getBytes(), ParmVars.enc.getIANACharset());
 	}
 
         ArrayList<String> readColumns(){
@@ -2047,7 +2047,7 @@ class ParmGen {
 	        		ParmVars.plog.debuglog(1, "application/x-www-form-urlencoded");
 	        		String content = null;
 	        		try{
-	        			content = new String(_contarray.getBytes(), ParmVars.enc);
+	        			content = new String(_contarray.getBytes(), ParmVars.enc.getIANACharset());
 	        		}catch(UnsupportedEncodingException e){
 	        			content = null;
 	        		}
@@ -2081,7 +2081,7 @@ class ParmGen {
                                                     partcontenttype = "";
                                                 }
                                                 int ctypestart = 0;
-                                                partenc = ParmVars.enc;
+                                                partenc = ParmVars.enc.getIANACharset();
                                                 if((ctypestart=partcontenttype.indexOf("Content-Type:"))!=-1){
                                                     String cstr = partcontenttype.substring(ctypestart + "Content-Type:".length());
                                                     String[] cstrvalues = cstr.split("[\r\n;]+");
@@ -2253,7 +2253,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 	byte[] Run(byte[] requestbytes){
                 String request_string = null;
                 try{
-                    request_string = new String(requestbytes, ParmVars.enc);
+                    request_string = new String(requestbytes, ParmVars.enc.getIANACharset());
                 }catch(Exception e){
                     ParmVars.plog.printException(e);
                 }

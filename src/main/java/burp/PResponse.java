@@ -1,11 +1,9 @@
 package burp;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map.Entry;
 
 class PResponse extends ParseHTTPHeaders {
-        private ParmGenHashMap map;
+	private ParmGenHashMap map;
     
 	//PResponse(){
 	//	super();

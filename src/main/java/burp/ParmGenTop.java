@@ -7,6 +7,7 @@ package burp;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import javax.swing.DefaultComboBoxModel;
 
 import javax.swing.JFileChooser;
 import javax.swing.JTable;
@@ -45,6 +46,12 @@ public class ParmGenTop extends javax.swing.JFrame {
 
 
         cleartables();
+        DefaultComboBoxModel<String> cbmodel = new DefaultComboBoxModel<String>();
+        Encode[] enclist = Encode.values();
+        for(Encode charset : enclist){
+            cbmodel.addElement(charset.getIANACharset());
+        }
+        LANGUAGE.setModel(cbmodel);
         LANGUAGE.setSelectedItem(csv.getLang());
         AppParmsIni pini;
         csv.rewindAppParmsIni();

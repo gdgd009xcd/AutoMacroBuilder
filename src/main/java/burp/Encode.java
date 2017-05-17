@@ -163,6 +163,16 @@ public enum Encode  {
         return this.name;
     }
 
+    public static String[] getIANAlist(){
+        Encode[] enumArray = Encode.values();
+        String[] ianalist = new String[enumArray.length];
+        int i = 0;
+        for(Encode enumval : enumArray){
+            ianalist[i] = new String(enumval.getIANACharset());
+        }
+        return ianalist;
+    }
+    
     public static Encode getEnum(String str) {
         // enum型全てを取得します。
         Encode[] enumArray = Encode.values();

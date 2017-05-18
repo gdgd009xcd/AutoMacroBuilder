@@ -604,60 +604,71 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     		//code to handle choosed file here.
     		File file = jfc.getSelectedFile();
     		String name = file.getAbsolutePath().replaceAll("\\\\", "\\\\\\\\");
+        	//エンコードの設定
+        	//ParmVars.encエンコードの決定
+        	//先頭ページのレスポンスのcharsetを取得
+        	PRequestResponse toppage = rlist.get(0);
+        	String tcharset = toppage.response.getCharset();
+        	ParmVars.enc = Encode.getEnum(tcharset);
 
+
+
+        	String tknames[] = {
+                    "PHPSESSID",
+                    "JSESSIONID",
+                    "SESID",
+                    "TOKEN",
+                    "_CSRF_TOKEN",
+                    "authenticity_token"
+            };
+
+            //token追跡自動設定。。
+            ArrayList<ParmGenToken> tracktokenlist = new ArrayList<ParmGenToken>();
+            Pattern patternw32 = Pattern.compile("\\w{32}");
+            ArrayList<AppParmsIni> newparms = new ArrayList<AppParmsIni>();//生成するパラメータ
+            PRequestResponse srcpqrs;
+
+
+            for(PRequestResponse pqrs : rlist){
+                if(tracktokenlist!=null&&tracktokenlist.size()>0){//直前のレスポンスに追跡パラメータあり
+                	//パラメータ生成
+
+
+
+                }
+                srcpqrs = pqrs;
+                //レスポンストークン解析
+                String body = pqrs.response.getBody();
+                //レスポンスから追跡パラメータ抽出
+                ParmGenParser pgparser = new ParmGenParser(body);
+                ArrayList<ParmGenToken> tokenlist = pgparser.getNameValues();
+                for(ParmGenToken token : tokenlist){
+                    //PHPSESSID, token, SesID, jsessionid
+
+                    String tokenname = token.getTokenKey().GetName();
+                    boolean namematched = false;
+                    for(String tkn : tknames){
+                        if(tokenname.equalsIgnoreCase(tkn)){
+                            tracktokenlist.add(token);
+                            namematched = true;
+                            break;
+                        }
+                    }
+
+                    // value値が \w{32}に一致
+                    if(!namematched){//nameはtknamesに一致しない
+                        String tokenvalue = token.getTokenValue().getValue();
+                        Matcher matcher = patternw32.matcher(tokenvalue);
+                        if(matcher.matches()){
+                            tracktokenlist.add(token);
+                        }
+                    }
+
+                }
+            }
     	}
 
-    	//エンコード、スコープの設定
-    	//ParmVars.encエンコードの決定
-    	//ツールスコープの設定
 
-    	String tknames[] = {
-                "PHPSESSID",
-                "JSESSIONID",
-                "SESID",
-                "TOKEN",
-                "_CSRF_TOKEN",
-                "authenticity_token"
-        };
-        //token追跡自動設定。。
-        ArrayList<ParmGenToken> tracktokenlist = new ArrayList<ParmGenToken>();
-        Pattern patternw32 = Pattern.compile("\\w{32}");
-        for(PRequestResponse pqrs : rlist){
-            if(tracktokenlist!=null&&tracktokenlist.size()>0){//直前のレスポンスに追跡パラメータあり
-            	//パラメータ生成
-
-
-
-            }
-            //レスポンストークン解析
-            String body = pqrs.response.getBody();
-            //レスポンスから追跡パラメータ抽出
-            ParmGenParser pgparser = new ParmGenParser(body);
-            ArrayList<ParmGenToken> tokenlist = pgparser.getNameValues();
-            for(ParmGenToken token : tokenlist){
-                //PHPSESSID, token, SesID, jsessionid
-
-                String tokenname = token.getTokenKey().GetName();
-                boolean namematched = false;
-                for(String tkn : tknames){
-                    if(tokenname.equalsIgnoreCase(tkn)){
-                        tracktokenlist.add(token);
-                        namematched = true;
-                        break;
-                    }
-                }
-
-                // value値が \w{32}に一致
-                if(!namematched){//nameはtknamesに一致しない
-                    String tokenvalue = token.getTokenValue().getValue();
-                    Matcher matcher = patternw32.matcher(tokenvalue);
-                    if(matcher.matches()){
-                        tracktokenlist.add(token);
-                    }
-                }
-
-            }
-        }
 
     }//GEN-LAST:event_ParamTrackingActionPerformed
 

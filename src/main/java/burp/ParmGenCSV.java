@@ -25,15 +25,14 @@ import flex.messaging.util.URLEncoder;
  * @author daike
  */
 public class ParmGenCSV {
-    String lang;
+
     ArrayList<AppParmsIni> records;
     Iterator<AppParmsIni> it;
     ParmGenWriteFile pfile;
     public static ArrayList<PRequestResponse> selected_messages;
     public static ArrayList<PRequestResponse> proxy_messages;
 
-    ParmGenCSV(ParmGenMacroTrace _pmt, String _lang, ArrayList<PRequestResponse> _selected_messages){
-       setLang(_lang);
+    ParmGenCSV(ParmGenMacroTrace _pmt, ArrayList<PRequestResponse> _selected_messages){
        reloadParmGen(_pmt);
        selected_messages = new ArrayList<PRequestResponse>();
        proxy_messages = _selected_messages;
@@ -55,17 +54,6 @@ public class ParmGenCSV {
         records = _records;//reference
     }
 
-    public void setLang(String _lang){
-         if ( _lang == null || _lang.isEmpty()){
-            lang = "UTF-8";
-        }else{
-            lang = _lang;
-        }
-    }
-
-    public String getLang(){
-        return lang;
-    }
 
 
 
@@ -129,7 +117,7 @@ public class ParmGenCSV {
         pfile.truncate();
         JsonObjectBuilder builder = Json.createObjectBuilder();
 
-        builder.add("LANG", lang);
+        builder.add("LANG", ParmVars.enc.getIANACharset());
 
         if(ParmGen.ProxyInScope){
             builder.add("ProxyInScope", true);
@@ -251,7 +239,7 @@ public class ParmGenCSV {
         }
 
 
-        pfile.print("LANG," + lang + "," + scopelist);
+        pfile.print("LANG," + ParmVars.enc.getIANACharset() + "," + scopelist);
         //pfile.print("");
 
         Iterator<AppParmsIni> it = records.iterator();

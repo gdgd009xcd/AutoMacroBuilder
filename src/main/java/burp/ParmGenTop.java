@@ -7,8 +7,8 @@ package burp;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import javax.swing.DefaultComboBoxModel;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
@@ -52,7 +52,7 @@ public class ParmGenTop extends javax.swing.JFrame {
             cbmodel.addElement(charset.getIANACharset());
         }
         LANGUAGE.setModel(cbmodel);
-        LANGUAGE.setSelectedItem(csv.getLang());
+        LANGUAGE.setSelectedItem(ParmVars.enc.getIANACharset());
         AppParmsIni pini;
         csv.rewindAppParmsIni();
         int ri = 0;
@@ -133,9 +133,8 @@ public class ParmGenTop extends javax.swing.JFrame {
             }else{
                 ScannerScope.setSelected(false);
             }
-            csv.setLang(ParmVars.enc.getIANACharset());
         }
-        LANGUAGE.setSelectedItem(csv.getLang());
+        LANGUAGE.setSelectedItem(ParmVars.enc.getIANACharset());
         AppParmsIni pini;
         csv.rewindAppParmsIni();
         int ri = 0;
@@ -489,7 +488,7 @@ public class ParmGenTop extends javax.swing.JFrame {
         int idx = LANGUAGE.getSelectedIndex();
         String str = (String)LANGUAGE.getSelectedItem();  //Object型で返された値をString型にｷｬｽﾄ
         ParmVars.enc = Encode.getEnum(str);
-        csv.setLang(str);
+
     }//GEN-LAST:event_LANGUAGEActionPerformed
 
     private void DelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DelActionPerformed

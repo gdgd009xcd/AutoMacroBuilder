@@ -460,7 +460,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                 //IHttpRequestResponse[] allmessages = mCallbacks.getProxyHistory();
                 ParmGen pgen = new ParmGen(pmt);//csv読み込み。LANG（ParmVars.enc）を設定。
                 if(pgen.twin==null){
-                    pgen.twin = new ParmGenTop(pmt, new ParmGenCSV(pmt, ParmVars.enc.getIANACharset(),
+                    pgen.twin = new ParmGenTop(pmt, new ParmGenCSV(pmt,
                         convertMessageInfoToArray(messageInfo))
                         );
                 }

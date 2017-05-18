@@ -4,8 +4,6 @@
  */
 package burp;
 
-import java.util.ArrayList;
-
 /**
  *
  * @author daike
@@ -15,7 +13,7 @@ public class test {
     public static void main(String[] args){
         //ParmGenCSV(String _filename, String _lang)
         ParmVars.parmfile = "xxx.csv";
-        ParmGenCSV csv = new ParmGenCSV(null, "UTF-8", null);
+        ParmGenCSV csv = new ParmGenCSV(null,  null);
         
         //void add(String URL, String initval, String valtype, String incval, ArrayList<ParmGenParam> parms)
        // csv.add("http://www.tms.co.jp", "1", "number", "4", new ArrayList<ParmGenParam> () {

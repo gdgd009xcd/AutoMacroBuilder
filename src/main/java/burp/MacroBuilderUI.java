@@ -632,6 +632,31 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             for(PRequestResponse pqrs : rlist){
                 if(tracktokenlist!=null&&tracktokenlist.size()>0){//直前のレスポンスに追跡パラメータあり
                 	//パラメータ生成
+                	AppParmsIni aparms = new AppParmsIni();
+                	//request URL
+                	String TargetURLRegex = ".*" + pqrs.request.getPath() + ".*";
+                	aparms.setUrl(TargetURLRegex);
+                	aparms.len = 4;//default
+                	aparms.typeval = aparms.T_TRACK;
+                	aparms.inival = 0;
+                	aparms.maxval = 0;
+                	aparms.csvname = "";
+                	aparms.pause = false;
+                	aparms.parmlist = new ArrayList<AppValue>();
+
+                	for(ParmGenToken tkn: tracktokenlist){
+                		AppValue apv = new AppValue();
+                		//body or query ターゲットリクエストのtokenパラメータ
+
+	                	apv.setValPart("body");
+	                	apv.clearNoCount();
+	                	apv.csvpos =-1;
+	                	// (?:[&=?]+|^)token=(value)
+	                	String token = tkn.getTokenKey().GetName();
+	                	String value = tkn.getTokenValue().getValue();
+	                	String regex = "(?:[&=?]+|^)" + token + "=(" + value + ")";
+	                	apv.setURLencodedVal(regex);
+                	}
 
 
 

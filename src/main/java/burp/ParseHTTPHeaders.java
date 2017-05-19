@@ -737,6 +737,22 @@ class ParseHTTPHeaders {
         String getCharset(){
         	return charset;
         }
+
+        // query parameter
+        public boolean hasBodyParam(String pname){
+        	for(String[] pair: queryparams){
+        		if(pname.equals(pair[0]))return true;
+        	}
+        	return false;
+        }
+
+        // body parameter
+        public boolean hasQueryParam(String pname){
+        	for(String[] pair: bodyparams){
+        		if(pname.equals(pair[0]))return true;
+        	}
+        	return false;
+        }
 }
 
 

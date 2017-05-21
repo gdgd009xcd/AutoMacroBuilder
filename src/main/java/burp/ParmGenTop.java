@@ -61,7 +61,7 @@ public class ParmGenTop extends javax.swing.JFrame {
             ParamTopList.setRowHeight(ri++, default_rowheight * pini.getAppValuesLineCnt());
         }
         current_row = 0;
-        ParmGen pg = new ParmGen(pmt);
+        ParmGen pg = new ParmGen(pmt,null);
         if(pg.ProxyInScope){
             ProxyScope.setSelected(true);
         }else{
@@ -97,7 +97,7 @@ public class ParmGenTop extends javax.swing.JFrame {
                     v = Integer.toString(row) + Integer.toString(column) + Boolean.toString((boolean)cell);
                     // column == 0 は、pauseボタン。
                     if ( column == 0){
-                        ParmGen pglocal = new ParmGen(pmt);
+                        ParmGen pglocal = new ParmGen(pmt, null);
                         AppParmsIni pini = pglocal.parmcsv.get(row);
                         if(pini!=null){
                             pini.setPause((boolean)cell);
@@ -112,7 +112,7 @@ public class ParmGenTop extends javax.swing.JFrame {
 
     public void refreshRowDisp(boolean reloadcsv){
         if(reloadcsv){
-            csv.reloadParmGen(pmt);
+            csv.reloadParmGen(pmt, null);
             if(ParmGen.ProxyInScope){
                 ProxyScope.setSelected(true);
             }else{
@@ -215,7 +215,7 @@ public class ParmGenTop extends javax.swing.JFrame {
 
         jLabel1.setText("文字コード");
 
-        LANGUAGE.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "SJIS", "EUC-JP", "UTF-8", "ISO8859-1" }));
+        LANGUAGE.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "SJIS", "EUC-JP", "UTF-8", "ISO8859-1", "x-MacCentralEurope" }));
         LANGUAGE.setToolTipText("文字コード");
         LANGUAGE.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -396,7 +396,7 @@ public class ParmGenTop extends javax.swing.JFrame {
                         .addComponent(LANGUAGE, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(40, 40, 40)
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 472, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(LogfileOnOff))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
@@ -449,7 +449,7 @@ public class ParmGenTop extends javax.swing.JFrame {
              //csv.save();
              csv.jsonsave();
             //reset ParmGen
-            ParmGen pgen = new ParmGen(pmt);
+            ParmGen pgen = new ParmGen(pmt, null);
 
             pgen.reset();
             pgen.disposeTop();
@@ -476,7 +476,7 @@ public class ParmGenTop extends javax.swing.JFrame {
 
     private void CancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CancelActionPerformed
         // TODO add your handling code here:
-        ParmGen pgen = new ParmGen(pmt);
+        ParmGen pgen = new ParmGen(pmt,null);
         if(ParmGenNew_Modified){
             pgen.reset();
         }
@@ -512,7 +512,7 @@ public class ParmGenTop extends javax.swing.JFrame {
 
     private void ProxyScopeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ProxyScopeActionPerformed
         // TODO add your handling code here:
-        ParmGen pg = new ParmGen(pmt);
+        ParmGen pg = new ParmGen(pmt,null);
         if (ProxyScope.isSelected()){
             pg.ProxyInScope = true;
         }else{
@@ -522,7 +522,7 @@ public class ParmGenTop extends javax.swing.JFrame {
 
     private void IntruderScopeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_IntruderScopeActionPerformed
         // TODO add your handling code here:
-        ParmGen pg = new ParmGen(pmt);
+        ParmGen pg = new ParmGen(pmt, null);
         if (IntruderScope.isSelected()){
             pg.IntruderInScope = true;
         }else{
@@ -532,7 +532,7 @@ public class ParmGenTop extends javax.swing.JFrame {
 
     private void RepeaterScopeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RepeaterScopeActionPerformed
         // TODO add your handling code here:
-        ParmGen pg = new ParmGen(pmt);
+        ParmGen pg = new ParmGen(pmt, null);
         if (RepeaterScope.isSelected()){
             pg.RepeaterInScope = true;
         }else{
@@ -542,7 +542,7 @@ public class ParmGenTop extends javax.swing.JFrame {
 
     private void ScannerScopeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ScannerScopeActionPerformed
         // TODO add your handling code here:
-        ParmGen pg = new ParmGen(pmt);
+        ParmGen pg = new ParmGen(pmt,null);
         if (ScannerScope.isSelected()){
             pg.ScannerInScope = true;
         }else{
@@ -563,7 +563,7 @@ public class ParmGenTop extends javax.swing.JFrame {
             File file = jfc.getSelectedFile();
             String name = file.getAbsolutePath().replaceAll("\\\\", "\\\\\\\\");
             ParmVars.parmfile = name;
-            ParmGen pgen = new ParmGen(pmt);
+            ParmGen pgen = new ParmGen(pmt, null);
             pgen.reset();//再読み込み
             refreshRowDisp(true);//表示更新
         }

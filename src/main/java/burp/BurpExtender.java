@@ -35,7 +35,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
             IHttpRequestResponse messageInfo)
         {
 
-                ParmGen pgen = new ParmGen(pmt);
+                ParmGen pgen = new ParmGen(pmt, null);
                 String url = null;
                 String toolname = "";
                 switch(toolflag){
@@ -275,7 +275,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
 
             IHttpRequestResponse httpReqRes = message.getMessageInfo();
 
-            ParmGen pgen = new ParmGen(pmt);
+            ParmGen pgen = new ParmGen(pmt, null);
             if (pgen.ProxyInScope)
             {
                 // update number sequeces...
@@ -458,7 +458,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
 
                 //プロキシヒストリのリクエストレスポンス
                 //IHttpRequestResponse[] allmessages = mCallbacks.getProxyHistory();
-                ParmGen pgen = new ParmGen(pmt);//csv読み込み。LANG（ParmVars.enc）を設定。
+                ParmGen pgen = new ParmGen(pmt, null);//csv読み込み。LANG（ParmVars.enc）を設定。
                 if(pgen.twin==null){
                     pgen.twin = new ParmGenTop(pmt, new ParmGenCSV(pmt,
                         convertMessageInfoToArray(messageInfo))

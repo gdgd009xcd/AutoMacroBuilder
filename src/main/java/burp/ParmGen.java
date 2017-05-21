@@ -2198,17 +2198,21 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 		return rflag;
 	}
 
-	ParmGen(ParmGenMacroTrace _pmt){
+	ParmGen(ParmGenMacroTrace _pmt, ArrayList<AppParmsIni>_parmcsv){
                 pmt = _pmt;
-		initMain();
+		initMain(_parmcsv);
 	}
 
-	void initMain(){
+	void initMain(ArrayList<AppParmsIni> _newparmcsv){
 		//main start.
 		// csv load
 		// parmcsvはローカル
 		if ( parmcsv == null ){
-			parmcsv = loadJSON();
+                        if(_newparmcsv==null){
+                            parmcsv = loadJSON();
+                        }else{
+                            parmcsv = _newparmcsv;
+                        }
                         //ArrayList<AppParmsIni> parmjson = loadJSON();
 
                         if(parmcsv==null)return;
@@ -2247,7 +2251,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
             parmcsv = null;trackcsv=null;
             FetchResponse.loc = null;
             hasTrackRequest = false;
-            initMain();
+            initMain(null);
         }
 
 	byte[] Run(byte[] requestbytes){

@@ -33,16 +33,21 @@ public class ParmGenCSV {
     public static ArrayList<PRequestResponse> proxy_messages;
 
     ParmGenCSV(ParmGenMacroTrace _pmt, ArrayList<PRequestResponse> _selected_messages){
-       reloadParmGen(_pmt);
+       reloadParmGen(_pmt, null);
        selected_messages = new ArrayList<PRequestResponse>();
        proxy_messages = _selected_messages;
        selected_messages.add(proxy_messages.get(0));
        pfile = null;
 
     }
+    
+    ParmGenCSV( ArrayList<AppParmsIni> _newparmcsv,ParmGenMacroTrace _pmt){
+        reloadParmGen(_pmt, _newparmcsv);
+        pfile = null;
+    }
 
-    public void reloadParmGen(ParmGenMacroTrace _pmt){
-       ParmGen pgen = new ParmGen(_pmt);
+    public void reloadParmGen(ParmGenMacroTrace _pmt, ArrayList<AppParmsIni>_newparmcsv){
+       ParmGen pgen = new ParmGen(_pmt, _newparmcsv);
        records = pgen.parmcsv;
        if (records==null){
            records = new ArrayList<AppParmsIni>();

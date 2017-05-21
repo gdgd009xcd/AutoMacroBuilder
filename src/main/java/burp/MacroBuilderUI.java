@@ -626,11 +626,12 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             ArrayList<ParmGenToken> tracktokenlist = new ArrayList<ParmGenToken>();
             Pattern patternw32 = Pattern.compile("\\w{32}");
             ArrayList<AppParmsIni> newparms = new ArrayList<AppParmsIni>();//生成するパラメータ
-            PRequestResponse srcpqrs;
+            PRequestResponse respqrs = null;
+            int row = 0;
 
 
             for(PRequestResponse pqrs : rlist){
-                if(tracktokenlist!=null&&tracktokenlist.size()>0){//直前のレスポンスに追跡パラメータあり
+                if(respqrs!=null&&tracktokenlist!=null&&tracktokenlist.size()>0){//直前のレスポンスに追跡パラメータあり
                 	//パラメータ生成
                 	AppParmsIni aparms = new AppParmsIni();
                 	//request URL
@@ -646,22 +647,39 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
                 	for(ParmGenToken tkn: tracktokenlist){
                 		AppValue apv = new AppValue();
+                                String token = tkn.getTokenKey().GetName();
                 		//body or query ターゲットリクエストのtokenパラメータ
-
-	                	apv.setValPart("body");
+                                String valtype = "query";
+                                if(pqrs.request.hasBodyParam(token)){
+                                    valtype = "body";
+                                }
+	                	apv.setValPart(valtype);
 	                	apv.clearNoCount();
 	                	apv.csvpos =-1;
 	                	// (?:[&=?]+|^)token=(value)
-	                	String token = tkn.getTokenKey().GetName();
+
 	                	String value = tkn.getTokenValue().getValue();
 	                	String regex = "(?:[&=?]+|^)" + token + "=(" + value + ")";
 	                	apv.setURLencodedVal(regex);
+                                apv.setresURL(".*" + respqrs.request.getPath() + ".*");
+                                apv.setresRegexURLencoded("");
+                                apv.setresPartType("responsebody");
+                                apv.resRegexPos = tkn.getTokenKey().GetFcnt();
+                                apv.token = token;
+                                apv.urlencode = true;
+                                apv.fromStepNo = -1;
+                                apv.toStepNo = 0;
+                                apv.tokentype = tkn.getTokenKey().GetTokenType();
+                                aparms.parmlist.add(apv);
                 	}
-
+                        aparms.setRowAndCntFile(row);row++;
+                        aparms.crtGenFormat(true);
+                        newparms.add(aparms);
 
 
                 }
-                srcpqrs = pqrs;
+                tracktokenlist.clear();
+                respqrs = pqrs;
                 //レスポンストークン解析
                 String body = pqrs.response.getBody();
                 //レスポンスから追跡パラメータ抽出
@@ -691,6 +709,8 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
                 }
             }
+            ParmGenCSV csv = new ParmGenCSV(newparms, pmt);
+            csv.jsonsave();
     	}
 
 

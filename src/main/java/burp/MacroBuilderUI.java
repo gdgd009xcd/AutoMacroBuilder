@@ -604,6 +604,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     		//code to handle choosed file here.
     		File file = jfc.getSelectedFile();
     		String name = file.getAbsolutePath().replaceAll("\\\\", "\\\\\\\\");
+    		ParmVars.parmfile = name;
         	//エンコードの設定
         	//ParmVars.encエンコードの決定
         	//先頭ページのレスポンスのcharsetを取得
@@ -709,8 +710,10 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
                 }
             }
-            ParmGenCSV csv = new ParmGenCSV(newparms, pmt);
-            csv.jsonsave();
+            if(newparms!=null&&!newparms.isEmpty()){
+	            ParmGenCSV csv = new ParmGenCSV(newparms, pmt);
+	            csv.jsonsave();
+            }
     	}
 
 

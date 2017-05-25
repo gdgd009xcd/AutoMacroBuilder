@@ -738,20 +738,24 @@ class ParseHTTPHeaders {
         	return charset;
         }
 
-        // query parameter
+        // body parameter
         public boolean hasBodyParam(String pname){
+            if(getBodyParams()!=null){
         	for(String[] pair: bodyparams){//bodyparams
         		if(pname.equals(pair[0]))return true;
         	}
-        	return false;
+            }
+            return false;
         }
 
-        // body parameter
+        // query parameter
         public boolean hasQueryParam(String pname){
+            if(queryparams!=null){
         	for(String[] pair: queryparams){//queryparams
         		if(pname.equals(pair[0]))return true;
         	}
-        	return false;
+            }
+            return false;
         }
 }
 

@@ -664,7 +664,18 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 	                	apv.setURLencodedVal(regex);
                                 apv.setresURL(".*" + respqrs.request.getPath() + ".*");
                                 apv.setresRegexURLencoded("");
-                                apv.setresPartType("responsebody");
+                                int resvalpart = AppValue.V_AUTOTRACKBODY;
+                                switch(tkn.getTokenKey().GetTokenType()){
+                                    case AppValue.T_LOCATION:
+                                        resvalpart = AppValue.V_HEADER;
+                                        break;
+                                    case AppValue.T_XCSRF_TOKEN:
+                                        break;
+                                    default:
+                                        break;
+                                    
+                                }
+                                apv.setresPartType(apv.getValPart(resvalpart));
                                 apv.resRegexPos = tkn.getTokenKey().GetFcnt();
                                 apv.token = token;
                                 apv.urlencode = true;
@@ -686,8 +697,14 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                 String body = pqrs.response.getBody();
                 //レスポンスから追跡パラメータ抽出
                 ParmGenParser pgparser = new ParmGenParser(body);
-                ArrayList<ParmGenToken> tokenlist = pgparser.getNameValues();
-                for(ParmGenToken token : tokenlist){
+                ArrayList<ParmGenToken> bodytklist = pgparser.getNameValues();
+                ParmGenArrayList tklist = new ParmGenArrayList();
+
+                InterfaceCollection<ParmGenToken> ic = pqrs.response.getLocationTokens(tklist);
+
+                tklist.addAll(bodytklist);
+
+                for(ParmGenToken token : tklist){
                     //PHPSESSID, token, SesID, jsessionid
 
                     String tokenname = token.getTokenKey().GetName();

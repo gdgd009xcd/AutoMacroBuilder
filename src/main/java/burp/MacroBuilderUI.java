@@ -671,6 +671,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                                 apv.fromStepNo = -1;
                                 apv.toStepNo = 0;
                                 apv.tokentype = tkn.getTokenKey().GetTokenType();
+                                apv.col = aparms.parmlist.size();
                                 aparms.parmlist.add(apv);
                 	}
                         aparms.setRowAndCntFile(row);row++;
@@ -692,13 +693,21 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                     String tokenname = token.getTokenKey().GetName();
                     boolean namematched = false;
                     for(String tkn : tknames){
-                        if(tokenname.equalsIgnoreCase(tkn)){
+                        if(tokenname.equalsIgnoreCase(tkn)){//完全一致
                             tracktokenlist.add(token);
                             namematched = true;
                             break;
                         }
                     }
-
+                    if(!namematched){//nameはtknamesに一致しない
+	                    for(String tkn : tknames){
+	                    	if(tokenname.toUpperCase().indexOf(tkn.toUpperCase())!=-1){//部分一致
+	                            tracktokenlist.add(token);
+	                            namematched = true;
+	                            break;
+	                        }
+	                    }
+                    }
                     // value値が \w{32}に一致
                     if(!namematched){//nameはtknamesに一致しない
                         String tokenvalue = token.getTokenValue().getValue();
@@ -710,6 +719,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
                 }
             }
+            ParmVars.plog.debuglog(0, "newparms.size=" + newparms.size());
             if(newparms!=null&&!newparms.isEmpty()){
 	            ParmGenCSV csv = new ParmGenCSV(newparms, pmt);
 	            csv.jsonsave();

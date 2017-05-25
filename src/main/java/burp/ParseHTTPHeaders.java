@@ -740,7 +740,7 @@ class ParseHTTPHeaders {
 
         // query parameter
         public boolean hasBodyParam(String pname){
-        	for(String[] pair: queryparams){
+        	for(String[] pair: bodyparams){//bodyparams
         		if(pname.equals(pair[0]))return true;
         	}
         	return false;
@@ -748,7 +748,7 @@ class ParseHTTPHeaders {
 
         // body parameter
         public boolean hasQueryParam(String pname){
-        	for(String[] pair: bodyparams){
+        	for(String[] pair: queryparams){//queryparams
         		if(pname.equals(pair[0]))return true;
         	}
         	return false;

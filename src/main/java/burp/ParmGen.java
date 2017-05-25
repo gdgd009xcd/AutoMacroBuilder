@@ -1885,90 +1885,90 @@ class ParmGen {
         //
         //
         ArrayList<AppParmsIni> loadJSON(){
-			//
-			int arraylevel = 0;
+        	//
+        	int arraylevel = 0;
 
-			ArrayList<AppParmsIni> rlist = null;
-            String pfile = ParmVars.parmfile;
-			ParmVars.plog.debuglog(1, "---------AppPermGen.json----------");
+        	ArrayList<AppParmsIni> rlist = null;
+        	String pfile = ParmVars.parmfile;
+        	ParmVars.plog.debuglog(1, "---------AppPermGen.json----------");
 
-			try{
+        	try{
 
-				String rdata;
-                                String jsondata=new String("");
-                                FileReader fr = new FileReader(pfile);
-                                try{
+        		String rdata;
+        		String jsondata=new String("");
+        		FileReader fr = new FileReader(pfile);
+        		try{
 
-                                    BufferedReader br = new BufferedReader(fr);
-                                    while((rdata = br.readLine()) != null) {
-                                            jsondata += rdata;
-                                    }//end of while((rdata = br.readLine()) != null)
-                                    fr.close();
-                                    fr = null;
-                                }catch(Exception e){
-                                    throw new RuntimeException(e.toString());
-                                }finally{
-                                    if(fr!=null){
-                                        try{
-                                            fr.close();
-                                        }catch (Exception e){
-                                            throw new RuntimeException(e.toString());
-                                        }
-                                        fr = null;
-                                    }
-                                }
+        			BufferedReader br = new BufferedReader(fr);
+        			while((rdata = br.readLine()) != null) {
+        				jsondata += rdata;
+        			}//end of while((rdata = br.readLine()) != null)
+        			fr.close();
+        			fr = null;
+        		}catch(Exception e){
+        			throw new RuntimeException(e.toString());
+        		}finally{
+        			if(fr!=null){
+        				try{
+        					fr.close();
+        				}catch (Exception e){
+        					throw new RuntimeException(e.toString());
+        				}
+        				fr = null;
+        			}
+        		}
 
-                                JsonParser parser = Json.createParser(new StringReader(jsondata));
-                                String keyname = null;
-                                boolean errflg = false;
-                                ParmGenJSON gjson = new ParmGenJSON();
-				while (parser.hasNext()) {
-                                    JsonParser.Event event = parser.next();
-                                    boolean bval = false;
-                                    Object obj = null;
-                                    if(keyname==null){
-                                        keyname ="";
-                                    }
-                                    switch(event) {
-                                       case START_ARRAY:
-                                           arraylevel++;
-                                           break;
-                                       case END_ARRAY:
-                                           arraylevel--;
-                                           break;
-                                       case KEY_NAME:
-                                          keyname = parser.getString();
-                                          break;
-                                       case START_OBJECT:
-                                       case END_OBJECT:
-                                           errflg = gjson.Parse(arraylevel, event, keyname, null);
-                                           break;
-                                       case VALUE_TRUE:
-                                           bval = true;
-                                       case VALUE_FALSE:
-                                           errflg = gjson.Parse(arraylevel, event, keyname, bval);
-                                           break;
-                                       case VALUE_STRING:
-                                       case VALUE_NUMBER:
-                                           obj = parser.getString();
-                                       case VALUE_NULL:
-                                          errflg = gjson.Parse(arraylevel, event, keyname, obj);
-                                          break;
-                                    }
-                                 }
-				if(errflg){
-                                   rlist = gjson.Getrlist();
-                                }else{
-                                    ParmVars.plog.printError("JSON load failed.");
-                                }
-                        }catch(Exception e){//設定ファイル無し。
-                            ParmVars.plog.printException(e);
-                            rlist = null;
+        		JsonParser parser = Json.createParser(new StringReader(jsondata));
+        		String keyname = null;
+        		boolean errflg = false;
+        		ParmGenJSON gjson = new ParmGenJSON();
+        		while (parser.hasNext()) {
+        			JsonParser.Event event = parser.next();
+        			boolean bval = false;
+        			Object obj = null;
+        			if(keyname==null){
+        				keyname ="";
+        			}
+        			switch(event) {
+        			case START_ARRAY:
+        				arraylevel++;
+        				break;
+        			case END_ARRAY:
+        				arraylevel--;
+        				break;
+        			case KEY_NAME:
+        				keyname = parser.getString();
+        				break;
+        			case START_OBJECT:
+        			case END_OBJECT:
+        				errflg = gjson.Parse(arraylevel, event, keyname, null);
+        				break;
+        			case VALUE_TRUE:
+        				bval = true;
+        			case VALUE_FALSE:
+        				errflg = gjson.Parse(arraylevel, event, keyname, bval);
+        				break;
+        			case VALUE_STRING:
+        			case VALUE_NUMBER:
+        				obj = parser.getString();
+        			case VALUE_NULL:
+        				errflg = gjson.Parse(arraylevel, event, keyname, obj);
+        				break;
+        			}
+        		}
+        		if(errflg){
+        			rlist = gjson.Getrlist();
+        		}else{
+        			ParmVars.plog.printError("JSON load failed.");
+        		}
+        	}catch(Exception e){//設定ファイル無し。
+        		ParmVars.plog.printException(e);
+        		rlist = null;
 
-			}
-			ParmVars.plog.debuglog(1, "---------AppPermGen JSON load END ----------");
-			return rlist;
-	}
+        	}
+        	ParmVars.plog.debuglog(1, "---------AppPermGen JSON load END ----------");
+        	return rlist;
+        }
 
 
 
@@ -2199,50 +2199,51 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 	}
 
 	ParmGen(ParmGenMacroTrace _pmt, ArrayList<AppParmsIni>_parmcsv){
-                pmt = _pmt;
+		pmt = _pmt;
+		if(_parmcsv!=null)reset();
 		initMain(_parmcsv);
 	}
 
 	void initMain(ArrayList<AppParmsIni> _newparmcsv){
 		//main start.
 		// csv load
-		// parmcsvはローカル
-		if ( parmcsv == null ){
-                        if(_newparmcsv==null){
-                            parmcsv = loadJSON();
-                        }else{
-                            parmcsv = _newparmcsv;
-                        }
-                        //ArrayList<AppParmsIni> parmjson = loadJSON();
+		// parmcsvはstatic
+		if ( parmcsv == null || _newparmcsv != null){
+			if(_newparmcsv==null){
+				parmcsv = loadJSON();
+			}else{
+				parmcsv = _newparmcsv;
+			}
+			//ArrayList<AppParmsIni> parmjson = loadJSON();
 
-                        if(parmcsv==null)return;
-                        FetchResponse.loc = new LocVal(parmcsv.size());
-                        Iterator<AppParmsIni> api = parmcsv.iterator();
-                        while(api.hasNext()){
-                            AppParmsIni pini = api.next();
-                            int row = pini.row;
-                            Iterator<AppValue> apv = pini.parmlist.iterator();
-                            if(pini.getType()==AppParmsIni.T_TRACK){
-                                if(trackcsv==null){
-                                    trackcsv = new ArrayList<AppParmsIni>();
-                                }
-                                while(apv.hasNext()){
-                                    AppValue apval = apv.next();
-                                    if(apval.getResTypeInt()>=AppValue.V_REQTRACKBODY){
-                                        hasTrackRequest =true;
-                                    }
+			if(parmcsv==null)return;
+			FetchResponse.loc = new LocVal(parmcsv.size());
+			Iterator<AppParmsIni> api = parmcsv.iterator();
+			while(api.hasNext()){
+				AppParmsIni pini = api.next();
+				int row = pini.row;
+				Iterator<AppValue> apv = pini.parmlist.iterator();
+				if(pini.getType()==AppParmsIni.T_TRACK){
+					if(trackcsv==null){
+						trackcsv = new ArrayList<AppParmsIni>();
+					}
+					while(apv.hasNext()){
+						AppValue apval = apv.next();
+						if(apval.getResTypeInt()>=AppValue.V_REQTRACKBODY){
+							hasTrackRequest =true;
+						}
 
-                                    int col = apval.col;
-                                    //loc.setURLRegex(".*test.kurashi-research.jp:(\\d+)/top.php.*", 0,0);
-                                    //ParmVars.plog.debuglog(0, "r,c,resURL:" + Integer.toString(row) + "," + Integer.toString(col) + ","+ apval.resURL);
-                                    FetchResponse.loc.setURLRegex(apval.resURL, row, col);
-                                    //loc.setRegex("'PU31', '00', 'exchange', '([a-z0-9]+)'",0,0);
-                                    FetchResponse.loc.setRegex(apval.resRegex, row, col);
-                                }
-                                trackcsv.add(pini);
+						int col = apval.col;
+						//loc.setURLRegex(".*test.kurashi-research.jp:(\\d+)/top.php.*", 0,0);
+						//ParmVars.plog.debuglog(0, "r,c,resURL:" + Integer.toString(row) + "," + Integer.toString(col) + ","+ apval.resURL);
+						FetchResponse.loc.setURLRegex(apval.resURL, row, col);
+						//loc.setRegex("'PU31', '00', 'exchange', '([a-z0-9]+)'",0,0);
+						FetchResponse.loc.setRegex(apval.resRegex, row, col);
+					}
+					trackcsv.add(pini);
 
-                            }
-                        }
+				}
+			}
 			//debuglog(0, "loadCSV executed.");
 		}
 	}

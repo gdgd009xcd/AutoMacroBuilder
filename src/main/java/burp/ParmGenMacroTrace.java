@@ -60,6 +60,18 @@ public class ParmGenMacroTrace {
     //
     // setter
     //
+    void clear(){
+    	rlist = null;
+    	originalrlist = null;
+    	set_cookienames = null;
+    	selected_request = 0;
+    	stepno = -1;
+    	oit = null;
+    	cit = null;
+    	pit = null;
+    	postmacro_RequestResponse = null;
+    }
+
     void setUI(MacroBuilderUI _ui){
         ui = _ui;
     }
@@ -439,35 +451,37 @@ public class ParmGenMacroTrace {
    }
 
    void ParseResponse(){
-       cit = rlist.listIterator();
-       //csrflist = new ArrayList<ParmGenParser> ();
-       set_cookienames = new ArrayList<String>();
-       HashMap<String,String> uniquecookies = new HashMap<String, String>();
-       while(cit.hasNext()){
-           PRequestResponse prr = cit.next();
-           ParmVars.plog.debuglog(0, "body lenght=" + prr.response.getBodyLength());
-           //ParmGenParser pgparser = new ParmGenParser(prr.response.getBody(), "[type=\"hidden\"],[type=\"HIDDEN\"]");
+	   if(rlist!=null){
+	       cit = rlist.listIterator();
+	       //csrflist = new ArrayList<ParmGenParser> ();
+	       set_cookienames = new ArrayList<String>();
+	       HashMap<String,String> uniquecookies = new HashMap<String, String>();
+	       while(cit.hasNext()){
+	           PRequestResponse prr = cit.next();
+	           ParmVars.plog.debuglog(0, "body lenght=" + prr.response.getBodyLength());
+	           //ParmGenParser pgparser = new ParmGenParser(prr.response.getBody(), "[type=\"hidden\"],[type=\"HIDDEN\"]");
 
-           //csrflist.add(pgparser);
-           HashMap<String,ArrayList<String[]>> setcookieparams = prr.response.set_cookieparams;
-            for(Map.Entry<String, ArrayList<String[]>> e : setcookieparams.entrySet()) {
-                String k = e.getKey();
-                ArrayList<String[]> values = e.getValue();
-                String name = null;
-                for(String[] s: values){
-                    if(s[0].equals(k)){
-                        name = s[0];
-                        uniquecookies.put(name, s[1]);//name, value
-                    }
-                }
+	           //csrflist.add(pgparser);
+	           HashMap<String,ArrayList<String[]>> setcookieparams = prr.response.set_cookieparams;
+	            for(Map.Entry<String, ArrayList<String[]>> e : setcookieparams.entrySet()) {
+	                String k = e.getKey();
+	                ArrayList<String[]> values = e.getValue();
+	                String name = null;
+	                for(String[] s: values){
+	                    if(s[0].equals(k)){
+	                        name = s[0];
+	                        uniquecookies.put(name, s[1]);//name, value
+	                    }
+	                }
 
-            }
-       }
-       for(Map.Entry<String,String> e: uniquecookies.entrySet()){
-           String name = e.getKey();
-           set_cookienames.add(name);
-           ParmVars.plog.debuglog(0, "ParseResponse: Set-Cookie: " + name);
-       }
+	            }
+	       }
+	       for(Map.Entry<String,String> e: uniquecookies.entrySet()){
+	           String name = e.getKey();
+	           set_cookienames.add(name);
+	           ParmVars.plog.debuglog(0, "ParseResponse: Set-Cookie: " + name);
+	       }
+	   }
 
 
    }

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 
 session_start();
@@ -52,13 +52,14 @@ $_SESSION['token2'] = $randomval;
 
 <P> user:<?php echo $user; ?>
 
-<form action="confirm.php" method="POST">
+<form action="confirm.php" method="POST" enctype="multipart/form-data">
 <input type="hidden" name="token2" value="<?php echo $randomval; ?>">
 件名<input type="text" name="subject" value="<?php echo $subject;?>"><BR>
 お問い合わせ内容<BR>
 <TEXTAREA name="contents" rows="4" cols="40"><?php echo $contents; ?></textarea><BR>
 mail<BR>
 <input type="text" name="mailaddr" value="<?php echo $mailaddr; ?>" size="10" ><BR>
+<input type="file" name="imgfile" accept="image/*" ><P>
 <input type="submit"  value="確認">
 </form>
 

@@ -639,6 +639,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                 	AppParmsIni aparms = new AppParmsIni();
                 	//request URL
                 	String TargetURLRegex = ".*" + pqrs.request.getPath() + ".*";
+                	boolean isformdata = pqrs.request.isFormData();
                 	aparms.setUrl(TargetURLRegex);
                 	aparms.len = 4;//default
                 	aparms.typeval = aparms.T_TRACK;
@@ -665,6 +666,9 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                                 int len = value.length();
                                 String reg = ".{" + len + "}";
 	                	String regex = "(?:[&=?]+|^)" + token + "=(" + reg + ")";
+	                	if(isformdata){
+	                		regex = "(?:[A-Z].* name=\"" + ParmGenUtil.escapeRegexChars(token) + "\".*(?:\\r|\\n|\\r\\n))(?:[A-Z].*(?:\\r|\\n|\\r\\n)){0,}(?:\\r|\\n|\\r\\n)(?:.*?)(" + reg + ")" ;
+	                	}
 	                	apv.setURLencodedVal(regex);
                                 apv.setresURL(".*" + respqrs.request.getPath() + ".*");
                                 apv.setresRegexURLencoded("");
@@ -677,7 +681,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                                         break;
                                     default:
                                         break;
-                                    
+
                                 }
                                 apv.setresPartType(apv.getValPart(resvalpart));
                                 apv.resRegexPos = tkn.getTokenKey().GetFcnt();

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 session_start();
 
@@ -37,9 +37,15 @@ if(isset($_SESSION['mailaddr'])){
 }else{
     $mailaddr = "";
 }
+if(isset($_SESSION['imgfile'])){
+    $imgfile = $_SESSION['imgfile'];
+}else{
+    $imgfile = "";
+}
 
-if ( empty($subject) || 
+if ( empty($subject) ||
      empty($contents) ||
+     empty($imgfile) ||
      empty($mailaddr) ){
      $_SESSION['token1'] = $randomval;
      header('Location: inquiry.php?token1=' . $randomval);
@@ -68,6 +74,9 @@ if ( empty($subject) ||
 </tr>
 <tr>
 <th>宛先</th><td><?php echo $mailaddr; ?></td>
+</tr>
+<tr>
+<th>ファイル</th><td><?php echo $imgfile; ?></td>
 </tr>
 </table><BR>
 

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 session_start();
 
@@ -26,8 +26,10 @@ $randomval = sha1(uniqid(rand(), true));
 $subject = $_POST['subject'];
 $contents = $_POST['contents'];
 $mailaddr = $_POST['mailaddr'];
+$imgfile = $_FILES['imgfile']['name'];
+$tmp_path = $_FILES['imgfile']['tmp_name'];
 
-if ( empty($subject) || 
+if ( empty($subject) ||
      empty($contents) ||
      empty($mailaddr) ){
      $_SESSION['token2'] = $randomval;
@@ -65,6 +67,8 @@ $_SESSION['token3'] = $randomval;
 $_SESSION['subject'] =  $subject;
 $_SESSION['contents'] =  $contents;
 $_SESSION['mailaddr'] =  $mailaddr;
+$_SESSION['imgfile'] =  $imgfile;
+$_SESSION['tmp_path'] =  $tmp_path;
 
 ?>
 <html>
@@ -89,6 +93,12 @@ $_SESSION['mailaddr'] =  $mailaddr;
 </tr>
 <tr>
 <th>宛先</th><td><?php echo $mailaddr; ?></td>
+</tr>
+<tr>
+<th>ファイル</th><td><?php echo $imgfile; ?></td>
+</tr>
+<tr>
+<th>ファイル格納先</th><td><?php echo $tmp_path; ?></td>
 </tr>
 </table>
 

@@ -59,7 +59,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
                               <Component id="jButton2" alignment="0" pref="111" max="32767" attributes="0"/>
-                              <Component id="jButton3" alignment="0" max="32767" attributes="0"/>
+                              <Component id="ClearMacro" alignment="0" max="32767" attributes="0"/>
                               <Component id="ParamTracking" alignment="0" max="32767" attributes="0"/>
                           </Group>
                       </Group>
@@ -139,7 +139,7 @@
                           <Group type="102" attributes="0">
                               <Component id="jButton2" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                              <Component id="jButton3" min="-2" max="-2" attributes="0"/>
+                              <Component id="ClearMacro" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="9" max="-2" attributes="0"/>
                               <Component id="ParamTracking" min="-2" max="-2" attributes="0"/>
                           </Group>
@@ -332,10 +332,13 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton2ActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="jButton3">
+    <Component class="javax.swing.JButton" name="ClearMacro">
       <Properties>
-        <Property name="text" type="java.lang.String" value="&#x524a;&#x9664;"/>
+        <Property name="text" type="java.lang.String" value="&#x30af;&#x30ea;&#x30a2;"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ClearMacroActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JCheckBox" name="MBExec">
       <Properties>

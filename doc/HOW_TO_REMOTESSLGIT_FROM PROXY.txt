@@ -1,0 +1,39 @@
+１．リモートのproxyごしのgithub.com等へのアクセス。
+
+sslVerify = false等のエラー表示。
+
+
+１）インポート
+　　　Gitからプロジェクト
+　　　　URIの複製
+　　　　　httpsでアクセス。
+　　　　　　失敗する。
+２）　プロトコルをhttpに変更しアクセス。
+３）再度httpsでアクセス。
+　　
+
+２．maven2のproxy越しhttpsエラーの対応。
+
+~user/.m2/settings.xml
+
+<settings>
+  <proxies>
+    <proxy>
+      <id>proxy-http</id>
+      <active>true</active>
+      <protocol>http</protocol>
+      <host>proxy.toppan.co.jp</host>
+      <port>8088</port>
+      <username>chikara_1.daike</username>
+      <password>z4yvtz6w1</password>
+    </proxy>
+  </proxies>
+  <mirrors>
+    <mirror>
+      <id>UK</id>
+      <name>UK Central</name>
+      <url>http://repo.maven.apache.org/maven2</url>
+      <mirrorOf>central</mirrorOf>
+    </mirror>
+  </mirrors>
+</settings>

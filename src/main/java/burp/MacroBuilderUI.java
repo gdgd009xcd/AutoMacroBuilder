@@ -57,6 +57,21 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         return pmt;
     }
 
+    void clear(){
+    	//JListをクリアするには、modelのremove & jListへModelセットが必須。
+    	CSRFListModel.removeAllElements();
+    	CSRFList.setModel(CSRFListModel);
+    	RequestListModel.removeAllElements();
+    	RequestList.setModel(RequestListModel);
+    	MacroRequest.setText("");
+    	MacroResponse.setText("");
+        MacroComments.setText("");
+        rlist = null;
+        if(pmt!=null){
+        	pmt.clear();
+        }
+    }
+
     void addNewRequests(ArrayList <PRequestResponse> _rlist){
         DefaultListModel  lmodel = new DefaultListModel();
         AppParmsIni pini;
@@ -762,6 +777,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
     private void ClearMacroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ClearMacroActionPerformed
         // TODO add your handling code here:
+    	clear();
     }//GEN-LAST:event_ClearMacroActionPerformed
 
 

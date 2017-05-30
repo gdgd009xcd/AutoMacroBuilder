@@ -21,10 +21,18 @@ public class ParmGenJSON {
     AppValue apv;
     String exerr = null;
     int row = 0;
+    enum JSONLTYPE {
+    	DEFAULT,
+    	AppParmsIni_List,
+    	AppValue_List,
+    	MacroList
+    }
+    
+    JSONLTYPE current_LTYPE = JSONLTYPE.DEFAULT;
 
     ParmGenJSON(){
 
-	rlist = new ArrayList<AppParmsIni>();
+    	rlist = new ArrayList<AppParmsIni>();
         aparms = null;
         apv = null;
 

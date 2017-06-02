@@ -621,154 +621,175 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     		}
     	};
     	ParmFileFilter pFilter=new ParmFileFilter();
-        jfc.setFileFilter(pFilter);
+    	jfc.setFileFilter(pFilter);
     	if(jfc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+    		//rlist = pmt.originalrlist;//originalにリセット,PResponseのメンバーを保持して内容のコピーが必要。
+
     		//code to handle choosed file here.
     		File file = jfc.getSelectedFile();
     		String name = file.getAbsolutePath().replaceAll("\\\\", "\\\\\\\\");
     		ParmVars.parmfile = name;
-        	//エンコードの設定
-        	//ParmVars.encエンコードの決定
-        	//先頭ページのレスポンスのcharsetを取得
-        	PRequestResponse toppage = rlist.get(0);
-        	String tcharset = toppage.response.getCharset();
-        	ParmVars.enc = Encode.getEnum(tcharset);
+    		//エンコードの設定
+    		//ParmVars.encエンコードの決定
+    		//先頭ページのレスポンスのcharsetを取得
+    		PRequestResponse toppage = rlist.get(0);
+    		String tcharset = toppage.response.getCharset();
+    		ParmVars.enc = Encode.getEnum(tcharset);
 
 
 
-        	String tknames[] = {
-                    "PHPSESSID",
-                    "JSESSIONID",
-                    "SESID",
-                    "TOKEN",
-                    "_CSRF_TOKEN",
-                    "authenticity_token"
-            };
+    		String tknames[] = {
+    				"PHPSESSID",
+    				"JSESSIONID",
+    				"SESID",
+    				"TOKEN",
+    				"_CSRF_TOKEN",
+    				"authenticity_token"
+    		};
 
-            //token追跡自動設定。。
-            ArrayList<ParmGenToken> tracktokenlist = new ArrayList<ParmGenToken>();
-            Pattern patternw32 = Pattern.compile("\\w{32}");
-            ArrayList<AppParmsIni> newparms = new ArrayList<AppParmsIni>();//生成するパラメータ
-            PRequestResponse respqrs = null;
-            int row = 0;
-
-
-            for(PRequestResponse pqrs : rlist){
-                if(respqrs!=null&&tracktokenlist!=null&&tracktokenlist.size()>0){//直前のレスポンスに追跡パラメータあり
-                	//パラメータ生成
-                	AppParmsIni aparms = new AppParmsIni();
-                	//request URL
-                	String TargetURLRegex = ".*" + pqrs.request.getPath() + ".*";
-                	boolean isformdata = pqrs.request.isFormData();
-                	aparms.setUrl(TargetURLRegex);
-                	aparms.len = 4;//default
-                	aparms.typeval = aparms.T_TRACK;
-                	aparms.inival = 0;
-                	aparms.maxval = 0;
-                	aparms.csvname = "";
-                	aparms.pause = false;
-                	aparms.parmlist = new ArrayList<AppValue>();
-
-                	for(ParmGenToken tkn: tracktokenlist){
-                		AppValue apv = new AppValue();
-                                String token = tkn.getTokenKey().GetName();
-                		//body or query ターゲットリクエストのtokenパラメータ
-                                String valtype = "query";
-                                if(pqrs.request.hasBodyParam(token)){
-                                    valtype = "body";
-                                }
-	                	apv.setValPart(valtype);
-	                	apv.clearNoCount();
-	                	apv.csvpos =-1;
-	                	// (?:[&=?]+|^)token=(value)
-
-	                	String value = tkn.getTokenValue().getValue();
-                                int len = value.length();
-                                String reg = ".{" + len + "}";
-	                	String regex = "(?:[&=?]+|^)" + token + "=(" + reg + ")";
-	                	if(isformdata){
-	                		regex = "(?:[A-Z].* name=\"" + ParmGenUtil.escapeRegexChars(token) + "\".*(?:\\r|\\n|\\r\\n))(?:[A-Z].*(?:\\r|\\n|\\r\\n)){0,}(?:\\r|\\n|\\r\\n)(?:.*?)(" + reg + ")" ;
-	                	}
-	                	apv.setURLencodedVal(regex);
-                                apv.setresURL(".*" + respqrs.request.getPath() + ".*");
-                                apv.setresRegexURLencoded("");
-                                int resvalpart = AppValue.V_AUTOTRACKBODY;
-                                switch(tkn.getTokenKey().GetTokenType()){
-                                    case AppValue.T_LOCATION:
-                                        resvalpart = AppValue.V_HEADER;
-                                        break;
-                                    case AppValue.T_XCSRF_TOKEN:
-                                        break;
-                                    default:
-                                        break;
-
-                                }
-                                apv.setresPartType(apv.getValPart(resvalpart));
-                                apv.resRegexPos = tkn.getTokenKey().GetFcnt();
-                                apv.token = token;
-                                apv.urlencode = true;
-                                apv.fromStepNo = -1;
-                                apv.toStepNo = 0;
-                                apv.tokentype = tkn.getTokenKey().GetTokenType();
-                                apv.col = aparms.parmlist.size();
-                                aparms.parmlist.add(apv);
-                	}
-                        aparms.setRowAndCntFile(row);row++;
-                        aparms.crtGenFormat(true);
-                        newparms.add(aparms);
+    		//token追跡自動設定。。
+    		ArrayList<ParmGenToken> tracktokenlist = new ArrayList<ParmGenToken>();
+    		Pattern patternw32 = Pattern.compile("\\w{32}");
+    		ArrayList<AppParmsIni> newparms = new ArrayList<AppParmsIni>();//生成するパラメータ
+    		PRequestResponse respqrs = null;
+    		int row = 0;
 
 
-                }
-                tracktokenlist.clear();
-                respqrs = pqrs;
-                //レスポンストークン解析
-                String body = pqrs.response.getBody();
-                //レスポンスから追跡パラメータ抽出
-                ParmGenParser pgparser = new ParmGenParser(body);
-                ArrayList<ParmGenToken> bodytklist = pgparser.getNameValues();
-                ParmGenArrayList tklist = new ParmGenArrayList();
+    		for(PRequestResponse pqrs : rlist){
+    			if(respqrs!=null&&tracktokenlist!=null&&tracktokenlist.size()>0){//直前のレスポンスに追跡パラメータあり
+    				//リクエストにtracktokenlistのトークンが含まれる場合のみ
+    				boolean RequesthasToken = false;
+    				ArrayList<ParmGenToken> requesttokenlist = new ArrayList<ParmGenToken>();
+    				int p=0;
+    				ArrayList<Integer> dellist = new ArrayList<Integer>();
+    				for(ParmGenToken tkn: tracktokenlist){
+    					String token = tkn.getTokenKey().GetName();
+    					if(pqrs.request.hasQueryParam(token)||pqrs.request.hasBodyParam(token)){
+    						RequesthasToken = true;
+    						requesttokenlist.add(tkn);
+    						dellist.add(p);
+    					}
+    					p++;
+    				}
+    				for(int d: dellist){
+    					tracktokenlist.remove(d);
+    				}
+    				if(RequesthasToken){
+    					//パラメータ生成
+    					AppParmsIni aparms = new AppParmsIni();
+    					//request URL
+    					String TargetURLRegex = ".*" + pqrs.request.getPath() + ".*";
+    					boolean isformdata = pqrs.request.isFormData();
+    					aparms.setUrl(TargetURLRegex);
+    					aparms.len = 4;//default
+    					aparms.typeval = aparms.T_TRACK;
+    					aparms.inival = 0;
+    					aparms.maxval = 0;
+    					aparms.csvname = "";
+    					aparms.pause = false;
+    					aparms.parmlist = new ArrayList<AppValue>();
 
-                InterfaceCollection<ParmGenToken> ic = pqrs.response.getLocationTokens(tklist);
+    					for(ParmGenToken tkn: requesttokenlist){
+    						AppValue apv = new AppValue();
+    						String token = tkn.getTokenKey().GetName();
+    						//body or query ターゲットリクエストのtokenパラメータ
+    						String valtype = "query";
+    						if(pqrs.request.hasBodyParam(token)){
+    							valtype = "body";
+    						}
+    						apv.setValPart(valtype);
+    						apv.clearNoCount();
+    						apv.csvpos =-1;
+    						// (?:[&=?]+|^)token=(value)
 
-                tklist.addAll(bodytklist);
+    						String value = tkn.getTokenValue().getValue();
+    						int len = value.length();
+    						String reg = ".{" + len + "}";
+    						String regex = "(?:[&=?]+|^)" + token + "=(" + reg + ")";
+    						if(isformdata){
+    							regex = "(?:[A-Z].* name=\"" + ParmGenUtil.escapeRegexChars(token) + "\".*(?:\\r|\\n|\\r\\n))(?:[A-Z].*(?:\\r|\\n|\\r\\n)){0,}(?:\\r|\\n|\\r\\n)(?:.*?)(" + reg + ")" ;
+    						}
+    						apv.setURLencodedVal(regex);
+    						apv.setresURL(".*" + respqrs.request.getPath() + ".*");
+    						apv.setresRegexURLencoded("");
+    						int resvalpart = AppValue.V_AUTOTRACKBODY;
+    						switch(tkn.getTokenKey().GetTokenType()){
+    						case AppValue.T_LOCATION:
+    							resvalpart = AppValue.V_HEADER;
+    							break;
+    						case AppValue.T_XCSRF_TOKEN:
+    							break;
+    						default:
+    							break;
 
-                for(ParmGenToken token : tklist){
-                    //PHPSESSID, token, SesID, jsessionid
+    						}
+    						apv.setresPartType(apv.getValPart(resvalpart));
+    						apv.resRegexPos = tkn.getTokenKey().GetFcnt();
+    						apv.token = token;
+    						apv.urlencode = true;
+    						apv.fromStepNo = -1;
+    						apv.toStepNo = 0;
+    						apv.tokentype = tkn.getTokenKey().GetTokenType();
+    						apv.col = aparms.parmlist.size();
+    						aparms.parmlist.add(apv);
+    					}
+    					aparms.setRowAndCntFile(row);row++;
+    					aparms.crtGenFormat(true);
+    					newparms.add(aparms);
+    				}
 
-                    String tokenname = token.getTokenKey().GetName();
-                    boolean namematched = false;
-                    for(String tkn : tknames){
-                        if(tokenname.equalsIgnoreCase(tkn)){//完全一致
-                            tracktokenlist.add(token);
-                            namematched = true;
-                            break;
-                        }
-                    }
-                    if(!namematched){//nameはtknamesに一致しない
-	                    for(String tkn : tknames){
-	                    	if(tokenname.toUpperCase().indexOf(tkn.toUpperCase())!=-1){//部分一致
-	                            tracktokenlist.add(token);
-	                            namematched = true;
-	                            break;
-	                        }
-	                    }
-                    }
-                    // value値が \w{32}に一致
-                    if(!namematched){//nameはtknamesに一致しない
-                        String tokenvalue = token.getTokenValue().getValue();
-                        Matcher matcher = patternw32.matcher(tokenvalue);
-                        if(matcher.matches()){
-                            tracktokenlist.add(token);
-                        }
-                    }
 
-                }
-            }
-            ParmVars.plog.debuglog(0, "newparms.size=" + newparms.size());
-            if(newparms!=null&&!newparms.isEmpty()){
-	            ParmGenCSV csv = new ParmGenCSV(newparms, pmt);
-	            csv.jsonsave();
-            }
+    			}
+
+    			respqrs = pqrs;
+    			//レスポンストークン解析
+    			String body = pqrs.response.getBody();
+    			//レスポンスから追跡パラメータ抽出
+    			ParmGenParser pgparser = new ParmGenParser(body);
+    			ArrayList<ParmGenToken> bodytklist = pgparser.getNameValues();
+    			ParmGenArrayList tklist = new ParmGenArrayList();
+
+    			InterfaceCollection<ParmGenToken> ic = pqrs.response.getLocationTokens(tklist);
+
+    			tklist.addAll(bodytklist);
+
+    			for(ParmGenToken token : tklist){
+    				//PHPSESSID, token, SesID, jsessionid
+
+    				String tokenname = token.getTokenKey().GetName();
+    				boolean namematched = false;
+    				for(String tkn : tknames){
+    					if(tokenname.equalsIgnoreCase(tkn)){//完全一致
+    						tracktokenlist.add(token);
+    						namematched = true;
+    						break;
+    					}
+    				}
+    				if(!namematched){//nameはtknamesに一致しない
+    					for(String tkn : tknames){
+    						if(tokenname.toUpperCase().indexOf(tkn.toUpperCase())!=-1){//部分一致
+    							tracktokenlist.add(token);
+    							namematched = true;
+    							break;
+    						}
+    					}
+    				}
+    				// value値が \w{32}に一致
+    				if(!namematched){//nameはtknamesに一致しない
+    					String tokenvalue = token.getTokenValue().getValue();
+    					Matcher matcher = patternw32.matcher(tokenvalue);
+    					if(matcher.matches()){
+    						tracktokenlist.add(token);
+    					}
+    				}
+
+    			}
+    		}
+    		ParmVars.plog.debuglog(0, "newparms.size=" + newparms.size());
+    		if(newparms!=null&&!newparms.isEmpty()){
+    			ParmGenCSV csv = new ParmGenCSV(newparms, pmt);
+    			csv.jsonsave();
+    		}
     	}
 
 

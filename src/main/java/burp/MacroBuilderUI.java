@@ -221,7 +221,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 446, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 584, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -238,7 +238,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 446, Short.MAX_VALUE)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 584, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -255,7 +255,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 446, Short.MAX_VALUE)
+            .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 584, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -414,8 +414,8 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                                 .addComponent(CSRFupdate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(CSRFdelete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(paramlog, javax.swing.GroupLayout.PREFERRED_SIZE, 451, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(150, 150, 150))
+                .addComponent(paramlog, javax.swing.GroupLayout.DEFAULT_SIZE, 589, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -623,8 +623,8 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     	};
     	ParmFileFilter pFilter=new ParmFileFilter();
     	jfc.setFileFilter(pFilter);
+        ArrayList <PRequestResponse> orglist = pmt.originalrlist;
     	if(jfc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-    		rlist = pmt.originalrlist;//originalにリセット,PResponseのメンバーを保持して内容のコピーが必要。
 
     		//code to handle choosed file here.
     		File file = jfc.getSelectedFile();
@@ -633,7 +633,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     		//エンコードの設定
     		//ParmVars.encエンコードの決定
     		//先頭ページのレスポンスのcharsetを取得
-    		PRequestResponse toppage = rlist.get(0);
+    		PRequestResponse toppage = orglist.get(0);
     		String tcharset = toppage.response.getCharset();
     		ParmVars.enc = Encode.getEnum(tcharset);
 
@@ -656,7 +656,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     		int row = 0;
 
 
-    		for(PRequestResponse pqrs : rlist){
+    		for(PRequestResponse pqrs : orglist){
     			if(respqrs!=null&&tracktokenlist!=null&&tracktokenlist.size()>0){//直前のレスポンスに追跡パラメータあり
     				//リクエストにtracktokenlistのトークンが含まれる場合のみ
     				boolean RequesthasToken = false;

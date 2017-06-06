@@ -624,7 +624,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     	ParmFileFilter pFilter=new ParmFileFilter();
     	jfc.setFileFilter(pFilter);
     	if(jfc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-    		//rlist = pmt.originalrlist;//originalにリセット,PResponseのメンバーを保持して内容のコピーが必要。
+    		rlist = pmt.originalrlist;//originalにリセット,PResponseのメンバーを保持して内容のコピーが必要。
 
     		//code to handle choosed file here.
     		File file = jfc.getSelectedFile();

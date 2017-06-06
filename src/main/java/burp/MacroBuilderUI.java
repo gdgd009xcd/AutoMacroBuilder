@@ -8,6 +8,7 @@ package burp;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -671,8 +672,11 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     					}
     					p++;
     				}
+    				dellist.sort(Comparator.reverseOrder());
     				for(int d: dellist){
-    					tracktokenlist.remove(d);
+    					if(d<tracktokenlist.size()){
+    						tracktokenlist.remove(d);
+    					}
     				}
     				if(RequesthasToken){
     					//パラメータ生成

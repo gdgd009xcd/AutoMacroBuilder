@@ -9,28 +9,46 @@ package burp;
  * @author daike
  */
 public class test {
-    
+
     public static void main(String[] args){
         //ParmGenCSV(String _filename, String _lang)
         ParmVars.parmfile = "xxx.csv";
-        //ParmGenCSV csv = new ParmGenCSV(null,  null);
-        
-        //void add(String URL, String initval, String valtype, String incval, ArrayList<ParmGenParam> parms)
-       // csv.add("http://www.tms.co.jp", "1", "number", "4", new ArrayList<ParmGenParam> () {
-       //     { add(new ParmGenParam("path","","","","","name=(\\d+)"));//reqtype, csvpos, nomodify, resurl, resregex, reqregex
-       //       add(new ParmGenParam("body","","","","","index=(\\w+)"));
-       //     }           
-       // });
-        
-       // ParmGenRec rec = csv.get(0);
-        
-        //ParmGenParam param = rec.paramlist.get(1);
-        
-        // update by reference ParmGenParam object
-        //param.reqregex = "uname=([0-9a-z]+)";
-        
-        //csv.save();
-        
+        String seq = new String("1ABABABCxD123ABCD4");
+        String key = new String("ABCx");
+
+        byte[] seqbin = seq.getBytes();
+        byte[] keybin = key.getBytes();
+
+        int startpos = 2;
+
+
+        System.out.println("String.indexof=" + seq.indexOf(key, startpos));
+
+        	int j = 0;
+        	int idx = 0;
+        	boolean found = false;
+        	for(int i = startpos; i<seqbin.length; i++){
+        		System.out.println("  i,j="  + i + "," + j);
+        		if(seqbin[i] != keybin[j]){
+        			j = 0;
+        		}
+        		if(seqbin[i] == keybin[j]){
+        			if(j == 0){
+        				idx = i;
+        			}
+        			if(++j == keybin.length ){
+        				found = true;
+        				System.out.println(" result idx,i,j=" + idx+ "," + i + "," + j);
+        				break;
+        			}
+        		}else{
+        			j = 0;
+        		}
+        	}
+        	if(!found){
+        		idx = -1;
+        	}
+        	System.out.println(" result idx=" + idx);
     }
-    
+
 }

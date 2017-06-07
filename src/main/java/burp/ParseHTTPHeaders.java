@@ -95,7 +95,7 @@ class ParseHTTPHeaders {
                     httpmessage = new String(_binmessage, ParmVars.enc.getIANACharset());
                     ArrayList<String []> dummy = Parse(httpmessage);
                     int hlen = getParsedHeaderLength();
-                    ByteArrayUtil warray = new ByteArrayUtil(_binmessage);
+                    ParmGenBinUtil warray = new ParmGenBinUtil(_binmessage);
                     if(_binmessage!=null&&hlen < warray.length()){
                         byte[] _body = warray.subBytes(hlen);
                         setBody(_body);
@@ -644,9 +644,9 @@ class ParseHTTPHeaders {
                     sb.append("\r\n");
 
                     String headerpart = new String(sb);
-                    ByteArrayUtil rawmessage = new ByteArrayUtil();
+                    ParmGenBinUtil rawmessage = new ParmGenBinUtil();
                     try {
-                        rawmessage = new ByteArrayUtil(headerpart.getBytes(ParmVars.enc.getIANACharset()));
+                        rawmessage = new ParmGenBinUtil(headerpart.getBytes(ParmVars.enc.getIANACharset()));
                         if(bytebody!=null){
                             rawmessage.concat(bytebody);
                         }

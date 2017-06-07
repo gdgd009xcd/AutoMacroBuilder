@@ -330,411 +330,6 @@ class CSVParser {
 	}
 }
 
-//
-// ByteArray
-//
-class ByteArrayUtil {
-
-//	private Logger log= BaseLogger.getLogger(BaseLogger.TYPE_SYSTEM);	// ログ
-	private ByteArrayOutputStream stream= null;						// 保持しているbyte配列ストリーム
-
-	/**
-	 * 空のByteArrayUtilオブジェクトを生成する
-	 */
-	public ByteArrayUtil(){
-		initByteArrayUtil(null);
-	}
-
-	/**
-	 * 指定データを内部に保持するByteArrayUtilオブジェクトを生成する
-	 *
-	 * @param newByteArray 保持するbyte配列
-	 */
-	public ByteArrayUtil(byte[] newByteArray){
-		initByteArrayUtil(newByteArray);
-	}
-
-	/**
-	 * 指定データを内部に保持するByteArrayUtilオブジェクトを生成する
-	 * 指定データが`null`の場合は空のByteArrayUtilオブジェクトを生成する
-	 *
-	 * @param newByteArray 保持するbyte配列
-	 */
-	void initByteArrayUtil(byte[] newByteArray){
-		stream= new ByteArrayOutputStream();
-		concat(newByteArray);
-	}
-
-	/**
-	 * 内部保持しているbyte配列の長さを返します
-	 *
-	 * @return 内部保持しているbyte配列の長さ
-	 */
-	public int length(){
-		return stream.size();
-	}
-
-	/**
-	 * 指定されたインデックス位置にあるbyte値を返します
-	 *
-	 * @param index 取得したいインデックス
-	 * @return byte値
-	 * @throws OutOfMemoryError 内部保持している配列の長さ以上を指定した場合
-	 */
-	public byte byteAt(int index){
-		byte[] b= getBytes();
-		return b[index];
-	}
-
-	/**
-	 * 保持データに指定したbyte配列を追加します<br>
-	 * `ByteArrayUtil#insert()`でも同様の動作が可能だが
-	 * ストリームの性質上こっちの実装が適しているため単独実装した。
-	 *
-	 * @param addBytes 新規に追加したいbyte配列
-	 * @return 追加成功:true / 失敗:false
-	 */
-	public boolean concat(byte[] addBytes){
-
-		// 評価以前の問題
-		if ((stream== null)||(addBytes== null)){
-			return false;
-		}
-
-		// 保持データに追加
-		try {
-			stream.write(addBytes);
-		}
-		catch (IOException e) {
-		// 入出力チェックをしているので基本的には流れてこない
-                    ParmVars.plog.printException(e);
-                    return false;
-		}
-		return true;
-	}
-
-	/**
-	 * `fromIndex`で指定するbyte配列`org`の位置に
-	 * 配列`dest`を挿入する。
-	 * <pre>
-	 * Ex.
-	 * 	内部保持データ= {0, 1, 2, 3};
-	 * 	byte[] dest= {4, 5};
-	 *
-	 * 	とした時…
-	 *
-	 * 	insert(dest, 0)実行後の配列イメージ	: {4, 5, 0, 1, 2, 3}
-	 * 	insert(dest, 1)実行後の配列イメージ	: {0, 4, 5, 1, 2, 3}
-	 * 	insert(dest, 4)実行後の配列イメージ	: {0, 1, 2, 3, 4, 5}
-	 * 	insert(dest, 5)実行後の配列イメージ	: OutOfMemoryErrorをスロー
-	 * </pre>
-	 * @param dest 挿入するbyte配列
-	 * @param fromIndex 挿入するorgのインデックス
-	 * @return 二つのbyte配列を合成したbyte配列
-	 * @throws IllegalArgumentException - byte配列が`null`の場合と`fromIndex`に負の数を指定した場合
-	 * @throws OutOfMemoryError - `org`の長さを超える`fromIndex`を指定した時(org.length < fromIndex)
-	 */
-	public void insert(byte[] dest, int fromIndex){
-
-		byte[] org= getBytes();
-
-		// 評価以前の問題
-		if ((org== null)||(dest== null)||(fromIndex< 0)){	// 引数がおかしい
-			throw new IllegalArgumentException();
-		}
-		if (org.length< fromIndex){							// 配列長を超えた値指定(OutOfBounds)
-			throw new OutOfMemoryError("`fromIndex` is larger than length `org` of the specified array.");
-		}
-
-		ByteArrayOutputStream out= new ByteArrayOutputStream();		// 戻り値用ストリーム
-
-		// ストリーム上で配列を結合
-		if (fromIndex!= 0){
-			out.write(org, 0, fromIndex);
-		}
-		try {
-			out.write(dest);
-		} catch (IOException e) {	// 理論的には出てこないはずだが…
-                    ParmVars.plog.printException(e);
-		}
-		out.write(org, fromIndex, org.length - fromIndex);
-
-		// 一度保持データを破棄して
-		initByteArrayUtil(null);
-
-		// 書き直す
-		try {
-			out.writeTo(stream);
-		}
-		catch (IOException e) {
-                        ParmVars.plog.printException(e);
-		}
-	}
-
-	/**
-	 * 内部に保持するデータをbyte配列形式で返す
-	 *
-	 * @return byte配列
-	 */
-	public byte[] getBytes(){
-		if (stream== null){
-			return null;
-		}
-		return stream.toByteArray();
-	}
-
-	/**
-	 * この配列の部分配列を返します<br>
-	 * 部分配列は、指定された `beginIndex` から `endIndex` - 1 にある byte要素 までです<br>
-	 * したがって、部分配列の長さは `endIndex`-`beginIndex` になります。
-	 *
-	 * @param beginIndex 開始インデックス(この要素を含む)
-	 * @param endIndex 終了インデックス(この要素を含まない)
-	 * @return 指定された部分配列
-	 * @throws OutOfMemoryError
-	 * 				`beginIndex`が負の数の場合。`endIndex`がこの配列要素数以上の場合。
-	 * 				`beginIndex>= endIndex` が成立する場合。
-	 */
-	public byte[] subBytes(int beginIndex, int endIndex){
-
-		// 評価以前の問題
-		if ((beginIndex< 0)||(endIndex> length())||(beginIndex>= endIndex)){
-			throw new OutOfMemoryError();
-		}
-
-		int count= endIndex - beginIndex;		// 戻り値配列の要素数
-		byte[] org= getBytes();
-		byte[] result= new byte[count];
-
-		for (int i= 0; i< count; i++){
-			result[i]= org[beginIndex + i];
-		}
-
-		return result;
-	}
-
-	/**
-	 * この配列の部分配列を返します<br>
-	 * 部分配列は、指定された `beginIndex` から終端までです<br>
-	 * したがって、部分配列の長さは `endIndex - (内部配列の長さ)` になります。
-	 *
-	 * @param beginIndex 開始インデックス(この要素を含む)
-	 * @return 指定された部分配列
-	 * @throws OutOfMemoryError
-	 * 				`beginIndex`が負の数。またはがこの配列要素数以上の場合。
-	 */
-	public byte[] subBytes(int beginIndex){
-		return subBytes(beginIndex, length());
-	}
-
-	/**
-	 * この配列が`fromIndex`以降において、
-	 * `dest`が最初に出現する位置を返します。<br>
-	 * <br>
-	 * 見つからない場合は -1 を返します
-	 *
-	 * @param dest 検索したいbyte配列
-	 * @param fromIndex 検索開始位置
-	 * @return 見つかったインデックス
-	 */
-	public int indexOf(byte[] dest, int fromIndex){
-
-		byte[] org= getBytes();
-
-		// 評価以前の問題
-		if ((org== null)||(dest== null)||(fromIndex< 0)){
-			throw new IllegalArgumentException("`dest` or `fromIndex` is null.");
-		}
-		if (org.length< fromIndex){							// 配列長を超えた値指定(OutOfBounds)
-			throw new OutOfMemoryError("`fromIndex` is larger than length `org` of the specified array.");
-		}
-		if ((org.length== 0)||(dest.length== 0)				// 長さが無いので比較しようが無い
-				||(org.length< dest.length))				// 探したい配列の方が長いので見つかるワケがない
-		{
-			return -1;
-		}
-
-		// 評価する限界値
-		int limitIndex= org.length - dest.length + 1;
-
-		for (int i= fromIndex; i< limitIndex; i++){
-			for (int j= 0; j< dest.length; j++){
-				if (org[i + j]== dest[j]){
-					// 最後まで一致したら戻り値に設定する
-					if (j== dest.length - 1){
-						return i;
-					}
-				}
-				else{
-					break;
-				}
-			}
-		}
-		// 最後まで見つからなかった
-		return -1;
-	}
-
-	/**
-	 * この配列内において、配列`dest`が最初に出現する位置を返します。<br>
-	 * <br>
-	 * 見つからない場合は -1 を返します
-	 *
-	 * @param dest 検索したいbyte
-	 * @return 見つかったインデックス
-	 */
-	public int indexOf(byte[] dest){
-		return indexOf(dest, 0);
-	}
-
-	/**
-	 * この配列内において、`dest`が最初に出現する位置を返します。<br>
-	 * <br>
-	 * 見つからない場合は -1 を返します
-	 *
-	 * @param dest 検索したいbyte
-	 * @return 見つかったインデックス
-	 */
-	public int indexOf(byte dest){
-		byte[] b= {dest};
-		return indexOf(b, 0);
-	}
-
-	/**
-	 * この内部配列が、指定された配列`regex`で始まるかどうかを判定する
-	 *
-	 * @param regex 接頭配列
-	 * @return `regex`で始まる:true / 始まらない:false
-	 * @throws IllegalArgumentException `regex`が`null`の時
-	 */
-	public boolean startsWith(byte[] regex){
-
-		if (regex== null){
-			throw new IllegalArgumentException("`regex` is null.");
-		}
-
-		if (indexOf(regex)!= 0){
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * この内部配列と指定したbyte配列が等しいかどうかを判定する
-	 *
-	 * @param dest 比較したいbyte配列
-	 * @return 等しい:true / 等しくない:false
-	 * @throws IllegalArgumentException `dest`が`null`の時
-	 */
-	public boolean equals(byte[] dest){
-
-		if (dest== null){
-			throw new IllegalArgumentException("`dest` is null.");
-		}
-
-		if ((length()!= dest.length)||(indexOf(dest)!= 0)){
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * この配列内において配列`target`に一致する部分配列を
-	 * 配列`replacement`に置換したbyte配列を返します。
-	 *
-	 * @param target ターゲット配列(置換したいbyte配列)
-	 * @param replacement 置換後の部分配列
-	 * @return 全体を置換した配列
-	 */
-	public byte[] replace(byte[] target, byte[] replacement){
-
-		// 評価以前の問題
-		if ((target== null)||(replacement== null)){
-			throw new IllegalArgumentException("`target` or `replacement` is null.");
-		}
-
-		int index= indexOf(target);
-		byte[] org= getBytes();
-
-		// 見つからないので分解生成は不要
-		if (index== -1){
-			return org;
-		}
-
-		ByteArrayOutputStream out= new ByteArrayOutputStream();
-		int beforeIndex= 0;
-		int skipCount= target.length;							// 要素発見時の配列スキップ数
-
-		// `target`が見つかる間は書き込み続ける
-		while(index!= -1){
-
-			out.write(org, beforeIndex, index - beforeIndex);	// 直前まで書き込む
-			out.write(replacement, 0, replacement.length);		// 置換配列を書き込む
-			beforeIndex= index + skipCount;						// 見つけたターゲット分飛ばす
-
-			if (length()< index + skipCount){					// 残りの探索幅より`target`が大きければ終了
-				break;
-			}
-			index= indexOf(target, index + skipCount);
-		}
-
-		// 残りの要素を書き込む
-		out.write(org, beforeIndex, org.length - beforeIndex);
-
-		return out.toByteArray();
-	}
-
-	/**
-	 * この配列内にある全ての`oldByte`を`newByte`に置換した
-	 * byte配列を返します。
-	 *
-	 * @param oldByte 置換したいbyte
-	 * @param newByte 置換後のbyte
-	 * @return 置換後のbyte配列
-	 */
-	public byte[] replace(byte oldByte, byte newByte){
-
-		byte[] org= getBytes();
-		int count= org.length;
-
-		for (int i= 0; i< count; i++){
-			if (org[i]== oldByte){
-				org[i]= newByte;
-			}
-		}
-		return org;
-	}
-
-	/**
-	 * この配列内に含まれる部分配列`target`の個数を返す
-	 *
-	 * @param target 探し出す部分配列
-	 * @return 見つかった部分配列の個数
-	 */
-	public int countOf(byte[] target){
-
-		// 評価以前の問題
-		if (target== null){
-			throw new IllegalArgumentException("`target` is null.");
-		}
-		if (length()< target.length){
-			return 0;
-		}
-
-		int count= 0;
-		int skip= target.length;
-		int index= indexOf(target);
-		while(index!= -1){
-			count++;
-
-			if (length()< index + skip){
-				break;
-			}
-			index= indexOf(target, index + skip);
-		}
-
-		return count;
-	}
-}
 
 //
 // class AppValue
@@ -1230,7 +825,7 @@ class FileReadLine {
  	*/
 	String readLineRandomAccessFileCharset(RandomAccessFile f)
 	  throws IOException {
-	  ByteArrayUtil barray = new ByteArrayUtil();
+	  ParmGenBinUtil barray = new ParmGenBinUtil();
 	  byte[] onebyte = new byte[1];
 	  int c = -1;
 	  boolean eol = false;
@@ -1972,7 +1567,7 @@ class ParmGen {
 
 
 
-	PRequest ParseRequest(PRequest prequest,  ByteArrayUtil boundaryarray, ByteArrayUtil _contarray, AppParmsIni pini, AppValue av)  {
+	PRequest ParseRequest(PRequest prequest,  ParmGenBinUtil boundaryarray, ParmGenBinUtil _contarray, AppParmsIni pini, AppValue av)  {
 
 
 	//	String[] headers=request.getHeaderNames();
@@ -2055,12 +1650,12 @@ class ParmGen {
 		        	if ( content != null && !content.equals(n_content) && av.isModify()){
 		        		ParmVars.plog.debuglog(1, " Original body[" + content + "]");
 		        		ParmVars.plog.debuglog(1, " Modified body[" + n_content + "]");
-						_contarray.initByteArrayUtil(n_content.getBytes());
+						_contarray.initParmGenBinUtil(n_content.getBytes());
 		        		return prequest;
 		        	}
 	        	}else{//multipart/form-data
 	        		ParmVars.plog.debuglog(1, "multipart/form-data");
-	        		ByteArrayUtil n_array = new ByteArrayUtil();
+	        		ParmGenBinUtil n_array = new ParmGenBinUtil();
 	        		int cpos = 0;
 	        		int npos = -1;
 	        		byte[] partdata= null;
@@ -2129,7 +1724,7 @@ class ParmGen {
 
 	        		if ( partupdt ){
 	        			//_contarray = n_array;
-	        			_contarray.initByteArrayUtil(n_array.getBytes());
+	        			_contarray.initParmGenBinUtil(n_array.getBytes());
 		        		return prequest;
 	        		}
 	        	}
@@ -2262,8 +1857,8 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                 }catch(Exception e){
                     ParmVars.plog.printException(e);
                 }
-		ByteArrayUtil boundaryarray = null;
-		ByteArrayUtil contarray = null;
+		ParmGenBinUtil boundaryarray = null;
+		ParmGenBinUtil contarray = null;
 
 
 		if( parmcsv == null){
@@ -2301,7 +1896,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                                                                 String Boundary = ctypematcher.group(1);
                                                                 ParmVars.plog.debuglog(1, "boundary=" + Boundary);
                                                                 Boundary = "--" + Boundary;//
-                                                                boundaryarray = new ByteArrayUtil(Boundary.getBytes());
+                                                                boundaryarray = new ParmGenBinUtil(Boundary.getBytes());
 
                                                         }
                                                         hasboundary = true;
@@ -2317,16 +1912,16 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 								bytes = null;
 							}
 							if ( bytes != null ){
-								contarray = new ByteArrayUtil(bytes);
+								contarray = new ParmGenBinUtil(bytes);
 							}
 							bytes = null;
                                                         * **/
-                                                    ByteArrayUtil warray = new ByteArrayUtil(requestbytes);
+                                                    ParmGenBinUtil warray = new ParmGenBinUtil(requestbytes);
                                                     try{
                                                         //ParmVars.plog.debuglog(1,"request length : " + Integer.toString(warray.length()) + "/" + Integer.toString(prequest.getParsedHeaderLength()));
                                                         if(warray.length()>prequest.getParsedHeaderLength()){
                                                             byte[] wbyte = warray.subBytes(prequest.getParsedHeaderLength());
-                                                            contarray = new ByteArrayUtil(wbyte);
+                                                            contarray = new ParmGenBinUtil(wbyte);
                                                         }
                                                     }catch(Exception e ){
                                                         //contarray is null . No Body...

@@ -61,6 +61,7 @@
                               <Component id="jButton2" alignment="0" pref="111" max="32767" attributes="0"/>
                               <Component id="ClearMacro" alignment="0" max="32767" attributes="0"/>
                               <Component id="ParamTracking" alignment="0" max="32767" attributes="0"/>
+                              <Component id="Load" alignment="0" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                       <Component id="jSeparator1" alignment="0" max="32767" attributes="0"/>
@@ -106,7 +107,7 @@
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="paramlog" pref="589" max="32767" attributes="0"/>
+              <Component id="paramlog" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -133,15 +134,17 @@
                   <Component id="FinalResponse" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="103" groupAlignment="0" max="-2" attributes="0">
                   <Group type="102" attributes="0">
-                      <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Group type="102" attributes="0">
                               <Component id="jButton2" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Component id="ClearMacro" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="9" max="-2" attributes="0"/>
                               <Component id="ParamTracking" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
+                              <Component id="Load" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Component id="jScrollPane1" max="-2" attributes="0"/>
                       </Group>
@@ -162,7 +165,7 @@
                           <Component id="CSRFdelete" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
-                  <Component id="paramlog" min="-2" pref="252" max="-2" attributes="0"/>
+                  <Component id="paramlog" max="32767" attributes="0"/>
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="jSeparator2" min="-2" max="-2" attributes="0"/>
@@ -225,7 +228,7 @@
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane2" alignment="0" pref="228" max="32767" attributes="0"/>
+                  <Component id="jScrollPane2" alignment="0" pref="244" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
           </Layout>
@@ -264,7 +267,7 @@
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane3" alignment="0" pref="228" max="32767" attributes="0"/>
+                  <Component id="jScrollPane3" alignment="0" pref="244" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
           </Layout>
@@ -303,7 +306,7 @@
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane5" alignment="0" pref="228" max="32767" attributes="0"/>
+                  <Component id="jScrollPane5" alignment="0" pref="244" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
           </Layout>
@@ -467,6 +470,14 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ParamTrackingActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="Load">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Load"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="LoadActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

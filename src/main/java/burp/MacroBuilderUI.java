@@ -162,6 +162,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         MBResetToOriginal = new javax.swing.JCheckBox();
         MBdeleteSetCookies = new javax.swing.JCheckBox();
         ParamTracking = new javax.swing.JButton();
+        Load = new javax.swing.JButton();
 
         targetRequest.setText("targetRequest");
         targetRequest.addActionListener(new java.awt.event.ActionListener() {
@@ -225,7 +226,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 228, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 244, Short.MAX_VALUE)
         );
 
         paramlog.addTab("リクエスト", jPanel1);
@@ -242,7 +243,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 228, Short.MAX_VALUE)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 244, Short.MAX_VALUE)
         );
 
         paramlog.addTab("レスポンス", jPanel2);
@@ -259,7 +260,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 228, Short.MAX_VALUE)
+            .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 244, Short.MAX_VALUE)
         );
 
         paramlog.addTab("追跡", jPanel3);
@@ -366,6 +367,13 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             }
         });
 
+        Load.setText("Load");
+        Load.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                LoadActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -380,7 +388,8 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)
                                 .addComponent(ClearMacro, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(ParamTracking, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                .addComponent(ParamTracking, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(Load, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                         .addComponent(jSeparator1)
                         .addGroup(layout.createSequentialGroup()
                             .addComponent(jCheckBox2)
@@ -414,7 +423,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                                 .addComponent(CSRFupdate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(CSRFdelete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(paramlog, javax.swing.GroupLayout.DEFAULT_SIZE, 589, Short.MAX_VALUE)
+                .addComponent(paramlog)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -436,15 +445,17 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                     .addComponent(jCheckBox2)
                     .addComponent(FinalResponse))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jButton2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(ClearMacro)
                                 .addGap(9, 9, 9)
-                                .addComponent(ParamTracking))
+                                .addComponent(ParamTracking)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(Load))
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -459,7 +470,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                                     .addComponent(CSRFParam, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(CSRFupdate)))
                             .addComponent(CSRFdelete)))
-                    .addComponent(paramlog, javax.swing.GroupLayout.PREFERRED_SIZE, 252, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(paramlog))
                 .addGap(18, 18, 18)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(272, Short.MAX_VALUE))
@@ -481,8 +492,11 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                 //
 
                 DefaultListModel  lmodel = new DefaultListModel();
+                ParmVars.plog.debuglog(0, "before rlist.get");
                 PRequestResponse pqr = rlist.get(pos);
+                ParmVars.plog.debuglog(0, "before MacroRequest.setText");
                 MacroRequest.setText(pqr.request.getMessage());
+                ParmVars.plog.debuglog(0, "before MacroResponse.setText");
                 MacroResponse.setText(pqr.response.getMessage());
                 MacroComments.setText(pqr.getComments());
 
@@ -805,6 +819,10 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     	clear();
     }//GEN-LAST:event_ClearMacroActionPerformed
 
+    private void LoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoadActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_LoadActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JList CSRFList;
@@ -813,6 +831,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     private javax.swing.JButton CSRFupdate;
     private javax.swing.JButton ClearMacro;
     private javax.swing.JCheckBox FinalResponse;
+    private javax.swing.JButton Load;
     private javax.swing.JCheckBox MBCookieFromJar;
     private javax.swing.JCheckBox MBCookieUpdate;
     private javax.swing.JCheckBox MBExec;

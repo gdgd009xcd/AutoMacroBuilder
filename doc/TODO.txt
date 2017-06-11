@@ -121,3 +121,7 @@ currentStepNo: 実行中のstepno
 　　？その後発生せず。
 　　
 24. requestの修正機能必要。originalを修正する機能。
+
+25. windowsのピクチャライブラリサンプル画像アップロード。800k程度。
+    JTextAreaの表示に限界あり。一定サイズ以上は、非表示とするよう修正要。
+　　ParmGenNewのRequest, MacroBuilderUIのRequestエリア。。

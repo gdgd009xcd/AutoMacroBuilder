@@ -36,6 +36,8 @@ import javax.json.Json;
 import javax.json.stream.JsonParser;
 
 import flex.messaging.util.URLDecoder;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 
 
@@ -1512,7 +1514,7 @@ class ParmGen {
         				fr = null;
         			}
         		}
-
+                        ParmGenStack<String> astack = new ParmGenStack<String>();
         		JsonParser parser = Json.createParser(new StringReader(jsondata));
         		String keyname = null;
         		boolean errflg = false;
@@ -1527,27 +1529,31 @@ class ParmGen {
         			switch(event) {
         			case START_ARRAY:
         				arraylevel++;
+                                        astack.push(keyname);
+                                        //ParmVars.plog.debuglog(0, "START_ARRAY NAME:" +keyname + " level:" + arraylevel);
         				break;
         			case END_ARRAY:
         				arraylevel--;
+                                        String ep = astack.pop();
+                                        //ParmVars.plog.debuglog(0, "END_ARRAY NAME:" +ep + " level:" + arraylevel);
         				break;
         			case KEY_NAME:
         				keyname = parser.getString();
         				break;
         			case START_OBJECT:
         			case END_OBJECT:
-        				errflg = gjson.Parse(arraylevel, event, keyname, null);
+        				errflg = gjson.Parse(astack,arraylevel, event, keyname, null);
         				break;
         			case VALUE_TRUE:
         				bval = true;
         			case VALUE_FALSE:
-        				errflg = gjson.Parse(arraylevel, event, keyname, bval);
+        				errflg = gjson.Parse(astack,arraylevel, event, keyname, bval);
         				break;
         			case VALUE_STRING:
         			case VALUE_NUMBER:
         				obj = parser.getString();
         			case VALUE_NULL:
-        				errflg = gjson.Parse(arraylevel, event, keyname, obj);
+        				errflg = gjson.Parse(astack,arraylevel, event, keyname, obj);
         				break;
         			}
         		}

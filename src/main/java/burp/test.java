@@ -4,6 +4,8 @@
  */
 package burp;
 
+import java.util.Deque;
+
 /**
  *
  * @author daike
@@ -41,10 +43,20 @@ public class test {
 	        			break;
 	        		}
         		}
+                        
         		if(idx!=-1)break;
         	}
         	
         	System.out.println(" result idx=" + idx);
+                ParmGenStack<String> stack = new ParmGenStack<String>();
+                stack.push("1");
+                stack.push("2");
+                stack.push("3");
+                stack.push("4");
+                
+                String p = stack.pop();
+                System.out.println("current:" + stack.getCurrent() + " p:" + p);
     }
 
+    
 }

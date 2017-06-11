@@ -624,8 +624,9 @@ class ParseHTTPHeaders {
 		}
 		sb.append("\r\n");
 		sb.append(getBody());
-
+                //ParmVars.plog.debuglog(0, "getMessage sb.len=" + sb.length());
 		message = new String(sb);
+                //ParmVars.plog.debuglog(0, "getMessage done.");
 
 		return message;
 	}

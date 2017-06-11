@@ -96,8 +96,8 @@ public class ParmGenJSON {
         return b;
     }
 
-    boolean Parse(int alevel, JsonParser.Event ev, String name, Object value ){
-
+    boolean Parse(ParmGenStack<String> astack, int alevel, JsonParser.Event ev, String name, Object value ){
+        String current = astack.getCurrent();
         switch(alevel){
             case 0:
                 if(name.toUpperCase().equals("LANG")){
@@ -115,8 +115,11 @@ public class ParmGenJSON {
             case 1:
                 switch(ev){
                     case START_OBJECT:
-                        aparms = new AppParmsIni();
-                        aparms.parmlist = new ArrayList<AppValue>();
+                        if(current!=null&&current.toUpperCase().equals("APPPARMSINI_LIST")){
+                            //ParmVars.plog.debuglog(0, "START_OBJECT level1 name:" + current);
+                            aparms = new AppParmsIni();
+                            aparms.parmlist = new ArrayList<AppValue>();
+                        }
                         break;
                     case END_OBJECT:
                         if(exerr==null){
@@ -164,7 +167,10 @@ public class ParmGenJSON {
             case 2:
                 switch(ev){
                     case START_OBJECT:
-                        apv = new AppValue();
+                        if(current!=null&&current.toUpperCase().equals("APPVALUE_LIST")){
+                            //ParmVars.plog.debuglog(0, "START_OBJECT level2 name:" + current);
+                            apv = new AppValue();
+                        }
                         break;
                     case END_OBJECT:
                         if(exerr==null){

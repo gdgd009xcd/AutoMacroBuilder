@@ -125,3 +125,5 @@ currentStepNo: 実行中のstepno
 25. windowsのピクチャライブラリサンプル画像アップロード。800k程度。
     JTextAreaの表示に限界あり。一定サイズ以上は、非表示とするよう修正要。
 　　ParmGenNewのRequest, MacroBuilderUIのRequestエリア。。
+
+26. JSONデータのレスポンス追跡。 JSONエンコード形式リテラルを (\u0027/ エスケープ\/...)を文字列に変換が必要。

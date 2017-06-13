@@ -331,6 +331,15 @@ class LocVal {
 				}
 
 				if ( matchval != null ){
+					if(_uencode==true){
+                        String venc = matchval;
+                        try{
+                            venc = URLEncoder.encode(matchval, ParmVars.enc.getIANACharset());
+                        }catch (UnsupportedEncodingException e){
+                            //NOP
+                        }
+                        matchval = venc;
+                    }
 					String ONETIMEPASSWD = matchval.replaceAll(",", "%2C");
                     if(ONETIMEPASSWD!=null&&!ONETIMEPASSWD.isEmpty()){// value値nullは追跡しない
                         printlog("*****FETCHRESPONSE body r,c:value:" + r + "," + c + ":" +  ONETIMEPASSWD );

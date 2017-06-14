@@ -278,7 +278,7 @@ class LocVal {
 	//
 	// body match
 	//
-	boolean bodymatch(int currentStepNo, int fromStepNo, String url, PResponse presponse, int r, int c, boolean overwrite, boolean autotrack, int fcnt, String name, boolean _uencode, int _tokentype) throws UnsupportedEncodingException{
+	boolean bodymatch(int currentStepNo, int fromStepNo, String url, PResponse presponse, int r, int c, boolean overwrite, boolean autotrack, AppValue av,int fcnt, String name, boolean _uencode, int _tokentype) throws UnsupportedEncodingException{
 		if (urlmatch(url, r, c )){
 
             String body = presponse.getBody();
@@ -331,6 +331,7 @@ class LocVal {
 				}
 
 				if ( matchval != null ){
+					matchval = matchval.replaceAll("\\\\/", "/");
 					if(_uencode==true){
                         String venc = matchval;
                         try{
@@ -341,6 +342,7 @@ class LocVal {
                         matchval = venc;
                     }
 					String ONETIMEPASSWD = matchval.replaceAll(",", "%2C");
+
                     if(ONETIMEPASSWD!=null&&!ONETIMEPASSWD.isEmpty()){// value値nullは追跡しない
                         printlog("*****FETCHRESPONSE body r,c:value:" + r + "," + c + ":" +  ONETIMEPASSWD );
                         setLocVal(currentStepNo,fromStepNo, r,c,ONETIMEPASSWD, overwrite);

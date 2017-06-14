@@ -12,7 +12,6 @@ package burp;
 
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -36,8 +35,6 @@ import javax.json.Json;
 import javax.json.stream.JsonParser;
 
 import flex.messaging.util.URLDecoder;
-import java.util.ArrayDeque;
-import java.util.Deque;
 
 
 
@@ -347,63 +344,70 @@ class AppValue {
 	Pattern valueregex;
 	public int csvpos;
 	public int col;
-        public String resURL;
-        public String resRegex;
-        public int resPartType;
-        public int resRegexPos = -1;
-        public String token;//追跡token　Name
+	public String resURL;
+	public String resRegex;
+	public int resPartType;
+	public int resRegexPos = -1;
+	public String token;//追跡token　Name
 
-        public int tokentype;
-        public static final int T_DEFAULT = 0;
-        public static final int T_HIDDEN = 1;
-        public static final int T_LOCATION = 2;
-        public static final int T_HREF = 3;
-        public static final int T_XCSRF_TOKEN = 4;
-        public static final int T_TEXT = 5;
+	public int tokentype;
+	public static final int T_DEFAULT = 0;
+	public static final int T_HIDDEN = 1;
+	public static final int T_LOCATION = 2;
+	public static final int T_HREF = 3;
+	public static final int T_XCSRF_TOKEN = 4;
+	public static final int T_TEXT = 5;
 
-        private static String[] TokenTypeNames = {
-            "",
-            "hidden",
-            "location",
-            "href",
-            "xcsrf",
-            "text",
-            null
-        };
+	private static String[] TokenTypeNames = {
+			"",
+			"hidden",
+			"location",
+			"href",
+			"xcsrf",
+			"text",
+			null
+	};
 
-        public String tamattack;
-        public int tamadvance;
-        public int payloadposition;//I_APPEND, I_INSERT, I_REPLACE
-        public boolean urlencode;// URLencodeする・しない
-        public int fromStepNo = -1;//追跡元 <0 :　無条件で追跡　>=0: 指定StepNoのリクエスト追跡
-        public int toStepNo = 0;//更新先 <0 currentStepNo == responseStepNo - toStepNo ==0: 無条件　>0:指定したStepNoのリクエスト更新
+	public String tamattack;
+	public int tamadvance;
+	public int payloadposition;//I_APPEND, I_INSERT, I_REPLACE
+	public boolean urlencode;// URLencodeする・しない
+	public FromEncodeTypes fromencodetype;//追跡元のエンコードタイプ json/raw/urlencode
+	public enum FromEncodeTypes {
+		RAW,
+		JSON,
+		URLENCODE,
+	}
+
+	public int fromStepNo = -1;//追跡元 <0 :　無条件で追跡　>=0: 指定StepNoのリクエスト追跡
+	public int toStepNo = 0;//更新先 <0 currentStepNo == responseStepNo - toStepNo ==0: 無条件　>0:指定したStepNoのリクエスト更新
 
 	public static final int V_QUERY = 1;
-        public static final int V_BODY = 2;
-        public static final int V_HEADER = 3;
-        public static final int V_PATH = 4;
-        public static final int V_AUTOTRACKBODY = 5;//  response body tracking
-        public static final int V_REQTRACKBODY = 6;// password(request body) tracking
-        public static final int V_REQTRACKQUERY = 7;// password(request query) tracking
-        public static final int V_REQTRACKPATH = 8;//password (request path) tracking
+	public static final int V_BODY = 2;
+	public static final int V_HEADER = 3;
+	public static final int V_PATH = 4;
+	public static final int V_AUTOTRACKBODY = 5;//  response body tracking
+	public static final int V_REQTRACKBODY = 6;// password(request body) tracking
+	public static final int V_REQTRACKQUERY = 7;// password(request query) tracking
+	public static final int V_REQTRACKPATH = 8;//password (request path) tracking
 	public static final int C_NOCOUNT = 16;
 	public static final int C_NOMODIFY = 32;
 	public static final int C_VTYPE = 15;
-        public static String[] ctypestr = null;
+	public static String[] ctypestr = null;
 
-        public static final int I_APPEND = 0;
-        public static final int I_INSERT = 1;
-        public static final int I_REPLACE = 2;
-        public static final int I_REGEX = 3;
+	public static final int I_APPEND = 0;
+	public static final int I_INSERT = 1;
+	public static final int I_REPLACE = 2;
+	public static final int I_REGEX = 3;
 
-        private static String[] payloadpositionnames = {
-            //診断パターン挿入位置
-            // append 値末尾に追加
-            // insert 値先頭に挿入
-            // replace 値をパターンに置き換え
-            // regex   埋め込み箇所正規表現指定
-            "append", "insert", "replace", "regex", null
-        };
+	private static String[] payloadpositionnames = {
+			//診断パターン挿入位置
+			// append 値末尾に追加
+			// insert 値先頭に挿入
+			// replace 値をパターンに置き換え
+			// regex   埋め込み箇所正規表現指定
+			"append", "insert", "replace", "regex", null
+	};
 
         private void initctype(){
             if(ctypestr==null){
@@ -501,6 +505,17 @@ class AppValue {
                 return payloadpositionnames[it];
             }
             return "";
+        }
+
+        public  void setFromEncodeType(String t){
+        	if(t!=null){
+        		if(t.toUpperCase().equals(FromEncodeTypes.JSON.name())){
+        			fromencodetype = FromEncodeTypes.JSON;
+        		}else if(t.toUpperCase().equals(FromEncodeTypes.URLENCODE.name())){
+        			fromencodetype = FromEncodeTypes.URLENCODE;
+        		}
+        	}
+        	fromencodetype = FromEncodeTypes.RAW;
         }
 
         public static String[] makePayloadPositionNames(){
@@ -1788,7 +1803,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                         try {
                             //body
                             //ParmVars.plog.debuglog(0, "ParseResponse: V_BODY " + rowcolstr);
-                            rflag = FetchResponse.loc.bodymatch(pmt.getStepNo(),av.fromStepNo,url, presponse, row, col, true, autotrack, av.resRegexPos, av.token, av.urlencode, av.tokentype);
+                            rflag = FetchResponse.loc.bodymatch(pmt.getStepNo(),av.fromStepNo,url, presponse, row, col, true, autotrack, av,av.resRegexPos, av.token, av.urlencode, av.tokentype);
                         } catch (UnsupportedEncodingException ex) {
                             Logger.getLogger(ParmGen.class.getName()).log(Level.SEVERE, null, ex);
                         }

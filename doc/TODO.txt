@@ -127,3 +127,4 @@ currentStepNo: 実行中のstepno
 　　ParmGenNewのRequest, MacroBuilderUIのRequestエリア。。
 
 26. JSONデータのレスポンス追跡。 JSONエンコード形式リテラルを (\u0027/ エスケープ\/...)を文字列に変換が必要。
+27. tokenの解析。数字、英文字が一定の長さ以上で混在する値

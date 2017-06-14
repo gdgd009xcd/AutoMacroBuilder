@@ -27,7 +27,7 @@ public class ParmGenJSON {
     	AppValue_List,
     	MacroList
     }
-    
+
     JSONLTYPE current_LTYPE = JSONLTYPE.DEFAULT;
 
     ParmGenJSON(){
@@ -217,6 +217,8 @@ public class ParmGenJSON {
                                 apv.toStepNo = GetNumber(ev, value, 0);
                             }else if(name.toUpperCase().equals("TOKENTYPE")){
                                 apv.tokentype = GetNumber(ev,value,0);
+                            }else if(name.toUpperCase().equals("FROMENCODETYPE")){
+                            	apv.setFromEncodeType(GetString(ev, value, ""));
                             }
                         }
                         break;

@@ -25,27 +25,27 @@ class ParmGenBinUtil {
 	public ParmGenBinUtil(byte[] bin){
             initParmGenBinUtil(bin);
 	}
-        
+
         public void initParmGenBinUtil(byte[] bin){
             bstream = new ByteArrayOutputStream();
             concat(bin);
         }
 
 
-	
+
 
 	public int length(){
 		return bstream.size();
 	}
 
-	
+
 
 	/**
 	 * streamにバイトを追加
 	 */
 	public boolean concat(byte[] bin){
 
-		
+
 		if ((bin== null)){
 			return false;
 		}
@@ -59,7 +59,7 @@ class ParmGenBinUtil {
 		}
 		return true;
 	}
-	
+
 
 
 	public byte[] getBytes(){
@@ -96,7 +96,7 @@ class ParmGenBinUtil {
 	}
 
 	/**
-	indexOf 
+	indexOf
 	 */
 	public int indexOf(byte[] dest, int startpos){
             int idx = -1;
@@ -108,12 +108,12 @@ class ParmGenBinUtil {
             if(endpos>0&&startpos<endpos){
         	for(int i = startpos; i<endpos; i++){
         		for(int j=0; j<keybin.length; j++){
-	        		System.out.println("  i,j="  + i + "," + j);
-	        		
+	        		//System.out.println("  i,j="  + i + "," + j);
+
 	        		if(seqbin[i+j] == keybin[j]){
 	        			if(j == keybin.length -1 ){
 	        				idx = i;
-	        				System.out.println(" result idx,i,j=" + idx+ "," + i + "," + j);
+	        				//System.out.println(" result idx,i,j=" + idx+ "," + i + "," + j);
 	        				break;
 	        			}
 
@@ -124,33 +124,33 @@ class ParmGenBinUtil {
         		if(idx!=-1)break;
         	}
             }
-        	
-        	
+
+
             return idx;
 	}
 
 	/**
-	
+
 	 */
 	public int indexOf(byte[] dest){
 		return indexOf(dest, 0);
 	}
 
-	
+
 	public int indexOf(byte dest){
 		byte[] b= {dest};
 		return indexOf(b, 0);
 	}
 
-	
-	
 
 
 
 
 
 
-	
-	
+
+
+
+
 }
 

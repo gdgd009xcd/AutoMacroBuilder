@@ -372,8 +372,8 @@ class AppValue {
 	public int tamadvance;
 	public int payloadposition;//I_APPEND, I_INSERT, I_REPLACE
 	public boolean urlencode;// URLencodeする・しない
-	public FromEncodeTypes fromencodetype;//追跡元のエンコードタイプ json/raw/urlencode
-	public enum FromEncodeTypes {
+	public ResEncodeTypes resencodetype = ResEncodeTypes.RAW;//追跡元のエンコードタイプ json/raw/urlencode
+	public enum ResEncodeTypes {
 		RAW,
 		JSON,
 		URLENCODE,
@@ -507,15 +507,17 @@ class AppValue {
             return "";
         }
 
-        public  void setFromEncodeType(String t){
+        public  void setResEncodeType(String t){
         	if(t!=null){
-        		if(t.toUpperCase().equals(FromEncodeTypes.JSON.name())){
-        			fromencodetype = FromEncodeTypes.JSON;
-        		}else if(t.toUpperCase().equals(FromEncodeTypes.URLENCODE.name())){
-        			fromencodetype = FromEncodeTypes.URLENCODE;
+        		if(t.toUpperCase().equals(ResEncodeTypes.JSON.name())){
+        			resencodetype = ResEncodeTypes.JSON;
+        			return;
+        		}else if(t.toUpperCase().equals(ResEncodeTypes.URLENCODE.name())){
+        			resencodetype = ResEncodeTypes.URLENCODE;
+        			return;
         		}
         	}
-        	fromencodetype = FromEncodeTypes.RAW;
+        	resencodetype = ResEncodeTypes.RAW;
         }
 
         public static String[] makePayloadPositionNames(){

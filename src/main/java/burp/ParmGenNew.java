@@ -25,28 +25,28 @@ public class ParmGenNew extends javax.swing.JFrame implements InterfaceRegex, in
     final static int P_TRACKMODEL = 2;
     final static int P_TAMPERMODEL = 3;
     final static int P_RANDOMMODEL = 4;//NOP
-    
-    
+
+
     //
     public final static int P_REQUESTTAB = 0;
     public final static int P_RESPONSETAB = 1;
-   
+
 
     int current_model;
 
     int current_tablerowidx;
     int current_tablecolidx;
-    
+
     int current_reqrespanel;
-    
-    
-    
+
+
+
     AppParmsIni rec;
     AppParmsIni addrec;
 
     //起動元ウィンドウ
     private ParmGenTop parentwin;
-    
+
     DefaultTableModel[] ParamTableModels={
         null, null, null, null,null
     };
@@ -54,17 +54,17 @@ public class ParmGenNew extends javax.swing.JFrame implements InterfaceRegex, in
     /**
      * Creates new form ParmGenNew
      */
-    
-    
-    
-    
+
+
+
+
     public ParmGenNew(ParmGenTop _parentwin, AppParmsIni _rec){
-        
+
         current_tablerowidx = 0;
-        
+
         parentwin = _parentwin;
-        
-        
+
+
         initComponents();
         ParamTableModels[P_NUMBERMODEL] = (DefaultTableModel)nParamTable.getModel();
         ParamTableModels[P_CSVMODEL] = (DefaultTableModel)csvParamTable.getModel();
@@ -72,16 +72,16 @@ public class ParmGenNew extends javax.swing.JFrame implements InterfaceRegex, in
         ParamTableModels[P_TAMPERMODEL] = (DefaultTableModel)tamperTable.getModel();
 
         addJComboBoxToJTable();
-        
+
         PRequestResponse mess = parentwin.csv.proxy_messages.get(0);
         String _url = mess.request.getURL();
         String _requestmess = mess.request.getMessage();
-        
+
         selected_requestURL.setText(_url);
         RequestArea.setText(_requestmess);
-        
+
         current_model = P_NUMBERMODEL;
-        
+
         if(_rec!=null){
             rec = _rec;
             rec.setCntFileName();
@@ -112,23 +112,23 @@ public class ParmGenNew extends javax.swing.JFrame implements InterfaceRegex, in
             CSVrewind.setSelected(true);
             NumberRewind.setSelected(true);
         }
-        
+
         setAppParmsIni();
-        
-        
+
+
         ResponseArea.setToolTipText("<html>※追跡パラメータの登録方法<BR>追跡する値を選択し、追加ボタンを押す。</html>");
-        
+
         ModelTabs.setSelectedIndex(current_model);
-        
+
     }
-    
+
     public void setPatternFileName(String _name){
         AttackPatternFile.setText(_name);
     }
     public int getCurrentModel(){
         return current_model;
     }
-    
+
 private void setAppParmsIni(){
         Object[] row;
         switch(current_model){
@@ -168,10 +168,10 @@ private void setAppParmsIni(){
             default:
                 break;
         }
-        
+
         current_reqrespanel = P_REQUESTTAB;
     }
-    
+
     private void clearTable(DefaultTableModel model){
         int rcnt = model.getRowCount();
         for(int i = 0 ; i < rcnt; i++){
@@ -189,7 +189,7 @@ private void setAppParmsIni(){
         trackTable.getColumnModel().getColumn(0).setCellEditor(dce);
         tamperTable.getColumnModel().getColumn(0).setCellEditor(dce);
         tamperTable.getColumnModel().getColumn(6).setCellEditor(tbe);
-        
+
         //modelの初期化とクリア
         for(int i = 0; i < ParamTableModels.length; i++){
             DefaultTableModel model = ParamTableModels[i];
@@ -201,15 +201,15 @@ private void setAppParmsIni(){
         NumberInit.setText("");
         NumberLen.setText("");
         NumberRewind.setSelected(false);
-        
-        
-        
+
+
+
     }
 
     public String getRegex(){
         return getTableRowRegex();
     }
-    
+
     public String getOriginal(){
         if (current_model == P_TRACKMODEL){
             if( current_tablecolidx > 2){
@@ -218,11 +218,11 @@ private void setAppParmsIni(){
         }
         return getRequestArea();
     }
-    
+
     public void setRegex(String regex){
         updateTableRowRegex(regex);
     }
-    
+
     public void addParamToSelectedModel(String reqplace, String name, int ni, String value, boolean target_req_isformdata){
         addParam(current_model, reqplace, name, ni, value, target_req_isformdata);
     }
@@ -235,8 +235,8 @@ private void setAppParmsIni(){
             panelno = current_reqrespanel;
         }
         String TargetURLRegex = ".*" + rs.request.getPath() + ".*";
-       
-        
+
+
         switch(panelno){
             case P_REQUESTTAB:
                 ParmVars.session.put(ParmGenSession.K_REQUESTURLREGEX, TargetURLRegex);
@@ -254,30 +254,30 @@ private void setAppParmsIni(){
                 break;
             default:
                 break;
-            
+
         }
     }
-    
+
     private void addParam(int m, String reqplace, String name, int ni, String value, boolean target_req_isformdata){
         DefaultTableModel model = ParamTableModels[m];
         //name=valueにデフォルトの正規表現を生成してセット
-        String nval =  (name!=null?("(?:[&=?]+|^)" + name + "="):"") + value;
+        String nval =  (name!=null?("(?:[&=?]|^)" + name + "="):"") + value;
         String _reqplace = reqplace;
         if ( reqplace.toLowerCase().equals("formdata")){
             //nval = "(?:[A-Z].* name=\"" + ParmGenUtil.escapeRegexChars(name) + "\".*(?:\\r|\\n|\\r\\n))(?:[A-Z].*(?:\\r|\\n|\\r\\n)){0,}(?:\\r|\\n|\\r\\n)(?:.*?)" + value + "(?:.*?)(?:\\r|\\n|\\r\\n)";
             nval = "(?:[A-Z].* name=\"" + ParmGenUtil.escapeRegexChars(name) + "\".*(?:\\r|\\n|\\r\\n))(?:[A-Z].*(?:\\r|\\n|\\r\\n)){0,}(?:\\r|\\n|\\r\\n)(?:.*?)" + value ;
-            
+
             _reqplace = "body";
         }
         Object []row = null;
         boolean urlencode = false;
         AppValue ap = new AppValue();
-        
+
         String payloadposition = ParmVars.session.get(ParmGenSession.K_PAYLOADPOSITION);
         if(payloadposition==null){
             payloadposition = ap.getPayloadPositionName(AppValue.I_APPEND);
         }
-        
+
         switch(m){
             case P_NUMBERMODEL:
                 row = new Object[]{_reqplace, false, nval, false};
@@ -300,7 +300,7 @@ private void setAppParmsIni(){
                         }
                     }
                     row = new Object[]{_reqplace, false, nval,
-                    ParmVars.session.get(ParmGenSession.K_RESPONSEURLREGEX), 
+                    ParmVars.session.get(ParmGenSession.K_RESPONSEURLREGEX),
                     ParmVars.session.get(ParmGenSession.K_RESPONSEREGEX),
                     ParmVars.session.get(ParmGenSession.K_RESPONSEPART),
                     ParmVars.session.get(ParmGenSession.K_RESPONSEPOSITION),
@@ -317,7 +317,7 @@ private void setAppParmsIni(){
                             }
                         }
                         row = new Object[]{_reqplace, false, nval,
-                        ParmVars.session.get(ParmGenSession.K_RESPONSEURLREGEX), 
+                        ParmVars.session.get(ParmGenSession.K_RESPONSEURLREGEX),
                         ParmVars.session.get(ni, ParmGenSession.K_RESPONSEREGEX),
                         ParmVars.session.get(ni, ParmGenSession.K_RESPONSEPART),
                         ParmVars.session.get(ni, ParmGenSession.K_RESPONSEPOSITION),
@@ -327,9 +327,9 @@ private void setAppParmsIni(){
                     }
                 }
                 break;
-           
+
         }
-        
+
         if(row !=null){
             model.addRow(row);
         }
@@ -366,7 +366,7 @@ private void setAppParmsIni(){
         }
         //ParmVars.plog.debuglog(0, mname);
     }
-    
+
     /*
      * current_modelのtargetURLを返す
      */
@@ -387,10 +387,10 @@ private void setAppParmsIni(){
         }
         return "";
     }
-    
+
     private JTable getCurrentTable(){
         JTable current_table = null;
-        
+
         switch(current_model){
             case P_NUMBERMODEL:
                 current_table = nParamTable;
@@ -408,16 +408,16 @@ private void setAppParmsIni(){
         }
         return current_table;
     }
-    
+
     public void updateTableRowRegex(String regex){
         int pos = current_tablecolidx;
         if(current_model==P_CSVMODEL){
             pos = 3;
         }
         ParamTableModels[current_model].setValueAt(regex, current_tablerowidx, pos);
-        
+
     }
-    
+
     public String getTableRowRegex(){
         int pos = current_tablecolidx;
         if(current_model==P_CSVMODEL){
@@ -425,19 +425,19 @@ private void setAppParmsIni(){
         }
         return (String)ParamTableModels[current_model].getValueAt(current_tablerowidx, pos);
     }
-    
+
     public String getRequestArea(){
         return RequestArea.getText();
     }
-    
+
     public String getResponseArea(){
         return ResponseArea.getText();
     }
-    
+
     ParmGenCSV getCSV(){
         return parentwin.csv;
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -1316,12 +1316,12 @@ private void setAppParmsIni(){
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         // TODO add your handling code here:
         JFileChooser jfc = new JFileChooser();
-        if(jfc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) { 
-            //code to handle choosed file here. 
+        if(jfc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            //code to handle choosed file here.
             File file = jfc.getSelectedFile();
             String name = file.getAbsolutePath().replaceAll("\\\\", "\\\\\\\\");
             csvFilePath.setText(name);
-        } 
+        }
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void csvParamAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_csvParamAddActionPerformed
@@ -1334,7 +1334,7 @@ private void setAppParmsIni(){
         }else{
              csvloader.dispose();
         }
-        
+
     }//GEN-LAST:event_csvParamAddActionPerformed
 
     private void CancelParmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CancelParmActionPerformed
@@ -1368,7 +1368,7 @@ private void setAppParmsIni(){
     private void NumberRewindActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NumberRewindActionPerformed
         // TODO add your handling code here:
         if (NumberRewind.isSelected()){
-           
+
         }
     }//GEN-LAST:event_NumberRewindActionPerformed
 
@@ -1415,7 +1415,7 @@ private void setAppParmsIni(){
             default:
                 break;
         }
-        
+
         DefaultTableModel model = ParamTableModels[current_model];
         int rcnt = model.getRowCount();
         rec.clearAppValues();
@@ -1461,7 +1461,7 @@ private void setAppParmsIni(){
                     int tktype;
 
                     String tktypename = (String)model.getValueAt(i, 11);
-                    
+
 
                     app = new AppValue(type, nomodify, value, _resURL, _resRegex, _resPartType, _resRegexPos, _token, _trackreq, fromStepNo, toStepNo,tktypename);
                     break;
@@ -1472,8 +1472,8 @@ private void setAppParmsIni(){
                     value = (String)model.getValueAt(i, 2);
                     break;
             }
-            
-            
+
+
            if(app!=null)rec.addAppValue(app);
         }
         Boolean lastEntryNocount = true;
@@ -1485,7 +1485,7 @@ private void setAppParmsIni(){
         parentwin.updateRowDisp(addrec);
         parentwin.Modified();
         dispose();
-        
+
     }//GEN-LAST:event_SaveParmActionPerformed
 
     private void nParamAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nParamAddActionPerformed
@@ -1503,7 +1503,7 @@ private void setAppParmsIni(){
             current_tablerowidx = rowsSelected[0];
             new ParmGenRegex(this).setVisible(true);
         }
-        
+
     }//GEN-LAST:event_NumberRegexTestActionPerformed
 
     private void nParamDelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nParamDelActionPerformed

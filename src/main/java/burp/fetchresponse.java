@@ -331,7 +331,14 @@ class LocVal {
 				}
 
 				if ( matchval != null ){
-					matchval = matchval.replaceAll("\\\\/", "/");
+					switch(av.resencodetype){
+					case JSON:
+						ParmGenJSONDecoder jdec = new ParmGenJSONDecoder();
+						matchval = jdec.decodeStringValue(matchval);
+						break;
+					default:
+						break;
+					}
 					if(_uencode==true){
                         String venc = matchval;
                         try{

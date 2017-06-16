@@ -723,7 +723,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     						String value = tkn.getTokenValue().getValue();
     						int len = value.length();
     						String reg = ".{" + len + "}";
-    						String regex = "(?:[&=?]+|^)" + token + "=(" + reg + ")";
+    						String regex = "(?:[&=?]|^)" + token + "=(" + reg + ")";
     						if(isformdata){
     							regex = "(?:[A-Z].* name=\"" + ParmGenUtil.escapeRegexChars(token) + "\".*(?:\\r|\\n|\\r\\n))(?:[A-Z].*(?:\\r|\\n|\\r\\n)){0,}(?:\\r|\\n|\\r\\n)(?:.*?)(" + reg + ")" ;
     						}

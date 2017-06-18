@@ -64,10 +64,12 @@ ParmVars.parmfile
 
 
 3.2.2 トークン
+下記の1), 2)をマクロの先頭から最後まで繰り返す。
 1) マクロのレスポンスをパースし、tokenを取り出す。
    tokenとＵＲＬペア　ParmGenResTokenに格納し、ArrayListに保管
    作成済みハッシュクリア
-2) 1)のArrayListを逆順に次の処理繰り返し
+2) マクロのリクエストをパースし、
+　　1)のArrayListを逆順(リクエストの直前から先頭に向かって)次の処理繰り返し
 2.1) リクエストに、ParmGenResTokenのTokenKeyがマッチし、TokenKeyが作成済みハッシュになければ
 　　引き継ぎパラメータを作成。
 2.2)作成済みハッシュに引き継ぎパラメータ作成したTokenKeyを格納。

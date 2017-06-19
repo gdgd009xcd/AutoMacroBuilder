@@ -5,7 +5,9 @@
 package burp;
 
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Deque;
+import java.util.ListIterator;
 import javax.json.Json;
 import javax.json.stream.JsonParser;
 
@@ -95,6 +97,17 @@ public class test {
             }
         }
         ParmVars.plog.debuglog(0, "key:[" + keyname + " value[" + value + "]");
+         ArrayList<String> alist = new ArrayList<String>();
+        
+        alist.add("stark");
+        alist.add("stork");
+        alist.add("p");
+        alist.add("ack");
+        
+        for(ListIterator<String> it = alist.listIterator(alist.size());it.hasPrevious();){
+            String data = it.previous();
+            ParmVars.plog.debuglog(0, data);
+        }
     }
 
 }

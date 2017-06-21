@@ -12,6 +12,6 @@ import java.util.ArrayList;
  * @author youtube
  */
 public class ParmGenResToken {
-    public ArrayList<ParmGenToken> requesttokenlist;
+    public ArrayList<ParmGenToken> tracktokenlist;
     public PRequest request;  
 }

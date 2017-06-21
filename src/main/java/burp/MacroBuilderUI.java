@@ -3,15 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package burp;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.ListIterator;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
@@ -23,7 +24,7 @@ import javax.swing.JOptionPane;
  */
 public class MacroBuilderUI extends javax.swing.JPanel {
 
-    ArrayList <PRequestResponse> rlist = null;
+    ArrayList<PRequestResponse> rlist = null;
     ParmGenMacroTrace pmt = null;
 
     DefaultListModel<String> CSRFListModel = null;
@@ -54,50 +55,50 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
     }
 
-    ParmGenMacroTrace getParmGenMacroTrace(){
+    ParmGenMacroTrace getParmGenMacroTrace() {
         return pmt;
     }
 
-    void clear(){
-    	//JListをクリアするには、modelのremove & jListへModelセットが必須。
-    	CSRFListModel.removeAllElements();
-    	CSRFList.setModel(CSRFListModel);
-    	RequestListModel.removeAllElements();
-    	RequestList.setModel(RequestListModel);
-    	MacroRequest.setText("");
-    	MacroResponse.setText("");
+    void clear() {
+        //JListをクリアするには、modelのremove & jListへModelセットが必須。
+        CSRFListModel.removeAllElements();
+        CSRFList.setModel(CSRFListModel);
+        RequestListModel.removeAllElements();
+        RequestList.setModel(RequestListModel);
+        MacroRequest.setText("");
+        MacroResponse.setText("");
         MacroComments.setText("");
         rlist = null;
-        if(pmt!=null){
-        	pmt.clear();
+        if (pmt != null) {
+            pmt.clear();
         }
     }
 
-    void addNewRequests(ArrayList <PRequestResponse> _rlist){
-        DefaultListModel  lmodel = new DefaultListModel();
+    void addNewRequests(ArrayList<PRequestResponse> _rlist) {
+        DefaultListModel lmodel = new DefaultListModel();
         AppParmsIni pini;
-        if(_rlist!=null){
+        if (_rlist != null) {
             rlist = _rlist;
-            if(pmt!=null){
+            if (pmt != null) {
                 pmt.setRecords(_rlist);
                 pmt.ParseResponse();
             }
             Iterator<PRequestResponse> it = _rlist.iterator();
-            while(it.hasNext()){
+            while (it.hasNext()) {
 
                 //model.addRow(new Object[] {false, pini.url, pini.getIniValDsp(), pini.getLenDsp(), pini.getTypeValDsp(),pini.getAppValuesDsp(),pini.getCurrentValue()});
                 PRequestResponse pqr = it.next();
                 String url = pqr.request.url;
-                lmodel.addElement((Object)(' ' +url));
+                lmodel.addElement((Object) (' ' + url));
             }
             RequestList.setModel(lmodel);
         }
 
     }
 
-    void updateCurrentReqRes(){
+    void updateCurrentReqRes() {
         int cpos = pmt.getCurrentRequest();
-        if(rlist!=null){
+        if (rlist != null) {
             PRequestResponse pqr = rlist.get(cpos);
             MacroRequest.setText(pqr.request.getMessage());
             MacroResponse.setText(pqr.response.getMessage());
@@ -105,13 +106,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         }
     }
 
-
-
-
-
-
-
-    public void Redraw(){
+    public void Redraw() {
         //ListModel cmodel = RequestList.getModel();
         //RequestList.setModel(cmodel);
         RequestList.repaint();
@@ -486,12 +481,12 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         // TODO add your handling code here:
 
         int pos = RequestList.getSelectedIndex();
-        if (pos != -1){
+        if (pos != -1) {
 
-            if(rlist!=null&&rlist.size()>pos){
+            if (rlist != null && rlist.size() > pos) {
                 //
 
-                DefaultListModel  lmodel = new DefaultListModel();
+                DefaultListModel lmodel = new DefaultListModel();
                 ParmVars.plog.debuglog(0, "before rlist.get");
                 PRequestResponse pqr = rlist.get(pos);
                 ParmVars.plog.debuglog(0, "before MacroRequest.setText");
@@ -499,7 +494,6 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                 ParmVars.plog.debuglog(0, "before MacroResponse.setText");
                 MacroResponse.setText(pqr.response.getMessage());
                 MacroComments.setText(pqr.getComments());
-
 
             }
         }
@@ -526,7 +520,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         // TODO add your handling code here:
         int sidx = CSRFList.getSelectedIndex();
         int maxidx = CSRFListModel.getSize();
-        if(sidx>=0&& sidx < maxidx){
+        if (sidx >= 0 && sidx < maxidx) {
             CSRFListModel.remove(sidx);
         }
     }//GEN-LAST:event_CSRFdeleteActionPerformed
@@ -537,13 +531,13 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         String pattern = CSRFParam.getText();
         int sidx = CSRFList.getSelectedIndex();
         int maxidx = CSRFListModel.getSize();
-        if(maxidx<=0){//0件
+        if (maxidx <= 0) {//0件
             sidx = 0;
         }
         CSRFListModel.insertElementAt(pattern, sidx);
 
-        if(sidx+2 < maxidx){
-            CSRFListModel.remove(sidx+1);
+        if (sidx + 2 < maxidx) {
+            CSRFListModel.remove(sidx + 1);
         }
     }//GEN-LAST:event_CSRFupdateActionPerformed
 
@@ -564,7 +558,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
     private void RequestListMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_RequestListMousePressed
         // TODO add your handling code here:
-        if(evt.isPopupTrigger()){
+        if (evt.isPopupTrigger()) {
             jPopupMenu1.show(evt.getComponent(), evt.getX(), evt.getY());
         }
     }//GEN-LAST:event_RequestListMousePressed
@@ -572,7 +566,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     private void disableRequestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_disableRequestActionPerformed
         // TODO add your handling code here:
         int pos = RequestList.getSelectedIndex();
-        if( pos != -1){
+        if (pos != -1) {
             pmt.DisableRequest(pos);
         }
         Redraw();
@@ -581,7 +575,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     private void enableRequestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_enableRequestActionPerformed
         // TODO add your handling code here:
         int pos = RequestList.getSelectedIndex();
-        if( pos != -1){
+        if (pos != -1) {
             pmt.EnableRequest(pos);
         }
         Redraw();
@@ -589,14 +583,14 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
     private void RequestListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_RequestListMouseClicked
         // TODO add your handling code here:
-        if(evt.isPopupTrigger()){
+        if (evt.isPopupTrigger()) {
             jPopupMenu1.show(evt.getComponent(), evt.getX(), evt.getY());
         }
     }//GEN-LAST:event_RequestListMouseClicked
 
     private void RequestListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_RequestListMouseReleased
         // TODO add your handling code here:
-        if(evt.isPopupTrigger()){
+        if (evt.isPopupTrigger()) {
             jPopupMenu1.show(evt.getComponent(), evt.getX(), evt.getY());
         }
     }//GEN-LAST:event_RequestListMouseReleased
@@ -604,7 +598,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     private void targetRequestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_targetRequestActionPerformed
         // TODO add your handling code here:
         int pos = RequestList.getSelectedIndex();
-        if( pos != -1){
+        if (pos != -1) {
             pmt.setCurrentRequest(pos);
         }
         Redraw();
@@ -617,207 +611,209 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
     private void ParamTrackingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ParamTrackingActionPerformed
         // TODO add your handling code here:
-    	//fileChooser起動
-    	JFileChooser jfc = new JFileChooser() {
+        //fileChooser起動
+        JFileChooser jfc = new JFileChooser() {
 
-    		@Override public void approveSelection() {
-    			File f = getSelectedFile();
-    			if (f.exists() && getDialogType() == SAVE_DIALOG) {
-    				String m = String.format(
-    						"<html>%s already exists.<br>Do you want to replace it?",
-    						f.getAbsolutePath());
-    				int rv = JOptionPane.showConfirmDialog(
-    						this, m, "Save As", JOptionPane.YES_NO_OPTION);
-    				if (rv != JOptionPane.YES_OPTION) {
-    					return;
-    				}
-    			}
-    			super.approveSelection();
-    		}
-    	};
-    	ParmFileFilter pFilter=new ParmFileFilter();
-    	jfc.setFileFilter(pFilter);
-        ArrayList <PRequestResponse> orglist = pmt.originalrlist;
-    	if(jfc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            @Override
+            public void approveSelection() {
+                File f = getSelectedFile();
+                if (f.exists() && getDialogType() == SAVE_DIALOG) {
+                    String m = String.format(
+                            "<html>%s already exists.<br>Do you want to replace it?",
+                            f.getAbsolutePath());
+                    int rv = JOptionPane.showConfirmDialog(
+                            this, m, "Save As", JOptionPane.YES_NO_OPTION);
+                    if (rv != JOptionPane.YES_OPTION) {
+                        return;
+                    }
+                }
+                super.approveSelection();
+            }
+        };
+        ParmFileFilter pFilter = new ParmFileFilter();
+        jfc.setFileFilter(pFilter);
+        ArrayList<PRequestResponse> orglist = pmt.originalrlist;
+        if (jfc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
 
-    		//code to handle choosed file here.
-    		File file = jfc.getSelectedFile();
-    		String name = file.getAbsolutePath().replaceAll("\\\\", "\\\\\\\\");
-    		ParmVars.parmfile = name;
-    		//エンコードの設定
-    		//ParmVars.encエンコードの決定
-    		//先頭ページのレスポンスのcharsetを取得
-    		PRequestResponse toppage = orglist.get(0);
-    		String tcharset = toppage.response.getCharset();
-    		ParmVars.enc = Encode.getEnum(tcharset);
+            //code to handle choosed file here.
+            File file = jfc.getSelectedFile();
+            String name = file.getAbsolutePath().replaceAll("\\\\", "\\\\\\\\");
+            ParmVars.parmfile = name;
+            //エンコードの設定
+            //ParmVars.encエンコードの決定
+            //先頭ページのレスポンスのcharsetを取得
+            PRequestResponse toppage = orglist.get(0);
+            String tcharset = toppage.response.getCharset();
+            ParmVars.enc = Encode.getEnum(tcharset);
 
+            String tknames[] = {
+                "PHPSESSID",
+                "JSESSIONID",
+                "SESID",
+                "TOKEN",
+                "_CSRF_TOKEN",
+                "authenticity_token",
+                "NONCE"
+            };
 
+            //token追跡自動設定。。
+            //ArrayList<ParmGenToken> tracktokenlist = new ArrayList<ParmGenToken>();
+            ArrayList<ParmGenResToken> urltokens = new ArrayList<ParmGenResToken>();
+            Pattern patternw32 = Pattern.compile("\\w{32}");
+            
+            ArrayList<AppParmsIni> newparms = new ArrayList<AppParmsIni>();//生成するパラメータ
+            PRequestResponse respqrs = null;
+            int row = 0;
 
-    		String tknames[] = {
-    				"PHPSESSID",
-    				"JSESSIONID",
-    				"SESID",
-    				"TOKEN",
-    				"_CSRF_TOKEN",
-    				"authenticity_token",
-    				"NONCE"
-    		};
+            for (PRequestResponse pqrs : orglist) {
+                HashMap<ParmGenToken, String> addedtokens = new HashMap<ParmGenToken, String>();
+                for(ListIterator<ParmGenResToken> it = urltokens.listIterator(urltokens.size());it.hasPrevious();){
+                //if (respqrs != null && tracktokenlist != null && tracktokenlist.size() > 0) {//直前のレスポンスに追跡パラメータあり
+                    //リクエストにtracktokenlistのトークンが含まれる場合のみ
+                    ParmGenResToken restoken = it.previous();
+                    boolean RequesthasToken = false;
+                    ArrayList<ParmGenToken> requesttokenlist = new ArrayList<ParmGenToken>();
 
-    		//token追跡自動設定。。
-    		ArrayList<ParmGenToken> tracktokenlist = new ArrayList<ParmGenToken>();
-    		Pattern patternw32 = Pattern.compile("\\w{32}");
-    		ArrayList<AppParmsIni> newparms = new ArrayList<AppParmsIni>();//生成するパラメータ
-    		PRequestResponse respqrs = null;
-    		int row = 0;
+                    for (ParmGenToken tkn : restoken.tracktokenlist) {
+                        String token = tkn.getTokenKey().GetName();
+                        if(!addedtokens.containsKey(tkn)){
+                            if (pqrs.request.hasQueryParam(token) || pqrs.request.hasBodyParam(token)) {
+                                RequesthasToken = true;
+                                requesttokenlist.add(tkn);
+                                addedtokens.put(tkn, "");
+                            }
+                        }
+                    }
+                   
+                    if (RequesthasToken) {
+                        //パラメータ生成
+                        AppParmsIni aparms = new AppParmsIni();
+                        //request URL
+                        String TargetURLRegex = ".*" + pqrs.request.getPath() + ".*";
+                        boolean isformdata = pqrs.request.isFormData();
+                        aparms.setUrl(TargetURLRegex);
+                        aparms.len = 4;//default
+                        aparms.typeval = aparms.T_TRACK;
+                        aparms.inival = 0;
+                        aparms.maxval = 0;
+                        aparms.csvname = "";
+                        aparms.pause = false;
+                        aparms.parmlist = new ArrayList<AppValue>();
 
+                        for (ParmGenToken tkn : requesttokenlist) {
+                            AppValue apv = new AppValue();
+                            String token = tkn.getTokenKey().GetName();
+                            //body or query ターゲットリクエストのtokenパラメータ
+                            String valtype = "query";
+                            if (pqrs.request.hasBodyParam(token)) {
+                                valtype = "body";
+                            }
+                            apv.setValPart(valtype);
+                            apv.clearNoCount();
+                            apv.csvpos = -1;
+                            // (?:[&=?]+|^)token=(value)
 
-    		for(PRequestResponse pqrs : orglist){
-    			if(respqrs!=null&&tracktokenlist!=null&&tracktokenlist.size()>0){//直前のレスポンスに追跡パラメータあり
-    				//リクエストにtracktokenlistのトークンが含まれる場合のみ
-    				boolean RequesthasToken = false;
-    				ArrayList<ParmGenToken> requesttokenlist = new ArrayList<ParmGenToken>();
-    				int p=0;
-    				ArrayList<Integer> dellist = new ArrayList<Integer>();
-    				for(ParmGenToken tkn: tracktokenlist){
-    					String token = tkn.getTokenKey().GetName();
-    					if(pqrs.request.hasQueryParam(token)||pqrs.request.hasBodyParam(token)){
-    						RequesthasToken = true;
-    						requesttokenlist.add(tkn);
-    						dellist.add(p);
-    					}
-    					p++;
-    				}
-    				dellist.sort(Comparator.reverseOrder());
-    				for(int d: dellist){
-    					if(d<tracktokenlist.size()){
-    						tracktokenlist.remove(d);
-    					}
-    				}
-    				if(RequesthasToken){
-    					//パラメータ生成
-    					AppParmsIni aparms = new AppParmsIni();
-    					//request URL
-    					String TargetURLRegex = ".*" + pqrs.request.getPath() + ".*";
-    					boolean isformdata = pqrs.request.isFormData();
-    					aparms.setUrl(TargetURLRegex);
-    					aparms.len = 4;//default
-    					aparms.typeval = aparms.T_TRACK;
-    					aparms.inival = 0;
-    					aparms.maxval = 0;
-    					aparms.csvname = "";
-    					aparms.pause = false;
-    					aparms.parmlist = new ArrayList<AppValue>();
+                            String value = tkn.getTokenValue().getValue();
+                            int len = value.length();
+                            String reg = ".{" + len + "}";
+                            String regex = "(?:[&=?]|^)" + token + "=(" + reg + ")";
+                            if (isformdata) {
+                                regex = "(?:[A-Z].* name=\"" + ParmGenUtil.escapeRegexChars(token) + "\".*(?:\\r|\\n|\\r\\n))(?:[A-Z].*(?:\\r|\\n|\\r\\n)){0,}(?:\\r|\\n|\\r\\n)(?:.*?)(" + reg + ")";
+                            }
+                            apv.setURLencodedVal(regex);
+                            apv.setresURL(".*" + restoken.request.getPath() + ".*");
+                            apv.setresRegexURLencoded("");
+                            int resvalpart = AppValue.V_AUTOTRACKBODY;
+                            switch (tkn.getTokenKey().GetTokenType()) {
+                                case AppValue.T_LOCATION:
+                                    resvalpart = AppValue.V_HEADER;
+                                    break;
+                                case AppValue.T_XCSRF_TOKEN:
+                                    break;
+                                default:
+                                    break;
 
-    					for(ParmGenToken tkn: requesttokenlist){
-    						AppValue apv = new AppValue();
-    						String token = tkn.getTokenKey().GetName();
-    						//body or query ターゲットリクエストのtokenパラメータ
-    						String valtype = "query";
-    						if(pqrs.request.hasBodyParam(token)){
-    							valtype = "body";
-    						}
-    						apv.setValPart(valtype);
-    						apv.clearNoCount();
-    						apv.csvpos =-1;
-    						// (?:[&=?]+|^)token=(value)
+                            }
+                            apv.setresPartType(apv.getValPart(resvalpart));
+                            apv.resRegexPos = tkn.getTokenKey().GetFcnt();
+                            apv.token = token;
+                            apv.urlencode = true;
+                            apv.fromStepNo = -1;
+                            apv.toStepNo = 0;
+                            apv.tokentype = tkn.getTokenKey().GetTokenType();
+                            apv.col = aparms.parmlist.size();
+                            aparms.parmlist.add(apv);
+                        }
+                        aparms.setRowAndCntFile(row);
+                        row++;
+                        aparms.crtGenFormat(true);
+                        newparms.add(aparms);
+                    }
 
-    						String value = tkn.getTokenValue().getValue();
-    						int len = value.length();
-    						String reg = ".{" + len + "}";
-    						String regex = "(?:[&=?]|^)" + token + "=(" + reg + ")";
-    						if(isformdata){
-    							regex = "(?:[A-Z].* name=\"" + ParmGenUtil.escapeRegexChars(token) + "\".*(?:\\r|\\n|\\r\\n))(?:[A-Z].*(?:\\r|\\n|\\r\\n)){0,}(?:\\r|\\n|\\r\\n)(?:.*?)(" + reg + ")" ;
-    						}
-    						apv.setURLencodedVal(regex);
-    						apv.setresURL(".*" + respqrs.request.getPath() + ".*");
-    						apv.setresRegexURLencoded("");
-    						int resvalpart = AppValue.V_AUTOTRACKBODY;
-    						switch(tkn.getTokenKey().GetTokenType()){
-    						case AppValue.T_LOCATION:
-    							resvalpart = AppValue.V_HEADER;
-    							break;
-    						case AppValue.T_XCSRF_TOKEN:
-    							break;
-    						default:
-    							break;
+                }
 
-    						}
-    						apv.setresPartType(apv.getValPart(resvalpart));
-    						apv.resRegexPos = tkn.getTokenKey().GetFcnt();
-    						apv.token = token;
-    						apv.urlencode = true;
-    						apv.fromStepNo = -1;
-    						apv.toStepNo = 0;
-    						apv.tokentype = tkn.getTokenKey().GetTokenType();
-    						apv.col = aparms.parmlist.size();
-    						aparms.parmlist.add(apv);
-    					}
-    					aparms.setRowAndCntFile(row);row++;
-    					aparms.crtGenFormat(true);
-    					newparms.add(aparms);
-    				}
+                //respqrs = pqrs;
+                //レスポンストークン解析
+                String body = pqrs.response.getBody();
+                //レスポンスから追跡パラメータ抽出
+                ParmGenParser pgparser = new ParmGenParser(body);
+                ArrayList<ParmGenToken> bodytklist = pgparser.getNameValues();
+                ParmGenArrayList tklist = new ParmGenArrayList();
+                ParmGenResToken trackurltoken = new ParmGenResToken();
+                trackurltoken.request = pqrs.request;
+                trackurltoken.tracktokenlist = new ArrayList<ParmGenToken>();
+                InterfaceCollection<ParmGenToken> ic = pqrs.response.getLocationTokens(tklist);
 
+                tklist.addAll(bodytklist);
 
-    			}
+                for (ParmGenToken token : tklist) {
+                    //PHPSESSID, token, SesID, jsessionid
 
-    			respqrs = pqrs;
-    			//レスポンストークン解析
-    			String body = pqrs.response.getBody();
-    			//レスポンスから追跡パラメータ抽出
-    			ParmGenParser pgparser = new ParmGenParser(body);
-    			ArrayList<ParmGenToken> bodytklist = pgparser.getNameValues();
-    			ParmGenArrayList tklist = new ParmGenArrayList();
+                    String tokenname = token.getTokenKey().GetName();
+                    boolean namematched = false;
+                    for (String tkn : tknames) {
+                        if (tokenname.equalsIgnoreCase(tkn)) {//完全一致
+                            trackurltoken.tracktokenlist.add(token);
+                            namematched = true;
+                            break;
+                        }
+                    }
+                    if (!namematched) {//nameはtknamesに一致しない
+                        for (String tkn : tknames) {
+                            if (tokenname.toUpperCase().indexOf(tkn.toUpperCase()) != -1) {//部分一致
+                                trackurltoken.tracktokenlist.add(token);
+                                namematched = true;
+                                break;
+                            }
+                        }
+                    }
+                    // value値が \w{32}に一致
+                    if (!namematched) {//nameはtknamesに一致しない
+                        String tokenvalue = token.getTokenValue().getValue();
+                        Matcher matcher = patternw32.matcher(tokenvalue);
+                        if (matcher.matches()) {
+                            trackurltoken.tracktokenlist.add(token);
+                        }
+                    }
 
-    			InterfaceCollection<ParmGenToken> ic = pqrs.response.getLocationTokens(tklist);
-
-    			tklist.addAll(bodytklist);
-
-    			for(ParmGenToken token : tklist){
-    				//PHPSESSID, token, SesID, jsessionid
-
-    				String tokenname = token.getTokenKey().GetName();
-    				boolean namematched = false;
-    				for(String tkn : tknames){
-    					if(tokenname.equalsIgnoreCase(tkn)){//完全一致
-    						tracktokenlist.add(token);
-    						namematched = true;
-    						break;
-    					}
-    				}
-    				if(!namematched){//nameはtknamesに一致しない
-    					for(String tkn : tknames){
-    						if(tokenname.toUpperCase().indexOf(tkn.toUpperCase())!=-1){//部分一致
-    							tracktokenlist.add(token);
-    							namematched = true;
-    							break;
-    						}
-    					}
-    				}
-    				// value値が \w{32}に一致
-    				if(!namematched){//nameはtknamesに一致しない
-    					String tokenvalue = token.getTokenValue().getValue();
-    					Matcher matcher = patternw32.matcher(tokenvalue);
-    					if(matcher.matches()){
-    						tracktokenlist.add(token);
-    					}
-    				}
-
-    			}
-    		}
-    		ParmVars.plog.debuglog(0, "newparms.size=" + newparms.size());
-    		if(newparms!=null&&!newparms.isEmpty()){
-    			ParmGenCSV csv = new ParmGenCSV(newparms, pmt);
-    			csv.jsonsave();
-    		}
-    	}
-
+                }
+                if(!trackurltoken.tracktokenlist.isEmpty()){
+                    urltokens.add(trackurltoken);
+                }
+            }
+            ParmVars.plog.debuglog(0, "newparms.size=" + newparms.size());
+            if (newparms != null && !newparms.isEmpty()) {
+                ParmGenCSV csv = new ParmGenCSV(newparms, pmt);
+                csv.jsonsave();
+            }
+        }
 
 
     }//GEN-LAST:event_ParamTrackingActionPerformed
 
     private void ClearMacroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ClearMacroActionPerformed
         // TODO add your handling code here:
-    	clear();
+        clear();
     }//GEN-LAST:event_ClearMacroActionPerformed
 
     private void LoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoadActionPerformed

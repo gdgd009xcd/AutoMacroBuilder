@@ -288,12 +288,12 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
                         ParmGenTokenValue tval = tkn.getTokenValue();
                         String name = tkey.GetName();
                         String value = tval.getValue();
-                        int _tktype = tkey.GetTokenType();
+                        AppValue.TokenTypeNames _tktype = tkey.GetTokenType();
                         int npos = 0;
                         if(valueexistonly==true&&(value==null||value.isEmpty())){
                             //value値の無いパラメータは対象外
                         }else{
-                            model.addRow(new Object[]{ap.getValPart(AppValue.V_HEADER),ap.getTokentypeName(_tktype) ,Integer.toString(npos), name, value});
+                            model.addRow(new Object[]{ap.getValPart(AppValue.V_HEADER),_tktype.name() ,Integer.toString(npos), name, value});
                         }
             		}
 
@@ -313,12 +313,12 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
                     ParmGenTokenValue tval = tkn.getTokenValue();
                     String name = tkey.GetName();
                     String value = tval.getValue();
-                    int _tktype = tkey.GetTokenType();
+                    AppValue.TokenTypeNames _tktype = tkey.GetTokenType();
                     int npos = tkey.GetFcnt();
                     if(valueexistonly==true&&(value==null||value.isEmpty())){
                         //value値の無いパラメータは対象外
                     }else{
-                        model.addRow(new Object[]{ap.getValPart(AppValue.V_AUTOTRACKBODY),ap.getTokentypeName(_tktype) ,Integer.toString(npos), name, value});
+                        model.addRow(new Object[]{ap.getValPart(AppValue.V_AUTOTRACKBODY),_tktype.name() ,Integer.toString(npos), name, value});
                     }
                 }
             }
@@ -336,7 +336,7 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
                 }else{
                     namepos.put(name, npos);
                 }
-                model.addRow(new Object[]{ap.getValPart(AppValue.V_REQTRACKPATH), ap.getTokentypeName(ap.T_DEFAULT), Integer.toString(npos),Integer.toString(ppos), pit.next()});
+                model.addRow(new Object[]{ap.getValPart(AppValue.V_REQTRACKPATH), "", Integer.toString(npos),Integer.toString(ppos), pit.next()});
                 ppos++;
             }
 
@@ -355,7 +355,7 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
                 }else{
                     namepos.put(name, npos);
                 }
-                model.addRow(new Object[]{ap.getValPart(AppValue.V_REQTRACKQUERY),ap.getTokentypeName(ap.T_DEFAULT) ,Integer.toString(npos),nv[0], nv[1]});
+                model.addRow(new Object[]{ap.getValPart(AppValue.V_REQTRACKQUERY),"" ,Integer.toString(npos),nv[0], nv[1]});
             }
             Iterator<String[]> itb = rs.request.getBodyParams().iterator();
 
@@ -372,7 +372,7 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
                 }else{
                     namepos.put(name, npos);
                 }
-                model.addRow(new Object[]{ap.getValPart(AppValue.V_REQTRACKBODY), ap.getTokentypeName(ap.T_DEFAULT),Integer.toString(npos),nv[0], nv[1]});
+                model.addRow(new Object[]{ap.getValPart(AppValue.V_REQTRACKBODY), "",Integer.toString(npos),nv[0], nv[1]});
             }
 
          }

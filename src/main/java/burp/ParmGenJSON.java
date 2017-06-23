@@ -216,7 +216,7 @@ public class ParmGenJSON {
                             }else if(name.toUpperCase().equals("TOSTEPNO")){
                                 apv.toStepNo = GetNumber(ev, value, 0);
                             }else if(name.toUpperCase().equals("TOKENTYPE")){
-                                apv.tokentype = GetNumber(ev,value,0);
+                                apv.setTokenTypeName(GetString(ev, value, ""));
                             }else if(name.toUpperCase().equals("RESENCODETYPE")){
                             	apv.setResEncodeType(GetString(ev, value, ""));
                             }

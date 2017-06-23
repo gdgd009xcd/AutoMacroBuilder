@@ -350,22 +350,18 @@ class AppValue {
 	public int resRegexPos = -1;
 	public String token;//追跡token　Name
 
-	public int tokentype;
-	public static final int T_DEFAULT = 0;
-	public static final int T_HIDDEN = 1;
-	public static final int T_LOCATION = 2;
-	public static final int T_HREF = 3;
-	public static final int T_XCSRF_TOKEN = 4;
-	public static final int T_TEXT = 5;
+	public TokenTypeNames tokentype = TokenTypeNames.HIDDEN;
 
-	private static String[] TokenTypeNames = {
-			"",
-			"hidden",
-			"location",
-			"href",
-			"xcsrf",
-			"text",
-			null
+
+	public enum TokenTypeNames  {
+			DEFAULT,
+			HIDDEN,
+			LOCATION,
+			HREF,
+			XCSRF,
+			TEXT,
+                        JSON
+
 	};
 
 	public String tamattack;
@@ -417,7 +413,7 @@ class AppValue {
                 };
                 payloadposition = I_APPEND;
             }
-            tokentype = T_HIDDEN;
+            tokentype = TokenTypeNames.HIDDEN;
         }
 
         AppValue(){
@@ -508,16 +504,20 @@ class AppValue {
         }
 
         public  void setResEncodeType(String t){
-        	if(t!=null){
-        		if(t.toUpperCase().equals(ResEncodeTypes.JSON.name())){
-        			resencodetype = ResEncodeTypes.JSON;
-        			return;
-        		}else if(t.toUpperCase().equals(ResEncodeTypes.URLENCODE.name())){
-        			resencodetype = ResEncodeTypes.URLENCODE;
-        			return;
-        		}
-        	}
-        	resencodetype = ResEncodeTypes.RAW;
+        	resencodetype = parseResEncodeType(t);
+        }
+        
+        public ResEncodeTypes parseResEncodeType(String t){
+            ResEncodeTypes[] encarray = ResEncodeTypes.values();
+            if(t!=null&&!t.isEmpty()){
+                String tupper = t.toUpperCase();
+                for(ResEncodeTypes enc: encarray){
+                    if(enc.name().toUpperCase().equals(tupper)){
+                        return enc;
+                    }
+                }
+            }
+            return ResEncodeTypes.RAW;
         }
 
         public static String[] makePayloadPositionNames(){
@@ -605,7 +605,7 @@ class AppValue {
                     QUOTE_PREFCOMMA(token) + (_typeval==AppParmsIni.T_TRACK?QUOTE_PREFCOMMA(urlencode==true?"true":"false"):"")
                     + (_typeval==AppParmsIni.T_TRACK?QUOTE_PREFCOMMA(Integer.toString(fromStepNo)):"")
                     + (_typeval==AppParmsIni.T_TRACK?QUOTE_PREFCOMMA(Integer.toString(toStepNo)):"")
-                    + QUOTE_PREFCOMMA(Integer.toString(tokentype));
+                    + QUOTE_PREFCOMMA(tokentype.name());
 
             return avrec;
         }
@@ -623,22 +623,23 @@ class AppValue {
             return "";
         }
 
-        public String getTokentypeName(int _tktype){
-            if(TokenTypeNames.length>_tktype&&_tktype>=0){
-                return TokenTypeNames[_tktype];
-            }
-            return "";
-        }
 
-        public  int parseTokenTypeName(String tkname){
-        	if(tkname!=null){
-            for(int i=0; i<TokenTypeNames.length;i++){
-                if(tkname.toLowerCase().equals(TokenTypeNames[i])){
-                    return i;
+        public void setTokenTypeName(String tknames){
+            tokentype = parseTokenTypeName(tknames);
+        }
+        
+        public  TokenTypeNames parseTokenTypeName(String tkname){
+            if(tkname!=null&&!tkname.isEmpty()){
+                String uppername = tkname.toUpperCase();
+                TokenTypeNames[] tktypearray = TokenTypeNames.values();
+                for(TokenTypeNames tktype: tktypearray){
+                    if(tktype.name().toUpperCase().equals(uppername)){
+                        return tktype;
+                    }
                 }
+                
             }
-        	}
-            return 0;
+            return TokenTypeNames.DEFAULT;
         }
 
         String getResValPart(){
@@ -1456,7 +1457,7 @@ class AppParmsIni {
                         app.resRegex,
                         app.getResValPart(),
                         Integer.toString(app.resRegexPos),
-                    app.token, app.urlencode, app.fromStepNo, app.toStepNo, app.getTokentypeName(app.tokentype)};
+                    app.token, app.urlencode, app.fromStepNo, app.toStepNo, app.tokentype.name()};
                 case T_TAMPER:
                     return new Object[] {app.getValPart(), (app.isModify()?false:true), app.value,
                         app.token,
@@ -1795,7 +1796,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                         //ParmVars.plog.debuglog(0, "ParseResponse: V_HEADER " + rowcolstr);
 			//String[] headers=request.getHeaderNames();
 			//for(String header : headers){
-			rflag = FetchResponse.loc.headermatch(pmt.getStepNo(), av.fromStepNo,url, presponse, row, col, true,av.token, av.tokentype);
+			rflag = FetchResponse.loc.headermatch(pmt.getStepNo(), av.fromStepNo,url, presponse, row, col, true,av.token, av);
 			break;
                 case AppValue.V_REQTRACKBODY://request追跡なのでNOP.
                     break;
@@ -1805,7 +1806,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                         try {
                             //body
                             //ParmVars.plog.debuglog(0, "ParseResponse: V_BODY " + rowcolstr);
-                            rflag = FetchResponse.loc.bodymatch(pmt.getStepNo(),av.fromStepNo,url, presponse, row, col, true, autotrack, av,av.resRegexPos, av.token, av.urlencode, av.tokentype);
+                            rflag = FetchResponse.loc.bodymatch(pmt.getStepNo(),av.fromStepNo,url, presponse, row, col, true, autotrack, av,av.resRegexPos, av.token, av.urlencode);
                         } catch (UnsupportedEncodingException ex) {
                             Logger.getLogger(ParmGen.class.getName()).log(Level.SEVERE, null, ex);
                         }

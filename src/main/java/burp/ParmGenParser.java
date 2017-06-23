@@ -89,13 +89,13 @@ public class ParmGenParser {
                 }else{
                     namepos.put(n, npos);
                 }
-                int ttype= AppValue.T_HIDDEN;
+                AppValue.TokenTypeNames ttype= AppValue.TokenTypeNames.HIDDEN;
                 if(t!=null){
                 	if(t.toLowerCase().equals("text")){
-                		ttype = AppValue.T_TEXT;
+                		ttype = AppValue.TokenTypeNames.TEXT;
                 	}
                 }
-                tk = new ParmGenToken(ttype, "", n, v, npos);
+                tk = new ParmGenToken(ttype, "", n, v, false,npos);
                 tklist.add(tk);
             }
         }else if(vtag.tagName().toLowerCase().indexOf("a")!=-1){//<A
@@ -122,7 +122,7 @@ public class ParmGenParser {
 	                        }else{
 	                            namepos.put(name, npos);
 	                        }
-	                        tk = new ParmGenToken(AppValue.T_HREF,url, name, value, npos);
+	                        tk = new ParmGenToken(AppValue.TokenTypeNames.HREF,url, name, value, false, npos);
 	                        tklist.add(tk);
 	                    }
                     }
@@ -158,7 +158,7 @@ public class ParmGenParser {
     //
     // レスポンスパラメータ抽出
     //
-    public ParmGenToken fetchNameValue(String name, int fcnt, int _tokentype){
+    public ParmGenToken fetchNameValue(String name, int fcnt, AppValue.TokenTypeNames _tokentype){
             if(name ==null)return null;//name nullは不可。
             ParmGenTokenKey tkey = null;
             HashMap<String,Integer> namepos = new HashMap<String,Integer>();
@@ -175,14 +175,14 @@ public class ParmGenParser {
 
                         ParmGenTokenKey dkey = new ParmGenTokenKey(tkey);//copy
                         
-                    	dkey.SetTokenType(AppValue.T_DEFAULT);
+                    	dkey.SetTokenType(AppValue.TokenTypeNames.DEFAULT);
 
                     	defmap.put(dkey, tkn.getTokenValue());
                     }
                 }
             }
             HashMap<ParmGenTokenKey, ParmGenTokenValue> selectmap = map;
-            if(_tokentype==AppValue.T_DEFAULT){
+            if(_tokentype==AppValue.TokenTypeNames.DEFAULT){
             	selectmap = defmap;
             }
 

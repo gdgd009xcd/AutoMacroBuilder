@@ -725,10 +725,10 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                             apv.setresRegexURLencoded("");
                             int resvalpart = AppValue.V_AUTOTRACKBODY;
                             switch (tkn.getTokenKey().GetTokenType()) {
-                                case AppValue.T_LOCATION:
+                                case LOCATION:
                                     resvalpart = AppValue.V_HEADER;
                                     break;
-                                case AppValue.T_XCSRF_TOKEN:
+                                case XCSRF:
                                     break;
                                 default:
                                     break;

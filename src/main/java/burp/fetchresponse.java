@@ -221,9 +221,10 @@ class LocVal {
 	//
 	// header match
 	//
-	boolean headermatch(int currentStepNo, int fromStepNo, String url, PResponse presponse, int r, int c, boolean overwrite, String name, int _tokentype){
+	boolean headermatch(int currentStepNo, int fromStepNo, String url, PResponse presponse, int r, int c, boolean overwrite, String name, AppValue av){
+                AppValue.TokenTypeNames _tokentype = av.tokentype;
 		if (urlmatch(url, r, c )){
-                    if(_tokentype==AppValue.T_LOCATION){
+                    if(_tokentype==AppValue.TokenTypeNames.LOCATION){
                         ParmGenToken tkn = presponse.fetchNameValue(name, _tokentype);
                         if(tkn!=null){
                             ParmGenTokenValue tval = tkn.getTokenValue();
@@ -278,8 +279,9 @@ class LocVal {
 	//
 	// body match
 	//
-	boolean bodymatch(int currentStepNo, int fromStepNo, String url, PResponse presponse, int r, int c, boolean overwrite, boolean autotrack, AppValue av,int fcnt, String name, boolean _uencode, int _tokentype) throws UnsupportedEncodingException{
-		if (urlmatch(url, r, c )){
+	boolean bodymatch(int currentStepNo, int fromStepNo, String url, PResponse presponse, int r, int c, boolean overwrite, boolean autotrack, AppValue av,int fcnt, String name, boolean _uencode) throws UnsupportedEncodingException{
+            AppValue.TokenTypeNames _tokentype = av.tokentype;
+            if (urlmatch(url, r, c )){
 
             String body = presponse.getBody();
 
@@ -313,55 +315,53 @@ class LocVal {
                 return false;
             }
 
-			Matcher matcher = null;
+            Matcher matcher = null;
 
+            try {
+                matcher = regexes[r][c].matcher(body);
+            } catch (Exception e) {
+                printlog("matcher例外：" + e.toString());
+            }
 
-			try {
-				matcher = regexes[r][c].matcher(body);
-			}catch (Exception e) {
-				printlog("matcher例外：" + e.toString());
-			}
+            if (matcher.find()) {
+                int gcnt = matcher.groupCount();
+                String matchval = null;
+                for (int n = 0; n < gcnt; n++) {
+                    matchval = matcher.group(n + 1);
+                }
 
-
-			if ( matcher.find() ){
-				int gcnt = matcher.groupCount();
-				String matchval = null;
-				for(int n = 0; n < gcnt ; n++){
-					matchval = matcher.group(n+1);
-				}
-
-				if ( matchval != null ){
-					switch(av.resencodetype){
-					case JSON:
-						ParmGenJSONDecoder jdec = new ParmGenJSONDecoder();
-						matchval = jdec.decodeStringValue(matchval);
-						break;
-					default:
-						break;
-					}
-					if(_uencode==true){
+                if (matchval != null) {
+                    switch (av.resencodetype) {
+                        case JSON:
+                            ParmGenJSONDecoder jdec = new ParmGenJSONDecoder();
+                            matchval = jdec.decodeStringValue(matchval);
+                            break;
+                        default:
+                            break;
+                    }
+                    if (_uencode == true) {
                         String venc = matchval;
-                        try{
+                        try {
                             venc = URLEncoder.encode(matchval, ParmVars.enc.getIANACharset());
-                        }catch (UnsupportedEncodingException e){
+                        } catch (UnsupportedEncodingException e) {
                             //NOP
                         }
                         matchval = venc;
                     }
-					String ONETIMEPASSWD = matchval.replaceAll(",", "%2C");
+                    String ONETIMEPASSWD = matchval.replaceAll(",", "%2C");
 
-                    if(ONETIMEPASSWD!=null&&!ONETIMEPASSWD.isEmpty()){// value値nullは追跡しない
-                        printlog("*****FETCHRESPONSE body r,c:value:" + r + "," + c + ":" +  ONETIMEPASSWD );
-                        setLocVal(currentStepNo,fromStepNo, r,c,ONETIMEPASSWD, overwrite);
+                    if (ONETIMEPASSWD != null && !ONETIMEPASSWD.isEmpty()) {// value値nullは追跡しない
+                        printlog("*****FETCHRESPONSE body r,c:value:" + r + "," + c + ":" + ONETIMEPASSWD);
+                        setLocVal(currentStepNo, fromStepNo, r, c, ONETIMEPASSWD, overwrite);
                         return true;
-                    }else{
-                        printlog("xxxxxx IGNORED FETCHRESPONSE body r,c:value:" + r + "," + c + ":" +  "null" );
+                    } else {
+                        printlog("xxxxxx IGNORED FETCHRESPONSE body r,c:value:" + r + "," + c + ":" + "null");
                     }
-				}
-			}
-		}
-		return false;
-	}
+                }
+            }
+        }
+        return false;
+    }
 
         boolean reqbodymatch(int currentStepNo, int fromStepNo,String url, PRequest prequest, int r, int c, boolean overwrite, int fcnt, String name){
             if (urlmatch(url, r, c )){

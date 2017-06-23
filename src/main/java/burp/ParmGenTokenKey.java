@@ -11,12 +11,12 @@ import java.util.Objects;
  * @author chikara_1.daike
  */
 public class ParmGenTokenKey {
-    private int tokentype;
+    private AppValue.TokenTypeNames tokentype;
     private int fcnt;
     private String name;
     
    
-    ParmGenTokenKey(int _tokentype, String _name, int _fcnt){
+    ParmGenTokenKey(AppValue.TokenTypeNames _tokentype, String _name, int _fcnt){
         tokentype = _tokentype;
         name = new String(_name);
         fcnt = _fcnt;
@@ -32,7 +32,7 @@ public class ParmGenTokenKey {
         return name;
     }
     
-    public int GetTokenType(){
+    public AppValue.TokenTypeNames GetTokenType(){
         return tokentype;
     }
     
@@ -40,7 +40,7 @@ public class ParmGenTokenKey {
         return fcnt;
     }
     
-    public void SetTokenType(int _tktype){
+    public void SetTokenType(AppValue.TokenTypeNames _tktype){
     	tokentype = _tktype;
     }
     

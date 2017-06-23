@@ -16,8 +16,8 @@ public class ParmGenArrayList extends ArrayList<ParmGenToken> implements Interfa
     
     
     
-    public void addToken(int _tokentype, String url, String name, String value, int fcnt){
-        ParmGenToken tkn = new ParmGenToken( _tokentype,  url,  name,  value,  fcnt);
+    public void addToken(AppValue.TokenTypeNames _tokentype, String url, String name, String value, Boolean b, int fcnt){
+        ParmGenToken tkn = new ParmGenToken( _tokentype,  url,  name,  value, b, fcnt);
         add(tkn);
     }
     

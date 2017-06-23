@@ -14,9 +14,9 @@ public class ParmGenToken  {
     ParmGenTokenKey ptk;
     ParmGenTokenValue ptv;
     
-ParmGenToken(int _tokentype, String url, String name, String value, int fcnt){
+ParmGenToken(AppValue.TokenTypeNames _tokentype, String url, String name, String value, Boolean _b, int fcnt){
     ptk = new ParmGenTokenKey(_tokentype, name, fcnt);
-    ptv = new ParmGenTokenValue(url, value);
+    ptv = new ParmGenTokenValue(url, value, _b);
 }
 
 ParmGenToken(ParmGenTokenKey tkey, ParmGenTokenValue tval){

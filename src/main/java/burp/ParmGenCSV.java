@@ -183,7 +183,7 @@ public class ParmGenCSV {
                 AppValue_rec.add("urlencode", param.urlencode);
                 AppValue_rec.add("fromStepNo", param.fromStepNo);
                 AppValue_rec.add("toStepNo", param.toStepNo);
-                AppValue_rec.add("TokenType", param.tokentype);
+                AppValue_rec.add("TokenType", param.tokentype.name());
                 AppValue_List.add(AppValue_rec);
             }
 

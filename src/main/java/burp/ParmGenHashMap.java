@@ -27,9 +27,9 @@ public  class ParmGenHashMap extends HashMap<ParmGenTokenKey,ParmGenTokenValue> 
         return super.size();
     }
     
-    public void addToken(int _tokentype, String url, String name, String value, int fcnt){
+    public void addToken(AppValue.TokenTypeNames _tokentype, String url, String name, String value, Boolean b, int fcnt){
         ParmGenTokenKey tk = new ParmGenTokenKey(_tokentype, name, fcnt);
-        ParmGenTokenValue tv = new ParmGenTokenValue(url, value);
+        ParmGenTokenValue tv = new ParmGenTokenValue(url, value, b);
         super.put(tk, tv);
     }
 

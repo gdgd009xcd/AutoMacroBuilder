@@ -30,7 +30,7 @@ class PResponse extends ParseHTTPHeaders {
                             value = nvp[1];
 
                             if(name!=null&&name.length()>0&&value!=null){
-                                tklist.addToken(AppValue.T_LOCATION,url, name, value, 0);
+                                tklist.addToken(AppValue.TokenTypeNames.LOCATION,url, name, value, false,0);
                             }
                         }
                     }
@@ -41,7 +41,7 @@ class PResponse extends ParseHTTPHeaders {
 		return null;
 	}
         
-        public ParmGenToken fetchNameValue(String name, int _tokentype){
+        public ParmGenToken fetchNameValue(String name, AppValue.TokenTypeNames _tokentype){
             if(map==null){
                 map = new ParmGenHashMap();
                 InterfaceCollection<Entry<ParmGenTokenKey, ParmGenTokenValue>> ic = getLocationTokens(map);             

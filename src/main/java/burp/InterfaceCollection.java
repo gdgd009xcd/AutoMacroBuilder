@@ -12,5 +12,5 @@ package burp;
  */
 public interface InterfaceCollection<T> extends Iterable<T> {
     int size();
-    void addToken(int _tokentype, String url, String name, String value, int fcnt);
+    void addToken(AppValue.TokenTypeNames _tokentype, String url, String name, String value, Boolean b, int fcnt);
 }

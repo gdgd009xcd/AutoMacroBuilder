@@ -666,7 +666,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             int row = 0;
 
             for (PRequestResponse pqrs : orglist) {
-                HashMap<ParmGenToken, String> addedtokens = new HashMap<ParmGenToken, String>();
+                HashMap<ParmGenTokenKey, String> addedtokens = new HashMap<ParmGenTokenKey, String>();
                 for(ListIterator<ParmGenResToken> it = urltokens.listIterator(urltokens.size());it.hasPrevious();){
                 //if (respqrs != null && tracktokenlist != null && tracktokenlist.size() > 0) {//直前のレスポンスに追跡パラメータあり
                     //リクエストにtracktokenlistのトークンが含まれる場合のみ
@@ -676,11 +676,11 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
                     for (ParmGenToken tkn : restoken.tracktokenlist) {
                         String token = tkn.getTokenKey().GetName();
-                        if(!addedtokens.containsKey(tkn)){
+                        if(!addedtokens.containsKey(tkn.getTokenKey())){
                             if (pqrs.request.hasQueryParam(token) || pqrs.request.hasBodyParam(token)) {
                                 RequesthasToken = true;
                                 requesttokenlist.add(tkn);
-                                addedtokens.put(tkn, "");
+                                addedtokens.put(tkn.getTokenKey(), "");
                             }
                         }
                     }

@@ -16,7 +16,27 @@ import javax.json.stream.JsonParser;
  * @author daike
  */
 public class test {
+    String LFinsert(String data){
+        StringBuffer sb = new StringBuffer();
+        int mlen = 512;
+        if(data==null)return null;
+        
+        int end = data.length() - mlen + 1;
+        if(end>0){
+            for(int p = 0; p < end; p+=mlen){
+                String line = data.substring(p, p+mlen);
+                sb.append(line);
+                if(!line.contains("\n")){
+                    sb.append("<LF>\n");
+                }
 
+            }
+        }else{
+            return data;
+        }
+        return sb.toString();
+    }
+    
     public static void main(String[] args) {
         //ParmGenCSV(String _filename, String _lang)
         ParmVars.parmfile = "xxx.csv";

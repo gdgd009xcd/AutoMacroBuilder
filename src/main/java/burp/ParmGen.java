@@ -249,6 +249,7 @@ class ParmVars {
 	//String ProxyAuth = "Basic Y2hpa2FyYV8xLmRhaWtlOjdyOXR5QDRxMQ==";
 	static String ProxyAuth;
 	static ParmGenSession session;
+        static int displaylength = 10000;// JTextArea/JTextPane等swingの表示バイト数
 
 	//
 	// static変数初期化

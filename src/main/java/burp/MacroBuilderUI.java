@@ -104,7 +104,9 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         int cpos = pmt.getCurrentRequest();
         if (rlist != null) {
             PRequestResponse pqr = rlist.get(cpos);
-             Reader reqrd = new java.io.StringReader(pqr.request.getMessage());
+            String reqstr = pqr.request.getMessage();
+            int len = ParmVars.displaylength > reqstr.length()?reqstr.length():ParmVars.displaylength;
+             Reader reqrd = new java.io.StringReader(reqstr.substring(0, len));
                 try {
                     MacroRequest.read(reqrd, null);
                 } catch (IOException ex) {

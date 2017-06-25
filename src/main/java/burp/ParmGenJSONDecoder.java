@@ -9,9 +9,18 @@ import javax.json.stream.JsonParser;
 public class ParmGenJSONDecoder {
 
     JsonParser parser = null;
-
+    HashMap<ParmGenTokenKey, ParmGenTokenValue> map = null;
+    
+    ParmGenJSONDecoder(String jsondata){
+        crtparse(jsondata);
+    }
+    
     JsonParser crtparse(String jsondata) {
-        parser = Json.createParser(new StringReader(jsondata));
+        try{
+            parser = Json.createParser(new StringReader(jsondata));
+        }catch(Exception e){
+            parser = null;
+        }
         return parser;
     }
 
@@ -64,53 +73,78 @@ public class ParmGenJSONDecoder {
 
     }
 
-    public ArrayList<ParmGenToken> parseJSON2Token(String URL, String jsondata) {
+    public ArrayList<ParmGenToken> parseJSON2Token() {
         ArrayList<ParmGenToken> tknlist = new ArrayList<ParmGenToken>();
-        
-        if (crtparse(jsondata) != null) {
+        map = new HashMap<ParmGenTokenKey, ParmGenTokenValue>();
+        String URL = "";
+        if (parser != null) {
             String keyname = "";
             String value = "";
             int fcnt = 0;
             ParmGenToken tkn = null;
             HashMap<String, Integer> samenamehash = new HashMap<String, Integer>();
             while (parser.hasNext()) {
-                JsonParser.Event event = parser.next();
-                switch (event) {
-                    case START_ARRAY:
+                try {
+                    JsonParser.Event event = parser.next();
+                    switch (event) {
+                        case START_ARRAY:
 
-                        //ParmVars.plog.debuglog(0, "START_ARRAY NAME:" +keyname + " level:" + arraylevel);
-                        break;
-                    case END_ARRAY:
+                            //ParmVars.plog.debuglog(0, "START_ARRAY NAME:" +keyname + " level:" + arraylevel);
+                            break;
+                        case END_ARRAY:
 
-                        //ParmVars.plog.debuglog(0, "END_ARRAY NAME:" +ep + " level:" + arraylevel);
-                        break;
-                    case KEY_NAME:
-                        keyname = parser.getString();
-                        break;
-                    case START_OBJECT:
-                    case END_OBJECT:
-                        break;
-                    case VALUE_TRUE:
-                    case VALUE_FALSE:
-                        break;
-                    case VALUE_STRING:
-                    case VALUE_NUMBER:
-                        value = parser.getString();
-                        fcnt = 0;
-                        if(samenamehash.containsKey(keyname)){
-                            fcnt = samenamehash.get(keyname) + 1;
-                        }
-                        samenamehash.put(keyname, fcnt);
-                        tkn = new ParmGenToken(AppValue.TokenTypeNames.JSON, URL, keyname, value, false, fcnt);
-                        tknlist.add(tkn);
-                        break;
-                    case VALUE_NULL:
-                        value = null;
-                        break;
+                            //ParmVars.plog.debuglog(0, "END_ARRAY NAME:" +ep + " level:" + arraylevel);
+                            break;
+                        case KEY_NAME:
+                            keyname = parser.getString();
+                            break;
+                        case START_OBJECT:
+                        case END_OBJECT:
+                            break;
+                        case VALUE_TRUE:
+                        case VALUE_FALSE:
+                            break;
+                        case VALUE_STRING:
+                        case VALUE_NUMBER:
+                            value = parser.getString();
+                            fcnt = 0;
+                            if (samenamehash.containsKey(keyname)) {
+                                fcnt = samenamehash.get(keyname) + 1;
+                            }
+                            samenamehash.put(keyname, fcnt);
+                            tkn = new ParmGenToken(AppValue.TokenTypeNames.JSON, URL, keyname, value, false, fcnt);
+                            tknlist.add(tkn);
+                            map.put(tkn.getTokenKey(), tkn.getTokenValue());
+                            break;
+                        case VALUE_NULL:
+                            value = null;
+                            break;
+                    }
+                } catch (Exception e) {
+                    parser = null;
+                    tknlist.clear();
+                    break;
                 }
             }
         }
         return tknlist;
 
+    }
+    
+    public ParmGenToken fetchNameValue(String name, int fcnt, AppValue.TokenTypeNames _tokentype){
+        if(parser!=null){
+            if(map==null){
+                parseJSON2Token();
+            }
+            if(map!=null){
+                ParmGenTokenKey tkey = new ParmGenTokenKey(_tokentype, name, fcnt);
+                if(map.containsKey(tkey)){
+                    ParmGenTokenValue tval = map.get(tkey);
+                    ParmGenToken tkn = new ParmGenToken(tkey, tval);
+                    return tkn;
+                }
+            }
+        }
+        return null;
     }
 }

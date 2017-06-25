@@ -303,6 +303,9 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
             ParmGenParser pgser = new ParmGenParser(body);
             HashMap<String,Integer> namepos = new HashMap<String,Integer>();
             ArrayList<ParmGenToken> lst = pgser.getNameValues();
+            ParmGenJSONDecoder jdec = new ParmGenJSONDecoder(body);
+            ArrayList<ParmGenToken> jlst = jdec.parseJSON2Token();
+            lst.addAll(jlst);
 
             for(Iterator<ParmGenToken> it = lst.iterator();it.hasNext();){
                 ParmGenToken tkn = it.next();
@@ -332,10 +335,8 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
                 if(namepos.containsKey(name)){
                     npos = namepos.get(name);
                     npos++;
-                    namepos.put(name, npos);
-                }else{
-                    namepos.put(name, npos);
                 }
+                namepos.put(name, npos);                
                 model.addRow(new Object[]{ap.getValPart(AppValue.V_REQTRACKPATH), "", Integer.toString(npos),Integer.toString(ppos), pit.next()});
                 ppos++;
             }
@@ -351,10 +352,8 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
                 if(namepos.containsKey(name)){
                     npos = namepos.get(name);
                     npos++;
-                    namepos.put(name, npos);
-                }else{
-                    namepos.put(name, npos);
                 }
+                namepos.put(name, npos);
                 model.addRow(new Object[]{ap.getValPart(AppValue.V_REQTRACKQUERY),"" ,Integer.toString(npos),nv[0], nv[1]});
             }
             Iterator<String[]> itb = rs.request.getBodyParams().iterator();
@@ -368,10 +367,8 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
                 if(namepos.containsKey(name)){
                     npos = namepos.get(name);
                     npos++;
-                    namepos.put(name, npos);
-                }else{
-                    namepos.put(name, npos);
                 }
+                namepos.put(name, npos);
                 model.addRow(new Object[]{ap.getValPart(AppValue.V_REQTRACKBODY), "",Integer.toString(npos),nv[0], nv[1]});
             }
 

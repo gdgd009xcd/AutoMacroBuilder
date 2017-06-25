@@ -4,7 +4,8 @@ import java.util.Map.Entry;
 
 class PResponse extends ParseHTTPHeaders {
 	private ParmGenHashMap map;
-    
+        private ParmGenParser htmlparser;
+        private ParmGenJSONDecoder jsonparser;
 	//PResponse(){
 	//	super();
 	//}
@@ -12,6 +13,8 @@ class PResponse extends ParseHTTPHeaders {
 	PResponse(String httpmessage){
 		super(httpmessage);
                 map = null;
+                htmlparser = null;
+                jsonparser = null;
 	}
 
         
@@ -41,16 +44,26 @@ class PResponse extends ParseHTTPHeaders {
 		return null;
 	}
         
-        public ParmGenToken fetchNameValue(String name, AppValue.TokenTypeNames _tokentype){
+        public ParmGenToken fetchNameValue(String name, AppValue.TokenTypeNames _tokentype, int fcnt){
             if(map==null){
                 map = new ParmGenHashMap();
-                InterfaceCollection<Entry<ParmGenTokenKey, ParmGenTokenValue>> ic = getLocationTokens(map);             
+                InterfaceCollection<Entry<ParmGenTokenKey, ParmGenTokenValue>> ic = getLocationTokens(map);
+                htmlparser = new ParmGenParser(body);
+                jsonparser = new ParmGenJSONDecoder(body);
             }
-            ParmGenTokenKey tkey = new ParmGenTokenKey(_tokentype, name, 0);
+            ParmGenTokenKey tkey = new ParmGenTokenKey(_tokentype, name, fcnt);
             ParmGenTokenValue tval = map.get(tkey);
             if(tval!=null){
                 return new ParmGenToken(tkey, tval);
             }
+            if(htmlparser!=null){
+                return htmlparser.fetchNameValue(name, fcnt, _tokentype);
+            }
+            if(jsonparser!=null){
+                return jsonparser.fetchNameValue(name, fcnt, _tokentype);
+            }
             return null;
         }
+        
+       
 }

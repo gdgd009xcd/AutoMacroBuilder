@@ -6,6 +6,8 @@
 package burp;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -13,6 +15,8 @@ import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.ListIterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
@@ -100,7 +104,13 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         int cpos = pmt.getCurrentRequest();
         if (rlist != null) {
             PRequestResponse pqr = rlist.get(cpos);
-            MacroRequest.setText(pqr.request.getMessage());
+             Reader reqrd = new java.io.StringReader(pqr.request.getMessage());
+                try {
+                    MacroRequest.read(reqrd, null);
+                } catch (IOException ex) {
+                    ParmVars.plog.printException(ex);
+                }
+            //MacroRequest.setText(pqr.request.getMessage());
             MacroResponse.setText(pqr.response.getMessage());
             MacroComments.setText(pqr.getComments());
         }
@@ -129,8 +139,8 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         RequestList = new javax.swing.JList();
         paramlog = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        MacroRequest = new javax.swing.JTextArea();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        MacroRequest = new javax.swing.JEditorPane();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         MacroResponse = new javax.swing.JTextArea();
@@ -209,19 +219,17 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         });
         jScrollPane1.setViewportView(RequestList);
 
-        MacroRequest.setColumns(20);
-        MacroRequest.setRows(5);
-        jScrollPane2.setViewportView(MacroRequest);
+        jScrollPane6.setViewportView(MacroRequest);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 584, Short.MAX_VALUE)
+            .addComponent(jScrollPane6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 584, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 244, Short.MAX_VALUE)
+            .addComponent(jScrollPane6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 244, Short.MAX_VALUE)
         );
 
         paramlog.addTab("リクエスト", jPanel1);
@@ -490,7 +498,13 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                 ParmVars.plog.debuglog(0, "before rlist.get");
                 PRequestResponse pqr = rlist.get(pos);
                 ParmVars.plog.debuglog(0, "before MacroRequest.setText");
-                MacroRequest.setText(pqr.request.getMessage());
+                Reader reqrd = new java.io.StringReader(pqr.request.getMessage());
+                try {
+                    MacroRequest.read(reqrd, null);
+                } catch (IOException ex) {
+                    ParmVars.plog.printException(ex);
+                }
+                //MacroRequest.setText(pqr.request.getMessage());
                 ParmVars.plog.debuglog(0, "before MacroResponse.setText");
                 MacroResponse.setText(pqr.response.getMessage());
                 MacroComments.setText(pqr.getComments());
@@ -763,8 +777,12 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                 trackurltoken.request = pqrs.request;
                 trackurltoken.tracktokenlist = new ArrayList<ParmGenToken>();
                 InterfaceCollection<ParmGenToken> ic = pqrs.response.getLocationTokens(tklist);
+                //JSON parse
+                ParmGenJSONDecoder jdecoder = new ParmGenJSONDecoder(body);
+                ArrayList<ParmGenToken> jtklist = jdecoder.parseJSON2Token();
 
                 tklist.addAll(bodytklist);
+                tklist.addAll(jtklist);
 
                 for (ParmGenToken token : tklist) {
                     //PHPSESSID, token, SesID, jsessionid
@@ -835,7 +853,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     private javax.swing.JCheckBox MBResetToOriginal;
     private javax.swing.JCheckBox MBdeleteSetCookies;
     private javax.swing.JTextArea MacroComments;
-    private javax.swing.JTextArea MacroRequest;
+    private javax.swing.JEditorPane MacroRequest;
     private javax.swing.JTextArea MacroResponse;
     private javax.swing.JButton ParamTracking;
     private javax.swing.JList RequestList;
@@ -850,10 +868,10 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JTabbedPane paramlog;

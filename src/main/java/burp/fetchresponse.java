@@ -225,7 +225,7 @@ class LocVal {
                 AppValue.TokenTypeNames _tokentype = av.tokentype;
 		if (urlmatch(url, r, c )){
                     if(_tokentype==AppValue.TokenTypeNames.LOCATION){
-                        ParmGenToken tkn = presponse.fetchNameValue(name, _tokentype);
+                        ParmGenToken tkn = presponse.fetchNameValue(name, _tokentype, 0);
                         if(tkn!=null){
                             ParmGenTokenValue tval = tkn.getTokenValue();
                             if(tval!=null){// value値nullは追跡しない
@@ -286,8 +286,9 @@ class LocVal {
             String body = presponse.getBody();
 
             if(autotrack){
-                ParmGenParser parser = new ParmGenParser(body);
-                ParmGenToken tkn = parser.fetchNameValue(name, fcnt, _tokentype);
+                //ParmGenParser parser = new ParmGenParser(body);
+                //ParmGenToken tkn = parser.fetchNameValue(name, fcnt, _tokentype);
+                ParmGenToken tkn = presponse.fetchNameValue(name, _tokentype, fcnt);
                 if ( tkn != null ){
                     ParmGenTokenValue tval = tkn.getTokenValue();
                     if(tval!=null){
@@ -333,7 +334,7 @@ class LocVal {
                 if (matchval != null) {
                     switch (av.resencodetype) {
                         case JSON:
-                            ParmGenJSONDecoder jdec = new ParmGenJSONDecoder();
+                            ParmGenJSONDecoder jdec = new ParmGenJSONDecoder(null);
                             matchval = jdec.decodeStringValue(matchval);
                             break;
                         default:

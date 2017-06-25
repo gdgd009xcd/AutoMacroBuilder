@@ -85,10 +85,8 @@ public class ParmGenParser {
                 if(namepos.containsKey(n)){
                     npos = namepos.get(n);
                     npos++;
-                    namepos.put(n, npos);
-                }else{
-                    namepos.put(n, npos);
                 }
+                namepos.put(n, npos);                
                 AppValue.TokenTypeNames ttype= AppValue.TokenTypeNames.HIDDEN;
                 if(t!=null){
                 	if(t.toLowerCase().equals("text")){
@@ -118,10 +116,8 @@ public class ParmGenParser {
 	                        if(namepos.containsKey(name)){
 	                            npos = namepos.get(name);
 	                            npos++;
-	                            namepos.put(name, npos);
-	                        }else{
-	                            namepos.put(name, npos);
 	                        }
+	                        namepos.put(name, npos);                                
 	                        tk = new ParmGenToken(AppValue.TokenTypeNames.HREF,url, name, value, false, npos);
 	                        tklist.add(tk);
 	                    }
@@ -155,7 +151,7 @@ public class ParmGenParser {
         return lst;
     }
 
-    //
+     //
     // レスポンスパラメータ抽出
     //
     public ParmGenToken fetchNameValue(String name, int fcnt, AppValue.TokenTypeNames _tokentype){

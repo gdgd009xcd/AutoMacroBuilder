@@ -9,14 +9,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.ListIterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
@@ -113,7 +110,9 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                     ParmVars.plog.printException(ex);
                 }
             //MacroRequest.setText(pqr.request.getMessage());
-            MacroResponse.setText(pqr.response.getMessage());
+            String resstr = pqr.response.getMessage();
+            len = ParmVars.displaylength > resstr.length() ? resstr.length():ParmVars.displaylength;
+            MacroResponse.setText(resstr.substring(0, len));
             MacroComments.setText(pqr.getComments());
         }
     }
@@ -676,7 +675,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             //ArrayList<ParmGenToken> tracktokenlist = new ArrayList<ParmGenToken>();
             ArrayList<ParmGenResToken> urltokens = new ArrayList<ParmGenResToken>();
             Pattern patternw32 = Pattern.compile("\\w{32}");
-            
+
             ArrayList<AppParmsIni> newparms = new ArrayList<AppParmsIni>();//生成するパラメータ
             PRequestResponse respqrs = null;
             int row = 0;
@@ -700,7 +699,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                             }
                         }
                     }
-                   
+
                     if (RequesthasToken) {
                         //パラメータ生成
                         AppParmsIni aparms = new AppParmsIni();

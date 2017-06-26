@@ -507,7 +507,7 @@ class AppValue {
         public  void setResEncodeType(String t){
         	resencodetype = parseResEncodeType(t);
         }
-        
+
         public ResEncodeTypes parseResEncodeType(String t){
             ResEncodeTypes[] encarray = ResEncodeTypes.values();
             if(t!=null&&!t.isEmpty()){
@@ -628,7 +628,7 @@ class AppValue {
         public void setTokenTypeName(String tknames){
             tokentype = parseTokenTypeName(tknames);
         }
-        
+
         public  TokenTypeNames parseTokenTypeName(String tkname){
             if(tkname!=null&&!tkname.isEmpty()){
                 String uppername = tkname.toUpperCase();
@@ -638,7 +638,7 @@ class AppValue {
                         return tktype;
                     }
                 }
-                
+
             }
             return TokenTypeNames.DEFAULT;
         }
@@ -734,8 +734,16 @@ class AppValue {
         * ***/
 
 	String replaceContents(int currentStepNo, AppParmsIni pini, String contents){
-                if(contents==null)return null;
-                if(valueregex==null)return null;
+		if (contents == null)
+			return null;
+		if (valueregex == null)
+			return null;
+
+		if(toStepNo>0){
+			if(currentStepNo!=toStepNo){
+				return contents;//
+			}
+		}
 
 		Matcher m = valueregex.matcher(contents);
 
@@ -753,34 +761,40 @@ class AppValue {
 				ept = m.end(n+1);
 				matchval = m.group(n+1);
 			}
-			if ( spt != -1 && ept != -1 ){
-				strcnt = pini.getStrCnt(currentStepNo, toStepNo,valparttype, col, csvpos);
-                                ParmVars.plog.printLF();
-                                boolean isnull=false;
+			if (spt != -1 && ept != -1) {
+				strcnt = pini.getStrCnt(currentStepNo, toStepNo, valparttype, col, csvpos);
+				ParmVars.plog.printLF();
+				boolean isnull = false;
 
-				if (isModify()){
-                                        if(strcnt!=null){
-                                            ParmVars.plog.debuglog(0, "******パラメータ正規表現[" + value + "]マッチパターン[" + matchval + "]値[" + strcnt + "]\n");
-                                            //
-                                            ParmVars.plog.addComments("******パラメータ正規表現[" + value + "]マッチパターン[" + matchval + "]値[" + strcnt + "]\n");
-                                        }else{
-                                            ParmVars.plog.debuglog(0, "ERROR*パラメータ正規表現[" + value + "]マッチパターン[" + matchval + "]値が取得できません。\n");
-                                            ParmVars.plog.addComments("ERROR*パラメータ正規表現[" + value + "]マッチパターン[" + matchval + "]値が取得できません。\n");
-                                            isnull = true;
-                                        }
-				}else{
-                                        if(strcnt!=null){
-                                            ParmVars.plog.debuglog(0, "######無修正パラメータ正規表現[" + value + "]マッチパターン[" + matchval + "]値[" + strcnt + "]\n");
-                                        }else{
-                                            ParmVars.plog.debuglog(0, "ERROR#無修正パラメータ正規表現[" + value + "]マッチパターン[" + matchval + "]値が取得できません。\n");
+				if (isModify()) {
+					if (strcnt != null) {
+						ParmVars.plog.debuglog(0,
+								"******パラメータ正規表現[" + value + "]マッチパターン[" + matchval + "]値[" + strcnt + "]\n");
+						//
+						ParmVars.plog.addComments(
+								"******パラメータ正規表現[" + value + "]マッチパターン[" + matchval + "]値[" + strcnt + "]\n");
+					} else {
+						ParmVars.plog.debuglog(0,
+								"ERROR*パラメータ正規表現[" + value + "]マッチパターン[" + matchval + "]値が取得できません。\n");
+						ParmVars.plog
+								.addComments("ERROR*パラメータ正規表現[" + value + "]マッチパターン[" + matchval + "]値が取得できません。\n");
+						isnull = true;
+					}
+				} else {
+					if (strcnt != null) {
+						ParmVars.plog.debuglog(0,
+								"######無修正パラメータ正規表現[" + value + "]マッチパターン[" + matchval + "]値[" + strcnt + "]\n");
+					} else {
+						ParmVars.plog.debuglog(0,
+								"ERROR#無修正パラメータ正規表現[" + value + "]マッチパターン[" + matchval + "]値が取得できません。\n");
 
-                                            isnull = true;
-                                        }
+						isnull = true;
+					}
 				}
-                                if(isnull){//値取得失敗時は、オリジナルに戻す。
-                                    strcnt = matchval;
-                                    ParmVars.plog.setError(isnull);
-                                }
+				if (isnull) {// 値取得失敗時は、オリジナルに戻す。
+					strcnt = matchval;
+					ParmVars.plog.setError(isnull);
+				}
 				newcontents += contents.substring(cpt, spt) + strcnt;
 				cpt = ept;
 				tailcontents = contents.substring(ept);

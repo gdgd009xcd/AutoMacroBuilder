@@ -668,7 +668,8 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                 "TOKEN",
                 "_CSRF_TOKEN",
                 "authenticity_token",
-                "NONCE"
+                "NONCE",
+                "access_id"
             };
 
             //token追跡自動設定。。
@@ -679,6 +680,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             ArrayList<AppParmsIni> newparms = new ArrayList<AppParmsIni>();//生成するパラメータ
             PRequestResponse respqrs = null;
             int row = 0;
+            int pos = 0;
 
             for (PRequestResponse pqrs : orglist) {
                 HashMap<ParmGenTokenKey, String> addedtokens = new HashMap<ParmGenTokenKey, String>();
@@ -693,9 +695,26 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                         String token = tkn.getTokenKey().GetName();
                         if(!addedtokens.containsKey(tkn.getTokenKey())){
                             if (pqrs.request.hasQueryParam(token) || pqrs.request.hasBodyParam(token)) {
-                                RequesthasToken = true;
-                                requesttokenlist.add(tkn);
-                                addedtokens.put(tkn.getTokenKey(), "");
+                            	boolean valid = false;
+                            	switch(tkn.getTokenKey().GetTokenType()){
+                            	case ACTION:
+                            	case HREF:
+                            		String srcurl = tkn.getTokenValue().getURL();
+                            		String desturl = pqrs.request.getURL();
+                            		ParmVars.plog.debuglog(0, "srcurl/desturl:" + srcurl + "/" + desturl);
+                            		if(desturl.indexOf(srcurl)!=-1){
+                            			valid = true;
+                            		}
+                            		break;
+                            	default:
+                            		valid = true;
+                            		break;
+                            	}
+                            	if(valid){
+	                                RequesthasToken = true;
+	                                requesttokenlist.add(tkn);
+	                                addedtokens.put(tkn.getTokenKey(), "");
+                            	}
                             }
                         }
                     }
@@ -754,7 +773,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                             apv.token = token;
                             apv.urlencode = true;
                             apv.fromStepNo = -1;
-                            apv.toStepNo = 0;
+                            apv.toStepNo = pos;
                             apv.tokentype = tkn.getTokenKey().GetTokenType();
                             apv.col = aparms.parmlist.size();
                             aparms.parmlist.add(apv);
@@ -819,6 +838,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                 if(!trackurltoken.tracktokenlist.isEmpty()){
                     urltokens.add(trackurltoken);
                 }
+                pos++;
             }
             ParmVars.plog.debuglog(0, "newparms.size=" + newparms.size());
             if (newparms != null && !newparms.isEmpty()) {

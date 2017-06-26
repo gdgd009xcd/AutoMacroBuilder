@@ -37,7 +37,7 @@ public class ParmGenParser {
 
             try {
                     doc = Jsoup.parse(htmltext);//パース実行
-                    elems = doc.select("input[type=hidden],input[type=text],a[href]");//name属性を持つHIDDENタグ全部、A HREFタグ
+                    elems = doc.select("input[type=hidden],input[type=text],a[href],form[action]");//name属性を持つHIDDENタグ全部、A HREFタグ
                     //elemsprint(htmltext);
             } catch (Exception e) {
                     // TODO Auto-generated catch block
@@ -86,7 +86,7 @@ public class ParmGenParser {
                     npos = namepos.get(n);
                     npos++;
                 }
-                namepos.put(n, npos);                
+                namepos.put(n, npos);
                 AppValue.TokenTypeNames ttype= AppValue.TokenTypeNames.HIDDEN;
                 if(t!=null){
                 	if(t.toLowerCase().equals("text")){
@@ -117,8 +117,36 @@ public class ParmGenParser {
 	                            npos = namepos.get(name);
 	                            npos++;
 	                        }
-	                        namepos.put(name, npos);                                
+	                        namepos.put(name, npos);
 	                        tk = new ParmGenToken(AppValue.TokenTypeNames.HREF,url, name, value, false, npos);
+	                        tklist.add(tk);
+	                    }
+                    }
+                }
+            }
+        }else if(vtag.tagName().toLowerCase().indexOf("form")!=-1){//<A
+            String h = vtag.attr("action");
+            //href属性から、GETパラメータを抽出。
+            //?name=value&....
+            if(h!=null){
+                String []nvpairs = h.split("[?&]");
+                String url = nvpairs[0];
+                for(String tnv:nvpairs){
+                    String[] nvp = tnv.split("=");
+                    String name = nvp[0];
+                    String value = new String("");
+                    if(nvp.length>1){
+                        value = nvp[1];
+
+	                    if(name!=null&&name.length()>0&&value!=null){
+	                        //重複nameの検査
+	                        int npos = 0;
+	                        if(namepos.containsKey(name)){
+	                            npos = namepos.get(name);
+	                            npos++;
+	                        }
+	                        namepos.put(name, npos);
+	                        tk = new ParmGenToken(AppValue.TokenTypeNames.ACTION,url, name, value, false, npos);
 	                        tklist.add(tk);
 	                    }
                     }
@@ -170,7 +198,7 @@ public class ParmGenParser {
                         map.put(tkey, tkn.getTokenValue());
 
                         ParmGenTokenKey dkey = new ParmGenTokenKey(tkey);//copy
-                        
+
                     	dkey.SetTokenType(AppValue.TokenTypeNames.DEFAULT);
 
                     	defmap.put(dkey, tkn.getTokenValue());

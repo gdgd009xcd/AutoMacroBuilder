@@ -361,7 +361,8 @@ class AppValue {
 			HREF,
 			XCSRF,
 			TEXT,
-                        JSON
+                        JSON,
+                        ACTION,
 
 	};
 

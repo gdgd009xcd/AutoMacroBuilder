@@ -669,7 +669,8 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                 "_CSRF_TOKEN",
                 "authenticity_token",
                 "NONCE",
-                "access_id"
+                "access_id",
+                "fid"
             };
 
             //token追跡自動設定。。

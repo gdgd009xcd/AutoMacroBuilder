@@ -104,6 +104,13 @@ class LocVal {
 		}
 	}
 
+	void clearCachedLocVal(){
+		for(int i = 0; i< rmax; i++){
+			for(int j = 0 ; j<cmax ; j++){
+				locarray[i][j] = null;
+			}
+		}
+	}
         void setStepNo(int snum, int r, int c){
             if(isValid(r,c)){
                 responseStepNos[r][c] = snum;

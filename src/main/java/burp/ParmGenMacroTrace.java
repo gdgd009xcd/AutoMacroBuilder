@@ -208,6 +208,9 @@ public class ParmGenMacroTrace {
 
     //１）前処理マクロ開始
     void  startBeforePreMacro(){
+    	if(FetchResponse.loc!=null){
+    		FetchResponse.loc.clearCachedLocVal();
+    	}
         state = PMT_PREMACRO_BEGIN;
         ParmVars.plog.debuglog(0, "BEGIN PreMacro");
         //前処理マクロの0～selected_request-1まで実行。

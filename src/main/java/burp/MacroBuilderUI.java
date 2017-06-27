@@ -627,7 +627,9 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     private void ParamTrackingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ParamTrackingActionPerformed
         // TODO add your handling code here:
         //fileChooser起動
-        JFileChooser jfc = new JFileChooser() {
+    	File cfile = new File(ParmVars.parmfile);
+        String dirname = cfile.getParent();
+        JFileChooser jfc = new JFileChooser(dirname) {
 
             @Override
             public void approveSelection() {

@@ -169,6 +169,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         MBdeleteSetCookies = new javax.swing.JCheckBox();
         ParamTracking = new javax.swing.JButton();
         Load = new javax.swing.JButton();
+        MBcleatokenfromcache = new javax.swing.JCheckBox();
 
         targetRequest.setText("targetRequest");
         targetRequest.addActionListener(new java.awt.event.ActionListener() {
@@ -226,7 +227,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 584, Short.MAX_VALUE)
+            .addComponent(jScrollPane6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 568, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -243,7 +244,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 584, Short.MAX_VALUE)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 568, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -260,7 +261,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 584, Short.MAX_VALUE)
+            .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 568, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -378,6 +379,13 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             }
         });
 
+        MBcleatokenfromcache.setText("開始時tokenキャッシュクリア");
+        MBcleatokenfromcache.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MBcleatokenfromcacheActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -401,20 +409,25 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                             .addComponent(waitsec, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGap(52, 52, 52)
                             .addComponent(FinalResponse))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addGap(104, 104, 104)
-                                .addComponent(MBdeleteSetCookies)
-                                .addGap(68, 68, 68))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(MBExec)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(MBCookieUpdate)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(MBCookieFromJar)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(MBResetToOriginal))))
+                        .addGroup(layout.createSequentialGroup()
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                    .addComponent(MBExec)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addComponent(MBCookieUpdate)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                    .addComponent(jLabel2)
+                                    .addGap(75, 75, 75)))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(MBCookieFromJar)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addComponent(MBResetToOriginal))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(MBdeleteSetCookies)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(MBcleatokenfromcache, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addComponent(jSeparator2)
@@ -436,7 +449,8 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(MBdeleteSetCookies))
+                    .addComponent(MBdeleteSetCookies)
+                    .addComponent(MBcleatokenfromcache))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(MBExec)
@@ -862,6 +876,11 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_LoadActionPerformed
 
+    private void MBcleatokenfromcacheActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MBcleatokenfromcacheActionPerformed
+        // TODO add your handling code here:
+        pmt.setMBcleartokencache(MBcleatokenfromcache.isSelected());
+    }//GEN-LAST:event_MBcleatokenfromcacheActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JList CSRFList;
@@ -875,6 +894,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     private javax.swing.JCheckBox MBCookieUpdate;
     private javax.swing.JCheckBox MBExec;
     private javax.swing.JCheckBox MBResetToOriginal;
+    private javax.swing.JCheckBox MBcleatokenfromcache;
     private javax.swing.JCheckBox MBdeleteSetCookies;
     private javax.swing.JTextArea MacroComments;
     private javax.swing.JEditorPane MacroRequest;

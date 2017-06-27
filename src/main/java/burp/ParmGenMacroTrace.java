@@ -33,6 +33,7 @@ public class ParmGenMacroTrace {
     boolean MBFinalResponse = false;//==true 結果は最後に実行されたマクロのレスポンス
     boolean MBResetToOriginal =false;//==true オリジナルリクエストを実行。
     boolean MBdeletesetcookies = false;//==true リクエストからSet-Cookie値全削除
+    boolean MBcleartokencache = false;//開始時tokenキャッシュクリア
     int waittimer = 1;//実行間隔(msec)
 
     ListIterator<PRequestResponse> oit = null;//オリジナル
@@ -95,6 +96,10 @@ public class ParmGenMacroTrace {
         MBResetToOriginal = b;
     }
 
+    void setMBcleartokencache(boolean b){
+        MBcleartokencache = b;
+    }
+            
     void setWaitTimer(String msec){
         try{
             waittimer = Integer.parseInt(msec);//msec
@@ -208,9 +213,11 @@ public class ParmGenMacroTrace {
 
     //１）前処理マクロ開始
     void  startBeforePreMacro(){
-    	if(FetchResponse.loc!=null){
-    		FetchResponse.loc.clearCachedLocVal();
-    	}
+        if(!MBcleartokencache){
+            if(FetchResponse.loc!=null){
+                    FetchResponse.loc.clearCachedLocVal();
+            }
+        }
         state = PMT_PREMACRO_BEGIN;
         ParmVars.plog.debuglog(0, "BEGIN PreMacro");
         //前処理マクロの0～selected_request-1まで実行。

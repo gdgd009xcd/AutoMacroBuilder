@@ -17,11 +17,11 @@ class PResponse extends ParseHTTPHeaders {
                 jsonparser = null;
 	}
 
-        
+
 	//Location headerのパラメータ取得
 	public  <T> InterfaceCollection<T> getLocationTokens(InterfaceCollection<T> tklist){
 		String locheader = getHeader("Location");
-		
+
 		if(locheader!=null){
                     String []nvpairs = locheader.split("[?&]");
                     String url = nvpairs[0];
@@ -43,13 +43,19 @@ class PResponse extends ParseHTTPHeaders {
 		}
 		return null;
 	}
-        
+
         public ParmGenToken fetchNameValue(String name, AppValue.TokenTypeNames _tokentype, int fcnt){
             if(map==null){
                 map = new ParmGenHashMap();
                 InterfaceCollection<Entry<ParmGenTokenKey, ParmGenTokenValue>> ic = getLocationTokens(map);
-                htmlparser = new ParmGenParser(body);
-                jsonparser = new ParmGenJSONDecoder(body);
+                String subtype = getContent_Subtype();
+                if(subtype!=null&&subtype.toLowerCase().equals("json")){
+                	jsonparser = new ParmGenJSONDecoder(body);
+                }else{
+                	htmlparser = new ParmGenParser(body);
+                }
+
+
             }
             ParmGenTokenKey tkey = new ParmGenTokenKey(_tokentype, name, fcnt);
             ParmGenTokenValue tval = map.get(tkey);
@@ -64,6 +70,6 @@ class PResponse extends ParseHTTPHeaders {
             }
             return null;
         }
-        
-       
+
+
 }

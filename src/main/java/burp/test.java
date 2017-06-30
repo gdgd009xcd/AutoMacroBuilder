@@ -4,10 +4,14 @@
  */
 package burp;
 
+import java.io.IOException;
 import java.io.StringReader;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.ListIterator;
+
 import javax.json.Json;
 import javax.json.stream.JsonParser;
 
@@ -16,27 +20,40 @@ import javax.json.stream.JsonParser;
  * @author daike
  */
 public class test {
-    String LFinsert(String data){
+	public static String LFSIGN = "<!_DO_NOT_MODIFY_124kdsaoi2k_LF>\n";
+	public static String LFSIGNEX = "\\<\\!_DO_NOT_MODIFY_124kdsaoi2k_LF\\>\\n";
+    public static String LFinsert(String data){
         StringBuffer sb = new StringBuffer();
         int mlen = 512;
         if(data==null)return null;
-        
-        int end = data.length() - mlen + 1;
-        if(end>0){
+        int datalen = data.length();
+        int multi = datalen / mlen;
+        int remain = datalen % mlen;
+
+        int end = datalen - remain;
+        if(multi>0){
             for(int p = 0; p < end; p+=mlen){
                 String line = data.substring(p, p+mlen);
                 sb.append(line);
                 if(!line.contains("\n")){
-                    sb.append("<LF>\n");
+                    sb.append(LFSIGN);
                 }
 
+            }
+            if(end<datalen){
+            	sb.append(data.substring(end, datalen));
             }
         }else{
             return data;
         }
         return sb.toString();
     }
-    
+
+    public static String LFremove(String data){
+    	if(data==null)return null;
+    	return data.replaceAll(LFSIGNEX, "");
+    }
+
     public static void main(String[] args) {
         //ParmGenCSV(String _filename, String _lang)
         ParmVars.parmfile = "xxx.csv";
@@ -118,16 +135,40 @@ public class test {
         }
         ParmVars.plog.debuglog(0, "key:[" + keyname + " value[" + value + "]");
          ArrayList<String> alist = new ArrayList<String>();
-        
+
         alist.add("stark");
         alist.add("stork");
         alist.add("p");
         alist.add("ack");
-        
+
         for(ListIterator<String> it = alist.listIterator(alist.size());it.hasPrevious();){
             String data = it.previous();
             ParmVars.plog.debuglog(0, data);
         }
+
+        Path path = FileSystems.getDefault().getPath("", "e:\\Desert.jpg");
+        String img = "";
+        try {
+			byte [] fileData = Files.readAllBytes(path);
+
+			img = new String(fileData, "iso8859-1");
+			ParmVars.plog.debuglog(0, "bytelen:" + fileData.length + " strlen:" + img.length());
+		} catch (IOException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+
+        String LFdata = LFinsert(img);
+        String orgdata = LFremove(LFdata);
+        ParmVars.plog.debuglog(0, "LFdata.len:" + LFdata.length());
+        ParmVars.plog.debuglog(0, LFdata);
+        if(img.equals(orgdata)){
+        	ParmVars.plog.debuglog(0, "same. len:" + img.length());
+        }else{
+        	ParmVars.plog.debuglog(0,  "diff. imglen:" + img.length() + " orglen:" + orgdata.length());
+        	ParmVars.plog.debuglog(0, orgdata);
+        }
+
     }
 
 }

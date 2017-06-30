@@ -509,19 +509,20 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             if (rlist != null && rlist.size() > pos) {
                 //
 
-                DefaultListModel lmodel = new DefaultListModel();
-                ParmVars.plog.debuglog(0, "before rlist.get");
+                //DefaultListModel lmodel = new DefaultListModel();
+
                 PRequestResponse pqr = rlist.get(pos);
-                ParmVars.plog.debuglog(0, "before MacroRequest.setText");
-                Reader reqrd = new java.io.StringReader(pqr.request.getMessage());
+
+                //Reader reqrd = new java.io.StringReader(pqr.request.getMessage());
+                Reader reqrd = new java.io.StringReader(ParmGenUtil.LFinsert(pqr.request.getMessage()));
+
                 try {
                     MacroRequest.read(reqrd, null);
                 } catch (IOException ex) {
                     ParmVars.plog.printException(ex);
                 }
                 //MacroRequest.setText(pqr.request.getMessage());
-                ParmVars.plog.debuglog(0, "before MacroResponse.setText");
-                MacroResponse.setText(pqr.response.getMessage());
+                //MacroResponse.setText(ParmGenUtil.LFinsert( pqr.response.getMessage()));
                 MacroComments.setText(pqr.getComments());
 
             }

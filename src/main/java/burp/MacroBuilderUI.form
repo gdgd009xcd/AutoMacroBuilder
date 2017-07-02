@@ -488,7 +488,7 @@
     </Component>
     <Component class="javax.swing.JCheckBox" name="MBcleatokenfromcache">
       <Properties>
-        <Property name="text" type="java.lang.String" value="&#x958b;&#x59cb;&#x6642;token&#x30ad;&#x30e3;&#x30c3;&#x30b7;&#x30e5;&#x30af;&#x30ea;&#x30a2;"/>
+        <Property name="text" type="java.lang.String" value="&#x958b;&#x59cb;&#x6642;token&#x3092;&#x30ad;&#x30e3;&#x30c3;&#x30b7;&#x30e5;&#x304b;&#x3089;&#x5f15;&#x304d;&#x7d99;&#x3050;"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="MBcleatokenfromcacheActionPerformed"/>

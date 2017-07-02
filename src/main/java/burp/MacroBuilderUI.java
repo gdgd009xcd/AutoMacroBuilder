@@ -8,10 +8,13 @@ package burp;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ListIterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -379,7 +382,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             }
         });
 
-        MBcleatokenfromcache.setText("開始時tokenキャッシュクリア");
+        MBcleatokenfromcache.setText("開始時tokenをキャッシュから引き継ぐ");
         MBcleatokenfromcache.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 MBcleatokenfromcacheActionPerformed(evt);
@@ -512,17 +515,39 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                 //DefaultListModel lmodel = new DefaultListModel();
 
                 PRequestResponse pqr = rlist.get(pos);
-
-                //Reader reqrd = new java.io.StringReader(pqr.request.getMessage());
+/***
                 Reader reqrd = new java.io.StringReader(ParmGenUtil.LFinsert(pqr.request.getMessage()));
 
                 try {
+                    MacroRequest.setVisible(false);
+                    ParmVars.plog.debuglog(0, "before read");
+                    ;
                     MacroRequest.read(reqrd, null);
+                    ParmVars.plog.debuglog(0, "read done");
+                    MacroRequest.setVisible(true);
                 } catch (IOException ex) {
                     ParmVars.plog.printException(ex);
                 }
-                //MacroRequest.setText(pqr.request.getMessage());
-                //MacroResponse.setText(ParmGenUtil.LFinsert( pqr.response.getMessage()));
+                * ***/
+                //String reqmess = ParmGenUtil.LFinsert(pqr.request.getMessage());
+                //MacroRequest.setText(reqmess);
+                ParmGenTextDoc reqdoc = new ParmGenTextDoc(MacroRequest);
+                byte[] binmess = pqr.request.getByteMessage();
+                String reqmess = "";
+                try {
+                    reqmess = ParmGenUtil.LFinsert(new String(binmess, "ISO8859-1"));
+                } catch (UnsupportedEncodingException ex) {
+                    Logger.getLogger(MacroBuilderUI.class.getName()).log(Level.SEVERE, null, ex);
+                    reqmess = "";
+                }
+                reqdoc.setText(reqmess);
+
+                
+                String resmess = ParmGenUtil.LFinsert( pqr.response.getMessage());
+                //MacroResponse.setText(resmess);
+                ParmGenTextDoc resdoc = new ParmGenTextDoc(MacroResponse);
+                resdoc.setText(resmess);
+                
                 MacroComments.setText(pqr.getComments());
 
             }

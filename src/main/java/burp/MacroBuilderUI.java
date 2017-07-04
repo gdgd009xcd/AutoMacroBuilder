@@ -542,12 +542,13 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                 }
                 reqdoc.setText(reqmess);
 
-                
+
+
                 String resmess = ParmGenUtil.LFinsert( pqr.response.getMessage());
                 //MacroResponse.setText(resmess);
                 ParmGenTextDoc resdoc = new ParmGenTextDoc(MacroResponse);
                 resdoc.setText(resmess);
-                
+
                 MacroComments.setText(pqr.getComments());
 
             }

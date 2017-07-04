@@ -132,3 +132,30 @@ currentStepNo: 実行中のstepno
 29. HTML, JSONの実行時パースは、PResponseで行い、パラメータのfetchではパースしない。現状は、
 　　同じレスポンスに対しパラメータの数だけパースを繰り返している。
 30. form actionのパラメータ追跡。hrefと同様。
+31. formdata
+<CRLF>
+<CRLF>
+-----------------------------26734304307450<CRLF>
+Content-Disposition: form-data; name="token2"<CRLF>
+<CRLF>
+4b497b48c256be5ccff942c98e2da5bd37f41b72<CRLF>
+-----------------------------26734304307450<CRLF>
+Content-Disposition: form-data; name="subject"<CRLF>
+<CRLF>
+a<CRLF>
+-----------------------------26734304307450<CRLF>
+Content-Disposition: form-data; name="contents"<CRLF>
+<CRLF>
+b<CRLF>
+-----------------------------26734304307450<CRLF>
+Content-Disposition: form-data; name="mailaddr"<CRLF>
+<CRLF>
+c<CRLF>
+-----------------------------26734304307450<CRLF>
+Content-Disposition: form-data; name="imgfile"; filename="170x170.gif"<CRLF>
+Content-Type: image/gif<CRLF>
+<CRLF>
+.............<CRLF>
+-----------------------------26734304307450--<CRLF>
+
+

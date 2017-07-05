@@ -136,6 +136,10 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     private void initComponents() {
 
         jPopupMenu1 = new javax.swing.JPopupMenu();
+        SendTo = new javax.swing.JMenu();
+        Repeater = new javax.swing.JMenuItem();
+        Scanner = new javax.swing.JMenuItem();
+        Intruder = new javax.swing.JMenuItem();
         targetRequest = new javax.swing.JMenuItem();
         disableRequest = new javax.swing.JMenuItem();
         enableRequest = new javax.swing.JMenuItem();
@@ -173,6 +177,34 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         ParamTracking = new javax.swing.JButton();
         Load = new javax.swing.JButton();
         MBcleatokenfromcache = new javax.swing.JCheckBox();
+
+        SendTo.setText("jMenu1");
+
+        Repeater.setText("jMenuItem1");
+        Repeater.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RepeaterActionPerformed(evt);
+            }
+        });
+        SendTo.add(Repeater);
+
+        Scanner.setText("jMenuItem1");
+        Scanner.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ScannerActionPerformed(evt);
+            }
+        });
+        SendTo.add(Scanner);
+
+        Intruder.setText("jMenuItem1");
+        Intruder.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                IntruderActionPerformed(evt);
+            }
+        });
+        SendTo.add(Intruder);
+
+        jPopupMenu1.add(SendTo);
 
         targetRequest.setText("targetRequest");
         targetRequest.addActionListener(new java.awt.event.ActionListener() {
@@ -230,7 +262,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 568, Short.MAX_VALUE)
+            .addComponent(jScrollPane6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 481, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -247,7 +279,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 568, Short.MAX_VALUE)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 481, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -264,7 +296,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 568, Short.MAX_VALUE)
+            .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 481, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -397,40 +429,41 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                 .addGap(27, 27, 27)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 450, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)
-                                .addComponent(ClearMacro, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(ParamTracking, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(Load, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                         .addComponent(jSeparator1)
                         .addGroup(layout.createSequentialGroup()
-                            .addComponent(jCheckBox2)
-                            .addGap(18, 18, 18)
-                            .addComponent(waitsec, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(52, 52, 52)
-                            .addComponent(FinalResponse))
-                        .addGroup(layout.createSequentialGroup()
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                    .addComponent(MBExec)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                    .addComponent(MBCookieUpdate)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
-                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                    .addComponent(jLabel2)
-                                    .addGap(75, 75, 75)))
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(layout.createSequentialGroup()
-                                    .addComponent(MBCookieFromJar)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                    .addComponent(MBResetToOriginal))
+                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 450, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)
+                                        .addComponent(ClearMacro, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(ParamTracking, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(Load, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                                 .addGroup(layout.createSequentialGroup()
-                                    .addComponent(MBdeleteSetCookies)
+                                    .addComponent(jCheckBox2)
                                     .addGap(18, 18, 18)
-                                    .addComponent(MBcleatokenfromcache, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                    .addComponent(waitsec, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(52, 52, 52)
+                                    .addComponent(FinalResponse))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addComponent(MBExec)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(MBCookieUpdate))
+                                        .addComponent(jLabel2))
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addComponent(MBCookieFromJar)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(MBResetToOriginal))
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addComponent(MBdeleteSetCookies)
+                                            .addGap(18, 18, 18)
+                                            .addComponent(MBcleatokenfromcache, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                            .addGap(46, 46, 46)))
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addComponent(jSeparator2)
@@ -910,6 +943,18 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         pmt.setMBcleartokencache(MBcleatokenfromcache.isSelected());
     }//GEN-LAST:event_MBcleatokenfromcacheActionPerformed
 
+    private void RepeaterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RepeaterActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_RepeaterActionPerformed
+
+    private void ScannerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ScannerActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ScannerActionPerformed
+
+    private void IntruderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_IntruderActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_IntruderActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JList CSRFList;
@@ -918,6 +963,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     private javax.swing.JButton CSRFupdate;
     private javax.swing.JButton ClearMacro;
     private javax.swing.JCheckBox FinalResponse;
+    private javax.swing.JMenuItem Intruder;
     private javax.swing.JButton Load;
     private javax.swing.JCheckBox MBCookieFromJar;
     private javax.swing.JCheckBox MBCookieUpdate;
@@ -929,7 +975,10 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     private javax.swing.JEditorPane MacroRequest;
     private javax.swing.JTextArea MacroResponse;
     private javax.swing.JButton ParamTracking;
+    private javax.swing.JMenuItem Repeater;
     private javax.swing.JList RequestList;
+    private javax.swing.JMenuItem Scanner;
+    private javax.swing.JMenu SendTo;
     private javax.swing.JMenuItem disableRequest;
     private javax.swing.JMenuItem enableRequest;
     private javax.swing.JButton jButton2;

@@ -178,9 +178,9 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         Load = new javax.swing.JButton();
         MBcleatokenfromcache = new javax.swing.JCheckBox();
 
-        SendTo.setText("jMenu1");
+        SendTo.setText("SendTo");
 
-        Repeater.setText("jMenuItem1");
+        Repeater.setText("Repeater");
         Repeater.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 RepeaterActionPerformed(evt);
@@ -188,7 +188,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         });
         SendTo.add(Repeater);
 
-        Scanner.setText("jMenuItem1");
+        Scanner.setText("Scanner");
         Scanner.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ScannerActionPerformed(evt);
@@ -196,7 +196,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         });
         SendTo.add(Scanner);
 
-        Intruder.setText("jMenuItem1");
+        Intruder.setText("Intruder");
         Intruder.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 IntruderActionPerformed(evt);

@@ -99,7 +99,7 @@ public class ParmGenMacroTrace {
     void setMBcleartokencache(boolean b){
         MBcleartokencache = b;
     }
-            
+
     void setWaitTimer(String msec){
         try{
             waittimer = Integer.parseInt(msec);//msec
@@ -522,5 +522,57 @@ public class ParmGenMacroTrace {
 
     int getStepNo(){
         return stepno;
+    }
+
+    void sendToRepeater(int pos){
+    	if(rlist!=null&&rlist.size()>0){
+	    	PRequestResponse pqr = rlist.get(pos);
+	        if(pqr!=null){
+	        	String host = pqr.request.getHost();
+	        	int port = pqr.request.getPort();
+	        	boolean useHttps = pqr.request.isSSL();
+	        	callbacks.sendToRepeater(
+	                    host,
+	                    port,
+	                    useHttps,
+	                    pqr.request.getByteMessage(),
+	                    "MacroBuilder:" + pos);
+	        }
+    	}
+
+    }
+    void sendToScanner(int pos){
+    	if(rlist!=null&&rlist.size()>0){
+	    	PRequestResponse pqr = rlist.get(pos);
+	        if(pqr!=null){
+	        	String host = pqr.request.getHost();
+	        	int port = pqr.request.getPort();
+	        	boolean useHttps = pqr.request.isSSL();
+	        	IScanQueueItem que =callbacks.doActiveScan(
+	                    host,
+	                    port,
+	                    useHttps,
+	                    pqr.request.getByteMessage()
+	            );
+	        }
+    	}
+
+    }
+    void sendToIntruder(int pos){
+    	if(rlist!=null&&rlist.size()>0){
+	    	PRequestResponse pqr = rlist.get(pos);
+	        if(pqr!=null){
+	        	String host = pqr.request.getHost();
+	        	int port = pqr.request.getPort();
+	        	boolean useHttps = pqr.request.isSSL();
+	        	callbacks.sendToIntruder(
+	                    host,
+	                    port,
+	                    useHttps,
+	                    pqr.request.getByteMessage()
+	                    );
+	        }
+    	}
+
     }
 }

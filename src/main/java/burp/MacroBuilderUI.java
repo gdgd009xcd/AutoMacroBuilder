@@ -945,14 +945,35 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
     private void RepeaterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RepeaterActionPerformed
         // TODO add your handling code here:
+    	int pos = RequestList.getSelectedIndex();
+        if (pos != -1) {
+            pmt.setCurrentRequest(pos);
+            pmt.sendToRepeater(pos);
+
+        }
+        Redraw();
     }//GEN-LAST:event_RepeaterActionPerformed
 
     private void ScannerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ScannerActionPerformed
         // TODO add your handling code here:
+    	int pos = RequestList.getSelectedIndex();
+        if (pos != -1) {
+            pmt.setCurrentRequest(pos);
+            pmt.sendToScanner(pos);
+
+        }
+        Redraw();
     }//GEN-LAST:event_ScannerActionPerformed
 
     private void IntruderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_IntruderActionPerformed
         // TODO add your handling code here:
+    	int pos = RequestList.getSelectedIndex();
+        if (pos != -1) {
+            pmt.setCurrentRequest(pos);
+            pmt.sendToIntruder(pos);
+
+        }
+        Redraw();
     }//GEN-LAST:event_IntruderActionPerformed
 
 

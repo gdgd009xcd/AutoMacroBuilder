@@ -105,14 +105,14 @@ public class ParmGenTextDoc{
             }
 
             try {
-                ParmVars.plog.debuglog(0, "before blank insert");
+                //ParmVars.plog.debuglog(0, "before blank insert");
                 doc.insertString(0, text, null);
-                ParmVars.plog.debuglog(0, "blank insert done");
+                //ParmVars.plog.debuglog(0, "blank insert done");
             } catch (BadLocationException ex) {
                 Logger.getLogger(ParmGenTextDoc.class.getName()).log(Level.SEVERE, null, ex);
             }
             tcompo.setDocument(doc);
-            
+
 
         }
 

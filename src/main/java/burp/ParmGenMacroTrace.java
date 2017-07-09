@@ -526,7 +526,10 @@ public class ParmGenMacroTrace {
 
     void sendToRepeater(int pos){
     	if(rlist!=null&&rlist.size()>0){
-	    	PRequestResponse pqr = rlist.get(pos);
+            PRequestResponse pqr = rlist.get(pos);
+            if(MBResetToOriginal){
+                pqr = originalrlist.get(pos);
+            }
 	        if(pqr!=null){
 	        	String host = pqr.request.getHost();
 	        	int port = pqr.request.getPort();
@@ -543,7 +546,10 @@ public class ParmGenMacroTrace {
     }
     void sendToScanner(int pos){
     	if(rlist!=null&&rlist.size()>0){
-	    	PRequestResponse pqr = rlist.get(pos);
+	    PRequestResponse pqr = rlist.get(pos);
+            if(MBResetToOriginal){
+                pqr = originalrlist.get(pos);
+            }
 	        if(pqr!=null){
 	        	String host = pqr.request.getHost();
 	        	int port = pqr.request.getPort();
@@ -560,7 +566,10 @@ public class ParmGenMacroTrace {
     }
     void sendToIntruder(int pos){
     	if(rlist!=null&&rlist.size()>0){
-	    	PRequestResponse pqr = rlist.get(pos);
+	    PRequestResponse pqr = rlist.get(pos);
+            if(MBResetToOriginal){
+                pqr = originalrlist.get(pos);
+            }
 	        if(pqr!=null){
 	        	String host = pqr.request.getHost();
 	        	int port = pqr.request.getPort();

@@ -11,9 +11,16 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <mainClass>project.Main.class</mainClass>
     </properties>
-    
+
 <dependencies>
-    
+
+
+<dependency>
+    <groupId>commons-codec</groupId>
+    <artifactId>commons-codec</artifactId>
+    <version>1.10</version>
+</dependency>
+
 <dependency>
     <groupId>javax.json</groupId>
     <artifactId>javax.json-api</artifactId>
@@ -41,6 +48,8 @@
     <systemPath>${basedir}/lib/burpsuite_free.jar</systemPath>
 </dependency>
 
+
+
 </dependencies>
 
 <build>
@@ -55,8 +64,8 @@
                 </goals>
                 <configuration>
                     <outputDirectory>${project.build.directory}/</outputDirectory>
-                    <excludeArtifactIds>javax.json-api,bjarfile</excludeArtifactIds>
-                    
+                    <excludeArtifactIds>commons-codec,javax.json-api,bjarfile</excludeArtifactIds>
+
                 </configuration>
             </execution>
         </executions>
@@ -72,15 +81,15 @@
         </goals>
         <configuration>
           <outputDirectory>${project.build.directory}/classes/burp/</outputDirectory>
-          <resources>          
+          <resources>
             <resource>
               <directory>${project.basedir}/src/main/java/burp/</directory>
               <includes>
                 <include>Bundle*</include>
               </includes>
             </resource>
-          </resources>              
-        </configuration>            
+          </resources>
+        </configuration>
       </execution>
     </executions>
   </plugin>

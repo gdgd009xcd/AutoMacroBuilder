@@ -94,6 +94,20 @@ ParmVars.parmfile
 　　　10.1の各メンバーを読み込む。
 　　　　　
 　　　
+parseHTTPHeader
+  binary (Apache commons codec)
+  getHost hostname or IP
+  getPort int portno
+  boolean ssl true/false
+  isrequest true/false
+
+PRequestResponse
+ String comments
+ boolean disable
+ boolean iserror
+ 
+int currentrequest
+
 
 
 

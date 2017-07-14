@@ -15,6 +15,8 @@ import java.util.ListIterator;
 import javax.json.Json;
 import javax.json.stream.JsonParser;
 
+import org.apache.commons.codec.binary.Base64;
+
 /**
  *
  * @author daike
@@ -169,6 +171,9 @@ public class test {
         	ParmVars.plog.debuglog(0, orgdata);
         }
 
+        String bbdata = "1234";
+        byte[] encodedBytes = Base64.encodeBase64(bbdata.getBytes());
+        
     }
 
 }

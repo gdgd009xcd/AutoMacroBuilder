@@ -147,5 +147,122 @@ public class ParmGenUtil {
 		}
 		return mcnt;
 	}
+	
+	enum CharMODE {
+		NUMBER,
+		ALPHALOWER,
+		ALPHAUPPER,
+		OTHER,
+		DEFAULT
+	};
+	
+	static boolean isTokenValue(String tkn){
+		if(tkn==null||tkn.length()<=16)return false;
+		
+		CharMODE current = CharMODE.DEFAULT;
+		int ncnt = 0;
+		int lowercnt = 0;
+		int uppercnt = 0;
+		char[] charArray = tkn.toCharArray();
+		for(char ch: charArray){
+			switch(ch){
+			case '0':
+			case '1':
+			case '2':
+			case '3':
+			case '4':
+			case '5':
+			case '6':
+			case '7':
+			case '8':
+			case '9'://数値
+				switch(current){
+				case NUMBER:
+					break;
+				default:
+					ncnt++;
+					break;
+				}
+				current = CharMODE.NUMBER;
+				break;
+			case 'a':
+			case 'b':
+			case 'c':
+			case 'd':
+			case 'e':
+			case 'f':
+			case 'g':
+			case 'h':
+			case 'i':
+			case 'j':
+			case 'k':
+			case 'l':
+			case 'm':
+			case 'n':
+			case 'o':
+			case 'p':
+			case 'q':
+			case 'r':
+			case 's':
+			case 't':
+			case 'u':
+			case 'v':
+			case 'w':
+			case 'x':
+			case 'y':
+			case 'z':
+				switch(current){
+				case ALPHALOWER:
+					break;
+				default:
+					lowercnt++;
+					break;
+				}
+				current = CharMODE.ALPHALOWER;
+				break;
+			case 'A':
+			case 'B':
+			case 'C':
+			case 'D':
+			case 'E':
+			case 'F':
+			case 'G':
+			case 'H':
+			case 'I':
+			case 'J':
+			case 'K':
+			case 'L':
+			case 'M':
+			case 'N':
+			case 'O':
+			case 'P':
+			case 'Q':
+			case 'R':
+			case 'S':
+			case 'T':
+			case 'U':
+			case 'V':
+			case 'W':
+			case 'X':
+			case 'Y':
+			case 'Z':
+				switch(current){
+				case ALPHAUPPER:
+					break;
+				default:
+					uppercnt++;
+					break;
+				}
+				current = CharMODE.ALPHAUPPER;
+				break;
+			default:
+				current = CharMODE.OTHER;
+				break;
+			}
+		}
+		//System.out.println("number/lower/upper=" + ncnt + "/" +lowercnt + "/" + uppercnt);
+		if(ncnt>=4||(lowercnt>=4&&uppercnt>=4))return true;
+		return false;
+	}
 
 }

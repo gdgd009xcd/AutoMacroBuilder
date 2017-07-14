@@ -15,7 +15,6 @@ import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.DefaultListModel;
@@ -818,11 +817,11 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                             }
                         }
                     }
-                    // value値が \w{32}に一致
+                    // value値がToken値だとみられる
                     if (!namematched) {//nameはtknamesに一致しない
                         String tokenvalue = token.getTokenValue().getValue();
-                        Matcher matcher = patternw32.matcher(tokenvalue);
-                        if (matcher.matches()) {
+                        
+                        if (ParmGenUtil.isTokenValue(tokenvalue)) {
                             trackurltoken.tracktokenlist.add(token);
                         }
                     }

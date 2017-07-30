@@ -25,7 +25,7 @@ import flex.messaging.util.URLEncoder;
  * @author daike
  */
 public class ParmGenCSV {
-
+    ParmGenMacroTrace pmt = null;
     ArrayList<AppParmsIni> records;
     Iterator<AppParmsIni> it;
     ParmGenWriteFile pfile;
@@ -47,6 +47,7 @@ public class ParmGenCSV {
     }
 
     public void reloadParmGen(ParmGenMacroTrace _pmt, ArrayList<AppParmsIni>_newparmcsv){
+        pmt = _pmt;
        ParmGen pgen = new ParmGen(_pmt, _newparmcsv);
        records = pgen.parmcsv;
        if (records==null){
@@ -195,6 +196,12 @@ public class ParmGenCSV {
         }
 
         builder.add("AppParmsIni_List", AppParmsIni_List);
+        
+        //save Macros
+        if(pmt!=null){
+            pmt.JSONSave(builder);
+        }
+        
         JsonObject model = builder.build();
 
         //StringWriter stWriter = new StringWriter();

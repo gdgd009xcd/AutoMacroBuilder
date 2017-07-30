@@ -173,6 +173,7 @@ public class test {
 
         String bbdata = "1234";
         byte[] encodedBytes = Base64.encodeBase64(bbdata.getBytes());
+        ParmVars.plog.debuglog(0, "base64:" + new String(encodedBytes));
         
     }
 

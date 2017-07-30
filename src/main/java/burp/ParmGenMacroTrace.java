@@ -6,11 +6,16 @@
 
 package burp;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  *
@@ -583,5 +588,40 @@ public class ParmGenMacroTrace {
 	        }
     	}
 
+    }
+    
+    void JSONSave(JsonObjectBuilder builder){
+        if(builder!=null){
+            if(originalrlist!=null){
+                builder.add("TargetRequest" , getCurrentRequest());
+                JsonArrayBuilder Request_List =Json.createArrayBuilder();
+                JsonObjectBuilder Request_rec = Json.createObjectBuilder();
+                for(PRequestResponse pqr: originalrlist){
+                    byte[] qbin = pqr.request.getByteMessage();
+                    byte[] rbin = pqr.response.getByteMessage();
+                    byte[] encodedBytes = Base64.encodeBase64(qbin);
+                    String qbase64 = new String(encodedBytes);
+                    encodedBytes = Base64.encodeBase64(rbin);
+                    String rbase64 = new String(encodedBytes);
+                    Request_rec.add("PRequest", qbase64);
+                    Request_rec.add("PResponse", rbase64);
+                    String host = pqr.request.getHost();
+                    int port = pqr.request.getPort();
+                    boolean ssl = pqr.request.isSSL();
+                    String comments = pqr.getComments();
+                    boolean isdisabled = pqr.isDisabled();
+                    boolean iserror = pqr.isError();
+                    Request_rec.add("Host", host);
+                    Request_rec.add("Port", port);
+                    Request_rec.add("SSL", ssl);
+                    Request_rec.add("Comments", comments);
+                    Request_rec.add("Disabled", isdisabled);
+                    Request_rec.add("Error", iserror);
+                    Request_List.add(Request_rec);
+                    
+                }
+                builder.add("PRequestResponse", Request_List);
+            }
+        }
     }
 }

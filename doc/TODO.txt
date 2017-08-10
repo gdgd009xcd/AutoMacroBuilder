@@ -160,8 +160,7 @@ Content-Type: image/gif<CRLF>
 32.追跡実行時、ダイアログに引き継ぎパラメータ一覧を表示し、チェックボックスで選択可能。
 33.トークンの内容 16桁英数字で、数字グループが4箇所以上
 34.複数の同一toStepNoの追跡
-　　PRequest member Parameter HashMap 
-                    KEY token - 追跡パラメータ名
+　　 locarray[r][c] member Parameter HashMap 
 　　　　　　　　　　 Value distance = currentStepNo - responseStepNos
              member Function boolean isNearest(String token, int distance);
 　　　　　　　　　　　　　　　指定したtokenのハッシュに格納したdistanceとパラメータを比較し、
@@ -170,7 +169,7 @@ Content-Type: image/gif<CRLF>
 　　　　　　　　　　　　　　　tokenがnull or len=0なら常にtrue
                              return  true - 追跡する。false しない。  
             isNearestを
-　　　　　　　FetchResponse.loc.getLocValで実行し、trueの場合のみ値を返す。
+            FetchResponse.loc.getLocValで実行し、trueの場合のみ値を返す。
 
 
 

@@ -47,6 +47,8 @@ class LocVal {
         Pattern [][] urlregexes;
         //stepno
         int [][] responseStepNos;
+        //distance = currentStepNo responseSteNos
+        int [][] distance;
 	PLog _logger = null;
 	Encode _enc = null;
 	int rpos = 0;
@@ -84,12 +86,14 @@ class LocVal {
                 regexes = new Pattern[_rmax][cmax];
                 urlregexes = new Pattern[_rmax][cmax];
                 responseStepNos = new int[_rmax][cmax];
+                distance = new int[_rmax][cmax];
             }else{
                 rmax = 0;
                 locarray = null;
                 regexes = null;
                 urlregexes = null;
                 responseStepNos = null;
+                distance = null;
             }
         }
 
@@ -100,6 +104,7 @@ class LocVal {
 				regexes[i][j] = null;
 				urlregexes[i][j] = null;
                                 responseStepNos[i][j] = -1;
+                                distance[i][j] = -1;
 			}
 		}
 	}
@@ -108,6 +113,8 @@ class LocVal {
 		for(int i = 0; i< rmax; i++){
 			for(int j = 0 ; j<cmax ; j++){
 				locarray[i][j] = null;
+                                responseStepNos[i][j] = -1;
+                                distance[i][j] = -1;
 			}
 		}
 	}
@@ -141,27 +148,43 @@ class LocVal {
 		data_response = null;
 	}
 
-	String getLocVal(int currentStepNo, int toStepNo, int r, int c){
-		if(isValid(r,c)){
+    String getLocVal(int currentStepNo, int toStepNo, int r, int c) {
+        String rval = null;
+        if (isValid(r, c)) {
 
-                    String v = locarray[r][c];
-                    int responseStepNo = responseStepNos[r][c];
-                    //toStepNo <0 :currentStepNo == responseStepNo - toStepNo
-                    if(toStepNo<0){
-                        if(currentStepNo == responseStepNo - toStepNo){
-                            return v;
-                        }
-                    }else if(toStepNo>0){
-                        if(currentStepNo == toStepNo){
-                            return v;
-                        }
-                    }else if(toStepNo==0){
-                        return v;
-                    }
+            String v = locarray[r][c];
+            int responseStepNo = responseStepNos[r][c];
+            int StepNodistance = distance[r][c];
 
+            //toStepNo <0 :currentStepNo == responseStepNo - toStepNo
+            if (toStepNo < 0) {
+                if (currentStepNo == responseStepNo - toStepNo) {
+                    rval = v;
+                    //return v;
                 }
-                return null;
-	}
+            } else if (toStepNo > 0) {
+                if (currentStepNo == toStepNo) {
+                    rval = v;
+                    //return v;
+                }
+            } else if (toStepNo == 0) {
+                rval = v;
+                //return v;
+            }
+            if(rval!=null){
+                int newdistance = currentStepNo - responseStepNo;
+                if(StepNodistance>=0){
+                    if(StepNodistance<newdistance){
+                        rval = null;
+                    }
+                }
+                if(rval!=null){
+                    distance[r][c] = newdistance;
+                }
+            }
+        }
+        return rval;
+    }
 
         int getStepNo(int r, int c){
             if(isValid(r,c)){

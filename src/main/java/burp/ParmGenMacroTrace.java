@@ -593,7 +593,7 @@ public class ParmGenMacroTrace {
     void JSONSave(JsonObjectBuilder builder){
         if(builder!=null){
             if(originalrlist!=null){
-                builder.add("TargetRequest" , getCurrentRequest());
+                builder.add("CurrentRequest" , getCurrentRequest());
                 JsonArrayBuilder Request_List =Json.createArrayBuilder();
                 JsonObjectBuilder Request_rec = Json.createObjectBuilder();
                 for(PRequestResponse pqr: originalrlist){
@@ -614,7 +614,7 @@ public class ParmGenMacroTrace {
                     Request_rec.add("Host", host);
                     Request_rec.add("Port", port);
                     Request_rec.add("SSL", ssl);
-                    Request_rec.add("Comments", comments);
+                    Request_rec.add("Comments", comments==null?"":comments);
                     Request_rec.add("Disabled", isdisabled);
                     Request_rec.add("Error", iserror);
                     Request_List.add(Request_rec);

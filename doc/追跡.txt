@@ -85,7 +85,7 @@ ParmVars.parmfile
 
 10. マクロ保存・読み込み
 10.1 保存
-    JSON level=0 name=TARGETREQUEST value=int
+    JSON level=0 name=CURRENTREQUEST value=int
     JSON level=1 name=PREQRES_LIST のarray　として保存
 　　メンバー　name=PRequest  value=PRequest シリアル化し、BASE64化
              name=PResponse value=PResponse

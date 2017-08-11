@@ -5,11 +5,15 @@
  */
 package burp;
 
+import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 import java.util.ArrayList;
 
 import javax.json.stream.JsonParser;
 
 import flex.messaging.util.URLDecoder;
+import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -17,29 +21,53 @@ import flex.messaging.util.URLDecoder;
  */
 public class ParmGenJSON {
     ArrayList<AppParmsIni> rlist;
+    ArrayList<PRequestResponse> ReqResList;
     AppParmsIni aparms;
     AppValue apv;
     String exerr = null;
     int row = 0;
-    enum JSONLTYPE {
-    	DEFAULT,
-    	AppParmsIni_List,
-    	AppValue_List,
-    	MacroList
-    }
+    int currentrequest;
+    //PRequestResponse params
+    String PRequest64;
+    String PResponse64;
+    String Host;
+    int Port;
+    boolean SSL;
+    String Comments;
+    boolean Disabled;
+    boolean Error;
+    
 
-    JSONLTYPE current_LTYPE = JSONLTYPE.DEFAULT;
+
 
     ParmGenJSON(){
 
     	rlist = new ArrayList<AppParmsIni>();
         aparms = null;
         apv = null;
-
+        ReqResList = new ArrayList<PRequestResponse>();
+        currentrequest = 0;
+        initReqRes();
+  
+    }
+    
+    private void initReqRes(){
+        PRequest64 = null;
+        PResponse64 = null;
+        Host = null;
+        Port = 0;
+        SSL = false;
+        Comments = "";
+        Disabled = false;
+        Error = false;
     }
 
     ArrayList<AppParmsIni> Getrlist(){
         return rlist;
+    }
+    
+    ArrayList<PRequestResponse> GetMacroRequests(){
+        return ReqResList;
     }
 
     private String GetString(JsonParser.Event ev, Object value, String defval){
@@ -110,6 +138,8 @@ public class ParmGenJSON {
                     ParmGen.RepeaterInScope = Getboolean(ev, value, true);
                 }else if(name.toUpperCase().equals("SCANNERINSCOPE")){
                     ParmGen.ScannerInScope = Getboolean(ev, value, true);
+                }else if(name.toUpperCase().equals("CURRENTREQUEST")){
+                    currentrequest = GetNumber(ev, value,0);
                 }
                 break;
             case 1:
@@ -119,28 +149,53 @@ public class ParmGenJSON {
                             //ParmVars.plog.debuglog(0, "START_OBJECT level1 name:" + current);
                             aparms = new AppParmsIni();
                             aparms.parmlist = new ArrayList<AppValue>();
+                        }else if(current!=null&&current.toUpperCase().equals("PREQUESTRESPONSE")){
+                            initReqRes();
                         }
                         break;
                     case END_OBJECT:
                         if(exerr==null){
-                            if(aparms!=null&&rlist!=null){
-                                if(aparms.getType()==AppParmsIni.T_CSV){
-                                    String decodedname = "";
-                                    try{
-                                            decodedname = URLDecoder.decode(aparms.csvname, "UTF-8");
-                                    }catch(Exception e){
-                                            ParmVars.plog.printException(e);
-                                            exerr = e.getMessage();
+                            if(current!=null&&current.toUpperCase().equals("APPPARMSINI_LIST")){
+                                if(aparms!=null&&rlist!=null){
+                                    if(aparms.getType()==AppParmsIni.T_CSV){
+                                        String decodedname = "";
+                                        try{
+                                                decodedname = URLDecoder.decode(aparms.csvname, "UTF-8");
+                                        }catch(Exception e){
+                                                ParmVars.plog.printException(e);
+                                                exerr = e.getMessage();
+                                        }
+                                        aparms.frl = new FileReadLine(decodedname, true);
                                     }
-                                    aparms.frl = new FileReadLine(decodedname, true);
-                                }
 
-                                aparms.setRowAndCntFile(row);row++;
-                                aparms.crtGenFormat(true);
-                                rlist.add(aparms);
+                                    aparms.setRowAndCntFile(row);row++;
+                                    aparms.crtGenFormat(true);
+                                    rlist.add(aparms);
+                                }
+                                aparms = null;
+                            }else if(current!=null&&current.toUpperCase().equals("PREQUESTRESPONSE")){
+                                if(PRequest64!=null){
+                                    byte[] binreq = Base64.decode(PRequest64);
+                                    byte[] binres = Base64.decode(PResponse64);
+                                    
+                                    String res = "";
+                                    try {
+                                        res = new String(binres,ParmVars.enc.getIANACharset());
+                                    } catch (UnsupportedEncodingException ex) {
+                                        Logger.getLogger(ParmGenJSON.class.getName()).log(Level.SEVERE, null, ex);
+                                    }
+                                    PRequestResponse pqr = new PRequestResponse(Host, Port, SSL, binreq, res);
+                                    if(Disabled){
+                                        pqr.Disable();
+                                    }
+                                    pqr.setComments(Comments);
+                                    pqr.setError(Error);
+                                    ReqResList.add(pqr);
+                                    initReqRes();
+                                }
                             }
                         }
-                        aparms = null;
+                        
                         break;
                     default:
                         if(aparms!=null){
@@ -158,6 +213,24 @@ public class ParmGenJSON {
                                 aparms.csvname = GetString(ev, value, "");
                             }else if(name.toUpperCase().equals("PAUSE")){
                                 aparms.pause = Getboolean(ev,value, false);
+                            }
+                        }else if(current!=null&&current.toUpperCase().equals("PREQUESTRESPONSE")){
+                            if(name.toUpperCase().equals("PREQUEST")){
+                                PRequest64 = GetString(ev, value, "");
+                            }else if(name.toUpperCase().equals("PRESPONSE")){
+                                PResponse64 = GetString(ev,value, "");
+                            }else if(name.toUpperCase().equals("HOST")){
+                                Host = GetString(ev,value, "");
+                            }else if(name.toUpperCase().equals("PORT")){
+                                Port = GetNumber(ev,value, 0);
+                            }else if(name.toUpperCase().equals("SSL")){
+                                SSL = Getboolean(ev,value, false);
+                            }else if(name.toUpperCase().equals("COMMENTS")){
+                                Comments = GetString(ev,value, "");
+                            }else if(name.toUpperCase().equals("DISABLED")){
+                                Disabled = Getboolean(ev,value, false);
+                            }else if(name.toUpperCase().equals("ERROR")){
+                                Error = Getboolean(ev,value, false);
                             }
                         }
                         break;

@@ -6,12 +6,15 @@
 
 package burp;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
@@ -600,9 +603,19 @@ public class ParmGenMacroTrace {
                     byte[] qbin = pqr.request.getByteMessage();
                     byte[] rbin = pqr.response.getByteMessage();
                     byte[] encodedBytes = Base64.encodeBase64(qbin);
-                    String qbase64 = new String(encodedBytes);
+                    String qbase64 ="";
+                    try {
+                        qbase64 = new String(encodedBytes,"ISO-8859-1");
+                    } catch (UnsupportedEncodingException ex) {
+                        Logger.getLogger(ParmGenMacroTrace.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                     encodedBytes = Base64.encodeBase64(rbin);
-                    String rbase64 = new String(encodedBytes);
+                    String rbase64 = "";
+                    try {
+                        rbase64 = new String(encodedBytes, "ISO-8859-1");
+                    } catch (UnsupportedEncodingException ex) {
+                        Logger.getLogger(ParmGenMacroTrace.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                     Request_rec.add("PRequest", qbase64);
                     Request_rec.add("PResponse", rbase64);
                     String host = pqr.request.getHost();

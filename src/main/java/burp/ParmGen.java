@@ -1593,6 +1593,7 @@ class ParmGen {
         		}
         		if(errflg){
         			rlist = gjson.Getrlist();
+                                pmt.ui.addNewRequests(gjson.GetMacroRequests());
         		}else{
         			ParmVars.plog.printError("JSON load failed.");
         		}
@@ -1601,6 +1602,7 @@ class ParmGen {
         		rlist = null;
 
         	}
+
         	ParmVars.plog.debuglog(1, "---------AppPermGen JSON load END ----------");
         	return rlist;
         }

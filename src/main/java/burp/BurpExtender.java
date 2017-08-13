@@ -451,11 +451,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
         {
             try
             {
-
-
-
                 //選択したリクエストレスポンス
-
                 //プロキシヒストリのリクエストレスポンス
                 //IHttpRequestResponse[] allmessages = mCallbacks.getProxyHistory();
                 ParmGen pgen = new ParmGen(pmt, null);//csv読み込み。LANG（ParmVars.enc）を設定。

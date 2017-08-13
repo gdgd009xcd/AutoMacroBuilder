@@ -1594,6 +1594,9 @@ class ParmGen {
         		if(errflg){
         			rlist = gjson.Getrlist();
                                 pmt.ui.addNewRequests(gjson.GetMacroRequests());
+                                int creq = gjson.getCurrentRequest();
+                                pmt.setCurrentRequest(creq);
+                                pmt.ui.Redraw();
         		}else{
         			ParmVars.plog.printError("JSON load failed.");
         		}

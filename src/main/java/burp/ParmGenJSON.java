@@ -69,6 +69,9 @@ public class ParmGenJSON {
     ArrayList<PRequestResponse> GetMacroRequests(){
         return ReqResList;
     }
+    int getCurrentRequest(){
+        return currentrequest;
+    }
 
     private String GetString(JsonParser.Event ev, Object value, String defval){
         String v = "";

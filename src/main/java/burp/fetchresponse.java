@@ -309,90 +309,98 @@ class LocVal {
 	//
 	// body match
 	//
-	boolean bodymatch(int currentStepNo, int fromStepNo, String url, PResponse presponse, int r, int c, boolean overwrite, boolean autotrack, AppValue av,int fcnt, String name, boolean _uencode) throws UnsupportedEncodingException{
-            AppValue.TokenTypeNames _tokentype = av.tokentype;
-            if (urlmatch(url, r, c )){
+	boolean bodymatch(int currentStepNo, int fromStepNo, String url, PResponse presponse, int r, int c,
+			boolean overwrite, boolean autotrack, AppValue av, int fcnt, String name, boolean _uencode)
+			throws UnsupportedEncodingException {
+		AppValue.TokenTypeNames _tokentype = av.tokentype;
+		if (urlmatch(url, r, c)) {
 
-            String body = presponse.getBody();
+			String body = presponse.getBody();
 
-            if(autotrack){
-                //ParmGenParser parser = new ParmGenParser(body);
-                //ParmGenToken tkn = parser.fetchNameValue(name, fcnt, _tokentype);
-                ParmGenToken tkn = presponse.fetchNameValue(name, _tokentype, fcnt);
-                if ( tkn != null ){
-                    ParmGenTokenValue tval = tkn.getTokenValue();
-                    if(tval!=null){
-                            String v = tval.getValue();
-                            if(v!=null&&!v.isEmpty()){//value null値は追跡しない。
-                                printlog("*****FETCHRESPONSE auto track body r,c,p:value:" + r + "," + c + "," + fcnt + ":" +  v );
-                                if(_uencode==true){
-                                    String venc = v;
-                                    try{
-                                        venc = URLEncoder.encode(v, ParmVars.enc.getIANACharset());
-                                    }catch (UnsupportedEncodingException e){
-                                        //NOP
-                                    }
-                                    v = venc;
-                                }
-                                String ONETIMEPASSWD = v.replaceAll(",", "%2C");
+			if (autotrack) {
+				// ParmGenParser parser = new ParmGenParser(body);
+				// ParmGenToken tkn = parser.fetchNameValue(name, fcnt,
+				// _tokentype);
+				ParmGenToken tkn = presponse.fetchNameValue(name, _tokentype, fcnt);
+				if (tkn != null) {
+					ParmGenTokenValue tval = tkn.getTokenValue();
+					if (tval != null) {
+						String v = tval.getValue();
+						if (v != null && !v.isEmpty()) {// value null値は追跡しない。
+							printlog("*****FETCHRESPONSE auto track body r,c,p:value:" + r + "," + c + "," + fcnt + ":"
+									+ v);
+							if (_uencode == true) {
+								String venc = v;
+								try {
+									venc = URLEncoder.encode(v, ParmVars.enc.getIANACharset());
+								} catch (UnsupportedEncodingException e) {
+									// NOP
+								}
+								v = venc;
+							}
+							String ONETIMEPASSWD = v.replaceAll(",", "%2C");
 
-                                setLocVal(currentStepNo,fromStepNo, r,c,ONETIMEPASSWD, overwrite);
-                                return true;
-                            }else{
-                                printlog("xxxxx IGNORED FETCHRESPONSE auto track body r,c,p:value:" + r + "," + c + "," + fcnt + ":" +  "null" );
-                            }
-                       }
-                }
-                return false;
-            }
+							setLocVal(currentStepNo, fromStepNo, r, c, ONETIMEPASSWD, overwrite);
+							return true;
+						} else {
+							printlog("xxxxx IGNORED FETCHRESPONSE auto track body r,c,p:value:" + r + "," + c + ","
+									+ fcnt + ":" + "null");
+						}
+					}
+				}
+			}
 
-            Matcher matcher = null;
+			Matcher matcher = null;
 
-            try {
-                matcher = regexes[r][c].matcher(body);
-            } catch (Exception e) {
-                printlog("matcher例外：" + e.toString());
-            }
+			if (regexes != null) {
 
-            if (matcher.find()) {
-                int gcnt = matcher.groupCount();
-                String matchval = null;
-                for (int n = 0; n < gcnt; n++) {
-                    matchval = matcher.group(n + 1);
-                }
+				try {
+					matcher = regexes[r][c].matcher(body);
+				} catch (Exception e) {
+					ParmVars.plog.debuglog(0, "matcher例外：" + e.toString());
+					matcher = null;
+				}
 
-                if (matchval != null) {
-                    switch (av.resencodetype) {
-                        case JSON:
-                            ParmGenJSONDecoder jdec = new ParmGenJSONDecoder(null);
-                            matchval = jdec.decodeStringValue(matchval);
-                            break;
-                        default:
-                            break;
-                    }
-                    if (_uencode == true) {
-                        String venc = matchval;
-                        try {
-                            venc = URLEncoder.encode(matchval, ParmVars.enc.getIANACharset());
-                        } catch (UnsupportedEncodingException e) {
-                            //NOP
-                        }
-                        matchval = venc;
-                    }
-                    String ONETIMEPASSWD = matchval.replaceAll(",", "%2C");
+				if (matcher != null && matcher.find()) {
+					int gcnt = matcher.groupCount();
+					String matchval = null;
+					for (int n = 0; n < gcnt; n++) {
+						matchval = matcher.group(n + 1);
+					}
 
-                    if (ONETIMEPASSWD != null && !ONETIMEPASSWD.isEmpty()) {// value値nullは追跡しない
-                        printlog("*****FETCHRESPONSE body r,c:value:" + r + "," + c + ":" + ONETIMEPASSWD);
-                        setLocVal(currentStepNo, fromStepNo, r, c, ONETIMEPASSWD, overwrite);
-                        return true;
-                    } else {
-                        printlog("xxxxxx IGNORED FETCHRESPONSE body r,c:value:" + r + "," + c + ":" + "null");
-                    }
-                }
-            }
-        }
-        return false;
-    }
+					if (matchval != null) {
+						switch (av.resencodetype) {
+						case JSON:
+							ParmGenJSONDecoder jdec = new ParmGenJSONDecoder(null);
+							matchval = jdec.decodeStringValue(matchval);
+							break;
+						default:
+							break;
+						}
+						if (_uencode == true) {
+							String venc = matchval;
+							try {
+								venc = URLEncoder.encode(matchval, ParmVars.enc.getIANACharset());
+							} catch (UnsupportedEncodingException e) {
+								// NOP
+							}
+							matchval = venc;
+						}
+						String ONETIMEPASSWD = matchval.replaceAll(",", "%2C");
+
+						if (ONETIMEPASSWD != null && !ONETIMEPASSWD.isEmpty()) {// value値nullは追跡しない
+							printlog("*****FETCHRESPONSE body r,c:value:" + r + "," + c + ":" + ONETIMEPASSWD);
+							setLocVal(currentStepNo, fromStepNo, r, c, ONETIMEPASSWD, overwrite);
+							return true;
+						} else {
+							printlog("xxxxxx IGNORED FETCHRESPONSE body r,c:value:" + r + "," + c + ":" + "null");
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
 
         boolean reqbodymatch(int currentStepNo, int fromStepNo,String url, PRequest prequest, int r, int c, boolean overwrite, int fcnt, String name){
             if (urlmatch(url, r, c )){

@@ -5,15 +5,16 @@
  */
 package burp;
 
-import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.json.stream.JsonParser;
 
+import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
+
 import flex.messaging.util.URLDecoder;
-import java.io.UnsupportedEncodingException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -36,7 +37,7 @@ public class ParmGenJSON {
     String Comments;
     boolean Disabled;
     boolean Error;
-    
+
 
 
 
@@ -47,10 +48,12 @@ public class ParmGenJSON {
         apv = null;
         ReqResList = new ArrayList<PRequestResponse>();
         currentrequest = 0;
+        row = 0;
+        exerr = null;
         initReqRes();
-  
+
     }
-    
+
     private void initReqRes(){
         PRequest64 = null;
         PResponse64 = null;
@@ -65,7 +68,7 @@ public class ParmGenJSON {
     ArrayList<AppParmsIni> Getrlist(){
         return rlist;
     }
-    
+
     ArrayList<PRequestResponse> GetMacroRequests(){
         return ReqResList;
     }
@@ -180,7 +183,7 @@ public class ParmGenJSON {
                                 if(PRequest64!=null){
                                     byte[] binreq = Base64.decode(PRequest64);
                                     byte[] binres = Base64.decode(PResponse64);
-                                    
+
                                     String res = "";
                                     try {
                                         res = new String(binres,ParmVars.enc.getIANACharset());
@@ -198,7 +201,7 @@ public class ParmGenJSON {
                                 }
                             }
                         }
-                        
+
                         break;
                     default:
                         if(aparms!=null){

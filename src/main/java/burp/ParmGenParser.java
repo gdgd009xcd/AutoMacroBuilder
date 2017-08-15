@@ -37,7 +37,7 @@ public class ParmGenParser {
 
             try {
                     doc = Jsoup.parse(htmltext);//パース実行
-                    elems = doc.select("input[type=hidden],input[type=text],a[href],form[action]");//name属性を持つHIDDENタグ全部、A HREFタグ
+                    elems = doc.select("input[type=hidden],input[type=text],a[href],form[action],textarea");//name属性を持つHIDDENタグ全部、A HREFタグ
                     //elemsprint(htmltext);
             } catch (Exception e) {
                     // TODO Auto-generated catch block
@@ -96,7 +96,7 @@ public class ParmGenParser {
                 tk = new ParmGenToken(ttype, "", n, v, false,npos);
                 tklist.add(tk);
             }
-        }else if(vtag.tagName().toLowerCase().indexOf("a")!=-1){//<A
+        }else if(vtag.tagName().toLowerCase().equals("a")){//<A
             String h = vtag.attr("href");
             //href属性から、GETパラメータを抽出。
             //?name=value&....
@@ -151,6 +151,32 @@ public class ParmGenParser {
 	                    }
                     }
                 }
+            }
+        }else if(vtag.tagName().toLowerCase().indexOf("textarea")!=-1){//<textarea
+            String n = vtag.attr("name");
+            String v = vtag.html();
+            String t = vtag.attr("type");
+            // <inputタグのnameパラメータ
+            if(n == null){
+                n = null;
+            }else if(n.isEmpty()){
+                n = null;
+            }
+            if(v == null){
+            	v = "";
+            }
+            if(n != null){
+                //重複nameの検査
+                int npos = 0;
+                if(namepos.containsKey(n)){
+                    npos = namepos.get(n);
+                    npos++;
+                }
+                namepos.put(n, npos);
+                AppValue.TokenTypeNames ttype= AppValue.TokenTypeNames.TEXTAREA;
+
+                tk = new ParmGenToken(ttype, "", n, v, false,npos);
+                tklist.add(tk);
             }
         }
         return tklist;

@@ -207,7 +207,7 @@ class PLog {
         }
 
         void addComments(String _v){
-            comments += _v;
+            comments += _v + "\n";
         }
 
         void setComments(String _v){
@@ -361,6 +361,7 @@ class AppValue {
 			HREF,
 			XCSRF,
 			TEXT,
+			TEXTAREA,
                         JSON,
                         ACTION,
 
@@ -773,12 +774,12 @@ class AppValue {
 								"******パラメータ正規表現[" + value + "]マッチパターン[" + matchval + "]値[" + strcnt + "]\n");
 						//
 						ParmVars.plog.addComments(
-								"******パラメータ正規表現[" + value + "]マッチパターン[" + matchval + "]値[" + strcnt + "]\n");
+								"******パラメータ正規表現[" + value + "]マッチパターン[" + matchval + "]値[" + strcnt + "]");
 					} else {
 						ParmVars.plog.debuglog(0,
 								"ERROR*パラメータ正規表現[" + value + "]マッチパターン[" + matchval + "]値が取得できません。\n");
 						ParmVars.plog
-								.addComments("ERROR*パラメータ正規表現[" + value + "]マッチパターン[" + matchval + "]値が取得できません。\n");
+								.addComments("ERROR*パラメータ正規表現[" + value + "]マッチパターン[" + matchval + "]値が取得できません。");
 						isnull = true;
 					}
 				} else {

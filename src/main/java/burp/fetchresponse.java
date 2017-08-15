@@ -251,59 +251,70 @@ class LocVal {
 	//
 	// header match
 	//
-	boolean headermatch(int currentStepNo, int fromStepNo, String url, PResponse presponse, int r, int c, boolean overwrite, String name, AppValue av){
-                AppValue.TokenTypeNames _tokentype = av.tokentype;
-		if (urlmatch(url, r, c )){
-                    if(_tokentype==AppValue.TokenTypeNames.LOCATION){
-                        ParmGenToken tkn = presponse.fetchNameValue(name, _tokentype, 0);
-                        if(tkn!=null){
-                            ParmGenTokenValue tval = tkn.getTokenValue();
-                            if(tval!=null){// value値nullは追跡しない
-                                String matchval = tval.getValue();
-                                if(matchval!=null&&!matchval.isEmpty()){
-                                    printlog("*****FETCHRESPONSE header r,c/ header: value" + r + "," + c   + " => " + matchval );
-                                    setLocVal(currentStepNo,fromStepNo, r,c, matchval, overwrite);
-                                    return true;
-                                }
-                            }else{
-                                printlog("xxxxxIGNORED FETCHRESPONSE header r,c/ header: value" + r + "," + c  + " => null"  );
-                            }
-                        }
-                    }else if(regexes[r][c]!=null){
-			//
-                        int size = presponse.getHeadersCnt();
-			for(int i=0; i < size; i++)
-			{
-				//String nvName = (nv[i]).getName();
-				//String nvValue = (nv[i]).getValue();
-				//String hval = nvName + ": " + nvValue;
-				String hval = presponse.getHeaderLine(i);
-				Matcher matcher = null;
-				try {
-					matcher = regexes[r][c].matcher(hval);
-				}catch (Exception e) {
-					printlog("matcher例外：" + e.toString());
-				}
-				if ( matcher.find() ){
-					int gcnt = matcher.groupCount();
-					String matchval = null;
-					for(int n = 0; n < gcnt ; n++){
-						matchval = matcher.group(n+1);
+	boolean headermatch(int currentStepNo, int fromStepNo, String url, PResponse presponse, int r, int c,
+			boolean overwrite, String name, AppValue av) {
+		AppValue.TokenTypeNames _tokentype = av.tokentype;
+		String comments = "";
+		if (urlmatch(url, r, c)) {
+			if (_tokentype == AppValue.TokenTypeNames.LOCATION) {
+				ParmGenToken tkn = presponse.fetchNameValue(name, _tokentype, 0);
+				if (tkn != null) {
+					ParmGenTokenValue tval = tkn.getTokenValue();
+					if (tval != null) {// value値nullは追跡しない
+						String matchval = tval.getValue();
+						if (matchval != null && !matchval.isEmpty()) {
+							comments = "*****FETCHRESPONSE header r,c/ header: value" + r + "," + c + " => " + matchval;
+							printlog(comments);
+							ParmVars.plog.addComments(comments);
+							setLocVal(currentStepNo, fromStepNo, r, c, matchval, overwrite);
+							return true;
+						}
+					} else {
+						comments = "xxxxxIGNORED FETCHRESPONSE header r,c/ header: value" + r + "," + c + " => null";
+						printlog(comments);
+						ParmVars.plog.addComments(comments);
 					}
+				}
+			} else if (regexes[r][c] != null) {
+				//
+				int size = presponse.getHeadersCnt();
+				for (int i = 0; i < size; i++) {
+					// String nvName = (nv[i]).getName();
+					// String nvValue = (nv[i]).getValue();
+					// String hval = nvName + ": " + nvValue;
+					String hval = presponse.getHeaderLine(i);
+					Matcher matcher = null;
+					try {
+						matcher = regexes[r][c].matcher(hval);
+					} catch (Exception e) {
+						printlog("matcher例外：" + e.toString());
+					}
+					if (matcher.find()) {
+						int gcnt = matcher.groupCount();
+						String matchval = null;
+						for (int n = 0; n < gcnt; n++) {
+							matchval = matcher.group(n + 1);
+						}
 
-					if ( matchval != null ){
-                                            if(!matchval.isEmpty()){// value値nullは追跡しない
-                                                printlog("*****FETCHRESPONSE header r,c/ header: value" + r + "," + c + "/" + hval + " => " + matchval );
-                                                setLocVal(currentStepNo,fromStepNo, r,c, matchval, overwrite);
-                                                return true;
-                                            }else{
-                                                printlog("xxxxxIGNORED FETCHRESPONSE header r,c/ header: value" + r + "," + c + "/" + hval + " => null"  );
-                                            }
+						if (matchval != null) {
+							if (!matchval.isEmpty()) {// value値nullは追跡しない
+								comments = "*****FETCHRESPONSE header r,c/ header: value" + r + "," + c + "/" + hval
+										+ " => " + matchval;
+								printlog(comments);
+								ParmVars.plog.addComments(comments);
+								setLocVal(currentStepNo, fromStepNo, r, c, matchval, overwrite);
+								return true;
+							} else {
+								comments = "xxxxxIGNORED FETCHRESPONSE header r,c/ header: value" + r + "," + c + "/"
+										+ hval + " => null";
+								printlog(comments);
+								ParmVars.plog.addComments(comments);
+							}
+						}
 					}
 				}
 			}
-                    }
-                }
+		}
 		return false;
 	}
 	//
@@ -327,8 +338,9 @@ class LocVal {
 					if (tval != null) {
 						String v = tval.getValue();
 						if (v != null && !v.isEmpty()) {// value null値は追跡しない。
-							printlog("*****FETCHRESPONSE auto track body r,c,p:value:" + r + "," + c + "," + fcnt + ":"
-									+ v);
+							String comments = "*****FETCHRESPONSE auto track body r,c,p:" + r + "," + c + "," + fcnt + ": "	+ name + "=" + v;
+							printlog(comments);
+							ParmVars.plog.addComments(comments);
 							if (_uencode == true) {
 								String venc = v;
 								try {
@@ -343,8 +355,10 @@ class LocVal {
 							setLocVal(currentStepNo, fromStepNo, r, c, ONETIMEPASSWD, overwrite);
 							return true;
 						} else {
-							printlog("xxxxx IGNORED FETCHRESPONSE auto track body r,c,p:value:" + r + "," + c + ","
-									+ fcnt + ":" + "null");
+							String comments = "xxxxx FAILED FETCHRESPONSE auto track body r,c,p:" + r + "," + c + ","
+									+ fcnt + ": " + name + "=" + "null";
+							printlog(comments);
+							ParmVars.plog.addComments(comments);
 						}
 					}
 				}
@@ -357,7 +371,9 @@ class LocVal {
 				try {
 					matcher = regexes[r][c].matcher(body);
 				} catch (Exception e) {
-					ParmVars.plog.debuglog(0, "matcher例外：" + e.toString());
+					String comments =  "xxxxx EXCEPTION FETCHRESPONSE " + name + " 正規表現[" + av.resRegex  + "] 例外：" + e.toString();
+					printlog(comments);
+					ParmVars.plog.addComments(comments);
 					matcher = null;
 				}
 
@@ -387,13 +403,18 @@ class LocVal {
 							matchval = venc;
 						}
 						String ONETIMEPASSWD = matchval.replaceAll(",", "%2C");
+						String comments = "";
 
 						if (ONETIMEPASSWD != null && !ONETIMEPASSWD.isEmpty()) {// value値nullは追跡しない
-							printlog("*****FETCHRESPONSE body r,c:value:" + r + "," + c + ":" + ONETIMEPASSWD);
+							comments = "*****FETCHRESPONSE body r,c:" + r + "," + c + ": " + name + "=" + ONETIMEPASSWD;
+							printlog(comments);
+							ParmVars.plog.addComments(comments);
 							setLocVal(currentStepNo, fromStepNo, r, c, ONETIMEPASSWD, overwrite);
 							return true;
 						} else {
-							printlog("xxxxxx IGNORED FETCHRESPONSE body r,c:value:" + r + "," + c + ":" + "null");
+							comments = "xxxxxx FAILED FETCHRESPONSE body r,c:" + r + "," + c + ": " + name + "=" +  "null";
+							printlog(comments);
+							ParmVars.plog.addComments(comments);
 						}
 					}
 				}
@@ -402,25 +423,33 @@ class LocVal {
 		return false;
 	}
 
-        boolean reqbodymatch(int currentStepNo, int fromStepNo,String url, PRequest prequest, int r, int c, boolean overwrite, int fcnt, String name){
-            if (urlmatch(url, r, c )){
-                ArrayList<String[]> namelist = prequest.getBodyParams();
-                Iterator<String[]> it = namelist.iterator();
-                while(it.hasNext()){
-                    String[] nv = it.next();
-                    if(name.equals(nv[0])){
-                        if(nv.length>1&&nv[1]!=null&&!nv[1].isEmpty()){// value値nullは追跡しない
-                            printlog("******FETCH REQUEST body r,c: name=value:" + r + "," + c + ": " +  nv[0] + "=" + nv[1]);
-                            setLocVal(currentStepNo, fromStepNo,r,c,nv[1], overwrite);
-                            return true;
-                        }else{
-                            printlog("xxxxxIGNORED FETCH REQUEST body r,c: name=value:" + r + "," + c + ": " +  nv[0] + "=null" );
-                        }
-                    }
-                }
-            }
-            return false;
-        }
+	boolean reqbodymatch(int currentStepNo, int fromStepNo, String url, PRequest prequest, int r, int c,
+			boolean overwrite, int fcnt, String name) {
+		String comments = "";
+		if (urlmatch(url, r, c)) {
+			ArrayList<String[]> namelist = prequest.getBodyParams();
+			Iterator<String[]> it = namelist.iterator();
+			while (it.hasNext()) {
+				String[] nv = it.next();
+				if (name.equals(nv[0])) {
+					if (nv.length > 1 && nv[1] != null && !nv[1].isEmpty()) {// value値nullは追跡しない
+						comments =
+								"******FETCH REQUEST body r,c: name=value:" + r + "," + c + ": " + nv[0] + "=" + nv[1];
+						printlog(comments);
+						ParmVars.plog.addComments(comments);
+						setLocVal(currentStepNo, fromStepNo, r, c, nv[1], overwrite);
+						return true;
+					} else {
+						comments = "xxxxxFAILED FETCH REQUEST body r,c: name=value:" + r + "," + c + ": " + nv[0]
+								+ "=null";
+						printlog(comments);
+						ParmVars.plog.addComments(comments);
+					}
+				}
+			}
+		}
+		return false;
+	}
 	//
 	// URL match
 	//

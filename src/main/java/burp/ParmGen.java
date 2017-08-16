@@ -1841,7 +1841,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 
 	ParmGen(ParmGenMacroTrace _pmt, ArrayList<AppParmsIni>_parmcsv){
 		pmt = _pmt;
-		if(_parmcsv!=null)reset();
+		if(_parmcsv!=null)nullset();
 		initMain(_parmcsv);
 	}
 
@@ -1890,10 +1890,13 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 		}
 	}
 
+	private void nullset(){
+		 parmcsv = null;trackcsv=null;
+         FetchResponse.loc = null;
+         hasTrackRequest = false;
+	}
         public void reset(){
-            parmcsv = null;trackcsv=null;
-            FetchResponse.loc = null;
-            hasTrackRequest = false;
+            nullset();
             initMain(null);
         }
 

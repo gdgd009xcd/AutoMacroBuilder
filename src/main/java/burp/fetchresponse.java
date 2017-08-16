@@ -366,7 +366,7 @@ class LocVal {
 
 			Matcher matcher = null;
 
-			if (regexes != null) {
+			if (regexes != null && av.resRegex != null && !av.resRegex.isEmpty()) {
 
 				try {
 					matcher = regexes[r][c].matcher(body);

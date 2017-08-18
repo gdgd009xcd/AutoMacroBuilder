@@ -108,6 +108,7 @@ public class ParmGenCSV {
 
     public void jsonsave(){
         //ファイル初期化
+    	ParmVars.plog.debuglog(0, "jsonsave called.");
         try{
             pfile = new ParmGenWriteFile(ParmVars.parmfile);
         }catch(Exception ex){

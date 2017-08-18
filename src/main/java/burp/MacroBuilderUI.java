@@ -637,7 +637,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         ParmFileFilter pFilter = new ParmFileFilter();
         jfc.setFileFilter(pFilter);
         ArrayList<PRequestResponse> orglist = pmt.originalrlist;
-        if (jfc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+        if (jfc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION && orglist!=null) {
 
             //code to handle choosed file here.
             File file = jfc.getSelectedFile();
@@ -820,7 +820,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                     // value値がToken値だとみられる
                     if (!namematched) {//nameはtknamesに一致しない
                         String tokenvalue = token.getTokenValue().getValue();
-                        
+
                         if (ParmGenUtil.isTokenValue(tokenvalue)) {
                             trackurltoken.tracktokenlist.add(token);
                         }

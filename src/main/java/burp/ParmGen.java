@@ -1519,7 +1519,7 @@ class ParmGen {
         ArrayList<AppParmsIni> loadJSON(){
         	//
         	int arraylevel = 0;
-
+        	ParmVars.plog.debuglog(0, "loadJSON called.");
         	ArrayList<AppParmsIni> rlist = null;
         	String pfile = ParmVars.parmfile;
         	ParmVars.plog.debuglog(1, "---------AppPermGen.json----------");
@@ -1852,6 +1852,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 		// parmcsvはstatic
 		if ( parmcsv == null || _newparmcsv != null){
 			if(_newparmcsv==null){
+				
 				parmcsv = loadJSON();
 			}else{
 				parmcsv = _newparmcsv;

@@ -48,26 +48,56 @@ class PResponse extends ParseHTTPHeaders {
             if(map==null){
                 map = new ParmGenHashMap();
                 InterfaceCollection<Entry<ParmGenTokenKey, ParmGenTokenValue>> ic = getLocationTokens(map);
-                String subtype = getContent_Subtype();
+                //String subtype = getContent_Subtype();
+                switch(_tokentype){
+                case JSON:
+                	jsonparser = new ParmGenJSONDecoder(body);
+                	break;
+                default:
+                	htmlparser = new ParmGenParser(body);
+                	break;
+                }
+                /**
                 if(subtype!=null&&subtype.toLowerCase().equals("json")){
                 	jsonparser = new ParmGenJSONDecoder(body);
                 }else{
                 	htmlparser = new ParmGenParser(body);
+                }**/
+
+
+            }else{
+            	switch(_tokentype){
+                case JSON:
+                	if(jsonparser==null){
+                		jsonparser = new ParmGenJSONDecoder(body);
+                	}
+                	break;
+                default:
+	                if(htmlparser==null){
+	                	htmlparser = new ParmGenParser(body);
+	            	}
+                	break;
                 }
-
-
             }
             ParmGenTokenKey tkey = new ParmGenTokenKey(_tokentype, name, fcnt);
             ParmGenTokenValue tval = map.get(tkey);
             if(tval!=null){
                 return new ParmGenToken(tkey, tval);
             }
-            if(htmlparser!=null){
-                return htmlparser.fetchNameValue(name, fcnt, _tokentype);
+            switch(_tokentype){
+            case JSON:
+            	if(jsonparser!=null){
+                    return jsonparser.fetchNameValue(name, fcnt, _tokentype);
+                }
+
+            default:
+            	if(htmlparser!=null){
+                    return htmlparser.fetchNameValue(name, fcnt, _tokentype);
+                }
+            	break;
             }
-            if(jsonparser!=null){
-                return jsonparser.fetchNameValue(name, fcnt, _tokentype);
-            }
+
+
             return null;
         }
 

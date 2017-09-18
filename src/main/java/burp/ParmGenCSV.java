@@ -173,7 +173,7 @@ public class ParmGenCSV {
                 JsonObjectBuilder AppValue_rec = Json.createObjectBuilder();
 
                 AppValue_rec.add("valpart", param.getValPart());
-                AppValue_rec.add("isModify", param.isModify());
+                AppValue_rec.add("isEnabled", param.isEnabled());
                 AppValue_rec.add("isNoCount", param.isNoCount());
                 AppValue_rec.add("csvpos", param.csvpos);
                 AppValue_rec.add("value", escapeDelimiters(param.value, null));
@@ -266,7 +266,7 @@ public class ParmGenCSV {
                 if (!paramStr.isEmpty()){
                     paramStr += ",";
                 }
-                paramStr += QUOTE(param.getValPart() + (param.isModify()?"":"-") + (param.isNoCount()?"":"+") +
+                paramStr += QUOTE(param.getValPart() + (param.isEnabled()?"":"-") + (param.isNoCount()?"":"+") +
                         (param.csvpos == -1?"":(":" +Integer.toString(param.csvpos)))
                         , true) ;
                 if (prec.typeval != AppParmsIni.T_TRACK){

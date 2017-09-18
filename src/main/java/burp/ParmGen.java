@@ -390,7 +390,6 @@ class AppValue {
 	public static final int V_REQTRACKQUERY = 7;// password(request query) tracking
 	public static final int V_REQTRACKPATH = 8;//password (request path) tracking
 	public static final int C_NOCOUNT = 16;
-	public static final int C_NOMODIFY = 32;
 	public static final int C_VTYPE = 15;
 	public static String[] ctypestr = null;
 
@@ -427,22 +426,18 @@ class AppValue {
             resRegexPos = -1;
         }
 
-        AppValue(String _Type, boolean _nomodify, String _value){
+        AppValue(String _Type, boolean _disabled, String _value){
             initctype();
             setValPart(_Type);
-            if(_nomodify){
-                setNoModify();
-            }
+            setEnabled(!_disabled);//NOT 
             value = _value;
             resRegexPos = -1;
         }
 
-        AppValue(String _Type, boolean _nomodify, int _csvpos, String _value, boolean increment){
+        AppValue(String _Type, boolean _disabled, int _csvpos, String _value, boolean increment){
             initctype();
             setValPart(_Type);
-            if(_nomodify){
-                setNoModify();
-            }
+            setEnabled(!_disabled);//NOT 
             csvpos = _csvpos;
             value = _value;
             resRegexPos = -1;
@@ -453,12 +448,10 @@ class AppValue {
             }
         }
 
-        AppValue(String _Type, boolean _nomodify, String _value, boolean increment){
+        AppValue(String _Type, boolean _disabled, String _value, boolean increment){
             initctype();
             setValPart(_Type);
-            if(_nomodify){
-                setNoModify();
-            }
+            setEnabled(!_disabled);//NOT 
             value = _value;
             resRegexPos = -1;
             if(increment){
@@ -468,13 +461,11 @@ class AppValue {
             }
         }
 
-        AppValue(String _Type, boolean _nomodify, String _value,
+        AppValue(String _Type, boolean _disabled, String _value,
                 String _resURL, String _resRegex, String _resPartType, String _resRegexPos, String _token, boolean _urlenc, int _fromStepNo, int _toStepNo, String _tokentypename){
             initctype();
             setValPart(_Type);
-            if(_nomodify){
-                setNoModify();
-            }
+            setEnabled(!_disabled);//NOT 
             value = _value;
             setresURL(_resURL);
             setresRegex(_resRegex);
@@ -487,13 +478,11 @@ class AppValue {
             tokentype = parseTokenTypeName(_tokentypename);
         }
 
-        AppValue(String _Type, boolean _nomodify,  String _value,String _name,
+        AppValue(String _Type, boolean _disabled,  String _value,String _name,
                 String _tamattack, int _tamadvance, int _payloadposition,  boolean _urlenc){
             initctype();
             setValPart(_Type);
-            if(_nomodify){
-                setNoModify();
-            }
+            setEnabled(!_disabled);//NOT 
             token = _name;
             value = _value;
             tamattack = _tamattack;
@@ -611,7 +600,7 @@ class AppValue {
         }
 
         public String getAppValueDsp(int _typeval){
-            String avrec = QUOTE(getValPart() + (isModify()?"":"-") +(isNoCount()?"":"+")+ (_typeval==AppParmsIni.T_CSV?":"+Integer.toString(csvpos):"")) +","+ QUOTE(value)
+            String avrec = QUOTE(getValPart() + (isEnabled()?"":"+") +(isNoCount()?"":"+")+ (_typeval==AppParmsIni.T_CSV?":"+Integer.toString(csvpos):"")) +","+ QUOTE(value)
                     + QUOTE_PREFCOMMA(resURL)
                     + QUOTE_PREFCOMMA(resRegex)
                     + QUOTE_PREFCOMMA(getResValPart())
@@ -671,9 +660,6 @@ class AppValue {
                     break;
                 }
             }
-            if (_valtype.indexOf("-")!=-1){//no modify
-                    _valparttype |= C_NOMODIFY;
-            }
             return _valparttype;
         }
 
@@ -693,13 +679,7 @@ class AppValue {
 		}
 	}
 
-	boolean isModify(){
-		return ((valparttype & C_NOMODIFY)==0);
-	}
 
-        public void setNoModify(){
-            valparttype |= C_NOMODIFY;
-        }
 
 	void setNoCount(){
 		valparttype = valparttype | C_NOCOUNT;
@@ -782,8 +762,6 @@ class AppValue {
 				strcnt = pini.getStrCnt(tk,currentStepNo, toStepNo, valparttype, col, csvpos);
 				ParmVars.plog.printLF();
 				boolean isnull = false;
-
-				if (isModify()) {
 					if (strcnt != null) {
 						ParmVars.plog.debuglog(0,
 								"******パラメータ正規表現[" + value + "]マッチパターン[" + matchval + "]値[" + strcnt + "]\n");
@@ -797,17 +775,7 @@ class AppValue {
 								.addComments("ERROR*パラメータ正規表現[" + value + "]マッチパターン[" + matchval + "]値が取得できません。");
 						isnull = true;
 					}
-				} else {
-					if (strcnt != null) {
-						ParmVars.plog.debuglog(0,
-								"######無修正パラメータ正規表現[" + value + "]マッチパターン[" + matchval + "]値[" + strcnt + "]\n");
-					} else {
-						ParmVars.plog.debuglog(0,
-								"ERROR#無修正パラメータ正規表現[" + value + "]マッチパターン[" + matchval + "]値が取得できません。\n");
 
-						isnull = true;
-					}
-				}
 				if (isnull) {// 値取得失敗時は、オリジナルに戻す。
 					strcnt = matchval;
 					ParmVars.plog.setError(isnull);
@@ -1478,20 +1446,20 @@ class AppParmsIni {
                 app = it.next();
                 switch(typeval){
                 case T_NUMBER:
-                     return new Object[] {app.getValPart(), (app.isModify()?false:true), app.value, app.isNoCount()?false:true};
+                     return new Object[] {app.getValPart(), (app.isEnabled()?false:true), app.value, app.isNoCount()?false:true};
                 case T_RANDOM:
                     break;
                 case T_CSV:
-                    return new Object[] {app.getValPart(), (app.isModify()?false:true), app.csvpos, app.value, app.isNoCount()?false:true};
+                    return new Object[] {app.getValPart(), (app.isEnabled()?false:true), app.csvpos, app.value, app.isNoCount()?false:true};
                 case T_TRACK:
-                    return new Object[] {app.getValPart(), (app.isModify()?false:true), app.value,
+                    return new Object[] {app.getValPart(), (app.isEnabled()?false:true), app.value,
                         app.resURL,
                         app.resRegex,
                         app.getResValPart(),
                         Integer.toString(app.resRegexPos),
                     app.token, app.urlencode, app.fromStepNo, app.toStepNo, app.tokentype.name()};
                 case T_TAMPER:
-                    return new Object[] {app.getValPart(), (app.isModify()?false:true), app.value,
+                    return new Object[] {app.getValPart(), (app.isEnabled()?false:true), app.value,
                         app.token,
                         app.tamattack,
                         app.tamadvance,
@@ -1651,7 +1619,7 @@ class ParmGen {
 		case AppValue.V_PATH://path
 			// path = url
 			String n_path = av.replaceContents(pmt.getStepNo(), pini, path);
-			if (n_path != null && !path.equals(n_path) && av.isModify()){
+			if (n_path != null && !path.equals(n_path) ){
 				url = n_path;
 				ParmVars.plog.debuglog(1, " Original path[" + path + "]");
 				ParmVars.plog.debuglog(1, " Modified path[" + n_path + "]");
@@ -1667,7 +1635,7 @@ class ParmGen {
 				String n_query = av.replaceContents(pmt.getStepNo(),pini, query);
                                 ParmVars.plog.debuglog(1, query);
                                 ParmVars.plog.debuglog(1, n_query);
-				if ( n_query!=null && !query.equals(n_query) && av.isModify()){
+				if ( n_query!=null && !query.equals(n_query) ){
 					url = path + '?' + n_query;
 					ParmVars.plog.debuglog(1, " Original query[" + query + "]");
 					ParmVars.plog.debuglog(1, " Modified path[" + n_query + "]");
@@ -1684,7 +1652,7 @@ class ParmGen {
 			for(String[] nv : headers){
 				String hval = nv[0] + ": " + nv[1];//Cookie: value
 				String n_hval = av.replaceContents(pmt.getStepNo(),pini, hval);
-				if (n_hval !=null && !hval.equals(n_hval) && av.isModify()){
+				if (n_hval !=null && !hval.equals(n_hval) ){
 					ParmVars.plog.debuglog(1, " Original header[" + hval + "]");
 					ParmVars.plog.debuglog(1, " Modified header[" + n_hval + "]");
 					String htitle = nv[0] + ": ";
@@ -1708,7 +1676,7 @@ class ParmGen {
 	        			content = null;
 	        		}
 		        	String n_content = av.replaceContents(pmt.getStepNo(),pini, content);
-		        	if ( content != null && !content.equals(n_content) && av.isModify()){
+		        	if ( content != null && !content.equals(n_content) ){
 		        		ParmVars.plog.debuglog(1, " Original body[" + content + "]");
 		        		ParmVars.plog.debuglog(1, " Modified body[" + n_content + "]");
 						_contarray.initParmGenBinUtil(n_content.getBytes());
@@ -1757,7 +1725,7 @@ class ParmGen {
 	        					partdatastr = null;
 	        				}
 	        				String n_partdatastr = av.replaceContents(pmt.getStepNo(), pini, partdatastr);
-	        				if(n_partdatastr!=null && partdatastr != null && !partdatastr.equals(n_partdatastr) && av.isModify()){
+	        				if(n_partdatastr!=null && partdatastr != null && !partdatastr.equals(n_partdatastr) ){
 	        					ParmVars.plog.debuglog(1, " Original body[" + partdatastr + "]");
 	        					ParmVars.plog.debuglog(1, " Modified body[" + n_partdatastr + "]");
                                                         try{
@@ -2046,7 +2014,9 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                                 boolean fetched;
                                 while(pt.hasNext()){
                                         AppValue av = pt.next();
-                                        fetched = FetchRequest(prequest,  pini, av);
+                                        if(av.isEnabled()){
+                                            fetched = FetchRequest(prequest,  pini, av);
+                                        }
                                 }
                             }
 
@@ -2092,9 +2062,10 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 
                                                     while(pt.hasNext()){
                                                             AppValue av = pt.next();
-
-                                                            if (ParseResponse(url, presponse,  pini, av)){
-                                                                updtcnt++;
+                                                            if(av.isEnabled()){
+                                                                if (ParseResponse(url, presponse,  pini, av)){
+                                                                    updtcnt++;
+                                                                }
                                                             }
                                                     }
                                         //}

@@ -266,7 +266,11 @@ public class ParmGenJSON {
                                 apv.setValPart(GetString(ev, value, ""));
                             }else if(name.toUpperCase().equals("ISMODIFY")){
                                 if(Getboolean(ev, value, true)==false){
-                                    apv.setNoModify();
+                                    apv.setEnabled(false);
+                                }
+                            }else if(name.toUpperCase().equals("ISENABLED")){
+                                if(Getboolean(ev, value, true)==false){
+                                    apv.setEnabled(false);
                                 }
                             }else if(name.toUpperCase().equals("ISNOCOUNT")){
                                 if(Getboolean(ev, value, true)==true){

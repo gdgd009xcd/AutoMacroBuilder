@@ -9,6 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import flex.messaging.util.URLEncoder;
+import java.util.HashMap;
 
 
 //<?xml version="1.0" encoding="utf-8"?>
@@ -47,13 +48,12 @@ class LocVal {
         Pattern [][] urlregexes;
         //stepno
         int [][] responseStepNos;
-        //distance = currentStepNo responseSteNos
-        int [][] distance;
 	PLog _logger = null;
 	Encode _enc = null;
 	int rpos = 0;
 	int cpos = 0;
-
+        // Key: String token  int toStepNo Val: distance = responseStepNo - currentStepNo
+        HashMap<ParmGenTokenKey, Integer> distances;
 	//
 	LocVal (int _rmax){
 		_logger = ParmVars.plog;
@@ -86,14 +86,14 @@ class LocVal {
                 regexes = new Pattern[_rmax][cmax];
                 urlregexes = new Pattern[_rmax][cmax];
                 responseStepNos = new int[_rmax][cmax];
-                distance = new int[_rmax][cmax];
+                distances = new HashMap<ParmGenTokenKey, Integer> ();
             }else{
                 rmax = 0;
                 locarray = null;
                 regexes = null;
                 urlregexes = null;
                 responseStepNos = null;
-                distance = null;
+                distances = null;
             }
         }
 
@@ -104,9 +104,11 @@ class LocVal {
 				regexes[i][j] = null;
 				urlregexes[i][j] = null;
                                 responseStepNos[i][j] = -1;
-                                distance[i][j] = -1;
 			}
 		}
+                if(distances!=null){
+                    distances.clear();
+                }
 	}
 
 	void clearCachedLocVal(){
@@ -114,10 +116,16 @@ class LocVal {
 			for(int j = 0 ; j<cmax ; j++){
 				locarray[i][j] = null;
                                 responseStepNos[i][j] = -1;
-                                distance[i][j] = -1;
 			}
 		}
 	}
+        
+        void clearDistances(){
+            if(distances!=null){
+                distances.clear();
+            }
+        }
+        
         void setStepNo(int snum, int r, int c){
             if(isValid(r,c)){
                 responseStepNos[r][c] = snum;
@@ -148,13 +156,13 @@ class LocVal {
 		data_response = null;
 	}
 
-    String getLocVal(int currentStepNo, int toStepNo, int r, int c) {
+    String getLocVal(ParmGenTokenKey tk, int currentStepNo, int toStepNo, int r, int c) {
         String rval = null;
         if (isValid(r, c)) {
 
             String v = locarray[r][c];
             int responseStepNo = responseStepNos[r][c];
-            int StepNodistance = distance[r][c];
+
 
             //toStepNo <0 :currentStepNo == responseStepNo - toStepNo
             if (toStepNo < 0) {
@@ -171,15 +179,23 @@ class LocVal {
                 rval = v;
                 //return v;
             }
-            if(rval!=null){
-                int newdistance = currentStepNo - responseStepNo;
-                if(StepNodistance>=0){
-                    if(StepNodistance<newdistance){
-                        rval = null;
-                    }
-                }
+            
+            if(tk!=null&&distances!=null){
                 if(rval!=null){
-                    distance[r][c] = newdistance;
+                    int newdistance = currentStepNo - responseStepNo;
+                    Integer intobj =  distances.get(tk);
+                    
+                    if(intobj!=null){
+                        int prevdistance = intobj.intValue();
+                        if(prevdistance>=0){
+                            if(prevdistance<newdistance){
+                                rval = null;
+                            }
+                        }
+                    }
+                    if(rval != null){
+                        distances.put(tk, new Integer(newdistance));
+                    }
                 }
             }
         }

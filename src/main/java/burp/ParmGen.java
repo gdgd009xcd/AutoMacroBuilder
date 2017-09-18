@@ -407,8 +407,11 @@ class AppValue {
 			// regex   埋め込み箇所正規表現指定
 			"append", "insert", "replace", "regex", null
 	};
+        
+        private boolean enabled = true;//有効
 
         private void initctype(){
+            enabled = true;
             if(ctypestr==null){
                 ctypestr = new String[] {
                     //V_QUERY ==1
@@ -499,6 +502,14 @@ class AppValue {
             urlencode = _urlenc;
         }
 
+        public boolean isEnabled(){
+            return enabled;
+        }
+        
+        public void setEnabled(boolean b){
+            enabled = b;
+        }
+        
         String getPayloadPositionName(int it){
             if(payloadpositionnames.length > it && it >=0){
                 return payloadpositionnames[it];
@@ -740,13 +751,17 @@ class AppValue {
 			return null;
 		if (valueregex == null)
 			return null;
-
+                ParmGenTokenKey tk = null;
 		if(toStepNo>0){
 			if(currentStepNo!=toStepNo){
-				return contents;//
+				return null;//
 			}
+                        //tokentype 固定。tokentypeは追跡元のタイプなので、追跡先toStepNoの埋め込み先タイプとは無関係で無視する。
+                        tk = new ParmGenTokenKey(AppValue.TokenTypeNames.DEFAULT, token, toStepNo);
 		}
 
+                
+                
 		Matcher m = valueregex.matcher(contents);
 
 		String newcontents = "";
@@ -764,7 +779,7 @@ class AppValue {
 				matchval = m.group(n+1);
 			}
 			if (spt != -1 && ept != -1) {
-				strcnt = pini.getStrCnt(currentStepNo, toStepNo, valparttype, col, csvpos);
+				strcnt = pini.getStrCnt(tk,currentStepNo, toStepNo, valparttype, col, csvpos);
 				ParmVars.plog.printLF();
 				boolean isnull = false;
 
@@ -1290,7 +1305,7 @@ class AppParmsIni {
 		return nval;
 	}
 
-	String getGenValue(int currentStepNo, int toStepNo, int _valparttype, int col, int csvpos){
+	String getGenValue(ParmGenTokenKey tk, int currentStepNo, int toStepNo, int _valparttype, int col, int csvpos){
 		int n;
 		switch(typeval){
 		case T_NUMBER://number
@@ -1307,7 +1322,7 @@ class AppParmsIni {
 		case T_TRACK://loc
 			//if ( global.Location != void ){
 
-				return FetchResponse.loc.getLocVal(currentStepNo, toStepNo, row, col);
+				return FetchResponse.loc.getLocVal(tk, currentStepNo, toStepNo, row, col);
 			//}
 		default://csv
 			if ( frl != null){
@@ -1324,9 +1339,9 @@ class AppParmsIni {
 		return null;
 	}
 
-	String getStrCnt(int currentStepNo, int toStepNo,int _valparttype, int col, int csvpos){
+	String getStrCnt(ParmGenTokenKey tk, int currentStepNo, int toStepNo,int _valparttype, int col, int csvpos){
 		//if ( cstrcnt == null|| typeval == 3){
-				cstrcnt = getGenValue(currentStepNo,toStepNo,_valparttype, col, csvpos);
+				cstrcnt = getGenValue(tk, currentStepNo,toStepNo,_valparttype, col, csvpos);
 		//}
 		return cstrcnt;
 	}
@@ -1976,25 +1991,27 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                                                         }
                                                     }catch(Exception e ){
                                                         //contarray is null . No Body...
+                                                }
+
+                                            }
+
+                                            ArrayList<AppValue> parmlist = pini.parmlist;
+                                            Iterator<AppValue> pt = parmlist.iterator();
+                                            if (parmlist == null || parmlist.isEmpty()) {
+                                                //
+                                            }
+                                            ParmVars.plog.debuglog(1, "start");
+                                            while (pt.hasNext()) {
+                                                ParmVars.plog.debuglog(1, "loopin");
+                                                AppValue av = pt.next();
+                                                if (av.isEnabled()) {
+                                                    if ((tempreq = ParseRequest(prequest, boundaryarray, contarray, pini, av)) != null) {
+                                                        modreq = tempreq;
+                                                        prequest = tempreq;
                                                     }
-
-						}
-
-						ArrayList<AppValue> parmlist = pini.parmlist;
-						Iterator<AppValue> pt = parmlist.iterator();
-						if (parmlist == null || parmlist.isEmpty()){
-							//
-						}
-                                                ParmVars.plog.debuglog(1,"start");
-						while(pt.hasNext()){
-                                                    ParmVars.plog.debuglog(1, "loopin");
-							AppValue av = pt.next();
-							if ((tempreq = ParseRequest(prequest, boundaryarray, contarray, pini, av))!=null){
-								modreq = tempreq;
-								prequest = tempreq;
-							}
-						}
-                                                ParmVars.plog.debuglog(1,"end");
+                                                }
+                                            }
+                                            ParmVars.plog.debuglog(1, "end");
 					}
 				}
 			}

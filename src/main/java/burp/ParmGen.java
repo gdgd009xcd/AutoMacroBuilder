@@ -406,7 +406,7 @@ class AppValue {
 			// regex   埋め込み箇所正規表現指定
 			"append", "insert", "replace", "regex", null
 	};
-        
+
         private boolean enabled = true;//有効
 
         private void initctype(){
@@ -429,7 +429,7 @@ class AppValue {
         AppValue(String _Type, boolean _disabled, String _value){
             initctype();
             setValPart(_Type);
-            setEnabled(!_disabled);//NOT 
+            setEnabled(!_disabled);//NOT
             value = _value;
             resRegexPos = -1;
         }
@@ -437,7 +437,7 @@ class AppValue {
         AppValue(String _Type, boolean _disabled, int _csvpos, String _value, boolean increment){
             initctype();
             setValPart(_Type);
-            setEnabled(!_disabled);//NOT 
+            setEnabled(!_disabled);//NOT
             csvpos = _csvpos;
             value = _value;
             resRegexPos = -1;
@@ -451,7 +451,7 @@ class AppValue {
         AppValue(String _Type, boolean _disabled, String _value, boolean increment){
             initctype();
             setValPart(_Type);
-            setEnabled(!_disabled);//NOT 
+            setEnabled(!_disabled);//NOT
             value = _value;
             resRegexPos = -1;
             if(increment){
@@ -465,7 +465,7 @@ class AppValue {
                 String _resURL, String _resRegex, String _resPartType, String _resRegexPos, String _token, boolean _urlenc, int _fromStepNo, int _toStepNo, String _tokentypename){
             initctype();
             setValPart(_Type);
-            setEnabled(!_disabled);//NOT 
+            setEnabled(!_disabled);//NOT
             value = _value;
             setresURL(_resURL);
             setresRegex(_resRegex);
@@ -482,7 +482,7 @@ class AppValue {
                 String _tamattack, int _tamadvance, int _payloadposition,  boolean _urlenc){
             initctype();
             setValPart(_Type);
-            setEnabled(!_disabled);//NOT 
+            setEnabled(!_disabled);//NOT
             token = _name;
             value = _value;
             tamattack = _tamattack;
@@ -494,11 +494,11 @@ class AppValue {
         public boolean isEnabled(){
             return enabled;
         }
-        
+
         public void setEnabled(boolean b){
             enabled = b;
         }
-        
+
         String getPayloadPositionName(int it){
             if(payloadpositionnames.length > it && it >=0){
                 return payloadpositionnames[it];
@@ -740,8 +740,8 @@ class AppValue {
                         tk = new ParmGenTokenKey(AppValue.TokenTypeNames.DEFAULT, token, toStepNo);
 		}
 
-                
-                
+
+
 		Matcher m = valueregex.matcher(contents);
 
 		String newcontents = "";
@@ -1676,7 +1676,7 @@ class ParmGen {
 	        			content = null;
 	        		}
 		        	String n_content = av.replaceContents(pmt.getStepNo(),pini, content);
-		        	if ( content != null && !content.equals(n_content) ){
+		        	if ( n_content != null && !content.equals(n_content) ){
 		        		ParmVars.plog.debuglog(1, " Original body[" + content + "]");
 		        		ParmVars.plog.debuglog(1, " Modified body[" + n_content + "]");
 						_contarray.initParmGenBinUtil(n_content.getBytes());
@@ -1835,7 +1835,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 		// parmcsvはstatic
 		if ( parmcsv == null || _newparmcsv != null){
 			if(_newparmcsv==null){
-				
+
 				parmcsv = loadJSON();
 			}else{
 				parmcsv = _newparmcsv;

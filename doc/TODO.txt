@@ -174,4 +174,5 @@ Content-Type: image/gif<CRLF>
 
 35.<textarea>～</textarea>の追跡
 36.ParmGenメニュー起動時、JSONデータを強制ロードするため、保存してないMacroが消える。
+37.URLencodeアリ・無しでサイズが違う。リクエストのサイズで設定要。
 

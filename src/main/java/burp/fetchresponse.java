@@ -37,7 +37,7 @@ class LocVal {
 	int noclear = 0;
 	int rmax = 1;
 	int cmax = COLMAX;
-        static final int COLMAX = 50;
+        static final int COLMAX = 250;
 	boolean sticky = false;
 	String data_response = null;
 	//String [][] locarray = new String[rmax][cmax];

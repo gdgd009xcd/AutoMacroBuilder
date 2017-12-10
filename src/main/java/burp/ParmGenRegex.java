@@ -66,6 +66,27 @@ public class ParmGenRegex extends javax.swing.JDialog {
 		});
     }
     
+    public ParmGenRegex(String _reg, String _OriginalReadOnly){//読み取りのみ
+            initComponents();
+        um = new UndoManager();
+        To.setEnabled(false);
+        parentwin = null;
+        findplist = new ArrayList<Integer>();
+        init(null, null);
+        this.setModal(true);
+        RegexText.setText(_reg);
+        OriginalText.setText(_OriginalReadOnly);
+        OriginalText.setCaretPosition(0);
+        Document rexdoc = RegexText.getDocument();
+        //RegexTextのUndo/Redo
+        rexdoc.addUndoableEditListener(new UndoableEditListener() {
+			public void undoableEditHappened(UndoableEditEvent e) {
+				//行われた編集(文字の追加や削除)をUndoManagerに登録
+				um.addEdit(e.getEdit());
+			}
+		});
+    }
+    
     public static String EscapeSpecials(String _d){
         _d = _d.replaceAll(Escaperegex, "\\\\$1");
         _d = _d.replaceAll("(\r|\n)+", "(?:\\\\r|\\\\n)+?");
@@ -699,7 +720,9 @@ public class ParmGenRegex extends javax.swing.JDialog {
         String regex = RegexText.getText();
         int gcnt = hasGroupRegex(regex);
         if(gcnt==1){
-            parentwin.setRegex(RegexText.getText());
+            if(parentwin!=null){
+                parentwin.setRegex(RegexText.getText());
+            }
             //setVisible(false);
             dispose();
         }else if(gcnt>1){

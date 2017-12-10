@@ -387,7 +387,7 @@ class LocVal {
 				try {
 					matcher = regexes[r][c].matcher(body);
 				} catch (Exception e) {
-					String comments =  "xxxxx EXCEPTION FETCHRESPONSE " + name + " 正規表現[" + av.resRegex  + "] 例外：" + e.toString();
+					String comments =  "xxxxx EXCEPTION FETCHRESPONSE r,c:"+r +"," +c + ": " + name + " 正規表現[" + av.resRegex  + "] 例外：" + e.toString();
 					printlog(comments);
 					ParmVars.plog.addComments(comments);
 					matcher = null;

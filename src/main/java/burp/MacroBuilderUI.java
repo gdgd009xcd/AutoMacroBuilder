@@ -263,8 +263,14 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         jScrollPane1.setViewportView(RequestList);
 
         MacroRequest.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                MacroRequestMouseClicked(evt);
+            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 MacroRequestMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                MacroRequestMouseReleased(evt);
             }
         });
         jScrollPane6.setViewportView(MacroRequest);
@@ -285,8 +291,14 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         MacroResponse.setColumns(20);
         MacroResponse.setRows(5);
         MacroResponse.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                MacroResponseMouseClicked(evt);
+            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 MacroResponseMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                MacroResponseMouseReleased(evt);
             }
         });
         jScrollPane3.setViewportView(MacroResponse);
@@ -949,6 +961,35 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         String orig = MacroResponse.getText();
         new ParmGenRegex(reg,orig).setVisible(true);
     }//GEN-LAST:event_showActionPerformed
+
+    private void MacroRequestMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MacroRequestMouseClicked
+        // TODO add your handling code here:
+        if (evt.isPopupTrigger()) {
+            jPopupMenu2.show(evt.getComponent(), evt.getX(), evt.getY());
+        }
+    }//GEN-LAST:event_MacroRequestMouseClicked
+
+    private void MacroRequestMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MacroRequestMouseReleased
+        // TODO add your handling code here:
+        if (evt.isPopupTrigger()) {
+            jPopupMenu2.show(evt.getComponent(), evt.getX(), evt.getY());
+        }
+    }//GEN-LAST:event_MacroRequestMouseReleased
+
+    private void MacroResponseMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MacroResponseMouseClicked
+        // TODO add your handling code here:
+        if (evt.isPopupTrigger()) {
+            jPopupMenu3.show(evt.getComponent(), evt.getX(), evt.getY());
+        }
+        
+    }//GEN-LAST:event_MacroResponseMouseClicked
+
+    private void MacroResponseMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MacroResponseMouseReleased
+        // TODO add your handling code here:
+        if (evt.isPopupTrigger()) {
+            jPopupMenu3.show(evt.getComponent(), evt.getX(), evt.getY());
+        }
+    }//GEN-LAST:event_MacroResponseMouseReleased
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

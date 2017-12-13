@@ -20,6 +20,8 @@ import java.util.regex.Pattern;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 
 /**
  *
@@ -951,8 +953,16 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     private void editActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editActionPerformed
         // TODO add your handling code here:
         String reg = "";
-        String orig = MacroRequest.getText();
-        new ParmGenRegex(reg,orig).setVisible(true);
+        //String orig = MacroRequest.getText();
+        Document docreq = MacroRequest.getDocument();
+        int rlen = docreq.getLength();
+        try {
+            String reqdata = docreq.getText(0, rlen);
+            new ParmGenRegex(reg,reqdata).setVisible(true);
+        } catch (BadLocationException ex) {
+            Logger.getLogger(MacroBuilderUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }//GEN-LAST:event_editActionPerformed
 
     private void showActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showActionPerformed

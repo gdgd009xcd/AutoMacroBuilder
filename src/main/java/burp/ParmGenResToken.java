@@ -13,5 +13,6 @@ import java.util.ArrayList;
  */
 public class ParmGenResToken {
     public ArrayList<ParmGenToken> tracktokenlist;
+    public int fromStepNo;
     public PRequest request;  
 }

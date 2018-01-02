@@ -83,12 +83,13 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                 pmt.ParseResponse();
             }
             Iterator<PRequestResponse> it = _rlist.iterator();
+            int ii = 0;
             while (it.hasNext()) {
 
                 //model.addRow(new Object[] {false, pini.url, pini.getIniValDsp(), pini.getLenDsp(), pini.getTypeValDsp(),pini.getAppValuesDsp(),pini.getCurrentValue()});
                 PRequestResponse pqr = it.next();
                 String url = pqr.request.url;
-                lmodel.addElement((Object) (' ' + url));
+                lmodel.addElement((Object) (ii++ + ' ' + url));
             }
             RequestList.setModel(lmodel);
         }
@@ -138,9 +139,9 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         targetRequest = new javax.swing.JMenuItem();
         disableRequest = new javax.swing.JMenuItem();
         enableRequest = new javax.swing.JMenuItem();
-        jPopupMenu2 = new javax.swing.JPopupMenu();
+        RequestEdit = new javax.swing.JPopupMenu();
         edit = new javax.swing.JMenuItem();
-        jPopupMenu3 = new javax.swing.JPopupMenu();
+        ResponseShow = new javax.swing.JPopupMenu();
         show = new javax.swing.JMenuItem();
         jScrollPane1 = new javax.swing.JScrollPane();
         RequestList = new javax.swing.JList();
@@ -169,6 +170,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         Load = new javax.swing.JButton();
         MBcleatokenfromcache = new javax.swing.JCheckBox();
         Save = new javax.swing.JButton();
+        MBfromStepNo = new javax.swing.JCheckBox();
 
         SendTo.setText("SendTo");
 
@@ -228,7 +230,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                 editActionPerformed(evt);
             }
         });
-        jPopupMenu2.add(edit);
+        RequestEdit.add(edit);
 
         show.setText("jMenuItem1");
         show.addActionListener(new java.awt.event.ActionListener() {
@@ -236,7 +238,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                 showActionPerformed(evt);
             }
         });
-        jPopupMenu3.add(show);
+        ResponseShow.add(show);
 
         jScrollPane1.setAutoscrolls(true);
 
@@ -433,6 +435,9 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             }
         });
 
+        MBfromStepNo.setSelected(true);
+        MBfromStepNo.setText("追跡from設定");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -458,11 +463,13 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(MBCookieFromJar)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(MBResetToOriginal))
+                                .addComponent(MBResetToOriginal)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(MBfromStepNo))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(MBdeleteSetCookies)
                                 .addGap(18, 18, 18)
-                                .addComponent(MBcleatokenfromcache, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addComponent(MBcleatokenfromcache, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 450, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -489,7 +496,8 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                     .addComponent(MBExec)
                     .addComponent(MBCookieUpdate)
                     .addComponent(MBCookieFromJar)
-                    .addComponent(MBResetToOriginal))
+                    .addComponent(MBResetToOriginal)
+                    .addComponent(MBfromStepNo))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(waitsec, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -693,7 +701,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             String tcharset = toppage.response.getCharset();
             ParmVars.enc = Encode.getEnum(tcharset);
 
-            String tknames[] = {
+            String tknames[] = {//予約語
                 "PHPSESSID",
                 "JSESSIONID",
                 "SESID",
@@ -723,6 +731,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                 //if (respqrs != null && tracktokenlist != null && tracktokenlist.size() > 0) {//直前のレスポンスに追跡パラメータあり
                     //リクエストにtracktokenlistのトークンが含まれる場合のみ
                     ParmGenResToken restoken = it.previous();
+                    int fromStepNo = restoken.fromStepNo;
                     boolean RequesthasToken = false;
                     ArrayList<ParmGenToken> requesttokenlist = new ArrayList<ParmGenToken>();
 
@@ -807,7 +816,12 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                             apv.resRegexPos = tkn.getTokenKey().GetFcnt();
                             apv.token = token;
                             apv.urlencode = true;
-                            apv.fromStepNo = -1;
+                            if(MBfromStepNo.isSelected()){
+                                apv.fromStepNo = fromStepNo;
+                            }else{
+                                apv.fromStepNo = -1;
+                            }
+                            
                             apv.toStepNo = pos;
                             apv.tokentype = tkn.getTokenKey().GetTokenType();
                             apv.col = aparms.parmlist.size();
@@ -844,17 +858,19 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
                     String tokenname = token.getTokenKey().GetName();
                     boolean namematched = false;
-                    for (String tkn : tknames) {
+                    for (String tkn : tknames) {//予約語に一致
                         if (tokenname.equalsIgnoreCase(tkn)) {//完全一致
                             trackurltoken.tracktokenlist.add(token);
+                            trackurltoken.fromStepNo = pos;
                             namematched = true;
                             break;
                         }
                     }
                     if (!namematched) {//nameはtknamesに一致しない
                         for (String tkn : tknames) {
-                            if (tokenname.toUpperCase().indexOf(tkn.toUpperCase()) != -1) {//部分一致
+                            if (tokenname.toUpperCase().indexOf(tkn.toUpperCase()) != -1) {//予約語に部分一致
                                 trackurltoken.tracktokenlist.add(token);
+                                trackurltoken.fromStepNo = pos;
                                 namematched = true;
                                 break;
                             }
@@ -866,6 +882,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
                         if (ParmGenUtil.isTokenValue(tokenvalue)) {
                             trackurltoken.tracktokenlist.add(token);
+                            trackurltoken.fromStepNo = pos;
                         }
                     }
 
@@ -939,14 +956,14 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     private void MacroRequestMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MacroRequestMousePressed
         // TODO add your handling code here:
         if (evt.isPopupTrigger()) {
-            jPopupMenu2.show(evt.getComponent(), evt.getX(), evt.getY());
+            RequestEdit.show(evt.getComponent(), evt.getX(), evt.getY());
         }
     }//GEN-LAST:event_MacroRequestMousePressed
 
     private void MacroResponseMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MacroResponseMousePressed
         // TODO add your handling code here:
         if (evt.isPopupTrigger()) {
-            jPopupMenu3.show(evt.getComponent(), evt.getX(), evt.getY());
+            ResponseShow.show(evt.getComponent(), evt.getX(), evt.getY());
         }
     }//GEN-LAST:event_MacroResponseMousePressed
 
@@ -975,21 +992,21 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     private void MacroRequestMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MacroRequestMouseClicked
         // TODO add your handling code here:
         if (evt.isPopupTrigger()) {
-            jPopupMenu2.show(evt.getComponent(), evt.getX(), evt.getY());
+            RequestEdit.show(evt.getComponent(), evt.getX(), evt.getY());
         }
     }//GEN-LAST:event_MacroRequestMouseClicked
 
     private void MacroRequestMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MacroRequestMouseReleased
         // TODO add your handling code here:
         if (evt.isPopupTrigger()) {
-            jPopupMenu2.show(evt.getComponent(), evt.getX(), evt.getY());
+            RequestEdit.show(evt.getComponent(), evt.getX(), evt.getY());
         }
     }//GEN-LAST:event_MacroRequestMouseReleased
 
     private void MacroResponseMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MacroResponseMouseClicked
         // TODO add your handling code here:
         if (evt.isPopupTrigger()) {
-            jPopupMenu3.show(evt.getComponent(), evt.getX(), evt.getY());
+            ResponseShow.show(evt.getComponent(), evt.getX(), evt.getY());
         }
         
     }//GEN-LAST:event_MacroResponseMouseClicked
@@ -997,7 +1014,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     private void MacroResponseMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MacroResponseMouseReleased
         // TODO add your handling code here:
         if (evt.isPopupTrigger()) {
-            jPopupMenu3.show(evt.getComponent(), evt.getX(), evt.getY());
+            ResponseShow.show(evt.getComponent(), evt.getX(), evt.getY());
         }
     }//GEN-LAST:event_MacroResponseMouseReleased
 
@@ -1013,12 +1030,15 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     private javax.swing.JCheckBox MBResetToOriginal;
     private javax.swing.JCheckBox MBcleatokenfromcache;
     private javax.swing.JCheckBox MBdeleteSetCookies;
+    private javax.swing.JCheckBox MBfromStepNo;
     private javax.swing.JTextArea MacroComments;
     private javax.swing.JEditorPane MacroRequest;
     private javax.swing.JTextArea MacroResponse;
     private javax.swing.JButton ParamTracking;
     private javax.swing.JMenuItem Repeater;
+    private javax.swing.JPopupMenu RequestEdit;
     private javax.swing.JList RequestList;
+    private javax.swing.JPopupMenu ResponseShow;
     private javax.swing.JButton Save;
     private javax.swing.JMenuItem Scanner;
     private javax.swing.JMenu SendTo;
@@ -1032,8 +1052,6 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPopupMenu jPopupMenu1;
-    private javax.swing.JPopupMenu jPopupMenu2;
-    private javax.swing.JPopupMenu jPopupMenu3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane5;

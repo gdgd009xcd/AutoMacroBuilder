@@ -65,7 +65,7 @@
         </MenuItem>
       </SubComponents>
     </Container>
-    <Container class="javax.swing.JPopupMenu" name="jPopupMenu2">
+    <Container class="javax.swing.JPopupMenu" name="RequestEdit">
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout">
         <Property name="useNullLayout" type="boolean" value="true"/>
@@ -81,7 +81,7 @@
         </MenuItem>
       </SubComponents>
     </Container>
-    <Container class="javax.swing.JPopupMenu" name="jPopupMenu3">
+    <Container class="javax.swing.JPopupMenu" name="ResponseShow">
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout">
         <Property name="useNullLayout" type="boolean" value="true"/>
@@ -138,11 +138,13 @@
                               <Component id="MBCookieFromJar" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Component id="MBResetToOriginal" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="MBfromStepNo" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="MBdeleteSetCookies" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="MBcleatokenfromcache" min="-2" pref="218" max="-2" attributes="0"/>
+                              <Component id="MBcleatokenfromcache" min="-2" pref="281" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
@@ -179,6 +181,7 @@
                   <Component id="MBCookieUpdate" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="MBCookieFromJar" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="MBResetToOriginal" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="MBfromStepNo" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
@@ -482,6 +485,12 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="SaveActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="MBfromStepNo">
+      <Properties>
+        <Property name="selected" type="boolean" value="true"/>
+        <Property name="text" type="java.lang.String" value="&#x8ffd;&#x8de1;from&#x8a2d;&#x5b9a;"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

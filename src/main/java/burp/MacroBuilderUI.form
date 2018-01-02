@@ -73,7 +73,7 @@
       <SubComponents>
         <MenuItem class="javax.swing.JMenuItem" name="edit">
           <Properties>
-            <Property name="text" type="java.lang.String" value="jMenuItem1"/>
+            <Property name="text" type="java.lang.String" value="RequestEdit"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="editActionPerformed"/>
@@ -89,7 +89,7 @@
       <SubComponents>
         <MenuItem class="javax.swing.JMenuItem" name="show">
           <Properties>
-            <Property name="text" type="java.lang.String" value="jMenuItem1"/>
+            <Property name="text" type="java.lang.String" value="ResponseShow"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="showActionPerformed"/>

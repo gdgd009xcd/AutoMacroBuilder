@@ -21,6 +21,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Document;
 
 /**
@@ -102,16 +103,22 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             PRequestResponse pqr = rlist.get(cpos);
             String reqstr = pqr.request.getMessage();
             int len = ParmVars.displaylength > reqstr.length()?reqstr.length():ParmVars.displaylength;
-             Reader reqrd = new java.io.StringReader(reqstr.substring(0, len));
-                try {
-                    MacroRequest.read(reqrd, null);
-                } catch (IOException ex) {
-                    ParmVars.plog.printException(ex);
-                }
-            //MacroRequest.setText(pqr.request.getMessage());
+            Document  reqdoc = new DefaultStyledDocument();
+            try {
+                reqdoc.insertString(0, reqstr.substring(0,len), null);
+                MacroRequest.setDocument(reqdoc);
+            } catch (BadLocationException ex) {
+                Logger.getLogger(MacroBuilderUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
             String resstr = pqr.response.getMessage();
             len = ParmVars.displaylength > resstr.length() ? resstr.length():ParmVars.displaylength;
-            MacroResponse.setText(resstr.substring(0, len));
+            Document resdoc = new DefaultStyledDocument();
+            try {
+                resdoc.insertString(0, resstr.substring(0,len), null);
+                MacroResponse.setDocument(resdoc);
+            } catch (BadLocationException ex) {
+                Logger.getLogger(MacroBuilderUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
             MacroComments.setText(pqr.getComments());
         }
     }
@@ -224,7 +231,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         });
         jPopupMenu1.add(enableRequest);
 
-        edit.setText("jMenuItem1");
+        edit.setText("RequestEdit");
         edit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 editActionPerformed(evt);
@@ -232,7 +239,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         });
         RequestEdit.add(edit);
 
-        show.setText("jMenuItem1");
+        show.setText("ResponseShow");
         show.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 showActionPerformed(evt);

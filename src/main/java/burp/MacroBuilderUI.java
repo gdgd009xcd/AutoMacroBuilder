@@ -90,7 +90,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                 //model.addRow(new Object[] {false, pini.url, pini.getIniValDsp(), pini.getLenDsp(), pini.getTypeValDsp(),pini.getAppValuesDsp(),pini.getCurrentValue()});
                 PRequestResponse pqr = it.next();
                 String url = pqr.request.url;
-                lmodel.addElement((Object) (ii++ + ' ' + url));
+                lmodel.addElement((Object) (String.format("%03d",ii++) + '|' + url));
             }
             RequestList.setModel(lmodel);
         }
@@ -103,22 +103,18 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             PRequestResponse pqr = rlist.get(cpos);
             String reqstr = pqr.request.getMessage();
             int len = ParmVars.displaylength > reqstr.length()?reqstr.length():ParmVars.displaylength;
-            Document  reqdoc = new DefaultStyledDocument();
-            try {
-                reqdoc.insertString(0, reqstr.substring(0,len), null);
+            Document  reqdoc = ParmGenUtil.createDoc(reqstr.substring(0,len));
+            if(reqdoc!=null){
                 MacroRequest.setDocument(reqdoc);
-            } catch (BadLocationException ex) {
-                Logger.getLogger(MacroBuilderUI.class.getName()).log(Level.SEVERE, null, ex);
             }
+ 
             String resstr = pqr.response.getMessage();
             len = ParmVars.displaylength > resstr.length() ? resstr.length():ParmVars.displaylength;
-            Document resdoc = new DefaultStyledDocument();
-            try {
-                resdoc.insertString(0, resstr.substring(0,len), null);
+            Document resdoc = ParmGenUtil.createDoc(resstr.substring(0,len));
+            if(resdoc!=null){
                 MacroResponse.setDocument(resdoc);
-            } catch (BadLocationException ex) {
-                Logger.getLogger(MacroBuilderUI.class.getName()).log(Level.SEVERE, null, ex);
             }
+
             MacroComments.setText(pqr.getComments());
         }
     }

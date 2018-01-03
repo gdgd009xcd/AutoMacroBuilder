@@ -5,8 +5,13 @@
 package burp;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.Document;
 
 /**
  *
@@ -265,4 +270,14 @@ public class ParmGenUtil {
 		return false;
 	}
 
+        public static Document createDoc(String v){
+            Document  newdoc = new DefaultStyledDocument();
+            try {
+                newdoc.insertString(0, v, null);
+            } catch (BadLocationException ex) {
+                Logger.getLogger(MacroBuilderUI.class.getName()).log(Level.SEVERE, null, ex);
+                newdoc = null;
+            }
+            return newdoc;
+        }
 }

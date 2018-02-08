@@ -37,7 +37,8 @@ public class ParmGenParser {
 
             try {
                     doc = Jsoup.parse(htmltext);//パース実行
-                    elems = doc.select("input[type=hidden],input[type=text],a[href],form[action],textarea");//name属性を持つHIDDENタグ全部、A HREFタグ
+                    //elems = doc.select("input[type=hidden],input[type=text],input[type=tel],input[type=url], input[type=email], input[type=search],input[type=number],input[type=email],a[href],form[action],textarea");//name属性を持つHIDDENタグ全部、A HREFタグ
+                    elems = doc.select("input,a[href],form[action],textarea");//input、A HREFタグ                    
                     //elemsprint(htmltext);
             } catch (Exception e) {
                     // TODO Auto-generated catch block

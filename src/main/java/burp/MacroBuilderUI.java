@@ -12,6 +12,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -507,7 +508,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                     .addComponent(jCheckBox2)
                     .addComponent(FinalResponse))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jButton2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -518,8 +519,8 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                         .addComponent(Load)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(Save))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 254, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(paramlog, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(paramlog)
+                    .addComponent(jScrollPane1))
                 .addContainerGap(272, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -723,7 +724,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             ArrayList<ParmGenResToken> urltokens = new ArrayList<ParmGenResToken>();
             Pattern patternw32 = Pattern.compile("\\w{32}");
 
-            ArrayList<AppParmsIni> newparms = new ArrayList<AppParmsIni>();//生成するパラメータ
+            List<AppParmsIni> newparms = new ArrayList<AppParmsIni>();//生成するパラメータ
             PRequestResponse respqrs = null;
             int row = 0;
             int pos = 0;
@@ -795,6 +796,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                             // (?:[&=?]+|^)token=(value)
 
                             String value = tkn.getTokenValue().getValue();
+                            apv.resFetchedValue = value;
                             int len = value.length();
                             String reg = ".{" + len + "}";
                             String regex = "(?:[&=?]|^)" + token + "=(" + reg + ")";//埋め込み先の長さ設定が必要。
@@ -896,10 +898,8 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                 pos++;
             }
             ParmVars.plog.debuglog(0, "newparms.size=" + newparms.size());
-            if (newparms != null && !newparms.isEmpty()) {
-                ParmGenCSV csv = new ParmGenCSV(newparms, pmt);
-                csv.jsonsave();
-            }
+            new ParmGenTokenJDialog(null, false, newparms, pmt).setVisible(true);
+            
         }
 
 

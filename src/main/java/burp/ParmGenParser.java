@@ -88,7 +88,7 @@ public class ParmGenParser {
                     npos++;
                 }
                 namepos.put(n, npos);
-                AppValue.TokenTypeNames ttype= AppValue.TokenTypeNames.HIDDEN;
+                AppValue.TokenTypeNames ttype= AppValue.TokenTypeNames.INPUT;
                 if(t!=null){
                 	if(t.toLowerCase().equals("text")){
                 		ttype = AppValue.TokenTypeNames.TEXT;

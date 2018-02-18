@@ -55,11 +55,11 @@ class LocVal {
         // Key: String token  int toStepNo Val: distance = responseStepNo - currentStepNo
         HashMap<ParmGenTokenKey, Integer> distances;
 	//
-	LocVal (int _rmax){
+	LocVal (int _rmax, int _cmax){
 		_logger = ParmVars.plog;
 
 		//pattern = "<AuthUpload>(?:.|\r|\n|\t)*?<password>([a-zA-Z0-9]+)</password>";
-		allocLocVal(_rmax);
+		allocLocVal(_rmax, _cmax);
 
 		_enc = ParmVars.enc;
 		if(_enc == null  ){
@@ -79,9 +79,10 @@ class LocVal {
 		//printlog("***fetchresponse sticky***");
 	}
 
-        void allocLocVal(int _rmax){
-            if(_rmax>0){
+        void allocLocVal(int _rmax, int _cmax){
+            if(_rmax>0&&_cmax>0){
                 rmax = _rmax;
+                cmax = _cmax;
                 locarray = new String[_rmax][cmax];
                 regexes = new Pattern[_rmax][cmax];
                 urlregexes = new Pattern[_rmax][cmax];

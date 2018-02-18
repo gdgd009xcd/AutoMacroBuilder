@@ -175,4 +175,20 @@ Content-Type: image/gif<CRLF>
 35.<textarea>～</textarea>の追跡
 36.ParmGenメニュー起動時、JSONデータを強制ロードするため、保存してないMacroが消える。
 37.URLencodeアリ・無しでサイズが違う。リクエストのサイズで設定要。
+38. 追跡ダイアログメモ
+ArrayList<AppParmsIni>_parmcsv;
+
+追跡パラメータダイアログ表示
+
+for(AppParmsIni pini: _parmcsv ){
+
+ if pini.getType()==AppParmsIni.T_TRACK
+ 
+     for ( AppValue apv: pini.parmlist ){
+           String token = apv.token;//追跡パラメータ名前
+　　　　　　 String value = apv.value;//追跡パラメータ値（無い場合もあり。） 
+     }
+
+
+
 

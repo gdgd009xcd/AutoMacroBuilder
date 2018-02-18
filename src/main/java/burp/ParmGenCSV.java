@@ -18,6 +18,7 @@ import javax.json.JsonWriter;
 import javax.json.stream.JsonGenerator;
 
 import flex.messaging.util.URLEncoder;
+import java.util.List;
 
 
 /**
@@ -26,7 +27,7 @@ import flex.messaging.util.URLEncoder;
  */
 public class ParmGenCSV {
     ParmGenMacroTrace pmt = null;
-    ArrayList<AppParmsIni> records;
+    List<AppParmsIni> records;
     Iterator<AppParmsIni> it;
     ParmGenWriteFile pfile;
     public static ArrayList<PRequestResponse> selected_messages;
@@ -41,12 +42,12 @@ public class ParmGenCSV {
 
     }
     
-    ParmGenCSV( ArrayList<AppParmsIni> _newparmcsv,ParmGenMacroTrace _pmt){
+    ParmGenCSV( List<AppParmsIni> _newparmcsv,ParmGenMacroTrace _pmt){
         reloadParmGen(_pmt, _newparmcsv);
         pfile = null;
     }
 
-    public void reloadParmGen(ParmGenMacroTrace _pmt, ArrayList<AppParmsIni>_newparmcsv){
+    public void reloadParmGen(ParmGenMacroTrace _pmt, List<AppParmsIni>_newparmcsv){
         pmt = _pmt;
        ParmGen pgen = new ParmGen(_pmt, _newparmcsv);
        records = pgen.parmcsv;

@@ -35,6 +35,8 @@ import javax.json.Json;
 import javax.json.stream.JsonParser;
 
 import flex.messaging.util.URLDecoder;
+import java.util.List;
+import java.util.ListIterator;
 
 
 
@@ -341,22 +343,24 @@ class AppValue {
 //置換位置,置換しない,  value, Name,  Attack,   Advance,   Position,   URLencode
 	public String valpart;//置換位置
 	public int valparttype;// 0-path, 1-query, 2-body  3-header   16(10000) bit == no count 32(100000) == no modify
-	public String value;//value
-	Pattern valueregex;
+	public String value = null;//value リクエストパラメータの正規表現文字列
+	Pattern valueregex;//リクエストパラメータの正規表現
+
 	public int csvpos;
 	public int col;
 	public String resURL;
 	public String resRegex;
 	public int resPartType;
-	public int resRegexPos = -1;
+	public int resRegexPos = -1;//追跡token　ページ内出現位置 0start
 	public String token;//追跡token　Name
+        public String resFetchedValue=null;//レスポンスからフェッチしたtokenの値
 
-	public TokenTypeNames tokentype = TokenTypeNames.HIDDEN;
+	public TokenTypeNames tokentype = TokenTypeNames.INPUT;
 
 
 	public enum TokenTypeNames  {
 			DEFAULT,
-			HIDDEN,
+			INPUT,
 			LOCATION,
 			HREF,
 			XCSRF,
@@ -410,6 +414,7 @@ class AppValue {
         private boolean enabled = true;//有効
 
         private void initctype(){
+            resFetchedValue = null;
             enabled = true;
             if(ctypestr==null){
                 ctypestr = new String[] {
@@ -418,10 +423,11 @@ class AppValue {
                 };
                 payloadposition = I_APPEND;
             }
-            tokentype = TokenTypeNames.HIDDEN;
+            tokentype = TokenTypeNames.INPUT;
         }
 
         AppValue(){
+            value = null;
             initctype();
             resRegexPos = -1;
         }
@@ -631,7 +637,7 @@ class AppValue {
             tokentype = parseTokenTypeName(tknames);
         }
 
-        public  TokenTypeNames parseTokenTypeName(String tkname){
+        public  static TokenTypeNames parseTokenTypeName(String tkname){
             if(tkname!=null&&!tkname.isEmpty()){
                 String uppername = tkname.toUpperCase();
                 TokenTypeNames[] tktypearray = TokenTypeNames.values();
@@ -1477,7 +1483,7 @@ class AppParmsIni {
 // main class
 class ParmGen {
 
-	public static ArrayList<AppParmsIni> parmcsv = null;
+	public static List<AppParmsIni> parmcsv = null;
         public static ArrayList<AppParmsIni> parmjson = null;
         public static ArrayList<AppParmsIni> trackcsv = null;// response tracking
         public static boolean hasTrackRequest=false;//==true: リクエストを追跡
@@ -1668,98 +1674,98 @@ class ParmGen {
 		default://body
 	        if (_contarray != null) {
 	        	if ( boundaryarray == null ){//www-url-encoded
-	        		ParmVars.plog.debuglog(1, "application/x-www-form-urlencoded");
-	        		String content = null;
-	        		try{
-	        			content = new String(_contarray.getBytes(), ParmVars.enc.getIANACharset());
-	        		}catch(UnsupportedEncodingException e){
-	        			content = null;
-	        		}
-		        	String n_content = av.replaceContents(pmt.getStepNo(),pini, content);
-		        	if ( n_content != null && !content.equals(n_content) ){
-		        		ParmVars.plog.debuglog(1, " Original body[" + content + "]");
-		        		ParmVars.plog.debuglog(1, " Modified body[" + n_content + "]");
-						_contarray.initParmGenBinUtil(n_content.getBytes());
-		        		return prequest;
-		        	}
+                            ParmVars.plog.debuglog(1, "application/x-www-form-urlencoded");
+                            String content = null;
+                            try{
+                                    content = new String(_contarray.getBytes(), ParmVars.enc.getIANACharset());
+                            }catch(UnsupportedEncodingException e){
+                                    content = null;
+                            }
+                            String n_content = av.replaceContents(pmt.getStepNo(),pini, content);
+                            if ( n_content != null && !content.equals(n_content) ){
+                                    ParmVars.plog.debuglog(1, " Original body[" + content + "]");
+                                    ParmVars.plog.debuglog(1, " Modified body[" + n_content + "]");
+                                            _contarray.initParmGenBinUtil(n_content.getBytes());
+                                    return prequest;
+                            }
 	        	}else{//multipart/form-data
-	        		ParmVars.plog.debuglog(1, "multipart/form-data");
-	        		ParmGenBinUtil n_array = new ParmGenBinUtil();
-	        		int cpos = 0;
-	        		int npos = -1;
-	        		byte[] partdata= null;
-	        		boolean partupdt = false;
-                                byte[] headerseparator = {0x0d, 0x0a, 0x0d, 0x0a};//<CR><LF><CR><LF>
-                                byte[] partheader = null;
-                                String partenc = "";
-	        		while ( (npos=_contarray.indexOf(boundaryarray.getBytes(), cpos))!=-1){
-	        			if(cpos!=0){//cpos->npos == partdata
-	        				partdata = _contarray.subBytes(cpos, npos);
-                                                //マルチパート内のヘッダーまで(CRLFCRLF)読み込み、Content-typeを判定
-                                                int hend = _contarray.indexOf(headerseparator, cpos);
-                                                partheader = _contarray.subBytes(cpos, hend);
-                                                String partcontenttype = null;
-                                                try {
-                                                    partcontenttype = new String(partheader, ParmVars.formdataenc);
-                                                } catch (UnsupportedEncodingException ex) {
-                                                    partcontenttype = "";
-                                                }
-                                                int ctypestart = 0;
-                                                partenc = ParmVars.enc.getIANACharset();
-                                                if((ctypestart=partcontenttype.indexOf("Content-Type:"))!=-1){
-                                                    String cstr = partcontenttype.substring(ctypestart + "Content-Type:".length());
-                                                    String[] cstrvalues = cstr.split("[\r\n;]+");
-                                                    if(cstrvalues.length>0){
-                                                        String partcontenttypevalue = cstrvalues[0];
-                                                        if(!partcontenttypevalue.isEmpty()){
-                                                            partenc = ParmVars.formdataenc;
-                                                            partcontenttypevalue = partcontenttypevalue.trim();
-                                                            ParmVars.plog.printlog( "form-data Contentype:[" + partcontenttypevalue + "]", true);
-                                                        }
-                                                    }
-                                                }
-	        				String partdatastr = null;
-	        				try {
-	        					partdatastr = new String(partdata, partenc);
-	        				}catch(UnsupportedEncodingException e){
-	        					partdatastr = null;
-	        				}
-	        				String n_partdatastr = av.replaceContents(pmt.getStepNo(), pini, partdatastr);
-	        				if(n_partdatastr!=null && partdatastr != null && !partdatastr.equals(n_partdatastr) ){
-	        					ParmVars.plog.debuglog(1, " Original body[" + partdatastr + "]");
-	        					ParmVars.plog.debuglog(1, " Modified body[" + n_partdatastr + "]");
-                                                        try{
-                                                            n_array.concat(n_partdatastr.getBytes(partenc));
-                                                        }catch(UnsupportedEncodingException e){
-                                                            ParmVars.plog.printException(e);
-                                                            n_array.concat(n_partdatastr.getBytes());
-                                                        }
-	        					partupdt = true;
-	        				}else{
-	        					n_array.concat(partdata);
-	        				}
-	        				int nextcpos = npos + boundaryarray.length()+2;
-	        				n_array.concat(_contarray.subBytes(npos, nextcpos));
-	        				String lasthyphon = new String(_contarray.subBytes(nextcpos-2, nextcpos));
-	        				if ( lasthyphon.equals("--")){
-	        					n_array.concat("\r\n".getBytes());//last hyphon "--" + CRLF
-	        				}
-	        				cpos = nextcpos;
-	        			}else{
-	        				cpos = npos + boundaryarray.length() + 2;
-	        				n_array.concat(_contarray.subBytes(0, cpos));
-	        			}
-	        		}
+                            ParmVars.plog.debuglog(1, "multipart/form-data");
+                            ParmGenBinUtil n_array = new ParmGenBinUtil();
+                            int cpos = 0;
+                            int npos = -1;
+                            byte[] partdata= null;
+                            boolean partupdt = false;
+                            byte[] headerseparator = {0x0d, 0x0a, 0x0d, 0x0a};//<CR><LF><CR><LF>
+                            byte[] partheader = null;
+                            String partenc = "";
+                            while ( (npos=_contarray.indexOf(boundaryarray.getBytes(), cpos))!=-1){
+                                if(cpos!=0){//cpos->npos == partdata
+                                    partdata = _contarray.subBytes(cpos, npos);
+                                    //マルチパート内のヘッダーまで(CRLFCRLF)読み込み、Content-typeを判定
+                                    int hend = _contarray.indexOf(headerseparator, cpos);
+                                    partheader = _contarray.subBytes(cpos, hend);
+                                    String partcontenttype = null;
+                                    try {
+                                        partcontenttype = new String(partheader, ParmVars.formdataenc);
+                                    } catch (UnsupportedEncodingException ex) {
+                                        partcontenttype = "";
+                                    }
+                                    int ctypestart = 0;
+                                    partenc = ParmVars.enc.getIANACharset();
+                                    if((ctypestart=partcontenttype.indexOf("Content-Type:"))!=-1){
+                                        String cstr = partcontenttype.substring(ctypestart + "Content-Type:".length());
+                                        String[] cstrvalues = cstr.split("[\r\n;]+");
+                                        if(cstrvalues.length>0){
+                                            String partcontenttypevalue = cstrvalues[0];
+                                            if(!partcontenttypevalue.isEmpty()){
+                                                partenc = ParmVars.formdataenc;
+                                                partcontenttypevalue = partcontenttypevalue.trim();
+                                                ParmVars.plog.printlog( "form-data Contentype:[" + partcontenttypevalue + "]", true);
+                                            }
+                                        }
+                                    }
+                                    String partdatastr = null;
+                                    try {
+                                            partdatastr = new String(partdata, partenc);
+                                    }catch(UnsupportedEncodingException e){
+                                            partdatastr = null;
+                                    }
+                                    String n_partdatastr = av.replaceContents(pmt.getStepNo(), pini, partdatastr);
+                                    if(n_partdatastr!=null && partdatastr != null && !partdatastr.equals(n_partdatastr) ){
+                                        ParmVars.plog.debuglog(1, " Original body[" + partdatastr + "]");
+                                        ParmVars.plog.debuglog(1, " Modified body[" + n_partdatastr + "]");
+                                        try{
+                                            n_array.concat(n_partdatastr.getBytes(partenc));
+                                        }catch(UnsupportedEncodingException e){
+                                            ParmVars.plog.printException(e);
+                                            n_array.concat(n_partdatastr.getBytes());
+                                        }
+                                        partupdt = true;
+                                    }else{
+                                        n_array.concat(partdata);
+                                    }
+                                    int nextcpos = npos + boundaryarray.length()+2;
+                                    n_array.concat(_contarray.subBytes(npos, nextcpos));
+                                    String lasthyphon = new String(_contarray.subBytes(nextcpos-2, nextcpos));
+                                    if ( lasthyphon.equals("--")){
+                                        n_array.concat("\r\n".getBytes());//last hyphon "--" + CRLF
+                                    }
+                                    cpos = nextcpos;
+                                }else{
+                                    cpos = npos + boundaryarray.length() + 2;
+                                    n_array.concat(_contarray.subBytes(0, cpos));
+                                }
+                            }
 
-	        		if ( partupdt ){
-	        			//_contarray = n_array;
-	        			_contarray.initParmGenBinUtil(n_array.getBytes());
-		        		return prequest;
-	        		}
+                            if ( partupdt ){
+                                //_contarray = n_array;
+                                _contarray.initParmGenBinUtil(n_array.getBytes());
+                                return prequest;
+                            }
 	        	}
-			}
+                    }
 
-			break;
+                    break;
 		}
 
 
@@ -1822,14 +1828,14 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 		return rflag;
 	}
 
-	ParmGen(ParmGenMacroTrace _pmt, ArrayList<AppParmsIni>_parmcsv){
+	ParmGen(ParmGenMacroTrace _pmt, List<AppParmsIni>_parmcsv){
 		pmt = _pmt;
 		if(_parmcsv!=null)nullset();
 		initMain(_parmcsv);
 	}
 
 
-	void initMain(ArrayList<AppParmsIni> _newparmcsv){
+	void initMain(List<AppParmsIni> _newparmcsv){
 		//main start.
 		// csv load
 		// parmcsvはstatic
@@ -1843,8 +1849,17 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 			//ArrayList<AppParmsIni> parmjson = loadJSON();
 
 			if(parmcsv==null)return;
-			FetchResponse.loc = new LocVal(parmcsv.size());
+                        //colmax計算
+                        
 			Iterator<AppParmsIni> api = parmcsv.iterator();
+                        int cmax = 0;
+                        for(AppParmsIni pini: parmcsv){
+                            if(pini.parmlist!=null){
+                                int _cm = pini.parmlist.size();
+                                if(cmax<_cm) cmax = _cm;
+                            }
+                        }
+			FetchResponse.loc = new LocVal(parmcsv.size(), cmax);                        
 			while(api.hasNext()){
 				AppParmsIni pini = api.next();
 				int row = pini.row;
@@ -1917,7 +1932,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 			if ( url != null ){
 
 				AppParmsIni pini = null;
-				Iterator<AppParmsIni> it = parmcsv.iterator();
+				ListIterator<AppParmsIni> it = parmcsv.listIterator();
 				while(it.hasNext()) {
 					pini = it.next();
 					Matcher urlmatcher = pini.urlregex.matcher(url);
@@ -1963,8 +1978,8 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 
                                             }
 
-                                            ArrayList<AppValue> parmlist = pini.parmlist;
-                                            Iterator<AppValue> pt = parmlist.iterator();
+                                            List<AppValue> parmlist = pini.parmlist;
+                                            ListIterator<AppValue> pt = parmlist.listIterator();
                                             if (parmlist == null || parmlist.isEmpty()) {
                                                 //
                                             }

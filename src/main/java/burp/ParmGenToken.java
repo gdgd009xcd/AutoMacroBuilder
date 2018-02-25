@@ -13,6 +13,7 @@ public class ParmGenToken  {
 
     ParmGenTokenKey ptk;
     ParmGenTokenValue ptv;
+    Boolean enabled = false;
     
 ParmGenToken(AppValue.TokenTypeNames _tokentype, String url, String name, String value, Boolean _b, int fcnt){
     ptk = new ParmGenTokenKey(_tokentype, name, fcnt);
@@ -35,6 +36,14 @@ public ParmGenTokenKey getTokenKey(){
 
 public ParmGenTokenValue getTokenValue(){
     return ptv;
+}
+
+Boolean isEnabled() {
+    return enabled;
+}
+
+void setEnabled(Boolean _enabled){
+    enabled = _enabled;
 }
     
 }

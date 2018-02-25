@@ -747,21 +747,21 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                             	switch(tkn.getTokenKey().GetTokenType()){
                             	case ACTION:
                             	case HREF:
-                            		String srcurl = tkn.getTokenValue().getURL();
-                            		String desturl = pqrs.request.getURL();
-                            		ParmVars.plog.debuglog(0, "srcurl/desturl:" + srcurl + "/" + desturl);
-                            		if(desturl.indexOf(srcurl)!=-1){
-                            			valid = true;
-                            		}
-                            		break;
+                                    String srcurl = tkn.getTokenValue().getURL();
+                                    String desturl = pqrs.request.getURL();
+                                    ParmVars.plog.debuglog(0, "srcurl/desturl:" + srcurl + "/" + desturl);
+                                    if(desturl.indexOf(srcurl)!=-1){
+                                            valid = true;
+                                    }
+                                    break;
                             	default:
-                            		valid = true;
-                            		break;
+                                    valid = true;
+                                    break;
                             	}
                             	if(valid){
-	                                RequesthasToken = true;
-	                                requesttokenlist.add(tkn);
-	                                addedtokens.put(tkn.getTokenKey(), "");
+                                    RequesthasToken = true;
+                                    requesttokenlist.add(tkn);
+                                    addedtokens.put(tkn.getTokenKey(), "");
                             	}
                             }
                         }
@@ -808,13 +808,13 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                             apv.setresRegexURLencoded("");
                             int resvalpart = AppValue.V_AUTOTRACKBODY;
                             switch (tkn.getTokenKey().GetTokenType()) {
-                                case LOCATION:
-                                    resvalpart = AppValue.V_HEADER;
-                                    break;
-                                case XCSRF:
-                                    break;
-                                default:
-                                    break;
+                            case LOCATION:
+                                resvalpart = AppValue.V_HEADER;
+                                break;
+                            case XCSRF:
+                                break;
+                            default:
+                                break;
 
                             }
                             apv.setresPartType(apv.getValPart(resvalpart));
@@ -830,6 +830,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                             apv.toStepNo = pos;
                             apv.tokentype = tkn.getTokenKey().GetTokenType();
                             apv.col = aparms.parmlist.size();
+                            apv.setEnabled(tkn.isEnabled());
                             aparms.parmlist.add(apv);
                         }
                         aparms.setRowAndCntFile(row);
@@ -860,13 +861,10 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
                 for (ParmGenToken token : tklist) {
                     //PHPSESSID, token, SesID, jsessionid
-
                     String tokenname = token.getTokenKey().GetName();
                     boolean namematched = false;
                     for (String tkn : tknames) {//予約語に一致
                         if (tokenname.equalsIgnoreCase(tkn)) {//完全一致
-                            trackurltoken.tracktokenlist.add(token);
-                            trackurltoken.fromStepNo = pos;
                             namematched = true;
                             break;
                         }
@@ -874,8 +872,6 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                     if (!namematched) {//nameはtknamesに一致しない
                         for (String tkn : tknames) {
                             if (tokenname.toUpperCase().indexOf(tkn.toUpperCase()) != -1) {//予約語に部分一致
-                                trackurltoken.tracktokenlist.add(token);
-                                trackurltoken.fromStepNo = pos;
                                 namematched = true;
                                 break;
                             }
@@ -886,10 +882,12 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                         String tokenvalue = token.getTokenValue().getValue();
 
                         if (ParmGenUtil.isTokenValue(tokenvalue)) {
-                            trackurltoken.tracktokenlist.add(token);
-                            trackurltoken.fromStepNo = pos;
+                            namematched = true;
                         }
                     }
+                    token.setEnabled(namematched);
+                    trackurltoken.tracktokenlist.add(token);
+                    trackurltoken.fromStepNo = pos;
 
                 }
                 if(!trackurltoken.tracktokenlist.isEmpty()){

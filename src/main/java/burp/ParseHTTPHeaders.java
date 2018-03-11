@@ -748,6 +748,17 @@ class ParseHTTPHeaders {
             }
             return false;
         }
+        
+        public ParmGenTokenValue getBodyTokenValue(String pname){
+            if(getBodyParams()!=null){
+        	for(String[] pair: bodyparams){//bodyparams
+        		if(pname.equals(pair[0])){
+                            return new ParmGenTokenValue("", pair[1], true);
+                        }
+        	}
+            }
+            return null;
+        }
 
         // query parameter
         public boolean hasQueryParam(String pname){
@@ -757,6 +768,17 @@ class ParseHTTPHeaders {
         	}
             }
             return false;
+        }
+        
+        public ParmGenTokenValue getQueryTokenValue(String pname){
+            if(queryparams!=null){
+        	for(String[] pair: queryparams){//queryparams
+        		if(pname.equals(pair[0])){
+                            return new ParmGenTokenValue("", pair[1], true);
+                        }
+        	}
+            }
+            return null;
         }
 }
 

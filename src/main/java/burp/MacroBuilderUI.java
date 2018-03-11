@@ -787,9 +787,13 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                             String token = tkn.getTokenKey().GetName();
                             //body or query ターゲットリクエストのtokenパラメータ
                             String valtype = "query";
-                            if (pqrs.request.hasBodyParam(token)) {
+                            ParmGenTokenValue tkv = pqrs.request.getBodyTokenValue(token);
+                            if(tkv!=null){
                                 valtype = "body";
+                            }else{
+                                tkv = pqrs.request.getQueryTokenValue(token);
                             }
+                            
                             apv.setValPart(valtype);
                             apv.clearNoCount();
                             apv.csvpos = -1;
@@ -798,6 +802,11 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                             String value = tkn.getTokenValue().getValue();
                             apv.resFetchedValue = value;
                             int len = value.length();
+                            if(tkv!=null){
+                                int rlen = tkv.getValue().length();
+                                if(len<rlen) len = rlen;
+                            }
+                            
                             String reg = ".{" + len + "}";
                             String regex = "(?:[&=?]|^)" + token + "=(" + reg + ")";//埋め込み先の長さ設定が必要。
                             if (isformdata) {

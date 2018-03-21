@@ -235,7 +235,7 @@ class LocVal {
 	}
 
         boolean isValid(int r, int c){
-            if(rmax > 0 && r >= 0 && r < rmax && c >= 0 && c < COLMAX){
+            if(rmax > 0 && r >= 0 && r < rmax && c >= 0 && c < cmax && cmax > 0){
 		return true;
 
             }

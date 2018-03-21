@@ -8,6 +8,8 @@ package burp;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +20,7 @@ import java.util.logging.Logger;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
-import org.apache.commons.codec.binary.Base64;
+import java.util.Base64;
 
 /**
  *
@@ -28,7 +30,7 @@ public class ParmGenMacroTrace {
 
     MacroBuilderUI ui = null;
     IBurpExtenderCallbacks callbacks;
-
+    Charset charset = StandardCharsets.UTF_8;
     ArrayList <PRequestResponse> rlist = null;//マクロ実行後の全リクエストレスポンス
     ArrayList <PRequestResponse> originalrlist = null; //オリジナルリクエストレスポンス
     //ArrayList <ParmGenParser> csrflist = null;//引き継ぎhidden値リスト
@@ -605,20 +607,24 @@ public class ParmGenMacroTrace {
                 for(PRequestResponse pqr: originalrlist){
                     byte[] qbin = pqr.request.getByteMessage();
                     byte[] rbin = pqr.response.getByteMessage();
-                    byte[] encodedBytes = Base64.encodeBase64(qbin);
-                    String qbase64 ="";
+                    //byte[] encodedBytes = Base64.encodeBase64(qbin);
+                    String qbase64 =new String(Base64.getEncoder().encode(qbin), charset);
+                    /*
                     try {
                         qbase64 = new String(encodedBytes,"ISO-8859-1");
                     } catch (UnsupportedEncodingException ex) {
                         Logger.getLogger(ParmGenMacroTrace.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    encodedBytes = Base64.encodeBase64(rbin);
-                    String rbase64 = "";
+                    */
+                    //encodedBytes = Base64.encodeBase64(rbin);
+                    String rbase64 = new String(Base64.getEncoder().encode(rbin), charset);
+                    /*
                     try {
                         rbase64 = new String(encodedBytes, "ISO-8859-1");
                     } catch (UnsupportedEncodingException ex) {
                         Logger.getLogger(ParmGenMacroTrace.class.getName()).log(Level.SEVERE, null, ex);
                     }
+                    */
                     Request_rec.add("PRequest", qbase64);
                     Request_rec.add("PResponse", rbase64);
                     String host = pqr.request.getHost();

@@ -383,6 +383,9 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
         boolean fixed = true;
         String regpattern = "";
         String prepostpattern = "";
+        int vlen = v.length();
+        String vreg = ".{" + vlen + "}";
+        
         int selidx = ValReplacePart.getSelectedIndex();
         if(selidx==VT_DEFAULT){
             if(parentwin.getCurrentModel()==ParmGenNew.P_TRACKMODEL){
@@ -505,9 +508,9 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
         }
 
         if ( isformdata){
-            return "(" + ParmGenUtil.escapeRegexChars(v) + ")";
+            return "(" + vreg + ")";
         }
-        return prefix + "(" + ParmGenUtil.escapeRegexChars(v) + ")";
+        return prefix + "(" + vreg + ")";
     }
 
     private void AddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddActionPerformed

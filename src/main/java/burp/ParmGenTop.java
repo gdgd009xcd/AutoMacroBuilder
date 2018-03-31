@@ -445,6 +445,9 @@ public class ParmGenTop extends javax.swing.JFrame {
             //code to handle choosed file here.
             File file = jfc.getSelectedFile();
             String name = file.getAbsolutePath().replaceAll("\\\\", "\\\\\\\\");
+            if(!pFilter.accept(file)){//拡張子無しの場合は付与
+                name += ".json";
+            }
             ParmVars.parmfile = name;
              //csv.save();
              csv.jsonsave();

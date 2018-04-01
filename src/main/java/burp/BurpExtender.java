@@ -503,7 +503,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
         pmt = new ParmGenMacroTrace(callbacks);
         //セッション管理
         callbacks.registerSessionHandlingAction(new BurpMacroStartAction(pmt));
-        callbacks.registerSessionHandlingAction(new BurpMacroLogAction());
+        //callbacks.registerSessionHandlingAction(new BurpMacroLogAction());
     	//コンテキストメニューの追加：　マウス右クリックポップアップメニュー->[my menu item]
         callbacks.registerContextMenuFactory(new NewMenu());
         // register ourselves as an HTTP listener

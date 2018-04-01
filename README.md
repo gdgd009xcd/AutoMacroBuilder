@@ -1,1 +1,1 @@
-Yet Another equence Macrobuilder for burpsuite.
+Yet Another sequence Macrobuilder for burpsuite.

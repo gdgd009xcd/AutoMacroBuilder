@@ -42,7 +42,6 @@ public class ParmGenMacroTrace {
     boolean MBCookieFromJar = false;//==true 開始時Cookie.jarから引き継ぐ
     boolean MBFinalResponse = false;//==true 結果は最後に実行されたマクロのレスポンス
     boolean MBResetToOriginal =false;//==true オリジナルリクエストを実行。
-    boolean MBdeletesetcookies = false;//==true リクエストからSet-Cookie値全削除
     boolean MBcleartokencache = false;//開始時tokenキャッシュクリア
     int waittimer = 1;//実行間隔(msec)
 
@@ -96,9 +95,7 @@ public class ParmGenMacroTrace {
     void setMBCookieFromJar(boolean b){
         MBCookieFromJar = b;
     }
-     void setMBdeletesetcookies(boolean b){
-        MBdeletesetcookies = b;
-    }
+    
     void setMBFinalResponse(boolean b){
         MBFinalResponse = b;
     }
@@ -271,13 +268,7 @@ public class ParmGenMacroTrace {
                 }
 
 
-                if(MBCookieUpdate){
-                    for(ICookie cookie:iclist){
-                        String cname = cookie.getName();
-                        String cvalue = cookie.getValue();
-                        ppr.request.setCookie(cname, cvalue);//cookie.jarから更新
-                    }
-                }
+              
 
                 byte[] byterequest = ppr.request.getByteMessage();
                 if(byterequest!=null){
@@ -313,49 +304,39 @@ public class ParmGenMacroTrace {
 
     }
 
-    boolean isconfigurable(){
-        if(MBdeletesetcookies&&set_cookienames!=null&&set_cookienames.size()>0){
-            return true;
-        }
-        return false;
-    }
+    
 
     PRequest configureRequest(PRequest preq){
-        ArrayList<String> delcookies = null;
-        if(MBdeletesetcookies){
-                    delcookies = new ArrayList<String>(set_cookienames);//copy contents
-                    List<ICookie> iclist = callbacks.getCookieJarContents();//Burp's cookie.jar
-                    // 値がdeleted, 0 のゴミcookie削除
-                     for(ICookie cookie:iclist){
-                        String cname = cookie.getName();
-                        String cvalue = cookie.getValue();
+       
+        if(isRunning()){//MacroBuilder list > 0 && state is Running.
+            //ここでリクエストのCookieをCookie.jarで更新する。
+            List<ICookie> iclist = callbacks.getCookieJarContents();//Burp's cookie.jar
+            HashMap<CookieKey, ArrayList<CookiePathValue>> cookiemap = new HashMap<CookieKey, ArrayList<CookiePathValue>>();
+            for(ICookie cookie:iclist){
+                String domain = cookie.getDomain();
+                String name = cookie.getName();
+                String path = cookie.getPath();
+                String value = cookie.getValue();
+                CookieKey cikey = new CookieKey(domain, name);
+                CookiePathValue cpvalue = new CookiePathValue(path, value);
+                ArrayList<CookiePathValue> cpvlist = cookiemap.get(cikey);
+                if(cpvlist==null){
+                    cpvlist = new ArrayList<CookiePathValue>();
+                }
 
-                        String dcookiename = null;
-                        if(cvalue!=null){
-                            if(cvalue.toLowerCase().indexOf("delete")!=-1){//xxxx=delete or deleted
-                                dcookiename = cname;
-                            }else if(cvalue.equals("0")){// xxxx=0
-                                dcookiename = cname;
-                            }
-                        }
-                        if(dcookiename!=null){
-                            if(delcookies==null){
-                                delcookies = new ArrayList<String>();
-                            }
-                            delcookies.add(dcookiename);
-                        }else if(delcookies!=null&&delcookies.size()>0){
-                            while(delcookies.remove(cname)){;//cookie.jarに値があるので削除しない
-                                //ParmVars.plog.debuglog(0, "configreq remove from delcookies : Cookie "+ cname + "=" + cvalue);
-                            }
-                        }
-                    }
-        }
+                cpvlist.add(cpvalue);
 
-        if(delcookies!=null&&delcookies.size()>0){
-            if(preq.removeCookies(delcookies)){
+                cookiemap.put(cikey, cpvlist);
+            }
+
+
+
+
+            if(preq.setCookies(cookiemap)){
                 return preq;
             }
         }
+       
         return null;
     }
 
@@ -387,14 +368,7 @@ public class ParmGenMacroTrace {
                     if(MBResetToOriginal){
                         ppr = opr;
                     }
-                    if(MBCookieUpdate){
-                            for(ICookie cookie:iclist){
-                                String cname = cookie.getName();
-                                String cvalue = cookie.getValue();
-                                ParmVars.plog.debuglog(0, "Cookie: " + cname + "=" + cvalue);
-                                ppr.request.setCookie(cname, cvalue);//cookie.jarから更新
-                            }
-                    }
+                   
 
                     byte[] byterequest = ppr.request.getByteMessage();
                     if(byterequest!=null){
@@ -464,7 +438,8 @@ public class ParmGenMacroTrace {
     }
 
    boolean isRunning(){
-       return state<PMT_POSTMACRO_END?true:false;
+       if(rlist!=null&&rlist.size()>0)return state<PMT_POSTMACRO_END?true:false;
+       return false;
    }
 
    void setRecords(ArrayList <PRequestResponse> _rlist){

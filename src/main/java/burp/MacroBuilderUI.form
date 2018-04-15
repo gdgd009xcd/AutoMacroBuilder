@@ -142,8 +142,7 @@
                               <Component id="MBfromStepNo" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="MBdeleteSetCookies" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="223" max="-2" attributes="0"/>
                               <Component id="MBcleatokenfromcache" min="-2" pref="281" max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -152,11 +151,12 @@
                       <Component id="jScrollPane1" min="-2" pref="450" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="jButton2" alignment="0" pref="111" max="32767" attributes="0"/>
+                          <Component id="custom" alignment="0" pref="111" max="32767" attributes="0"/>
                           <Component id="ClearMacro" alignment="0" max="32767" attributes="0"/>
                           <Component id="ParamTracking" alignment="0" max="32767" attributes="0"/>
                           <Component id="Load" alignment="0" max="32767" attributes="0"/>
                           <Component id="Save" max="32767" attributes="0"/>
+                          <Component id="jButton3" alignment="0" pref="111" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="paramlog" min="-2" pref="542" max="-2" attributes="0"/>
@@ -172,7 +172,6 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="MBdeleteSetCookies" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="MBcleatokenfromcache" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
@@ -192,15 +191,17 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
                   <Group type="102" attributes="0">
-                      <Component id="jButton2" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="ClearMacro" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="9" max="-2" attributes="0"/>
                       <Component id="ParamTracking" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="13" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="custom" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Component id="ClearMacro" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                       <Component id="Load" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="Save" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="jButton3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Component id="paramlog" max="32767" attributes="0"/>
                   <Component id="jScrollPane1" alignment="0" max="32767" attributes="0"/>
@@ -369,12 +370,12 @@
         </Container>
       </SubComponents>
     </Container>
-    <Component class="javax.swing.JButton" name="jButton2">
+    <Component class="javax.swing.JButton" name="custom">
       <Properties>
-        <Property name="text" type="java.lang.String" value="&#x7de8;&#x96c6;"/>
+        <Property name="text" type="java.lang.String" value="custom"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton2ActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="customActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JButton" name="ClearMacro">
@@ -445,15 +446,6 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="MBResetToOriginalActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JCheckBox" name="MBdeleteSetCookies">
-      <Properties>
-        <Property name="selected" type="boolean" value="true"/>
-        <Property name="text" type="java.lang.String" value="delete setcookies from Request"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="MBdeleteSetCookiesActionPerformed"/>
-      </Events>
-    </Component>
     <Component class="javax.swing.JButton" name="ParamTracking">
       <Properties>
         <Property name="text" type="java.lang.String" value="&#x8ffd;&#x8de1;"/>
@@ -491,6 +483,15 @@
         <Property name="selected" type="boolean" value="true"/>
         <Property name="text" type="java.lang.String" value="&#x8ffd;&#x8de1;from&#x8a2d;&#x5b9a;"/>
       </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="jButton3">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="NOP"/>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton3ActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

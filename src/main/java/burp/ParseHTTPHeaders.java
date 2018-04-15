@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -531,6 +532,63 @@ class ParseHTTPHeaders {
             isHeaderModified = true;
         }
 
+        boolean setCookies(HashMap<CookieKey, ArrayList<CookiePathValue>> cookiemap){
+            if(cookiemap==null||cookiemap.size()==0){
+                return false;
+            }
+            ListIterator<String[]> it = cookieparams.listIterator();
+            String domain = host;
+            String cookiedata = "";
+            boolean cookiemodified = false;
+            while(it.hasNext()){
+                if(!cookiedata.equals("")){
+                        cookiedata += "; ";
+                }
+                String[] nv = it.next();
+                CookieKey ckey = new CookieKey(domain, nv[0]);
+                ArrayList<CookiePathValue> cpvlist = cookiemap.get(ckey);
+                if(cpvlist!=null){
+                    ListIterator<CookiePathValue> itv = cpvlist.listIterator();
+                    Boolean cpvlist_changed = false;
+                    while(itv.hasNext()){
+                        CookiePathValue cpv = itv.next();
+                        String _cpath = cpv.getPath();
+                        String _cvalue = cpv.getValue();
+                        if(path.startsWith(_cpath)){
+                            int len = nv[1].length() - _cvalue.length();
+                            String tail = "";
+                            if(len>0){
+                                tail = nv[1].substring(_cvalue.length());
+                            }
+                            nv[1] = _cvalue + tail;
+                            it.set(nv);itv.remove();
+                            cpvlist_changed = true;
+                            cookiemodified = true;
+                            break;
+                        }
+                    }
+                    if(cpvlist_changed){
+                        if(cpvlist.size()>0){
+                            cookiemap.put(ckey, cpvlist);
+                        }else{
+                            cookiemap.remove(ckey);
+                        }
+                    }
+                }
+                cookiedata += nv[0] + "=" + nv[1];
+            }
+            if(cookiemodified){
+                setHeader("Cookie", cookiedata);
+                ParmVars.plog.debuglog(0, "Cookie: " + cookiedata);
+                isHeaderModified = true;
+                message = null;
+                int l = getParsedHeaderLength();
+                return true;
+            }
+            return false;
+            
+        }
+        
         boolean removeCookies(ArrayList<String> names){
             Iterator<String[]> it = cookieparams.iterator();
             String cookiedata = "";

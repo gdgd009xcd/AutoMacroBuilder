@@ -1828,6 +1828,12 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 		return rflag;
 	}
 
+        //何もしないコンストラクタ
+        ParmGen(ParmGenMacroTrace _pmt){
+            pmt = _pmt;
+        }
+        
+        //
 	ParmGen(ParmGenMacroTrace _pmt, List<AppParmsIni>_parmcsv){
 		pmt = _pmt;
 		if(_parmcsv!=null)nullset();
@@ -1910,8 +1916,15 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 		ParmGenBinUtil contarray = null;
 
 
-		if( parmcsv == null){
+		if( parmcsv == null || parmcsv.size()<=0){
                     //NOP
+                    if(pmt.isRunning()){
+                        PRequest prequest = new PRequest(request_string);
+                        PRequest cookierequest = pmt.configureRequest(prequest);
+                        if(cookierequest!=null) {
+                            return cookierequest.getByteMessage();
+                        }
+                    }
 		}else{
 			// main loop
 			//Request request = connection.getRequest();
@@ -1999,8 +2012,14 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 				}
 			}
                         byte[] retval = null;
-                        //ここで、prequestでexpiredしたcookie値を削除する。
+                        
 
+                        PRequest cookierequest = pmt.configureRequest(prequest);
+                        if(cookierequest!=null){
+                            prequest = cookierequest;
+                            retval =  prequest.getByteMessage();
+                        }
+                        
 			if ( modreq != null){
 				// You have to use connection.setRequest() to make any changes take effect!
 				if (contarray != null){

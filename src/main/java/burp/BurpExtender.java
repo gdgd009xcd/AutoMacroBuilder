@@ -35,7 +35,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
             IHttpRequestResponse messageInfo)
         {
 
-                ParmGen pgen = new ParmGen(pmt, null);
+                ParmGen pgen = new ParmGen(pmt);
                 String url = null;
                 String toolname = "";
                 switch(toolflag){
@@ -95,46 +95,21 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
 
                             }
 
-                            //Set-Cookie　nameの削除
-                            if(pmt.isconfigurable()){
-                                IHttpService ihs = messageInfo.getHttpService();
-                                byte[] reqbytes = messageInfo.getRequest();
-                                PRequest preq = new PRequest(ihs.getHost(), ihs.getPort(), ihs.getProtocol().equals("https")?true:false, reqbytes);
-                                PRequest preq_qdel = pmt.configureRequest(preq);
-                                if(preq_qdel!=null){
-                                    messageInfo.setRequest(preq_qdel.getByteMessage());
-                                }
-                            }
+                            //Cookie処理
+                            
+                            
+                            
 
                             byte[] retval = pgen.Run(messageInfo.getRequest());
-                                /****** debug request to file
-                                try {
-                                            FileOutputStream fos = new FileOutputStream("orgreq.txt");
-                                            fos.write(messageInfo.getRequest());
-                                            fos.close();
-                                    }
-                                    catch(IOException e) {}
-                                    * *****/
-
+ 
 
 
                             if ( retval != null){
                                     messageInfo.setRequest(retval);
-                                    /**** debug request to file
-                                    try {
-                                            FileOutputStream fos = new FileOutputStream("modreq.txt");
-                                            fos.write(messageInfo.getRequest());
-                                            fos.close();
-                                    }
-                                    catch(IOException e) {}
-                                    * ****/
+
                             }
 
-                            IHttpService ihs = messageInfo.getHttpService();
-                            byte[] reqbytes = messageInfo.getRequest();
-                            PRequest preq = new PRequest(ihs.getHost(), ihs.getPort(), ihs.getProtocol().equals("https")?true:false, reqbytes);
-                            ParmVars.plog.debuglog(0, "=====Request Host: "+preq.getHost()+" URL:" + preq.getURL() );
-                            ParmVars.plog.debuglog(0, "=====RequestRun end======");
+ 
                         }catch(Exception e){
                             ParmVars.plog.debuglog(0, "RequestRun Exception");
                                 ParmVars.plog.printException(e);
@@ -275,7 +250,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
 
             IHttpRequestResponse httpReqRes = message.getMessageInfo();
 
-            ParmGen pgen = new ParmGen(pmt, null);
+            ParmGen pgen = new ParmGen(pmt);
             if (pgen.ProxyInScope)
             {
                 // update number sequeces...
@@ -427,7 +402,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
             ArrayList<JMenuItem> items = new ArrayList<JMenuItem>();
 
             JMenuItem item = new JMenuItem("■ParmGen■");
-            JMenuItem itemmacro = new JMenuItem("■MacroBuilder■");
+            JMenuItem itemmacro = new JMenuItem("■AutoMacroBuilder■");
             messageInfo = icmi.getSelectedMessages();
 
             item.addActionListener(new java.awt.event.ActionListener() {

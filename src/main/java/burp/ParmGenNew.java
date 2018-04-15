@@ -223,8 +223,8 @@ private void setAppParmsIni(){
         updateTableRowRegex(regex);
     }
 
-    public void addParamToSelectedModel(String reqplace, String name, int ni, String value, boolean target_req_isformdata){
-        addParam(current_model, reqplace, name, ni, value, target_req_isformdata);
+    public void addParamToSelectedModel(String reqplace, String name, int ni, String value, boolean target_req_isformdata, boolean islastparam){
+        addParam(current_model, reqplace, name, ni, value, target_req_isformdata, islastparam);
     }
     /*
      *  指定されたメッセージで、カレントのボタンのmessageAreaを更新
@@ -258,7 +258,7 @@ private void setAppParmsIni(){
         }
     }
 
-    private void addParam(int m, String reqplace, String name, int ni, String value, boolean target_req_isformdata){
+    private void addParam(int m, String reqplace, String name, int ni, String value, boolean target_req_isformdata, boolean islastparam){
         DefaultTableModel model = ParamTableModels[m];
         //name=valueにデフォルトの正規表現を生成してセット
         String nval =  (name!=null?("(?:[&=?]|^)" + name + "="):"") + value;
@@ -280,10 +280,10 @@ private void setAppParmsIni(){
 
         switch(m){
             case P_NUMBERMODEL:
-                row = new Object[]{_reqplace, false, nval, false};
+                row = new Object[]{_reqplace, false, nval, islastparam};
                 break;
             case P_CSVMODEL:
-                row = new Object[]{_reqplace, false, Integer.parseInt(ParmVars.session.get(ni, ParmGenSession.K_COLUMN)), nval, false};
+                row = new Object[]{_reqplace, false, Integer.parseInt(ParmVars.session.get(ni, ParmGenSession.K_COLUMN)), nval, islastparam};
                 break;
             case P_TAMPERMODEL://とりあえず、パラメータレコードを作成し、この時点では一部のデータをセットする。
                 //置換位置　   置換する・しない　Value　Name　Attack(未使用)　Advance　Position　URLencode

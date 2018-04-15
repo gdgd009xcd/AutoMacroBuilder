@@ -54,7 +54,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         pmt.setMBCookieFromJar(MBCookieFromJar.isSelected());
         pmt.setMBFinalResponse(FinalResponse.isSelected());
         pmt.setMBResetToOriginal(MBResetToOriginal.isSelected());
-        pmt.setMBdeletesetcookies(MBdeleteSetCookies.isSelected());
+        
 
     }
 
@@ -159,7 +159,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         jPanel3 = new javax.swing.JPanel();
         jScrollPane5 = new javax.swing.JScrollPane();
         MacroComments = new javax.swing.JTextArea();
-        jButton2 = new javax.swing.JButton();
+        custom = new javax.swing.JButton();
         ClearMacro = new javax.swing.JButton();
         MBExec = new javax.swing.JCheckBox();
         MBCookieUpdate = new javax.swing.JCheckBox();
@@ -169,12 +169,12 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         jCheckBox2 = new javax.swing.JCheckBox();
         FinalResponse = new javax.swing.JCheckBox();
         MBResetToOriginal = new javax.swing.JCheckBox();
-        MBdeleteSetCookies = new javax.swing.JCheckBox();
         ParamTracking = new javax.swing.JButton();
         Load = new javax.swing.JButton();
         MBcleatokenfromcache = new javax.swing.JCheckBox();
         Save = new javax.swing.JButton();
         MBfromStepNo = new javax.swing.JCheckBox();
+        jButton3 = new javax.swing.JButton();
 
         SendTo.setText("SendTo");
 
@@ -341,10 +341,10 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
         paramlog.addTab("追跡", jPanel3);
 
-        jButton2.setText("編集");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        custom.setText("custom");
+        custom.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                customActionPerformed(evt);
             }
         });
 
@@ -403,14 +403,6 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             }
         });
 
-        MBdeleteSetCookies.setSelected(true);
-        MBdeleteSetCookies.setText("delete setcookies from Request");
-        MBdeleteSetCookies.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                MBdeleteSetCookiesActionPerformed(evt);
-            }
-        });
-
         ParamTracking.setText("追跡");
         ParamTracking.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -442,6 +434,14 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         MBfromStepNo.setSelected(true);
         MBfromStepNo.setText("追跡from設定");
 
+        jButton3.setText("NOP");
+        jButton3.setEnabled(false);
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -471,18 +471,18 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(MBfromStepNo))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(MBdeleteSetCookies)
-                                .addGap(18, 18, 18)
+                                .addGap(223, 223, 223)
                                 .addComponent(MBcleatokenfromcache, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 450, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)
+                            .addComponent(custom, javax.swing.GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)
                             .addComponent(ClearMacro, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(ParamTracking, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(Load, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(Save, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(Save, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE))
                         .addGap(18, 18, 18)
                         .addComponent(paramlog, javax.swing.GroupLayout.PREFERRED_SIZE, 542, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -493,7 +493,6 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(MBdeleteSetCookies)
                     .addComponent(MBcleatokenfromcache))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -510,25 +509,45 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(ClearMacro)
-                        .addGap(9, 9, 9)
                         .addComponent(ParamTracking)
-                        .addGap(13, 13, 13)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(custom)
+                        .addGap(18, 18, 18)
+                        .addComponent(ClearMacro)
+                        .addGap(10, 10, 10)
                         .addComponent(Load)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(Save))
+                        .addComponent(Save)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButton3))
                     .addComponent(paramlog)
                     .addComponent(jScrollPane1))
                 .addContainerGap(272, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void customActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customActionPerformed
         // TODO add your handling code here:
-
-    }//GEN-LAST:event_jButton2ActionPerformed
+        List<String> poslist = RequestList.getSelectedValuesList();
+        if(rlist!=null){
+            ArrayList <PRequestResponse> messages = new ArrayList<PRequestResponse>() ;
+            for(String s: poslist){
+                String[] values = s.split("[|]", 0);
+                if(values.length>0){
+                    int i = Integer.parseInt(values[0]);
+                    PRequestResponse pqr = rlist.get(i);
+                    messages.add(pqr);
+                }
+            }
+            ParmGen pgen = new ParmGen(pmt);
+            if(pgen.twin==null){
+                    pgen.twin = new ParmGenTop(pmt, new ParmGenCSV(pmt,
+                        messages)
+                        );
+            }
+            pgen.twin.setVisible(true);
+        }
+    }//GEN-LAST:event_customActionPerformed
 
     private void RequestListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_RequestListValueChanged
         // TODO add your handling code here:
@@ -660,11 +679,6 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         }
         Redraw();
     }//GEN-LAST:event_targetRequestActionPerformed
-
-    private void MBdeleteSetCookiesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MBdeleteSetCookiesActionPerformed
-        // TODO add your handling code here:
-        pmt.setMBdeletesetcookies(MBdeleteSetCookies.isSelected());
-    }//GEN-LAST:event_MBdeleteSetCookiesActionPerformed
 
     private void ParamTrackingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ParamTrackingActionPerformed
         // TODO add your handling code here:
@@ -1046,6 +1060,10 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_MacroResponseMouseReleased
 
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton3ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ClearMacro;
@@ -1057,7 +1075,6 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     private javax.swing.JCheckBox MBExec;
     private javax.swing.JCheckBox MBResetToOriginal;
     private javax.swing.JCheckBox MBcleatokenfromcache;
-    private javax.swing.JCheckBox MBdeleteSetCookies;
     private javax.swing.JCheckBox MBfromStepNo;
     private javax.swing.JTextArea MacroComments;
     private javax.swing.JEditorPane MacroRequest;
@@ -1070,10 +1087,11 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     private javax.swing.JButton Save;
     private javax.swing.JMenuItem Scanner;
     private javax.swing.JMenu SendTo;
+    private javax.swing.JButton custom;
     private javax.swing.JMenuItem disableRequest;
     private javax.swing.JMenuItem edit;
     private javax.swing.JMenuItem enableRequest;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;

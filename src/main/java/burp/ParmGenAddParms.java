@@ -522,6 +522,10 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
             String reqplace = (String)ReqParsedTableModel.getValueAt(rowsSelected[k], 0);//位置
             String pname = (String)ReqParsedTableModel.getValueAt(rowsSelected[k], 1);//name
             String pvalue = (String)ReqParsedTableModel.getValueAt(rowsSelected[k], 2);//value
+            boolean islastparam = false;
+            if(k+1==rowsSelected.length){
+                islastparam = true;
+            }
             if (parentwin != null){
                 // default regex pattern name=[^&]value(\d+)[^&]
                 boolean ispath= false;
@@ -558,7 +562,7 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
                 if(parentwin.getCurrentModel()==ParmGenNew.P_NUMBERMODEL){
                     defaultvaltype = VT_NUMBERFIXED;
                 }
-                parentwin.addParamToSelectedModel(reqplace, pname, k, headerpref + cookiepref + pathpref + getValueRegex(pvalue, ispath, iscookie, isheader,defaultvaltype, iswholepath), isformdata);
+                parentwin.addParamToSelectedModel(reqplace, pname, k, headerpref + cookiepref + pathpref + getValueRegex(pvalue, ispath, iscookie, isheader,defaultvaltype, iswholepath), isformdata, islastparam);
 
             }
         }

@@ -554,7 +554,11 @@ class ParseHTTPHeaders {
                         CookiePathValue cpv = itv.next();
                         String _cpath = cpv.getPath();
                         String _cvalue = cpv.getValue();
-                        if(path.startsWith(_cpath)){
+                        String pathval = path;
+                        if(!pathval.endsWith("/")){
+                            pathval += "/";
+                        }
+                        if(pathval.startsWith(_cpath)){
                             int len = nv[1].length() - _cvalue.length();
                             String tail = "";
                             if(len>0){

@@ -314,9 +314,13 @@ public class ParmGenMacroTrace {
             HashMap<CookieKey, ArrayList<CookiePathValue>> cookiemap = new HashMap<CookieKey, ArrayList<CookiePathValue>>();
             for(ICookie cookie:iclist){
                 String domain = cookie.getDomain();
+                if(domain==null)domain = "";
                 String name = cookie.getName();
+                if(name==null)name = "";
                 String path = cookie.getPath();
+                if(path == null)path = "";
                 String value = cookie.getValue();
+                if(value==null) value = "";
                 CookieKey cikey = new CookieKey(domain, name);
                 CookiePathValue cpvalue = new CookiePathValue(path, value);
                 ArrayList<CookiePathValue> cpvlist = cookiemap.get(cikey);

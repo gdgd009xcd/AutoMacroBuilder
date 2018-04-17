@@ -2,6 +2,7 @@ package burp;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ListIterator;
@@ -547,6 +548,7 @@ class ParseHTTPHeaders {
                 String[] nv = it.next();
                 CookieKey ckey = new CookieKey(domain, nv[0]);
                 ArrayList<CookiePathValue> cpvlist = cookiemap.get(ckey);
+                Collections.sort(cpvlist, new PathComparator().reversed());
                 if(cpvlist!=null){
                     ListIterator<CookiePathValue> itv = cpvlist.listIterator();
                     Boolean cpvlist_changed = false;

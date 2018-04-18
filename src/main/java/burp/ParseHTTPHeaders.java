@@ -533,7 +533,7 @@ class ParseHTTPHeaders {
             isHeaderModified = true;
         }
 
-        boolean setCookies(HashMap<CookieKey, ArrayList<CookiePathValue>> cookiemap){
+        boolean setCookies(HashMap<CookieKey, ArrayList<CookiePathValue>> cookiemap, boolean replaceCookie){
             if(cookiemap==null||cookiemap.size()==0){
                 return false;
             }
@@ -563,8 +563,10 @@ class ParseHTTPHeaders {
                         if(pathval.startsWith(_cpath)){
                             int len = nv[1].length() - _cvalue.length();
                             String tail = "";
-                            if(len>0){
-                                tail = nv[1].substring(_cvalue.length());
+                            if(!replaceCookie){
+                                if(len>0){
+                                    tail = nv[1].substring(_cvalue.length());
+                                }
                             }
                             nv[1] = _cvalue + tail;
                             it.set(nv);itv.remove();

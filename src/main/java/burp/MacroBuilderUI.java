@@ -175,6 +175,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         Save = new javax.swing.JButton();
         MBfromStepNo = new javax.swing.JCheckBox();
         jButton3 = new javax.swing.JButton();
+        MBreplaceCookie = new javax.swing.JCheckBox();
 
         SendTo.setText("SendTo");
 
@@ -442,6 +443,13 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             }
         });
 
+        MBreplaceCookie.setText("Replace Cookie");
+        MBreplaceCookie.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MBreplaceCookieActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -471,7 +479,8 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(MBfromStepNo))
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(223, 223, 223)
+                                .addComponent(MBreplaceCookie, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(62, 62, 62)
                                 .addComponent(MBcleatokenfromcache, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 450, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -493,7 +502,8 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(MBcleatokenfromcache))
+                    .addComponent(MBcleatokenfromcache)
+                    .addComponent(MBreplaceCookie))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(MBExec)
@@ -1064,6 +1074,11 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton3ActionPerformed
 
+    private void MBreplaceCookieActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MBreplaceCookieActionPerformed
+        // TODO add your handling code here:
+        pmt.setMBreplaceCookie(MBreplaceCookie.isSelected());
+    }//GEN-LAST:event_MBreplaceCookieActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ClearMacro;
@@ -1076,6 +1091,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     private javax.swing.JCheckBox MBResetToOriginal;
     private javax.swing.JCheckBox MBcleatokenfromcache;
     private javax.swing.JCheckBox MBfromStepNo;
+    private javax.swing.JCheckBox MBreplaceCookie;
     private javax.swing.JTextArea MacroComments;
     private javax.swing.JEditorPane MacroRequest;
     private javax.swing.JTextArea MacroResponse;

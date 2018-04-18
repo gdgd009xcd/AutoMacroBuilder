@@ -43,6 +43,7 @@ public class ParmGenMacroTrace {
     boolean MBFinalResponse = false;//==true 結果は最後に実行されたマクロのレスポンス
     boolean MBResetToOriginal =false;//==true オリジナルリクエストを実行。
     boolean MBcleartokencache = false;//開始時tokenキャッシュクリア
+    boolean MBreplaceCookie = false;//==true Cookie引き継ぎ置き換え == false Cookie overwrite
     int waittimer = 1;//実行間隔(msec)
 
     ListIterator<PRequestResponse> oit = null;//オリジナル
@@ -106,7 +107,10 @@ public class ParmGenMacroTrace {
     void setMBcleartokencache(boolean b){
         MBcleartokencache = b;
     }
-
+    void setMBreplaceCookie(boolean b){
+        MBreplaceCookie = b;
+    }
+    
     void setWaitTimer(String msec){
         try{
             waittimer = Integer.parseInt(msec);//msec
@@ -336,7 +340,7 @@ public class ParmGenMacroTrace {
 
 
 
-            if(preq.setCookies(cookiemap)){
+            if(preq.setCookies(cookiemap, MBreplaceCookie)){
                 return preq;
             }
         }

@@ -548,8 +548,9 @@ class ParseHTTPHeaders {
                 String[] nv = it.next();
                 CookieKey ckey = new CookieKey(domain, nv[0]);
                 ArrayList<CookiePathValue> cpvlist = cookiemap.get(ckey);
-                Collections.sort(cpvlist, new PathComparator().reversed());
+                
                 if(cpvlist!=null){
+                    Collections.sort(cpvlist, new PathComparator().reversed());
                     ListIterator<CookiePathValue> itv = cpvlist.listIterator();
                     Boolean cpvlist_changed = false;
                     while(itv.hasNext()){
@@ -583,7 +584,11 @@ class ParseHTTPHeaders {
                         }
                     }
                 }
-                cookiedata += nv[0] + "=" + nv[1];
+                if(nv[1]!=null&&nv[1].toLowerCase().equals("deleted")){
+                    it.remove();
+                }else{
+                    cookiedata += nv[0] + "=" + nv[1];
+                }
             }
             if(cookiemodified){
                 setHeader("Cookie", cookiedata);

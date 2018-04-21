@@ -112,12 +112,12 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
  
                         }catch(Exception e){
                             ParmVars.plog.debuglog(0, "RequestRun Exception");
-                                ParmVars.plog.printException(e);
+                            ParmVars.plog.printException(e);
                         }
 
                         // Update last request time and append cookies to request
-                       //messageInfo = deleteCookies(messageInfo);
-                                        //
+                        //messageInfo = deleteCookies(messageInfo);
+                        //
                     }else{
                         try {
                             try{

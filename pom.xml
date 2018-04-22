@@ -23,11 +23,11 @@
     <version>1.0</version>
 </dependency>
 
-<!-- dependency>
+<dependency>
     <groupId>org.glassfish</groupId>
     <artifactId>javax.json</artifactId>
     <version>1.0.4</version>
-</dependency -->
+</dependency>
 
 <dependency>
   <!-- jsoup HTML parser library @ http://jsoup.org/ -->

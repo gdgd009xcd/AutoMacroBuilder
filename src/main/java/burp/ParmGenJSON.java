@@ -6,6 +6,7 @@
 package burp;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,7 +15,7 @@ import javax.json.stream.JsonParser;
 
 //import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 import java.util.Base64;
-import flex.messaging.util.URLDecoder;
+
 
 
 /**

@@ -3,12 +3,13 @@ package burp;
 
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import flex.messaging.util.URLEncoder;
+
 import java.util.HashMap;
 
 

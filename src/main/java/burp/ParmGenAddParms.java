@@ -8,10 +8,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.DefaultComboBoxModel;
 
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
@@ -36,6 +38,8 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
     public static final int VT_ALPHANUM=4;
     public static final int VT_FIXED = 5;
     public static final int VT_PARAMVALUE = 6;
+    private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
+    private static  DefaultComboBoxModel comboModel = null;
     private int[] ListSelectionModel;
 
 
@@ -46,8 +50,10 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
         parentwin = _parentwin;
         isformdata = false;
         wholeval = _wholeval;
+        if(comboModel==null){
+            comboModel = new javax.swing.DefaultComboBoxModel(new String[] { bundle.getString("ParmGenAddParms.comboModel.デフォルト.text"), bundle.getString("ParmGenAddParms.comboModel.数値固定長.text"), bundle.getString("ParmGenAddParms.comboModel.英数字固定長.text"), bundle.getString("ParmGenAddParms.comboModel.数値任意長.text"), bundle.getString("ParmGenAddParms.comboModel.英数字任意長.text"), bundle.getString("ParmGenAddParms.comboModel.固定値.text") });
+        }
         initComponents();
-
         this.setModal(true);
         update();
 
@@ -226,10 +232,10 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
         ValReplacePart = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("パラメータ選択画面");
+        setTitle(bundle.getString("ParmGenAddParms.パラメータ選択画面.text")); // NOI18N
 
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabel5.setText("<html>■パラメータ追加<BR>\n(1)追加するパラメータを選択し、<BR>\n(2)「置換対象」を指定する。<BR>\n(3)「追加」ボタンを押す。");
+        jLabel5.setText(bundle.getString("ParmGenAddParms.jLabel5.text")); // NOI18N
         jLabel5.setVerticalAlignment(javax.swing.SwingConstants.TOP);
 
         ReqParsedTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -256,15 +262,18 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
         ReqParsedTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         ReqParsedTable.getTableHeader().setReorderingAllowed(false);
         jScrollPane8.setViewportView(ReqParsedTable);
+        if (ReqParsedTable.getColumnModel().getColumnCount() > 0) {
+            ReqParsedTable.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("ParmGenAddParms.position.text")); // NOI18N
+        }
 
-        Add.setText("追加");
+        Add.setText(bundle.getString("ParmGenAddParms.追加.text")); // NOI18N
         Add.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 AddActionPerformed(evt);
             }
         });
 
-        Cancel.setText("取消");
+        Cancel.setText(bundle.getString("ParmGenAddParms.取消.text")); // NOI18N
         Cancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 CancelActionPerformed(evt);
@@ -279,11 +288,11 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
             }
         });
 
-        jLabel1.setText("置換対象パス：　既設定値に戻す場合は、下記のプルダウンで選択");
+        jLabel1.setText(bundle.getString("ParmGenAddParms.置換対象パス：　既設定値に戻す場合は、下記のプルダウンで選択.text")); // NOI18N
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("置換対象"));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("ParmGenAddParms.jPanel1.border.text"))); // NOI18N
 
-        ValReplacePart.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "デフォルト", "数値固定長", "英数字固定長", "数値任意長", "英数字任意長", "固定値" }));
+        ValReplacePart.setModel(comboModel);
         ValReplacePart.setToolTipText("<HTML>value値の以下の文字列が置換対象となる<BR>\n数値固定長　　　　例：　n=test0001a  -> \"0001\"の数値部分固定長４桁<BR>\n文字列固定長　　 例：　n=test0001a  -> \"test0001a\"英数字全体固定長９桁<BR>\n数値任意長　　　　例：　n=test123a, n=test0000999b -> \"123\", \"0000999\"の数値部分任意長<BR>\n文字列任意長　　 例：　n=test123a, n=real0000101b => \"test123a\", \"real0000101b\"　英数字全体任意長");
         ValReplacePart.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -340,7 +349,7 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
                 .addComponent(Select_ReplaceTargetURL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5)
                     .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane8, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)

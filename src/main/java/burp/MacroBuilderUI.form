@@ -10,12 +10,16 @@
       <SubComponents>
         <Menu class="javax.swing.JMenu" name="SendTo">
           <Properties>
-            <Property name="text" type="java.lang.String" value="SendTo"/>
+            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+              <ResourceString bundle="burp/Bundle.properties" key="SENDTO" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+            </Property>
           </Properties>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="Repeater">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Repeater"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="REPEATER" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="RepeaterActionPerformed"/>
@@ -23,7 +27,9 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="Scanner">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Scanner"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="SCANNER" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ScannerActionPerformed"/>
@@ -31,7 +37,9 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="Intruder">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Intruder"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="INTRUDER" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="IntruderActionPerformed"/>
@@ -41,7 +49,9 @@
         </Menu>
         <MenuItem class="javax.swing.JMenuItem" name="targetRequest">
           <Properties>
-            <Property name="text" type="java.lang.String" value="targetRequest"/>
+            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+              <ResourceString bundle="burp/Bundle.properties" key="TARGETREQUEST" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+            </Property>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="targetRequestActionPerformed"/>
@@ -49,7 +59,9 @@
         </MenuItem>
         <MenuItem class="javax.swing.JMenuItem" name="disableRequest">
           <Properties>
-            <Property name="text" type="java.lang.String" value="disableRequest"/>
+            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+              <ResourceString bundle="burp/Bundle.properties" key="DISABLEREQUEST" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+            </Property>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="disableRequestActionPerformed"/>
@@ -57,7 +69,9 @@
         </MenuItem>
         <MenuItem class="javax.swing.JMenuItem" name="enableRequest">
           <Properties>
-            <Property name="text" type="java.lang.String" value="enableRequest"/>
+            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+              <ResourceString bundle="burp/Bundle.properties" key="ENABLEREQUEST" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+            </Property>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="enableRequestActionPerformed"/>
@@ -73,7 +87,9 @@
       <SubComponents>
         <MenuItem class="javax.swing.JMenuItem" name="edit">
           <Properties>
-            <Property name="text" type="java.lang.String" value="RequestEdit"/>
+            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+              <ResourceString bundle="burp/Bundle.properties" key="REQUESTEDIT" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+            </Property>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="editActionPerformed"/>
@@ -89,7 +105,9 @@
       <SubComponents>
         <MenuItem class="javax.swing.JMenuItem" name="show">
           <Properties>
-            <Property name="text" type="java.lang.String" value="ResponseShow"/>
+            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+              <ResourceString bundle="burp/Bundle.properties" key="RESPONSESHOW" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+            </Property>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="showActionPerformed"/>
@@ -254,7 +272,9 @@
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="&#x30ea;&#x30af;&#x30a8;&#x30b9;&#x30c8;">
-                <Property name="tabTitle" type="java.lang.String" value="&#x30ea;&#x30af;&#x30a8;&#x30b9;&#x30c8;"/>
+                <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="&#x30ea;&#x30af;&#x30a8;&#x30b9;&#x30c8;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </JTabbedPaneConstraints>
             </Constraint>
           </Constraints>
@@ -294,7 +314,9 @@
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="&#x30ec;&#x30b9;&#x30dd;&#x30f3;&#x30b9;">
-                <Property name="tabTitle" type="java.lang.String" value="&#x30ec;&#x30b9;&#x30dd;&#x30f3;&#x30b9;"/>
+                <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="&#x30ec;&#x30b9;&#x30dd;&#x30f3;&#x30b9;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </JTabbedPaneConstraints>
             </Constraint>
           </Constraints>
@@ -338,7 +360,9 @@
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="&#x8ffd;&#x8de1;">
-                <Property name="tabTitle" type="java.lang.String" value="&#x8ffd;&#x8de1;"/>
+                <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="&#x8ffd;&#x8de1;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </JTabbedPaneConstraints>
             </Constraint>
           </Constraints>
@@ -374,7 +398,9 @@
     </Container>
     <Component class="javax.swing.JButton" name="custom">
       <Properties>
-        <Property name="text" type="java.lang.String" value="custom"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="burp/Bundle.properties" key="CUSTOM" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+        </Property>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="customActionPerformed"/>
@@ -382,7 +408,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="ClearMacro">
       <Properties>
-        <Property name="text" type="java.lang.String" value="&#x30af;&#x30ea;&#x30a2;"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="burp/Bundle.properties" key="&#x30af;&#x30ea;&#x30a2;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+        </Property>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ClearMacroActionPerformed"/>
@@ -390,7 +418,9 @@
     </Component>
     <Component class="javax.swing.JCheckBox" name="MBExec">
       <Properties>
-        <Property name="text" type="java.lang.String" value="&#x5b9f;&#x884c;"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="burp/Bundle.properties" key="&#x5b9f;&#x884c;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+        </Property>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="MBExecActionPerformed"/>
@@ -398,7 +428,9 @@
     </Component>
     <Component class="javax.swing.JCheckBox" name="MBCookieUpdate">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Cookie&#x66f4;&#x65b0;"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="burp/Bundle.properties" key="COOKIE&#x66f4;&#x65b0;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+        </Property>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="MBCookieUpdateActionPerformed"/>
@@ -406,7 +438,9 @@
     </Component>
     <Component class="javax.swing.JCheckBox" name="MBCookieFromJar">
       <Properties>
-        <Property name="text" type="java.lang.String" value="&#x958b;&#x59cb;&#x6642;Cookie.jar&#x304b;&#x3089;&#x5f15;&#x304d;&#x7d99;&#x3050;"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="burp/Bundle.properties" key="&#x958b;&#x59cb;&#x6642;COOKIE.JAR&#x304b;&#x3089;&#x5f15;&#x304d;&#x7d99;&#x3050;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+        </Property>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="MBCookieFromJarActionPerformed"/>
@@ -414,7 +448,9 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">
       <Properties>
-        <Property name="text" type="java.lang.String" value="&#x30de;&#x30af;&#x30ed;&#x30ea;&#x30af;&#x30a8;&#x30b9;&#x30c8;&#x4e00;&#x89a7;"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="burp/Bundle.properties" key="&#x30de;&#x30af;&#x30ed;&#x30ea;&#x30af;&#x30a8;&#x30b9;&#x30c8;&#x4e00;&#x89a7;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+        </Property>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="waitsec">
@@ -433,7 +469,9 @@
     <Component class="javax.swing.JCheckBox" name="FinalResponse">
       <Properties>
         <Property name="selected" type="boolean" value="true"/>
-        <Property name="text" type="java.lang.String" value="final response"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="burp/Bundle.properties" key="FINAL RESPONSE" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+        </Property>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="FinalResponseActionPerformed"/>
@@ -442,7 +480,9 @@
     <Component class="javax.swing.JCheckBox" name="MBResetToOriginal">
       <Properties>
         <Property name="selected" type="boolean" value="true"/>
-        <Property name="text" type="java.lang.String" value="&#x30aa;&#x30ea;&#x30b8;&#x30ca;&#x30eb;&#x306b;&#x30ea;&#x30bb;&#x30c3;&#x30c8;"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="burp/Bundle.properties" key="&#x30aa;&#x30ea;&#x30b8;&#x30ca;&#x30eb;&#x306b;&#x30ea;&#x30bb;&#x30c3;&#x30c8;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+        </Property>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="MBResetToOriginalActionPerformed"/>
@@ -450,7 +490,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="ParamTracking">
       <Properties>
-        <Property name="text" type="java.lang.String" value="&#x8ffd;&#x8de1;"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="burp/Bundle.properties" key="&#x8ffd;&#x8de1;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+        </Property>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ParamTrackingActionPerformed"/>
@@ -458,7 +500,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="Load">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Load"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="burp/Bundle.properties" key="LOAD" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+        </Property>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="LoadActionPerformed"/>
@@ -466,7 +510,9 @@
     </Component>
     <Component class="javax.swing.JCheckBox" name="MBcleatokenfromcache">
       <Properties>
-        <Property name="text" type="java.lang.String" value="&#x958b;&#x59cb;&#x6642;token&#x3092;&#x30ad;&#x30e3;&#x30c3;&#x30b7;&#x30e5;&#x304b;&#x3089;&#x5f15;&#x304d;&#x7d99;&#x3050;"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="burp/Bundle.properties" key="&#x958b;&#x59cb;&#x6642;TOKEN&#x3092;&#x30ad;&#x30e3;&#x30c3;&#x30b7;&#x30e5;&#x304b;&#x3089;&#x5f15;&#x304d;&#x7d99;&#x3050;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+        </Property>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="MBcleatokenfromcacheActionPerformed"/>
@@ -474,7 +520,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="Save">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Save"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="burp/Bundle.properties" key="SAVE" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+        </Property>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="SaveActionPerformed"/>
@@ -483,12 +531,16 @@
     <Component class="javax.swing.JCheckBox" name="MBfromStepNo">
       <Properties>
         <Property name="selected" type="boolean" value="true"/>
-        <Property name="text" type="java.lang.String" value="&#x8ffd;&#x8de1;from&#x8a2d;&#x5b9a;"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="burp/Bundle.properties" key="&#x8ffd;&#x8de1;FROM&#x8a2d;&#x5b9a;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+        </Property>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="jButton3">
       <Properties>
-        <Property name="text" type="java.lang.String" value="NOP"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="burp/Bundle.properties" key="NOP" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+        </Property>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
       <Events>
@@ -497,7 +549,9 @@
     </Component>
     <Component class="javax.swing.JCheckBox" name="MBreplaceCookie">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Replace Cookie"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="burp/Bundle.properties" key="REPLACE COOKIE" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+        </Property>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="MBreplaceCookieActionPerformed"/>

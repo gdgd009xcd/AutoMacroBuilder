@@ -170,58 +170,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                 }
     		return;
         }
-    // delete [deleted] HTTP cookies for all in-scope requests
-	private IHttpRequestResponse deleteCookies(IHttpRequestResponse messageInfo)
-	{
-		try
-		{
-			// If URL is in scope and we have cmdline specified cookies, append them to request
-
-			if (mCallbacks.isInScope(messageInfo.getUrl()))
-			{
-				byte[] request = messageInfo.getRequest();
-				String request_string = new String(request);
-				//SaveToFile("request.txt", request_string, false);
-				Pattern pattern = Pattern.compile("^(Cookie: .*$)",  Pattern.MULTILINE);
-				Matcher matcher = pattern.matcher(request_string);
-				if (matcher.find()){
-					String cookievalues = null;
-					String cookiedeleted = null;
-					int gcnt = matcher.groupCount();
-					for(int n = 0; n < gcnt ; n++){
-						cookievalues = matcher.group(n+1);
-					}
-					if ( cookievalues != null && cookievalues.length()>0){
-						// delete xxx=deleted cookies..
-						Pattern p = Pattern.compile(";{0,1}[ ]+[^&= ;]+?=[dD][eE][lL][eE][tT][eE][dD]");
-						 Matcher m = p.matcher(cookievalues);
-						 StringBuffer sb = new StringBuffer();
-						 boolean found = false;
-						 while (m.find()) { m.appendReplacement(sb, "");
-						 					found = true;
-						 } m.appendTail(sb);
-						 if ( found ){
-							cookiedeleted = sb.toString();
-							ParmVars.plog.debuglog(1,"before:" + cookievalues );
-							ParmVars.plog.debuglog(1,"after deleted:" + cookiedeleted);
-							request_string = matcher.replaceAll(cookiedeleted);
-							request = request_string.getBytes();
-							messageInfo.setRequest(request);
-						 }
-					}
-
-				}
-
-
-
-			}else{
-				ParmVars.plog.debuglog(0,"out of scope:" + messageInfo.getUrl());
-			}
-            }catch (Exception e){
-                    ParmVars.plog.debuglog(0,"Error setting Cookie Header: "+ e.getMessage());
-            }
-            return messageInfo;
-    }
+ 
 
 
     /*public byte[]*/@Override
@@ -265,13 +214,19 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                                     ParmVars.plog.printlog(e.toString(), true);
                             }
                             // Update last request time and append cookies to request
-                            //messageInfo = deleteCookies(messageInfo);
                 }else{//Fetch Responses...
-                    try {
-                        int updtcnt = pgen.ResponseRun(httpReqRes.getUrl().toString(), httpReqRes.getResponse(), ParmVars.enc.getIANACharset());
-                    } catch (Exception ex) {
-                        Logger.getLogger(BurpExtender.class.getName()).log(Level.SEVERE, null, ex);
+                    try{
+                        String request_string = new String(httpReqRes.getRequest(), ParmVars.enc.getIANACharset());
+                        PRequest prequest = new PRequest(request_string);
+                        try {
+                            int updtcnt = pgen.ResponseRun(prequest.getURL(), httpReqRes.getResponse(), ParmVars.enc.getIANACharset());
+                        } catch (Exception ex) {
+                            Logger.getLogger(BurpExtender.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }catch(Exception e){
+                        ParmVars.plog.printException(e);
                     }
+                    
                 }
             }
         }

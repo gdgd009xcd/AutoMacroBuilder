@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -30,6 +31,8 @@ import javax.swing.text.Document;
  * @author daike
  */
 public class MacroBuilderUI extends javax.swing.JPanel {
+
+    private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
 
     ArrayList<PRequestResponse> rlist = null;
     ParmGenMacroTrace pmt = null;
@@ -177,9 +180,9 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         jButton3 = new javax.swing.JButton();
         MBreplaceCookie = new javax.swing.JCheckBox();
 
-        SendTo.setText("SendTo");
+        SendTo.setText(bundle.getString("MacroBuilderUI.SENDTO.text")); // NOI18N
 
-        Repeater.setText("Repeater");
+        Repeater.setText(bundle.getString("MacroBuilderUI.REPEATER.text")); // NOI18N
         Repeater.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 RepeaterActionPerformed(evt);
@@ -187,7 +190,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         });
         SendTo.add(Repeater);
 
-        Scanner.setText("Scanner");
+        Scanner.setText(bundle.getString("MacroBuilderUI.SCANNER.text")); // NOI18N
         Scanner.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ScannerActionPerformed(evt);
@@ -195,7 +198,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         });
         SendTo.add(Scanner);
 
-        Intruder.setText("Intruder");
+        Intruder.setText(bundle.getString("MacroBuilderUI.INTRUDER.text")); // NOI18N
         Intruder.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 IntruderActionPerformed(evt);
@@ -205,7 +208,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
         jPopupMenu1.add(SendTo);
 
-        targetRequest.setText("targetRequest");
+        targetRequest.setText(bundle.getString("MacroBuilderUI.TARGETREQUEST.text")); // NOI18N
         targetRequest.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 targetRequestActionPerformed(evt);
@@ -213,7 +216,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         });
         jPopupMenu1.add(targetRequest);
 
-        disableRequest.setText("disableRequest");
+        disableRequest.setText(bundle.getString("MacroBuilderUI.DISABLEREQUEST.text")); // NOI18N
         disableRequest.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 disableRequestActionPerformed(evt);
@@ -221,7 +224,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         });
         jPopupMenu1.add(disableRequest);
 
-        enableRequest.setText("enableRequest");
+        enableRequest.setText(bundle.getString("MacroBuilderUI.ENABLEREQUEST.text")); // NOI18N
         enableRequest.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 enableRequestActionPerformed(evt);
@@ -229,7 +232,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         });
         jPopupMenu1.add(enableRequest);
 
-        edit.setText("RequestEdit");
+        edit.setText(bundle.getString("MacroBuilderUI.REQUESTEDIT.text")); // NOI18N
         edit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 editActionPerformed(evt);
@@ -237,7 +240,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         });
         RequestEdit.add(edit);
 
-        show.setText("ResponseShow");
+        show.setText(bundle.getString("MacroBuilderUI.RESPONSESHOW.text")); // NOI18N
         show.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 showActionPerformed(evt);
@@ -295,7 +298,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             .addComponent(jScrollPane6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 314, Short.MAX_VALUE)
         );
 
-        paramlog.addTab("リクエスト", jPanel1);
+        paramlog.addTab(bundle.getString("MacroBuilderUI.リクエスト.text"), jPanel1); // NOI18N
 
         MacroResponse.setColumns(20);
         MacroResponse.setRows(5);
@@ -323,7 +326,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 314, Short.MAX_VALUE)
         );
 
-        paramlog.addTab("レスポンス", jPanel2);
+        paramlog.addTab(bundle.getString("MacroBuilderUI.レスポンス.text"), jPanel2); // NOI18N
 
         MacroComments.setColumns(20);
         MacroComments.setRows(5);
@@ -340,44 +343,44 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 314, Short.MAX_VALUE)
         );
 
-        paramlog.addTab("追跡", jPanel3);
+        paramlog.addTab(bundle.getString("MacroBuilderUI.追跡.text"), jPanel3); // NOI18N
 
-        custom.setText("custom");
+        custom.setText(bundle.getString("MacroBuilderUI.CUSTOM.text")); // NOI18N
         custom.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 customActionPerformed(evt);
             }
         });
 
-        ClearMacro.setText("クリア");
+        ClearMacro.setText(bundle.getString("MacroBuilderUI.クリア.text")); // NOI18N
         ClearMacro.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ClearMacroActionPerformed(evt);
             }
         });
 
-        MBExec.setText("実行");
+        MBExec.setText(bundle.getString("MacroBuilderUI.実行.text")); // NOI18N
         MBExec.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 MBExecActionPerformed(evt);
             }
         });
 
-        MBCookieUpdate.setText("Cookie更新");
+        MBCookieUpdate.setText(bundle.getString("MacroBuilderUI.COOKIE更新.text")); // NOI18N
         MBCookieUpdate.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 MBCookieUpdateActionPerformed(evt);
             }
         });
 
-        MBCookieFromJar.setText("開始時Cookie.jarから引き継ぐ");
+        MBCookieFromJar.setText(bundle.getString("MacroBuilderUI.開始時COOKIE.JARから引き継ぐ.text")); // NOI18N
         MBCookieFromJar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 MBCookieFromJarActionPerformed(evt);
             }
         });
 
-        jLabel2.setText("マクロリクエスト一覧");
+        jLabel2.setText(bundle.getString("MacroBuilderUI.マクロリクエスト一覧.text")); // NOI18N
 
         waitsec.setText("1");
 
@@ -389,7 +392,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         });
 
         FinalResponse.setSelected(true);
-        FinalResponse.setText("final response");
+        FinalResponse.setText(bundle.getString("MacroBuilderUI.FINAL RESPONSE.text")); // NOI18N
         FinalResponse.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 FinalResponseActionPerformed(evt);
@@ -397,35 +400,35 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         });
 
         MBResetToOriginal.setSelected(true);
-        MBResetToOriginal.setText("オリジナルにリセット");
+        MBResetToOriginal.setText(bundle.getString("MacroBuilderUI.オリジナルにリセット.text")); // NOI18N
         MBResetToOriginal.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 MBResetToOriginalActionPerformed(evt);
             }
         });
 
-        ParamTracking.setText("追跡");
+        ParamTracking.setText(bundle.getString("MacroBuilderUI.追跡.text")); // NOI18N
         ParamTracking.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ParamTrackingActionPerformed(evt);
             }
         });
 
-        Load.setText("Load");
+        Load.setText(bundle.getString("MacroBuilderUI.LOAD.text")); // NOI18N
         Load.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 LoadActionPerformed(evt);
             }
         });
 
-        MBcleatokenfromcache.setText("開始時tokenをキャッシュから引き継ぐ");
+        MBcleatokenfromcache.setText(bundle.getString("MacroBuilderUI.開始時TOKENをキャッシュから引き継ぐ.text")); // NOI18N
         MBcleatokenfromcache.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 MBcleatokenfromcacheActionPerformed(evt);
             }
         });
 
-        Save.setText("Save");
+        Save.setText(bundle.getString("MacroBuilderUI.SAVE.text")); // NOI18N
         Save.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 SaveActionPerformed(evt);
@@ -433,9 +436,9 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         });
 
         MBfromStepNo.setSelected(true);
-        MBfromStepNo.setText("追跡from設定");
+        MBfromStepNo.setText(bundle.getString("MacroBuilderUI.追跡FROM設定.text")); // NOI18N
 
-        jButton3.setText("NOP");
+        jButton3.setText(bundle.getString("MacroBuilderUI.NOP.text")); // NOI18N
         jButton3.setEnabled(false);
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -443,7 +446,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             }
         });
 
-        MBreplaceCookie.setText("Replace Cookie");
+        MBreplaceCookie.setText(bundle.getString("MacroBuilderUI.REPLACE COOKIE.text")); // NOI18N
         MBreplaceCookie.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 MBreplaceCookieActionPerformed(evt);

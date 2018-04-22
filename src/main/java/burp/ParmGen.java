@@ -21,6 +21,7 @@ import java.io.RandomAccessFile;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,7 +35,7 @@ import java.util.regex.Pattern;
 import javax.json.Json;
 import javax.json.stream.JsonParser;
 
-import flex.messaging.util.URLDecoder;
+
 import java.util.List;
 import java.util.ListIterator;
 

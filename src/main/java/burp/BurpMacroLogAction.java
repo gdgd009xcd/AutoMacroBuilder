@@ -26,19 +26,7 @@ public class BurpMacroLogAction implements ISessionHandlingAction {
 
     @Override
     public void performAction(IHttpRequestResponse currentrequest, IHttpRequestResponse[] executedmacros) {
-        URL url = null;
-        String urlstr = "";
-        int macrosize = 0;
-        if (currentrequest!=null){
-            url = currentrequest.getUrl();
-            urlstr = url.toString();
-        }
-        if(executedmacros!=null){
-            if(executedmacros.length>0){
-                macrosize = executedmacros.length;
-            }
-        }
-        ParmVars.plog.debuglog(0, "Invoked. URL:" + urlstr + " macrorecords:" + macrosize);
+        
     }
     
 }

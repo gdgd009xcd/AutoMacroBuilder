@@ -5,6 +5,7 @@
 package burp;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,7 +18,6 @@ import javax.json.JsonObjectBuilder;
 import javax.json.JsonWriter;
 import javax.json.stream.JsonGenerator;
 
-import flex.messaging.util.URLEncoder;
 import java.util.List;
 
 

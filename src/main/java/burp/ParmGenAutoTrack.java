@@ -7,6 +7,7 @@ package burp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.ResourceBundle;
 
 import javax.swing.table.DefaultTableModel;
 
@@ -15,6 +16,8 @@ import javax.swing.table.DefaultTableModel;
  * @author tms783
  */
 public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceRegex, interfaceParmGenWin{
+
+    private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
     ParmGenNew parentwin;
     boolean valueexistonly = false;
 
@@ -69,6 +72,10 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
         });
         TokenTable.getTableHeader().setReorderingAllowed(false);
         TokenTablePane.setViewportView(TokenTable);
+        if (TokenTable.getColumnModel().getColumnCount() > 0) {
+            TokenTable.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("ParmGenAutoTrack.title0.part.text")); // NOI18N
+            TokenTable.getColumnModel().getColumn(2).setHeaderValue(bundle.getString("ParmGenAutoTrack.title2.order.text")); // NOI18N
+        }
 
         NextBtn.setText(bundle.getString("ParmGenAutoTrack.NextBtn.text")); // NOI18N
         NextBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -176,7 +183,7 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
         }
         //リクエスト選択へ。
         dispose();
-        new SelectRequest("リクエスト選択", parentwin, new ParmGenAddParms(parentwin, true), ParmGenNew.P_REQUESTTAB).setVisible(true);
+        new SelectRequest(bundle.getString("ParmGenAutoTrack.リクエスト選択.text"), parentwin, new ParmGenAddParms(parentwin, true), ParmGenNew.P_REQUESTTAB).setVisible(true);
     }//GEN-LAST:event_NextBtnActionPerformed
 
     private void RegexBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RegexBtnActionPerformed

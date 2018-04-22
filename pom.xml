@@ -23,11 +23,11 @@
     <version>1.0</version>
 </dependency>
 
-<dependency>
+<!-- dependency>
     <groupId>org.glassfish</groupId>
     <artifactId>javax.json</artifactId>
     <version>1.0.4</version>
-</dependency>
+</dependency -->
 
 <dependency>
   <!-- jsoup HTML parser library @ http://jsoup.org/ -->
@@ -36,13 +36,13 @@
   <version>1.10.2</version>
 </dependency>
 
-<dependency>
-    <groupId>bjarfile</groupId>
-    <artifactId>bjarfile</artifactId>
-    <version>1.0</version>
-    <scope>system</scope>
-    <systemPath>${basedir}/lib/burpsuite_free.jar</systemPath>
-</dependency>
+<!-- https://mvnrepository.com/artifact/net.portswigger.burp.extender/burp-extender-api -->
+    <dependency>
+      <groupId>net.portswigger.burp.extender</groupId>
+      <artifactId>burp-extender-api</artifactId>
+      <version>1.7.13</version>
+    </dependency>
+  
 
 
 
@@ -60,7 +60,7 @@
                 </goals>
                 <configuration>
                     <outputDirectory>${project.build.directory}/</outputDirectory>
-                    <excludeArtifactIds>javax.json-api,bjarfile</excludeArtifactIds>
+                    <excludeArtifactIds>javax.json-api,javax.json,burp-extender-api</excludeArtifactIds>
 
                 </configuration>
             </execution>

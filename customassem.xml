@@ -1,0 +1,16 @@
+<assembly>
+  <id>jar-with-dependencies-custom</id>  <!-- ここだけ変更 -->
+  <formats>
+    <format>jar</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory>/</outputDirectory>
+      <useProjectArtifact>true</useProjectArtifact>
+      <unpack>true</unpack>
+      <scope>runtime</scope>
+    </dependencySet>
+    
+    </dependencySets>
+</assembly>

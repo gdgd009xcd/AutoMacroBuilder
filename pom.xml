@@ -41,6 +41,7 @@
       <groupId>net.portswigger.burp.extender</groupId>
       <artifactId>burp-extender-api</artifactId>
       <version>1.7.13</version>
+      <scope>provided</scope>
     </dependency>
   
 
@@ -85,6 +86,13 @@
                 <include>*.txt</include>
               </includes>
             </resource>
+            <resource>
+              <directory>${project.basedir}/</directory>
+              <includes>
+                <include>LICENSE</include>
+                <include>README.md</include>
+              </includes>
+            </resource>
           </resources>
         </configuration>
       </execution>
@@ -96,16 +104,16 @@
     <version>3.0.0</version>
     <configuration>
         <finalName>test</finalName>
-        <descriptorRefs>
-            <!-- 依存するリソースをすべてjarに同梱する -->
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-        </descriptorRefs>
+        <descriptors>
+            <descriptor>customassem.xml</descriptor>  <!-- assembly 記述子を指定 -->
+          </descriptors>
         <archive>
             <manifest>
                 <mainClass>burp.test</mainClass>
             </manifest>
         </archive>
     </configuration>
+    
     <executions>
         <execution>
             <!-- idタグは任意の文字列であれば何でもよい -->

@@ -102,7 +102,7 @@ public class ParmGenParser {
             //href属性から、GETパラメータを抽出。
             //?name=value&....
             if(h!=null){
-                String []nvpairs = h.split("[?&]");
+                String []nvpairs = h.split("[&?]|amp;");
                 String url = nvpairs[0];
                 for(String tnv:nvpairs){
                     String[] nvp = tnv.split("=");
@@ -130,7 +130,7 @@ public class ParmGenParser {
             //href属性から、GETパラメータを抽出。
             //?name=value&....
             if(h!=null){
-                String []nvpairs = h.split("[?&]");
+                String []nvpairs = h.split("[&?]|amp;");
                 String url = nvpairs[0];
                 for(String tnv:nvpairs){
                     String[] nvp = tnv.split("=");

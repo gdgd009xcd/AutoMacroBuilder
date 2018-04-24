@@ -349,8 +349,8 @@ class AppValue {
 
 	public int csvpos;
 	public int col;
-	public String resURL;
-	public String resRegex;
+	public String resURL = "";
+	public String resRegex = "";
 	public int resPartType;
 	public int resRegexPos = -1;//追跡token　ページ内出現位置 0start
 	public String token;//追跡token　Name

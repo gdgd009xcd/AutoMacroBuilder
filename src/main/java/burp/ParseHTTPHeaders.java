@@ -584,7 +584,7 @@ class ParseHTTPHeaders {
                         }
                     }
                 }
-                if(nv[1]!=null&&nv[1].toLowerCase().equals("deleted")){
+                if(nv[1]!=null&&nv[1].toLowerCase().startsWith("deleted")){
                     it.remove();
                 }else{
                     cookiedata += nv[0] + "=" + nv[1];

@@ -271,7 +271,7 @@
         <Container class="javax.swing.JPanel" name="jPanel1">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="&#x30ea;&#x30af;&#x30a8;&#x30b9;&#x30c8;">
+              <JTabbedPaneConstraints tabName="&lt;&#x30ea;&#x30af;&#x30a8;&#x30b9;&#x30c8;&gt;">
                 <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="burp/Bundle.properties" key="&#x30ea;&#x30af;&#x30a8;&#x30b9;&#x30c8;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
                 </Property>
@@ -313,7 +313,7 @@
         <Container class="javax.swing.JPanel" name="jPanel2">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="&#x30ec;&#x30b9;&#x30dd;&#x30f3;&#x30b9;">
+              <JTabbedPaneConstraints tabName="&lt;&#x30ec;&#x30b9;&#x30dd;&#x30f3;&#x30b9;&gt;">
                 <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="burp/Bundle.properties" key="&#x30ec;&#x30b9;&#x30dd;&#x30f3;&#x30b9;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
                 </Property>
@@ -359,7 +359,7 @@
         <Container class="javax.swing.JPanel" name="jPanel3">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="&#x8ffd;&#x8de1;">
+              <JTabbedPaneConstraints tabName="&lt;&#x8ffd;&#x8de1;&gt;">
                 <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="burp/Bundle.properties" key="&#x8ffd;&#x8de1;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
                 </Property>

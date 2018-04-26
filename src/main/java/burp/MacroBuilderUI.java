@@ -778,9 +778,12 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                             	switch(tkn.getTokenKey().GetTokenType()){
                             	case ACTION:
                             	case HREF:
-                                    String srcurl = tkn.getTokenValue().getURL();
-                                    String desturl = pqrs.request.getURL();
-                                    ParmVars.plog.debuglog(0, "srcurl/desturl:" + srcurl + "/" + desturl);
+                                    
+                                    ParmGenParseURL _psrcurl = new ParmGenParseURL(tkn.getTokenValue().getURL());
+                                    ParmGenParseURL _pdesturl = new ParmGenParseURL(pqrs.request.getURL());
+                                    String srcurl = _psrcurl.getPath();
+                                    String desturl = _pdesturl.getPath();
+                                    ParmVars.plog.debuglog(0, "srcurl|desturl:[" + srcurl + "]|[" + desturl + "]");
                                     if(desturl.indexOf(srcurl)!=-1){
                                             valid = true;
                                     }

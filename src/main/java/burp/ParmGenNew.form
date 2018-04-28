@@ -3,7 +3,9 @@
 <Form version="1.8" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
-    <Property name="title" type="java.lang.String" value="ParmGen&#x7de8;&#x96c6;&#x753b;&#x9762;"/>
+    <Property name="title" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+      <ResourceString bundle="burp/Bundle.properties" key="PARMGEN&#x7de8;&#x96c6;&#x753b;&#x9762;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+    </Property>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
@@ -163,7 +165,9 @@
           <SubComponents>
             <Component class="javax.swing.JButton" name="NumberRegexTest">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&#x6b63;&#x898f;&#x8868;&#x73fe;&#x30c6;&#x30b9;&#x30c8;"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="&#x6b63;&#x898f;&#x8868;&#x73fe;&#x30c6;&#x30b9;&#x30c8;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="NumberRegexTestActionPerformed"/>
@@ -171,7 +175,9 @@
             </Component>
             <Component class="javax.swing.JButton" name="nParamDel">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&#x524a;&#x9664;"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="&#x524a;&#x9664;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="nParamDelActionPerformed"/>
@@ -179,7 +185,9 @@
             </Component>
             <Component class="javax.swing.JButton" name="nParamUP">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&#x25b2;UP  "/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="&#x25b2;UP  " replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="nParamUPActionPerformed"/>
@@ -187,7 +195,9 @@
             </Component>
             <Component class="javax.swing.JButton" name="nParamDOWN">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&#x25bc;DOWN"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="&#x25bc;DOWN" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="nParamDOWNActionPerformed"/>
@@ -244,7 +254,9 @@
             </Container>
             <Component class="javax.swing.JButton" name="nParamAdd">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&#x8ffd;&#x52a0;"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="&#x8ffd;&#x52a0;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="nParamAddActionPerformed"/>
@@ -260,7 +272,9 @@
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel5">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&#x7f6e;&#x63db;&#x5bfe;&#x8c61;&#x30d1;&#x30b9;"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="&#x7f6e;&#x63db;&#x5bfe;&#x8c61;&#x30d1;&#x30b9;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </Properties>
             </Component>
             <Container class="javax.swing.JPanel" name="jPanel2">
@@ -307,13 +321,17 @@
               <SubComponents>
                 <Component class="javax.swing.JLabel" name="jLabel2">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="&#x521d;&#x671f;&#x5024;"/>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="burp/Bundle.properties" key="&#x521d;&#x671f;&#x5024;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                    </Property>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JTextField" name="NumberInit">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="1"/>
-                    <Property name="toolTipText" type="java.lang.String" value="&#x6700;&#x5927;2147483647&#x307e;&#x3067;"/>
+                    <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="burp/Bundle.properties" key="&#x6700;&#x5927;2147483647&#x307e;&#x3067;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                    </Property>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="NumberInitActionPerformed"/>
@@ -321,13 +339,17 @@
                 </Component>
                 <Component class="javax.swing.JLabel" name="jLabel3">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="&#x6841;&#x6570;"/>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="burp/Bundle.properties" key="&#x6841;&#x6570;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                    </Property>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JTextField" name="NumberLen">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="4"/>
-                    <Property name="toolTipText" type="java.lang.String" value="&#x6700;&#x5927;10&#x30b1;&#x30bf;&#x307e;&#x3067;"/>
+                    <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="burp/Bundle.properties" key="&#x6700;&#x5927;10&#x30b1;&#x30bf;&#x307e;&#x3067;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                    </Property>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="NumberLenActionPerformed"/>
@@ -336,8 +358,12 @@
                 <Component class="javax.swing.JCheckBox" name="NumberRewind">
                   <Properties>
                     <Property name="selected" type="boolean" value="true"/>
-                    <Property name="text" type="java.lang.String" value="&#x30ab;&#x30a6;&#x30f3;&#x30bf;&#x3092;&#x521d;&#x671f;&#x5316;&#x3059;&#x308b;"/>
-                    <Property name="toolTipText" type="java.lang.String" value="&lt;HTML&gt;&#x30ab;&#x30a6;&#x30f3;&#x30bf;&#x3092;&#x521d;&#x671f;&#x5024;&#x3067;&#x521d;&#x671f;&#x5316;&#x3059;&#x308b;&#x5834;&#x5408;&#x306f;&#x3001;&#x30c1;&#x30a7;&#x30c3;&#x30af;"/>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="burp/Bundle.properties" key="&#x30ab;&#x30a6;&#x30f3;&#x30bf;&#x3092;&#x521d;&#x671f;&#x5316;&#x3059;&#x308b;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                    </Property>
+                    <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="burp/Bundle.properties" key="&lt;HTML&gt;&#x30ab;&#x30a6;&#x30f3;&#x30bf;&#x3092;&#x521d;&#x671f;&#x5024;&#x3067;&#x521d;&#x671f;&#x5316;&#x3059;&#x308b;&#x5834;&#x5408;&#x306f;&#x3001;&#x30c1;&#x30a7;&#x30c3;&#x30af;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                    </Property>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="NumberRewindActionPerformed"/>
@@ -438,7 +464,9 @@
           <SubComponents>
             <Component class="javax.swing.JButton" name="jButton6">
               <Properties>
-                <Property name="text" type="java.lang.String" value="CSV&#x30d5;&#x30a1;&#x30a4;&#x30eb;&#x9078;&#x629e;"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="CSV&#x30d5;&#x30a1;&#x30a4;&#x30eb;&#x9078;&#x629e;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton6ActionPerformed"/>
@@ -454,7 +482,9 @@
             </Component>
             <Component class="javax.swing.JButton" name="csvParamAdd">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&#x8ffd;&#x52a0;"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="&#x8ffd;&#x52a0;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
                 <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[107, 23]"/>
                 </Property>
@@ -471,7 +501,9 @@
             </Component>
             <Component class="javax.swing.JButton" name="csvParamDel">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&#x524a;&#x9664;"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="&#x524a;&#x9664;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
                 <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[107, 23]"/>
                 </Property>
@@ -488,7 +520,9 @@
             </Component>
             <Component class="javax.swing.JButton" name="csvParamUP">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&#x25b2;UP  "/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="&#x25b2;UP  " replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
                 <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[107, 23]"/>
                 </Property>
@@ -502,7 +536,9 @@
             </Component>
             <Component class="javax.swing.JButton" name="csvParamDOWN">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&#x25bc;DOWN"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="&#x25bc;DOWN" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
                 <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[107, 23]"/>
                 </Property>
@@ -519,7 +555,9 @@
             </Component>
             <Component class="javax.swing.JButton" name="csvParamRegexTest">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&#x6b63;&#x898f;&#x8868;&#x73fe;&#x30c6;&#x30b9;&#x30c8;"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="&#x6b63;&#x898f;&#x8868;&#x73fe;&#x30c6;&#x30b9;&#x30c8;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="csvParamRegexTestActionPerformed"/>
@@ -535,7 +573,9 @@
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel6">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&#x7f6e;&#x63db;&#x5bfe;&#x8c61;&#x30d1;&#x30b9;"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="&#x7f6e;&#x63db;&#x5bfe;&#x8c61;&#x30d1;&#x30b9;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </Properties>
             </Component>
             <Container class="javax.swing.JScrollPane" name="jScrollPane4">
@@ -626,8 +666,12 @@
                 <Component class="javax.swing.JCheckBox" name="CSVrewind">
                   <Properties>
                     <Property name="selected" type="boolean" value="true"/>
-                    <Property name="text" type="java.lang.String" value="&#x30ab;&#x30a6;&#x30f3;&#x30bf;&#x3092;&#x521d;&#x671f;&#x5316;&#x3059;&#x308b;"/>
-                    <Property name="toolTipText" type="java.lang.String" value="&lt;HTML&gt;&#x30ab;&#x30a6;&#x30f3;&#x30bf;&#x3092;&#x521d;&#x671f;&#x5024;&#x3067;&#x521d;&#x671f;&#x5316;&#x3059;&#x308b;&#x969b;&#x306f;&#x3001;&#x30c1;&#x30a7;&#x30c3;&#x30af;"/>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="burp/Bundle.properties" key="&#x30ab;&#x30a6;&#x30f3;&#x30bf;&#x3092;&#x521d;&#x671f;&#x5316;&#x3059;&#x308b;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                    </Property>
+                    <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="burp/Bundle.properties" key="&lt;HTML&gt;&#x30ab;&#x30a6;&#x30f3;&#x30bf;&#x3092;&#x521d;&#x671f;&#x5024;&#x3067;&#x521d;&#x671f;&#x5316;&#x3059;&#x308b;&#x969b;&#x306f;&#x3001;&#x30c1;&#x30a7;&#x30c3;&#x30af;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                    </Property>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="CSVrewindActionPerformed"/>
@@ -707,7 +751,9 @@
           <SubComponents>
             <Component class="javax.swing.JButton" name="nParamAdd4">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&#x8ffd;&#x52a0;"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="&#x8ffd;&#x52a0;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="nParamAdd4ActionPerformed"/>
@@ -715,7 +761,9 @@
             </Component>
             <Component class="javax.swing.JButton" name="nParamDel12">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&#x524a;&#x9664;"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="&#x524a;&#x9664;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="nParamDel12ActionPerformed"/>
@@ -723,7 +771,9 @@
             </Component>
             <Component class="javax.swing.JButton" name="nParamDel13">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&#x25b2;UP  "/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="&#x25b2;UP  " replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="nParamDel13ActionPerformed"/>
@@ -731,7 +781,9 @@
             </Component>
             <Component class="javax.swing.JButton" name="nParamDel14">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&#x25bc;DOWN"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="&#x25bc;DOWN" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="nParamDel14ActionPerformed"/>
@@ -739,7 +791,9 @@
             </Component>
             <Component class="javax.swing.JButton" name="jButton10">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&#x6b63;&#x898f;&#x8868;&#x73fe;&#x30c6;&#x30b9;&#x30c8;"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="&#x6b63;&#x898f;&#x8868;&#x73fe;&#x30c6;&#x30b9;&#x30c8;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton10ActionPerformed"/>
@@ -844,7 +898,9 @@
             </Container>
             <Component class="javax.swing.JLabel" name="jLabel9">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&#x7f6e;&#x63db;&#x5bfe;&#x8c61;&#x30d1;&#x30b9;"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="&#x7f6e;&#x63db;&#x5bfe;&#x8c61;&#x30d1;&#x30b9;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="trackTargetURL">
@@ -939,7 +995,9 @@
           <SubComponents>
             <Component class="javax.swing.JLabel" name="jLabel1">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&#x5bfe;&#x8c61;&#x30d1;&#x30b9;"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="&#x5bfe;&#x8c61;&#x30d1;&#x30b9;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="tamperTargetURL">
@@ -1041,7 +1099,9 @@
             </Container>
             <Component class="javax.swing.JButton" name="addTamper">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&#x8ffd;&#x52a0;"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="&#x8ffd;&#x52a0;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="addTamperActionPerformed"/>
@@ -1049,7 +1109,9 @@
             </Component>
             <Component class="javax.swing.JButton" name="upTamper">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&#x25b2;"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="&#x25b2;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="upTamperActionPerformed"/>
@@ -1057,7 +1119,9 @@
             </Component>
             <Component class="javax.swing.JButton" name="delTamper">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&#x524a;&#x9664;"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="&#x524a;&#x9664;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="delTamperActionPerformed"/>
@@ -1065,7 +1129,9 @@
             </Component>
             <Component class="javax.swing.JButton" name="downTamper">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&#x25bc;"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="&#x25bc;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="downTamperActionPerformed"/>
@@ -1073,7 +1139,9 @@
             </Component>
             <Component class="javax.swing.JButton" name="modTamper">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&#x7de8;&#x96c6;"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="&#x7de8;&#x96c6;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="modTamperActionPerformed"/>
@@ -1081,7 +1149,9 @@
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel4">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&#x30d1;&#x30bf;&#x30fc;&#x30f3;"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="&#x30d1;&#x30bf;&#x30fc;&#x30f3;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="AttackPatternFile">
@@ -1097,7 +1167,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="SaveParm">
       <Properties>
-        <Property name="text" type="java.lang.String" value="&#x4fdd;&#x5b58;"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="burp/Bundle.properties" key="&#x4fdd;&#x5b58;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+        </Property>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="SaveParmActionPerformed"/>
@@ -1105,7 +1177,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="CancelParm">
       <Properties>
-        <Property name="text" type="java.lang.String" value="&#x53d6;&#x6d88;"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="burp/Bundle.properties" key="&#x53d6;&#x6d88;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+        </Property>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="CancelParmActionPerformed"/>
@@ -1113,7 +1187,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="RequestSelectBtn">
       <Properties>
-        <Property name="text" type="java.lang.String" value="&#x30ea;&#x30af;&#x30a8;&#x30b9;&#x30c8;/&#x30ec;&#x30b9;&#x30dd;&#x30f3;&#x30b9;&#x9078;&#x629e;&#x3059;&#x308b;"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="burp/Bundle.properties" key="&#x30ea;&#x30af;&#x30a8;&#x30b9;&#x30c8;/&#x30ec;&#x30b9;&#x30dd;&#x30f3;&#x30b9;&#x9078;&#x629e;&#x3059;&#x308b;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+        </Property>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="RequestSelectBtnActionPerformed"/>

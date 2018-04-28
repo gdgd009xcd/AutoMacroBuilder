@@ -7,6 +7,7 @@ package burp;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.ResourceBundle;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
@@ -20,6 +21,8 @@ import javax.swing.table.TableColumnModel;
  */
 
 public class ParmGenTop extends javax.swing.JFrame {
+
+    private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
 
     public ParmGenCSV csv;//CSVファイル
     DefaultTableModel model = null;
@@ -211,47 +214,47 @@ public class ParmGenTop extends javax.swing.JFrame {
         Load = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("ParmGenトップ画面");
+        setTitle(bundle.getString("ParmGenTop.PARMGENトップ画面.text")); // NOI18N
 
-        jLabel1.setText("文字コード");
+        jLabel1.setText(bundle.getString("ParmGenTop.文字コード.text")); // NOI18N
 
         LANGUAGE.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "SJIS", "EUC-JP", "UTF-8", "ISO8859-1", "x-MacCentralEurope" }));
-        LANGUAGE.setToolTipText("文字コード");
+        LANGUAGE.setToolTipText(bundle.getString("ParmGenTop.文字コード.text")); // NOI18N
         LANGUAGE.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 LANGUAGEActionPerformed(evt);
             }
         });
 
-        Add.setText("新規");
+        Add.setText(bundle.getString("ParmGenTop.新規.text")); // NOI18N
         Add.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 AddActionPerformed(evt);
             }
         });
 
-        Mod.setText("修正");
+        Mod.setText(bundle.getString("ParmGenTop.修正.text")); // NOI18N
         Mod.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ModActionPerformed(evt);
             }
         });
 
-        Del.setText("削除");
+        Del.setText(bundle.getString("ParmGenTop.削除.text")); // NOI18N
         Del.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 DelActionPerformed(evt);
             }
         });
 
-        Save.setText("保存");
+        Save.setText(bundle.getString("ParmGenTop.保存.text")); // NOI18N
         Save.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 SaveActionPerformed(evt);
             }
         });
 
-        Cancel.setText("閉じる");
+        Cancel.setText(bundle.getString("ParmGenTop.閉じる.text")); // NOI18N
         Cancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 CancelActionPerformed(evt);
@@ -289,14 +292,21 @@ public class ParmGenTop extends javax.swing.JFrame {
         jScrollPane1.setViewportView(ParamTopList);
         if (ParamTopList.getColumnModel().getColumnCount() > 0) {
             ParamTopList.getColumnModel().getColumn(0).setPreferredWidth(35);
+            ParamTopList.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("ParmGenTop.title0.text")); // NOI18N
             ParamTopList.getColumnModel().getColumn(1).setPreferredWidth(200);
+            ParamTopList.getColumnModel().getColumn(1).setHeaderValue(bundle.getString("ParmGenTop.title1.text")); // NOI18N
             ParamTopList.getColumnModel().getColumn(2).setPreferredWidth(150);
+            ParamTopList.getColumnModel().getColumn(2).setHeaderValue(bundle.getString("ParmGenTop.title2.text")); // NOI18N
             ParamTopList.getColumnModel().getColumn(3).setPreferredWidth(40);
+            ParamTopList.getColumnModel().getColumn(3).setHeaderValue(bundle.getString("ParmGenTop.title3.text")); // NOI18N
             ParamTopList.getColumnModel().getColumn(4).setPreferredWidth(60);
+            ParamTopList.getColumnModel().getColumn(4).setHeaderValue(bundle.getString("ParmGenTop.title4.text")); // NOI18N
             ParamTopList.getColumnModel().getColumn(5).setPreferredWidth(200);
+            ParamTopList.getColumnModel().getColumn(5).setHeaderValue(bundle.getString("ParmGenTop.title5.text")); // NOI18N
+            ParamTopList.getColumnModel().getColumn(6).setHeaderValue(bundle.getString("ParmGenTop.title6.text")); // NOI18N
         }
 
-        LogfileOnOff.setText("ログファイル出力");
+        LogfileOnOff.setText(bundle.getString("ParmGenTop.ログファイル出力.text")); // NOI18N
         LogfileOnOff.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 LogfileOnOffActionPerformed(evt);
@@ -306,7 +316,7 @@ public class ParmGenTop extends javax.swing.JFrame {
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("対象機能"));
 
         ProxyScope.setSelected(true);
-        ProxyScope.setText("Proxy");
+        ProxyScope.setText(bundle.getString("ParmGenTop.PROXY.text")); // NOI18N
         ProxyScope.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ProxyScopeActionPerformed(evt);
@@ -314,7 +324,7 @@ public class ParmGenTop extends javax.swing.JFrame {
         });
 
         IntruderScope.setSelected(true);
-        IntruderScope.setText("intruder");
+        IntruderScope.setText(bundle.getString("ParmGenTop.INTRUDER.text")); // NOI18N
         IntruderScope.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 IntruderScopeActionPerformed(evt);
@@ -322,7 +332,7 @@ public class ParmGenTop extends javax.swing.JFrame {
         });
 
         ScannerScope.setSelected(true);
-        ScannerScope.setText("scanner");
+        ScannerScope.setText(bundle.getString("ParmGenTop.SCANNER.text")); // NOI18N
         ScannerScope.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ScannerScopeActionPerformed(evt);
@@ -330,7 +340,7 @@ public class ParmGenTop extends javax.swing.JFrame {
         });
 
         RepeaterScope.setSelected(true);
-        RepeaterScope.setText("repeater");
+        RepeaterScope.setText(bundle.getString("ParmGenTop.REPEATER.text")); // NOI18N
         RepeaterScope.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 RepeaterScopeActionPerformed(evt);
@@ -361,9 +371,9 @@ public class ParmGenTop extends javax.swing.JFrame {
                 .addComponent(RepeaterScope))
         );
 
-        jLabel2.setText("注意：処理実行前に、この画面は保存または閉じるボタンで閉じてください。");
+        jLabel2.setText(bundle.getString("ParmGenTop.注意：処理実行前に、この画面は保存または閉じるボタンで閉じてください。.text")); // NOI18N
 
-        Load.setText("ロード");
+        Load.setText(bundle.getString("ParmGenTop.ロード.text")); // NOI18N
         Load.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 LoadActionPerformed(evt);

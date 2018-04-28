@@ -6,6 +6,7 @@ package burp;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.ResourceBundle;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -14,7 +15,7 @@ import javax.swing.table.DefaultTableModel;
  * @author tms783
  */
 public class ParmGenCSVLoader extends javax.swing.JFrame {
-
+    private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
     String csvfile;
     FileReadLine frn;
     DefaultTableModel model;
@@ -35,7 +36,7 @@ public class ParmGenCSVLoader extends javax.swing.JFrame {
     public boolean  readOneLine(){
         ArrayList<String> columns = frn.readColumns();
         if(columns==null){
-            JOptionPane.showMessageDialog(this, "ＣＳＶファイル読み込み失敗", "CSVファイル読み込み", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, bundle.getString("ParmGenCSVLoader.ＣＳＶファイル読み込み失敗.text"), bundle.getString("ParmGenCSVLoader.CSVファイル読み込み.text"), JOptionPane.ERROR_MESSAGE);
             return false;
         }else{
             while(model.getRowCount()>0){
@@ -67,16 +68,16 @@ public class ParmGenCSVLoader extends javax.swing.JFrame {
         ReadNext = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("CSVカラム選択");
+        setTitle(bundle.getString("ParmGenCSVLoader.CSVカラム選択.text")); // NOI18N
 
-        CSelect.setText("選択");
+        CSelect.setText(bundle.getString("ParmGenCSVLoader.選択.text")); // NOI18N
         CSelect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 CSelectActionPerformed(evt);
             }
         });
 
-        Cancel.setText("取消");
+        Cancel.setText(bundle.getString("ParmGenCSVLoader.取消.text")); // NOI18N
         Cancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 CancelActionPerformed(evt);
@@ -102,9 +103,9 @@ public class ParmGenCSVLoader extends javax.swing.JFrame {
         ColumnTable.setToolTipText("<HTML>\n追加するカラムを選択し、ＯＫボタンを押す。");
         jScrollPane1.setViewportView(ColumnTable);
 
-        jLabel1.setText("<HTML> カラムを下記一覧から選択し、選択ボタンを押す。");
+        jLabel1.setText(bundle.getString("ParmGenCSVLoader.<HTML> カラムを下記一覧から選択し、選択ボタンを押す。.text")); // NOI18N
 
-        ReadNext.setText("次レコード読み込み");
+        ReadNext.setText(bundle.getString("ParmGenCSVLoader.次レコード読み込み.text")); // NOI18N
         ReadNext.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ReadNextActionPerformed(evt);
@@ -164,7 +165,7 @@ public class ParmGenCSVLoader extends javax.swing.JFrame {
                 ParmVars.session.put(i, ParmGenSession.K_COLUMN, Integer.toString(colpos));
             }
             dispose();
-            new SelectRequest("リクエスト選択", parentwin, new ParmGenAddParms((ParmGenNew)parentwin, true), ParmGenNew.P_REQUESTTAB).setVisible(true);
+            new SelectRequest(bundle.getString("ParmGenCSVLoader.リクエスト選択.text"), parentwin, new ParmGenAddParms((ParmGenNew)parentwin, true), ParmGenNew.P_REQUESTTAB).setVisible(true);
         }
     }//GEN-LAST:event_CSelectActionPerformed
 

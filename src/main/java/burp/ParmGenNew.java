@@ -5,6 +5,7 @@
 package burp;
 
 import java.io.File;
+import java.util.ResourceBundle;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
@@ -30,6 +31,7 @@ public class ParmGenNew extends javax.swing.JFrame implements InterfaceRegex, in
     //
     public final static int P_REQUESTTAB = 0;
     public final static int P_RESPONSETAB = 1;
+    private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
 
 
     int current_model;
@@ -73,6 +75,7 @@ public class ParmGenNew extends javax.swing.JFrame implements InterfaceRegex, in
 
         addJComboBoxToJTable();
 
+        ModelTabs.setEnabledAt(3, false);
         PRequestResponse mess = parentwin.csv.proxy_messages.get(0);
         String _url = mess.request.getURL();
         String _requestmess = mess.request.getMessage();
@@ -116,7 +119,7 @@ public class ParmGenNew extends javax.swing.JFrame implements InterfaceRegex, in
         setAppParmsIni();
 
 
-        ResponseArea.setToolTipText("<html>※追跡パラメータの登録方法<BR>追跡する値を選択し、追加ボタンを押す。</html>");
+        ResponseArea.setToolTipText(bundle.getString("ParmGenNew.<HTML>※追跡パラメータの登録方法<BR>追跡する値を選択し、追加ボタンを押す。</HTML>.text"));
 
         ModelTabs.setSelectedIndex(current_model);
 
@@ -516,7 +519,7 @@ private void setAppParmsIni(){
         selected_responseURL = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("ParmGen編集画面");
+        setTitle(bundle.getString("ParmGenNew.PARMGEN編集画面.text")); // NOI18N
 
         ModelTabs.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -524,28 +527,28 @@ private void setAppParmsIni(){
             }
         });
 
-        NumberRegexTest.setText("正規表現テスト");
+        NumberRegexTest.setText(bundle.getString("ParmGenNew.正規表現テスト.text")); // NOI18N
         NumberRegexTest.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 NumberRegexTestActionPerformed(evt);
             }
         });
 
-        nParamDel.setText("削除");
+        nParamDel.setText(bundle.getString("ParmGenNew.削除.text")); // NOI18N
         nParamDel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 nParamDelActionPerformed(evt);
             }
         });
 
-        nParamUP.setText("▲UP  ");
+        nParamUP.setText(bundle.getString("ParmGenNew.▲UP  .text")); // NOI18N
         nParamUP.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 nParamUPActionPerformed(evt);
             }
         });
 
-        nParamDOWN.setText("▼DOWN");
+        nParamDOWN.setText(bundle.getString("ParmGenNew.▼DOWN.text")); // NOI18N
         nParamDOWN.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 nParamDOWNActionPerformed(evt);
@@ -580,7 +583,7 @@ private void setAppParmsIni(){
             nParamTable.getColumnModel().getColumn(2).setPreferredWidth(150);
         }
 
-        nParamAdd.setText("追加");
+        nParamAdd.setText(bundle.getString("ParmGenNew.追加.text")); // NOI18N
         nParamAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 nParamAddActionPerformed(evt);
@@ -594,24 +597,24 @@ private void setAppParmsIni(){
             }
         });
 
-        jLabel5.setText("置換対象パス");
+        jLabel5.setText(bundle.getString("ParmGenNew.置換対象パス.text")); // NOI18N
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("カウンタ初期値"));
 
-        jLabel2.setText("初期値");
+        jLabel2.setText(bundle.getString("ParmGenNew.初期値.text")); // NOI18N
 
         NumberInit.setText("1");
-        NumberInit.setToolTipText("最大2147483647まで");
+        NumberInit.setToolTipText(bundle.getString("ParmGenNew.最大2147483647まで.text")); // NOI18N
         NumberInit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 NumberInitActionPerformed(evt);
             }
         });
 
-        jLabel3.setText("桁数");
+        jLabel3.setText(bundle.getString("ParmGenNew.桁数.text")); // NOI18N
 
         NumberLen.setText("4");
-        NumberLen.setToolTipText("最大10ケタまで");
+        NumberLen.setToolTipText(bundle.getString("ParmGenNew.最大10ケタまで.text")); // NOI18N
         NumberLen.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 NumberLenActionPerformed(evt);
@@ -619,8 +622,8 @@ private void setAppParmsIni(){
         });
 
         NumberRewind.setSelected(true);
-        NumberRewind.setText("カウンタを初期化する");
-        NumberRewind.setToolTipText("<HTML>カウンタを初期値で初期化する場合は、チェック");
+        NumberRewind.setText(bundle.getString("ParmGenNew.カウンタを初期化する.text")); // NOI18N
+        NumberRewind.setToolTipText(bundle.getString("ParmGenNew.<HTML>カウンタを初期値で初期化する場合は、チェック.text")); // NOI18N
         NumberRewind.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 NumberRewindActionPerformed(evt);
@@ -710,7 +713,7 @@ private void setAppParmsIni(){
 
         ModelTabs.addTab("数値", SeqNumber);
 
-        jButton6.setText("CSVファイル選択");
+        jButton6.setText(bundle.getString("ParmGenNew.CSVファイル選択.text")); // NOI18N
         jButton6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton6ActionPerformed(evt);
@@ -724,7 +727,7 @@ private void setAppParmsIni(){
             }
         });
 
-        csvParamAdd.setText("追加");
+        csvParamAdd.setText(bundle.getString("ParmGenNew.追加.text")); // NOI18N
         csvParamAdd.setMaximumSize(new java.awt.Dimension(107, 23));
         csvParamAdd.setMinimumSize(new java.awt.Dimension(107, 23));
         csvParamAdd.setPreferredSize(new java.awt.Dimension(107, 23));
@@ -734,7 +737,7 @@ private void setAppParmsIni(){
             }
         });
 
-        csvParamDel.setText("削除");
+        csvParamDel.setText(bundle.getString("ParmGenNew.削除.text")); // NOI18N
         csvParamDel.setMaximumSize(new java.awt.Dimension(107, 23));
         csvParamDel.setMinimumSize(new java.awt.Dimension(107, 23));
         csvParamDel.setPreferredSize(new java.awt.Dimension(107, 23));
@@ -744,7 +747,7 @@ private void setAppParmsIni(){
             }
         });
 
-        csvParamUP.setText("▲UP  ");
+        csvParamUP.setText(bundle.getString("ParmGenNew.▲UP  .text")); // NOI18N
         csvParamUP.setMaximumSize(new java.awt.Dimension(107, 23));
         csvParamUP.setMinimumSize(new java.awt.Dimension(107, 23));
         csvParamUP.addActionListener(new java.awt.event.ActionListener() {
@@ -753,7 +756,7 @@ private void setAppParmsIni(){
             }
         });
 
-        csvParamDOWN.setText("▼DOWN");
+        csvParamDOWN.setText(bundle.getString("ParmGenNew.▼DOWN.text")); // NOI18N
         csvParamDOWN.setMaximumSize(new java.awt.Dimension(107, 23));
         csvParamDOWN.setMinimumSize(new java.awt.Dimension(107, 23));
         csvParamDOWN.setPreferredSize(new java.awt.Dimension(107, 23));
@@ -763,7 +766,7 @@ private void setAppParmsIni(){
             }
         });
 
-        csvParamRegexTest.setText("正規表現テスト");
+        csvParamRegexTest.setText(bundle.getString("ParmGenNew.正規表現テスト.text")); // NOI18N
         csvParamRegexTest.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 csvParamRegexTestActionPerformed(evt);
@@ -777,7 +780,7 @@ private void setAppParmsIni(){
             }
         });
 
-        jLabel6.setText("置換対象パス");
+        jLabel6.setText(bundle.getString("ParmGenNew.置換対象パス.text")); // NOI18N
 
         csvParamTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -810,8 +813,8 @@ private void setAppParmsIni(){
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("カウンタ初期値（読み飛ばし行数）"));
 
         CSVrewind.setSelected(true);
-        CSVrewind.setText("カウンタを初期化する");
-        CSVrewind.setToolTipText("<HTML>カウンタを初期値で初期化する際は、チェック");
+        CSVrewind.setText(bundle.getString("ParmGenNew.カウンタを初期化する.text")); // NOI18N
+        CSVrewind.setToolTipText(bundle.getString("ParmGenNew.<HTML>カウンタを初期値で初期化する際は、チェック.text")); // NOI18N
         CSVrewind.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 CSVrewindActionPerformed(evt);
@@ -904,35 +907,35 @@ private void setAppParmsIni(){
 
         ModelTabs.addTab("ＣＳＶ", SeqCSV);
 
-        nParamAdd4.setText("追加");
+        nParamAdd4.setText(bundle.getString("ParmGenNew.追加.text")); // NOI18N
         nParamAdd4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 nParamAdd4ActionPerformed(evt);
             }
         });
 
-        nParamDel12.setText("削除");
+        nParamDel12.setText(bundle.getString("ParmGenNew.削除.text")); // NOI18N
         nParamDel12.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 nParamDel12ActionPerformed(evt);
             }
         });
 
-        nParamDel13.setText("▲UP  ");
+        nParamDel13.setText(bundle.getString("ParmGenNew.▲UP  .text")); // NOI18N
         nParamDel13.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 nParamDel13ActionPerformed(evt);
             }
         });
 
-        nParamDel14.setText("▼DOWN");
+        nParamDel14.setText(bundle.getString("ParmGenNew.▼DOWN.text")); // NOI18N
         nParamDel14.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 nParamDel14ActionPerformed(evt);
             }
         });
 
-        jButton10.setText("正規表現テスト");
+        jButton10.setText(bundle.getString("ParmGenNew.正規表現テスト.text")); // NOI18N
         jButton10.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton10ActionPerformed(evt);
@@ -967,7 +970,7 @@ private void setAppParmsIni(){
             trackTable.getColumnModel().getColumn(2).setPreferredWidth(150);
         }
 
-        jLabel9.setText("置換対象パス");
+        jLabel9.setText(bundle.getString("ParmGenNew.置換対象パス.text")); // NOI18N
 
         trackTargetURL.setText(".*/input.php.*");
         trackTargetURL.addActionListener(new java.awt.event.ActionListener() {
@@ -1022,7 +1025,7 @@ private void setAppParmsIni(){
 
         ModelTabs.addTab("追跡", SeqResponse);
 
-        jLabel1.setText("対象パス");
+        jLabel1.setText(bundle.getString("ParmGenNew.対象パス.text")); // NOI18N
 
         tamperTargetURL.setText("jTextField1");
 
@@ -1048,42 +1051,42 @@ private void setAppParmsIni(){
         tamperTable.getTableHeader().setReorderingAllowed(false);
         jScrollPane5.setViewportView(tamperTable);
 
-        addTamper.setText("追加");
+        addTamper.setText(bundle.getString("ParmGenNew.追加.text")); // NOI18N
         addTamper.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addTamperActionPerformed(evt);
             }
         });
 
-        upTamper.setText("▲");
+        upTamper.setText(bundle.getString("ParmGenNew.▲.text")); // NOI18N
         upTamper.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 upTamperActionPerformed(evt);
             }
         });
 
-        delTamper.setText("削除");
+        delTamper.setText(bundle.getString("ParmGenNew.削除.text")); // NOI18N
         delTamper.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 delTamperActionPerformed(evt);
             }
         });
 
-        downTamper.setText("▼");
+        downTamper.setText(bundle.getString("ParmGenNew.▼.text")); // NOI18N
         downTamper.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 downTamperActionPerformed(evt);
             }
         });
 
-        modTamper.setText("編集");
+        modTamper.setText(bundle.getString("ParmGenNew.編集.text")); // NOI18N
         modTamper.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 modTamperActionPerformed(evt);
             }
         });
 
-        jLabel4.setText("パターン");
+        jLabel4.setText(bundle.getString("ParmGenNew.パターン.text")); // NOI18N
 
         AttackPatternFile.setText("jTextField1");
 
@@ -1145,21 +1148,21 @@ private void setAppParmsIni(){
 
         ModelTabs.addTab("Tamper", SeqRandom);
 
-        SaveParm.setText("保存");
+        SaveParm.setText(bundle.getString("ParmGenNew.保存.text")); // NOI18N
         SaveParm.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 SaveParmActionPerformed(evt);
             }
         });
 
-        CancelParm.setText("取消");
+        CancelParm.setText(bundle.getString("ParmGenNew.取消.text")); // NOI18N
         CancelParm.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 CancelParmActionPerformed(evt);
             }
         });
 
-        RequestSelectBtn.setText("リクエスト/レスポンス選択する");
+        RequestSelectBtn.setText(bundle.getString("ParmGenNew.リクエスト/レスポンス選択する.text")); // NOI18N
         RequestSelectBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 RequestSelectBtnActionPerformed(evt);
@@ -1345,7 +1348,7 @@ private void setAppParmsIni(){
         ParmVars.session.clear();
         //new ResponseTracker(this).setVisible(true);
        //new SelectRequest("レスポンス選択", this, new ResponseTracker(this), ParmGenNew.P_RESPONSETAB).setVisible(true);
-        new SelectRequest("レスポンス選択", this, new ParmGenAutoTrack(this), ParmGenNew.P_RESPONSETAB).setVisible(true);
+        new SelectRequest(bundle.getString("ParmGenNew.レスポンス選択.text"), this, new ParmGenAutoTrack(this), ParmGenNew.P_RESPONSETAB).setVisible(true);
     }//GEN-LAST:event_nParamAdd4ActionPerformed
 
     private void numberTargetURLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_numberTargetURLActionPerformed
@@ -1369,7 +1372,7 @@ private void setAppParmsIni(){
 
     private void RequestSelectBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RequestSelectBtnActionPerformed
         // TODO add your handling code here:
-        new SelectRequest("リクエスト選択", this, null, -1).setVisible(true);
+        new SelectRequest(bundle.getString("ParmGenNew.リクエスト選択.text"), this, null, -1).setVisible(true);
     }//GEN-LAST:event_RequestSelectBtnActionPerformed
 
     private void SaveParmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveParmActionPerformed
@@ -1517,7 +1520,7 @@ private void setAppParmsIni(){
             current_model = i;
             switch(current_model){
                 case P_TRACKMODEL:
-                    ResReqTabs.add("レスポンス", ResPanel);
+                    ResReqTabs.add(bundle.getString("ParmGenNew.レスポンス.text"), ResPanel);
                     ResReqTabs.setSelectedIndex(P_REQUESTTAB);
                     break;
                 default:

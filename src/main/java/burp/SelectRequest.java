@@ -6,6 +6,7 @@ package burp;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
@@ -20,6 +21,8 @@ import javax.swing.text.SimpleAttributeSet;
  * @author tms783
  */
 public class SelectRequest extends javax.swing.JDialog {
+
+    private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
 
        DefaultTableModel model;
        interfaceParmGenWin pgenwin;
@@ -61,9 +64,9 @@ public class SelectRequest extends javax.swing.JDialog {
         P_proxy_messages = proxy_messages;
 
         // Create a couple of columns
-        model.addColumn("Method");
-        model.addColumn("URL");
-        model.addColumn("Status");
+        model.addColumn(bundle.getString("SelectRequest.METHOD.text"));
+        model.addColumn(bundle.getString("SelectRequest.URL.text"));
+        model.addColumn(bundle.getString("SelectRequest.STATUS.text"));
         
         if ( proxy_messages != null){
             for(int i=0; i< proxy_messages.size();i++){
@@ -100,7 +103,7 @@ public class SelectRequest extends javax.swing.JDialog {
         ResponseEntity = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("リクエスト選択");
+        setTitle(bundle.getString("SelectRequest.リクエスト選択.text")); // NOI18N
 
         RequestTable.setModel(model);
         RequestTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
@@ -111,21 +114,21 @@ public class SelectRequest extends javax.swing.JDialog {
         });
         jScrollPane1.setViewportView(RequestTable);
 
-        MessageSelected.setText("OK");
+        MessageSelected.setText(bundle.getString("SelectRequest.OK.text")); // NOI18N
         MessageSelected.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 MessageSelectedActionPerformed(evt);
             }
         });
 
-        jButton2.setText("取消");
+        jButton2.setText(bundle.getString("SelectRequest.取消.text")); // NOI18N
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
             }
         });
 
-        jLabel1.setText("リクエストを下記一覧から選択し、ＯＫボタンで選択。");
+        jLabel1.setText(bundle.getString("SelectRequest.リクエストを下記一覧から選択し、ＯＫボタンで選択。.text")); // NOI18N
 
         RequestEntity.setColumns(20);
         RequestEntity.setRows(5);
@@ -149,7 +152,7 @@ public class SelectRequest extends javax.swing.JDialog {
                 .addGap(36, 36, 36))
         );
 
-        jTabbedPane1.addTab("request", jPanel1);
+        jTabbedPane1.addTab(bundle.getString("SelectRequest.REQUEST.text"), jPanel1); // NOI18N
 
         ResponseEntity.setColumns(20);
         ResponseEntity.setRows(5);
@@ -172,7 +175,7 @@ public class SelectRequest extends javax.swing.JDialog {
                 .addGap(35, 35, 35))
         );
 
-        jTabbedPane1.addTab("response", jPanel2);
+        jTabbedPane1.addTab(bundle.getString("SelectRequest.RESPONSE.text"), jPanel2); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

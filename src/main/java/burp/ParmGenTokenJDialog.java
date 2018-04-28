@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.ResourceBundle;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -16,6 +17,8 @@ import javax.swing.table.DefaultTableModel;
  * @author daike
  */
 public class ParmGenTokenJDialog extends javax.swing.JDialog {
+
+    private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
     List<AppParmsIni> newparms = null;
     ParmGenMacroTrace pmt = null;
     
@@ -96,6 +99,10 @@ public class ParmGenTokenJDialog extends javax.swing.JDialog {
         });
         TrackTkTable.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(TrackTkTable);
+        if (TrackTkTable.getColumnModel().getColumnCount() > 0) {
+            TrackTkTable.getColumnModel().getColumn(1).setHeaderValue(bundle.getString("ParmGenTokenJDialog.title1.text")); // NOI18N
+            TrackTkTable.getColumnModel().getColumn(3).setHeaderValue(bundle.getString("ParmGenTokenJDialog.title3.text")); // NOI18N
+        }
 
         OK.setText("OK");
         OK.addActionListener(new java.awt.event.ActionListener() {
@@ -111,7 +118,7 @@ public class ParmGenTokenJDialog extends javax.swing.JDialog {
             }
         });
 
-        jLabel1.setText("追跡するパラメータを指定してください。");
+        jLabel1.setText(bundle.getString("ParmGenTokenJDialog.追跡するパラメータを指定してください。.text")); // NOI18N
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);

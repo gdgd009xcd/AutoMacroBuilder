@@ -6,6 +6,7 @@ package burp;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -25,6 +26,7 @@ public class ResponseTracker extends javax.swing.JFrame implements InterfaceRege
     public static final int T_NAME = 0;
     public static final int T_VALUE = 1;
     public static final int T_OPTIONTITLE = 2;
+    private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
 
     
     // 正規表現適用順序
@@ -386,21 +388,21 @@ public class ResponseTracker extends javax.swing.JFrame implements InterfaceRege
         FixedValue = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("レスポンス追跡");
+        setTitle(bundle.getString("ResponseTracker.レスポンス追跡.text")); // NOI18N
 
-        RegexTextBtn.setText("2)正規表現テスト");
+        RegexTextBtn.setText(bundle.getString("ResponseTracker.2)正規表現テスト.text")); // NOI18N
         RegexTextBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 RegexTextBtnActionPerformed(evt);
             }
         });
 
-        jLabel1.setText("<html> 1)表示されたレスポンスの追跡する値をマウスで選択し、値選択ボタンを押す。<BR> 2)正規表現テストボタンで、値が選択されることを確認する。<BR> 3)次へボタンで、リクエスト設定画面へ。");
+        jLabel1.setText(bundle.getString("ResponseTracker.<HTML> 1)表示されたレスポンスの追跡する値をマウスで選択し、値選択ボタンを押す。<BR> 2)正規表現テストボタンで、値が選択されることを確認する。<BR> 3)次へボタンで、リクエスト設定画面へ。.text")); // NOI18N
         jLabel1.setVerticalAlignment(javax.swing.SwingConstants.TOP);
 
         ResponseURL.setText("jTextField1");
 
-        jLabel2.setText("ＵＲＬ");
+        jLabel2.setText(bundle.getString("ResponseTracker.ＵＲＬ.text")); // NOI18N
 
         ResponseArea.setColumns(20);
         ResponseArea.setRows(5);
@@ -408,30 +410,30 @@ public class ResponseTracker extends javax.swing.JFrame implements InterfaceRege
 
         RegexPattern.setText("jTextField2");
 
-        jButton2.setText("1)値選択");
+        jButton2.setText(bundle.getString("ResponseTracker.1)値選択.text")); // NOI18N
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
             }
         });
 
-        jButton3.setText("3)次へ");
+        jButton3.setText(bundle.getString("ResponseTracker.3)次へ.text")); // NOI18N
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
             }
         });
 
-        jButton4.setText("キャンセル");
+        jButton4.setText(bundle.getString("ResponseTracker.キャンセル.text")); // NOI18N
         jButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton4ActionPerformed(evt);
             }
         });
 
-        jLabel3.setText("レスポンス");
+        jLabel3.setText(bundle.getString("ResponseTracker.レスポンス.text")); // NOI18N
 
-        FixedValue.setText("固定長");
+        FixedValue.setText(bundle.getString("ResponseTracker.固定長.text")); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -639,7 +641,7 @@ public class ResponseTracker extends javax.swing.JFrame implements InterfaceRege
         int mcnt = ParmGenUtil.getRegexMatchpos(getRegex(), getOriginal());
         ParmVars.session.put(ParmGenSession.K_RESPONSEPOSITION, Integer.toString(mcnt));
         dispose();
-        new SelectRequest("リクエスト選択", parentwin, new ParmGenAddParms(parentwin, true), ParmGenNew.P_REQUESTTAB).setVisible(true);
+        new SelectRequest(bundle.getString("ResponseTracker.リクエスト選択.text"), parentwin, new ParmGenAddParms(parentwin, true), ParmGenNew.P_REQUESTTAB).setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
 
     /**

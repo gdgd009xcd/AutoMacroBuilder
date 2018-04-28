@@ -69,9 +69,9 @@ public class ParmGenParseURL {
             for(String v : argslist){
               if(i==0){
                 path = v;
-                if(url.endsWith("/")){
-                    path += "/";
-                }
+                //if(url.endsWith("/")){
+                //    path += "/";
+                //}
               }else{
                 String[] nvp = v.split("=");
 

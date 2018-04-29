@@ -304,7 +304,6 @@
       <SubComponents>
         <Component class="javax.swing.JCheckBox" name="ProxyScope">
           <Properties>
-            <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="burp/Bundle.properties" key="PROXY" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
             </Property>

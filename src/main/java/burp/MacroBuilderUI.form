@@ -142,15 +142,8 @@
                       <Component id="FinalResponse" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" attributes="0">
-                              <Component id="MBExec" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                              <Component id="MBCookieUpdate" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="67" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" attributes="0">
                               <Component id="MBCookieFromJar" min="-2" max="-2" attributes="0"/>
@@ -196,8 +189,6 @@
               </Group>
               <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="MBExec" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="MBCookieUpdate" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="MBCookieFromJar" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="MBResetToOriginal" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="MBfromStepNo" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -414,26 +405,6 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ClearMacroActionPerformed"/>
-      </Events>
-    </Component>
-    <Component class="javax.swing.JCheckBox" name="MBExec">
-      <Properties>
-        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="burp/Bundle.properties" key="&#x5b9f;&#x884c;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
-        </Property>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="MBExecActionPerformed"/>
-      </Events>
-    </Component>
-    <Component class="javax.swing.JCheckBox" name="MBCookieUpdate">
-      <Properties>
-        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="burp/Bundle.properties" key="COOKIE&#x66f4;&#x65b0;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
-        </Property>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="MBCookieUpdateActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JCheckBox" name="MBCookieFromJar">

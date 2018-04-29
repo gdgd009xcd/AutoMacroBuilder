@@ -52,8 +52,8 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
         pmt.setUI(this);
 
-        pmt.setMBExec(MBExec.isSelected());
-        pmt.setMBCookieUpdate(MBCookieUpdate.isSelected());
+
+        
         pmt.setMBCookieFromJar(MBCookieFromJar.isSelected());
         pmt.setMBFinalResponse(FinalResponse.isSelected());
         pmt.setMBResetToOriginal(MBResetToOriginal.isSelected());
@@ -164,8 +164,6 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         MacroComments = new javax.swing.JTextArea();
         custom = new javax.swing.JButton();
         ClearMacro = new javax.swing.JButton();
-        MBExec = new javax.swing.JCheckBox();
-        MBCookieUpdate = new javax.swing.JCheckBox();
         MBCookieFromJar = new javax.swing.JCheckBox();
         jLabel2 = new javax.swing.JLabel();
         waitsec = new javax.swing.JTextField();
@@ -359,20 +357,6 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             }
         });
 
-        MBExec.setText(bundle.getString("MacroBuilderUI.実行.text")); // NOI18N
-        MBExec.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                MBExecActionPerformed(evt);
-            }
-        });
-
-        MBCookieUpdate.setText(bundle.getString("MacroBuilderUI.COOKIE更新.text")); // NOI18N
-        MBCookieUpdate.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                MBCookieUpdateActionPerformed(evt);
-            }
-        });
-
         MBCookieFromJar.setText(bundle.getString("MacroBuilderUI.開始時COOKIE.JARから引き継ぐ.text")); // NOI18N
         MBCookieFromJar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -467,13 +451,8 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                         .addGap(52, 52, 52)
                         .addComponent(FinalResponse))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(MBExec)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(MBCookieUpdate))
-                            .addComponent(jLabel2))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel2)
+                        .addGap(67, 67, 67)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(MBCookieFromJar)
@@ -509,8 +488,6 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                     .addComponent(MBreplaceCookie))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(MBExec)
-                    .addComponent(MBCookieUpdate)
                     .addComponent(MBCookieFromJar)
                     .addComponent(MBResetToOriginal)
                     .addComponent(MBfromStepNo))
@@ -615,20 +592,10 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
     }//GEN-LAST:event_RequestListValueChanged
 
-    private void MBCookieUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MBCookieUpdateActionPerformed
-        // TODO add your handling code here:
-        pmt.setMBCookieUpdate(MBCookieUpdate.isSelected());
-    }//GEN-LAST:event_MBCookieUpdateActionPerformed
-
     private void MBCookieFromJarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MBCookieFromJarActionPerformed
         // TODO add your handling code here:
         pmt.setMBCookieFromJar(MBCookieFromJar.isSelected());
     }//GEN-LAST:event_MBCookieFromJarActionPerformed
-
-    private void MBExecActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MBExecActionPerformed
-        // TODO add your handling code here:
-        pmt.setMBExec(MBExec.isSelected());
-    }//GEN-LAST:event_MBExecActionPerformed
 
     private void jCheckBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox2ActionPerformed
         // TODO add your handling code here:
@@ -1093,8 +1060,6 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     private javax.swing.JMenuItem Intruder;
     private javax.swing.JButton Load;
     private javax.swing.JCheckBox MBCookieFromJar;
-    private javax.swing.JCheckBox MBCookieUpdate;
-    private javax.swing.JCheckBox MBExec;
     private javax.swing.JCheckBox MBResetToOriginal;
     private javax.swing.JCheckBox MBcleatokenfromcache;
     private javax.swing.JCheckBox MBfromStepNo;

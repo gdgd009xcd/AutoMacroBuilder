@@ -37,7 +37,7 @@ public class ParmGenMacroTrace {
     ArrayList<String> set_cookienames = null;//レスポンスのSet-Cookie値の名前リスト
     int selected_request = 0;//現在選択しているカレントのリクエスト
     int stepno = -1;//実行中のリクエスト番号
-    boolean MBExec = false;//==true実行中
+    
     boolean MBCookieUpdate = false;//==true Cookie更新
     boolean MBCookieFromJar = false;//==true 開始時Cookie.jarから引き継ぐ
     boolean MBFinalResponse = false;//==true 結果は最後に実行されたマクロのレスポンス
@@ -87,12 +87,8 @@ public class ParmGenMacroTrace {
         ui = _ui;
     }
 
-    void setMBExec(boolean b){
-        MBExec = b;
-    }
-    void setMBCookieUpdate(boolean b){
-        MBCookieUpdate= b;
-    }
+   
+    
     void setMBCookieFromJar(boolean b){
         MBCookieFromJar = b;
     }

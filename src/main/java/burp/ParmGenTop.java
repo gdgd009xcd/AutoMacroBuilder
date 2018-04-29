@@ -315,7 +315,6 @@ public class ParmGenTop extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("対象機能"));
 
-        ProxyScope.setSelected(true);
         ProxyScope.setText(bundle.getString("ParmGenTop.PROXY.text")); // NOI18N
         ProxyScope.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

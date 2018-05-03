@@ -38,6 +38,8 @@ import javax.json.stream.JsonParser;
 
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 
 
@@ -343,7 +345,7 @@ class AppValue {
 //valparttype,         value, token, tamattack,tamadvance,tamposition,urlencode
 //置換位置,置換しない,  value, Name,  Attack,   Advance,   Position,   URLencode
 	public String valpart;//置換位置
-	public int valparttype;// 0-path, 1-query, 2-body  3-header   16(10000) bit == no count 32(100000) == no modify
+	private int valparttype;// 0-path, 1-query, 2-body  3-header   16(10000) bit == no count 32(100000) == no modify
 	public String value = null;//value リクエストパラメータの正規表現文字列
 	Pattern valueregex;//リクエストパラメータの正規表現
 
@@ -351,7 +353,7 @@ class AppValue {
 	public int col;
 	public String resURL = "";
 	public String resRegex = "";
-	public int resPartType;
+	private int resPartType;
 	public int resRegexPos = -1;//追跡token　ページ内出現位置 0start
 	public String token;//追跡token　Name
         public String resFetchedValue=null;//レスポンスからフェッチしたtokenの値
@@ -733,7 +735,7 @@ class AppValue {
 	}
         * ***/
 
-	String replaceContents(int currentStepNo, AppParmsIni pini, String contents){
+	String replaceContents(int currentStepNo, AppParmsIni pini, String contents, ParmGenHashMap errorhash){
 		if (contents == null)
 			return null;
 		if (valueregex == null)
@@ -747,8 +749,8 @@ class AppValue {
                         tk = new ParmGenTokenKey(AppValue.TokenTypeNames.DEFAULT, token, toStepNo);
 		}
 
-
-
+                String errKeyName = "TypeVal:" + Integer.toString(pini.typeval) + " TargetPart:"+ getValPart() + " TargetRegex:" + value + " ResRegex:" + resRegex + " TokenName:" + token;
+                ParmGenTokenKey errorhash_key = new ParmGenTokenKey(AppValue.TokenTypeNames.DEFAULT, errKeyName, 0);
 		Matcher m = valueregex.matcher(contents);
 
 		String newcontents = "";
@@ -769,23 +771,32 @@ class AppValue {
 				strcnt = pini.getStrCnt(tk,currentStepNo, toStepNo, valparttype, col, csvpos);
 				ParmVars.plog.printLF();
 				boolean isnull = false;
-					if (strcnt != null) {
-						ParmVars.plog.debuglog(0,
-								"******パラメータ正規表現[" + value + "]マッチパターン[" + matchval + "]値[" + strcnt + "]\n");
-						//
-						ParmVars.plog.addComments(
-								"******パラメータ正規表現[" + value + "]マッチパターン[" + matchval + "]値[" + strcnt + "]");
-					} else {
-						ParmVars.plog.debuglog(0,
-								"ERROR*パラメータ正規表現[" + value + "]マッチパターン[" + matchval + "]値が取得できません。\n");
-						ParmVars.plog
-								.addComments("ERROR*パラメータ正規表現[" + value + "]マッチパターン[" + matchval + "]値が取得できません。");
-						isnull = true;
-					}
+                                ParmGenTokenValue errorhash_value = null;
+                                if (strcnt != null) {
+                                        ParmVars.plog.debuglog(0,
+                                                        java.text.MessageFormat.format(java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGen.parameter_regex_msg1.text"), new Object[] {value, matchval, token, strcnt}));
+                                        //
+                                        ParmVars.plog.addComments(
+                                                        java.text.MessageFormat.format(java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGen.parameter_regex_msg2.text"), new Object[] {value, matchval, token, strcnt}));
+                                        errorhash_value = new ParmGenTokenValue("", strcnt, true);
+                                        errorhash.put(errorhash_key,errorhash_value);
+                                } else {
+                                        ParmVars.plog.debuglog(0,
+                                                        java.text.MessageFormat.format(java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGen.parameter_regex_err1.text"), new Object[] {value, token, matchval}));
+                                        ParmVars.plog
+                                                        .addComments(java.text.MessageFormat.format(java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGen.parameter_regex_err2.text"), new Object[] {value, token, matchval}));
+                                        isnull = true;
+                                        errorhash_value = new ParmGenTokenValue("", strcnt, false);
+                                        ParmGenTokenValue storederror = errorhash.get(errorhash_key);
+                                        if(storederror==null||storederror.getBoolean()==false){
+                                            errorhash.put(errorhash_key,errorhash_value);
+                                        }
+                                        
+                                }
 
 				if (isnull) {// 値取得失敗時は、オリジナルに戻す。
 					strcnt = matchval;
-					ParmVars.plog.setError(isnull);
+					//ParmVars.plog.setError(isnull);
 				}
 				newcontents += contents.substring(cpt, spt) + strcnt;
 				cpt = ept;
@@ -1016,7 +1027,7 @@ class FileReadLine {
 //
 //
 class AppParmsIni {
-
+        private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
 	public String url;
 	Pattern urlregex;
 	public ArrayList<AppValue> parmlist = null;
@@ -1109,15 +1120,15 @@ class AppParmsIni {
         public String getTypeValDsp(){
             switch(typeval){
                 case T_NUMBER:
-                    return "数値昇順";
+                    return bundle.getString("ParmGen.数値昇順.text");
                 case T_CSV:
-                    return "CSVファイル昇順";
+                    return bundle.getString("ParmGen.CSVファイル昇順.text");
                 case T_RANDOM:
-                    return "乱数";
+                    return bundle.getString("ParmGen.乱数.text");
                 case T_TRACK:
-                    return "追跡";
+                    return bundle.getString("ParmGen.追跡.text");
                 case T_TAMPER:
-                    return "TamperProxy";
+                    return bundle.getString("ParmGen.TAMPERPROXY.text");
             }
             return "";
         }
@@ -1467,6 +1478,7 @@ class AppParmsIni {
                     app.token, app.urlencode, app.fromStepNo, app.toStepNo, app.tokentype.name()};
                 case T_TAMPER:
                     return new Object[] {app.getValPart(), (app.isEnabled()?false:true), app.value,
+app.getValPart(), (app.isEnabled()?false:true), app.value,
                         app.token,
                         app.tamattack,
                         app.tamadvance,
@@ -1487,6 +1499,8 @@ class ParmGen {
 	public static List<AppParmsIni> parmcsv = null;
         public static ArrayList<AppParmsIni> parmjson = null;
         public static ArrayList<AppParmsIni> trackcsv = null;// response tracking
+        private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
+
         public static boolean hasTrackRequest=false;//==true: リクエストを追跡
         public static ParmGenTop twin = null;
         public static boolean ProxyInScope = true;
@@ -1603,7 +1617,7 @@ class ParmGen {
 
 
 
-	PRequest ParseRequest(PRequest prequest,  ParmGenBinUtil boundaryarray, ParmGenBinUtil _contarray, AppParmsIni pini, AppValue av)  {
+	PRequest ParseRequest(PRequest prequest,  ParmGenBinUtil boundaryarray, ParmGenBinUtil _contarray, AppParmsIni pini, AppValue av, ParmGenHashMap errorhash)  {
 
 
 	//	String[] headers=request.getHeaderNames();
@@ -1622,10 +1636,11 @@ class ParmGen {
 		String path = new String(url);
 		ParmVars.plog.debuglog(1, "method[" + method + "] request[" + url + "]");
 		int qpos = -1;
-		switch(av.valparttype & AppValue.C_VTYPE){
+                switch(av.getTypeInt()){
+		//switch(av.valparttype & AppValue.C_VTYPE){
 		case AppValue.V_PATH://path
 			// path = url
-			String n_path = av.replaceContents(pmt.getStepNo(), pini, path);
+			String n_path = av.replaceContents(pmt.getStepNo(), pini, path, errorhash);
 			if (n_path != null && !path.equals(n_path) ){
 				url = n_path;
 				ParmVars.plog.debuglog(1, " Original path[" + path + "]");
@@ -1639,7 +1654,7 @@ class ParmGen {
 			if ((qpos = url.indexOf('?'))!=-1){
 				path = url.substring(0,qpos);
 				String query = url.substring(qpos+1);
-				String n_query = av.replaceContents(pmt.getStepNo(),pini, query);
+				String n_query = av.replaceContents(pmt.getStepNo(),pini, query, errorhash);
                                 ParmVars.plog.debuglog(1, query);
                                 ParmVars.plog.debuglog(1, n_query);
 				if ( n_query!=null && !query.equals(n_query) ){
@@ -1658,7 +1673,7 @@ class ParmGen {
 			int i = 0;
 			for(String[] nv : headers){
 				String hval = nv[0] + ": " + nv[1];//Cookie: value
-				String n_hval = av.replaceContents(pmt.getStepNo(),pini, hval);
+				String n_hval = av.replaceContents(pmt.getStepNo(),pini, hval, errorhash);
 				if (n_hval !=null && !hval.equals(n_hval) ){
 					ParmVars.plog.debuglog(1, " Original header[" + hval + "]");
 					ParmVars.plog.debuglog(1, " Modified header[" + n_hval + "]");
@@ -1682,7 +1697,7 @@ class ParmGen {
                             }catch(UnsupportedEncodingException e){
                                     content = null;
                             }
-                            String n_content = av.replaceContents(pmt.getStepNo(),pini, content);
+                            String n_content = av.replaceContents(pmt.getStepNo(),pini, content, errorhash);
                             if ( n_content != null && !content.equals(n_content) ){
                                     ParmVars.plog.debuglog(1, " Original body[" + content + "]");
                                     ParmVars.plog.debuglog(1, " Modified body[" + n_content + "]");
@@ -1731,7 +1746,7 @@ class ParmGen {
                                     }catch(UnsupportedEncodingException e){
                                             partdatastr = null;
                                     }
-                                    String n_partdatastr = av.replaceContents(pmt.getStepNo(), pini, partdatastr);
+                                    String n_partdatastr = av.replaceContents(pmt.getStepNo(), pini, partdatastr, errorhash);
                                     if(n_partdatastr!=null && partdatastr != null && !partdatastr.equals(n_partdatastr) ){
                                         ParmVars.plog.debuglog(1, " Original body[" + partdatastr + "]");
                                         ParmVars.plog.debuglog(1, " Modified body[" + n_partdatastr + "]");
@@ -1797,7 +1812,8 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                 String rowcolstr = Integer.toString(row) + "," + Integer.toString(col);
 		//String path = new String(url);
 		int qpos = -1;
-		switch(av.resPartType & AppValue.C_VTYPE){
+                switch(av.getResTypeInt()){
+		//switch(av.resPartType & AppValue.C_VTYPE){
 		case AppValue.V_PATH://path
                         //ParmVars.plog.debuglog(0, "ParseResponse: V_PATH " + rowcolstr);
 			break;
@@ -1907,159 +1923,175 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
         }
 
 	byte[] Run(byte[] requestbytes){
-                String request_string = null;
-                try{
-                    request_string = new String(requestbytes, ParmVars.enc.getIANACharset());
-                }catch(Exception e){
-                    ParmVars.plog.printException(e);
-                }
-		ParmGenBinUtil boundaryarray = null;
-		ParmGenBinUtil contarray = null;
+            String request_string = null;
+            try{
+                request_string = new String(requestbytes, ParmVars.enc.getIANACharset());
+            }catch(Exception e){
+                ParmVars.plog.printException(e);
+            }
+            ParmGenBinUtil boundaryarray = null;
+            ParmGenBinUtil contarray = null;
 
 
-		if( parmcsv == null || parmcsv.size()<=0){
-                    //NOP
-                    if(pmt.isRunning()){
-                        PRequest prequest = new PRequest(request_string);
-                        PRequest cookierequest = pmt.configureRequest(prequest);
-                        if(cookierequest!=null) {
-                            return cookierequest.getByteMessage();
-                        }
+            if( parmcsv == null || parmcsv.size()<=0){
+                //NOP
+                if(pmt.isRunning()){
+                    PRequest prequest = new PRequest(request_string);
+                    PRequest cookierequest = pmt.configureRequest(prequest);
+                    if(cookierequest!=null) {
+                        return cookierequest.getByteMessage();
                     }
-		}else{
-			// main loop
-			//Request request = connection.getRequest();
-			PRequest prequest = new PRequest(request_string);
+                }
+            }else{
+                    // error hash
+                    ParmGenHashMap errorhash = new ParmGenHashMap();
+                    
+                    //Request request = connection.getRequest();
+                    PRequest prequest = new PRequest(request_string);
 
-			// check if we have parameters
-			// Construct a new HttpUrl object, since they are immutable
-			// This is a bit of a cheat!
-			//String url = request.getURL().toString();
-			String url = prequest.getURL();
+                    // check if we have parameters
+                    // Construct a new HttpUrl object, since they are immutable
+                    // This is a bit of a cheat!
+                    //String url = request.getURL().toString();
+                    String url = prequest.getURL();
 
-			String content_type =prequest.getHeader("Content-Type");
+                    String content_type =prequest.getHeader("Content-Type");
 
 
-                        boolean hasboundary = false;
-			PRequest tempreq = null;
-			PRequest modreq = null;
-			if ( url != null ){
-
-				AppParmsIni pini = null;
-				ListIterator<AppParmsIni> it = parmcsv.listIterator();
-				while(it.hasNext()) {
-					pini = it.next();
-					Matcher urlmatcher = pini.urlregex.matcher(url);
-					if ( urlmatcher.find() ){
-                                                //Content-Type: multipart/form-data; boundary=---------------------------30333176734664
-                                                if (content_type != null && !content_type.equals("") && hasboundary ==false){//found
-                                                        Pattern ctypepattern = Pattern.compile("multipart/form-data;.*?boundary=(.+)$");
-                                                        Matcher ctypematcher = ctypepattern.matcher(content_type);
-                                                        if ( ctypematcher.find()){
-                                                                String Boundary = ctypematcher.group(1);
-                                                                ParmVars.plog.debuglog(1, "boundary=" + Boundary);
-                                                                Boundary = "--" + Boundary;//
-                                                                boundaryarray = new ParmGenBinUtil(Boundary.getBytes());
-
-                                                        }
-                                                        hasboundary = true;
-                                                }
-						ParmVars.plog.debuglog(0, "***URL正規表現[" + pini.url + "]マッチパターン[" + url + "]");
-						if( contarray == null ){
-                                                    /*****
-							byte[] bytes = null;
-							try{
-								bytes = prequest.getBody().getBytes(ParmVars.enc);
-							}catch(UnsupportedEncodingException e){
-                                                            ParmVars.plog.printException(e);
-								bytes = null;
-							}
-							if ( bytes != null ){
-								contarray = new ParmGenBinUtil(bytes);
-							}
-							bytes = null;
-                                                        * **/
-                                                    ParmGenBinUtil warray = new ParmGenBinUtil(requestbytes);
-                                                    try{
-                                                        //ParmVars.plog.debuglog(1,"request length : " + Integer.toString(warray.length()) + "/" + Integer.toString(prequest.getParsedHeaderLength()));
-                                                        if(warray.length()>prequest.getParsedHeaderLength()){
-                                                            byte[] wbyte = warray.subBytes(prequest.getParsedHeaderLength());
-                                                            contarray = new ParmGenBinUtil(wbyte);
-                                                        }
-                                                    }catch(Exception e ){
-                                                        //contarray is null . No Body...
-                                                }
-
-                                            }
-
-                                            List<AppValue> parmlist = pini.parmlist;
-                                            ListIterator<AppValue> pt = parmlist.listIterator();
-                                            if (parmlist == null || parmlist.isEmpty()) {
-                                                //
-                                            }
-                                            ParmVars.plog.debuglog(1, "start");
-                                            while (pt.hasNext()) {
-                                                ParmVars.plog.debuglog(1, "loopin");
-                                                AppValue av = pt.next();
-                                                if (av.isEnabled()) {
-                                                    if ((tempreq = ParseRequest(prequest, boundaryarray, contarray, pini, av)) != null) {
-                                                        modreq = tempreq;
-                                                        prequest = tempreq;
-                                                    }
-                                                }
-                                            }
-                                            ParmVars.plog.debuglog(1, "end");
-					}
-				}
-			}
-                        byte[] retval = null;
-                        
-
-                        PRequest cookierequest = pmt.configureRequest(prequest);
-                        if(cookierequest!=null){
-                            prequest = cookierequest;
-                            retval =  prequest.getByteMessage();
-                        }
-                        
-			if ( modreq != null){
-				// You have to use connection.setRequest() to make any changes take effect!
-				if (contarray != null){
-					try {
-						prequest.setBody(contarray.getBytes());
-					}catch(Exception e){
-						ParmVars.plog.printException(e);
-					}
-				}
-				if(ParmVars.ProxyAuth.length()>0){
-					prequest.setHeader("Proxy-Authorization", ParmVars.ProxyAuth);// username:passwd => base64
-				}
-				retval =  prequest.getByteMessage();
-			}else if(ParmVars.ProxyAuth.length()>0){
-				prequest.setHeader("Proxy-Authorization", ParmVars.ProxyAuth);// username:passwd => base64
-				retval = prequest.getByteMessage();
-                        }
-                        if(hasTrackRequest){
+                    boolean hasboundary = false;
+                    PRequest tempreq = null;
+                    PRequest modreq = null;
+                    if ( url != null ){
 
                             AppParmsIni pini = null;
-                            Iterator<AppParmsIni> it = trackcsv.iterator();
-                            while(it.hasNext()){
+                            ListIterator<AppParmsIni> it = parmcsv.listIterator();
+                            while(it.hasNext()) {
                                 pini = it.next();
-                                ArrayList<AppValue> parmlist = pini.parmlist;
-                                Iterator<AppValue> pt = parmlist.iterator();
-                                boolean fetched;
-                                while(pt.hasNext()){
-                                        AppValue av = pt.next();
-                                        if(av.isEnabled()){
-                                            fetched = FetchRequest(prequest,  pini, av);
+                                Matcher urlmatcher = pini.urlregex.matcher(url);
+                                if ( urlmatcher.find() ){
+                                        //Content-Type: multipart/form-data; boundary=---------------------------30333176734664
+                                        if (content_type != null && !content_type.equals("") && hasboundary ==false){//found
+                                                Pattern ctypepattern = Pattern.compile("multipart/form-data;.*?boundary=(.+)$");
+                                                Matcher ctypematcher = ctypepattern.matcher(content_type);
+                                                if ( ctypematcher.find()){
+                                                        String Boundary = ctypematcher.group(1);
+                                                        ParmVars.plog.debuglog(1, "boundary=" + Boundary);
+                                                        Boundary = "--" + Boundary;//
+                                                        boundaryarray = new ParmGenBinUtil(Boundary.getBytes());
+
+                                                }
+                                                hasboundary = true;
                                         }
+                                        ParmVars.plog.debuglog(0, "***URL正規表現[" + pini.url + "]マッチパターン[" + url + "]");
+                                        if( contarray == null ){
+                                            /*****
+                                                byte[] bytes = null;
+                                                try{
+                                                        bytes = prequest.getBody().getBytes(ParmVars.enc);
+                                                }catch(UnsupportedEncodingException e){
+                                                    ParmVars.plog.printException(e);
+                                                        bytes = null;
+                                                }
+                                                if ( bytes != null ){
+                                                        contarray = new ParmGenBinUtil(bytes);
+                                                }
+                                                bytes = null;
+                                                * **/
+                                            ParmGenBinUtil warray = new ParmGenBinUtil(requestbytes);
+                                            try{
+                                                //ParmVars.plog.debuglog(1,"request length : " + Integer.toString(warray.length()) + "/" + Integer.toString(prequest.getParsedHeaderLength()));
+                                                if(warray.length()>prequest.getParsedHeaderLength()){
+                                                    byte[] wbyte = warray.subBytes(prequest.getParsedHeaderLength());
+                                                    contarray = new ParmGenBinUtil(wbyte);
+                                                }
+                                            }catch(Exception e ){
+                                                //contarray is null . No Body...
+                                        }
+
+                                    }
+
+                                    List<AppValue> parmlist = pini.parmlist;
+                                    ListIterator<AppValue> pt = parmlist.listIterator();
+                                    if (parmlist == null || parmlist.isEmpty()) {
+                                        //
+                                    }
+                                    ParmVars.plog.debuglog(1, "start");
+                                    while (pt.hasNext()) {
+                                        ParmVars.plog.debuglog(1, "loopin");
+                                        AppValue av = pt.next();
+                                        if (av.isEnabled()) {
+                                            if ((tempreq = ParseRequest(prequest, boundaryarray, contarray, pini, av, errorhash)) != null) {
+                                                modreq = tempreq;
+                                                prequest = tempreq;
+                                            }
+                                        }
+                                    }
+                                    //ここでerrorhashを評価し、setErrorする。
+                                    Iterator<Map.Entry<ParmGenTokenKey, ParmGenTokenValue>> ic =errorhash.iterator();
+                                    boolean iserror = false;
+                                    if(ic!=null){
+                                        while(ic.hasNext()){
+                                            Map.Entry<ParmGenTokenKey, ParmGenTokenValue> entry = ic.next();
+                                            ParmGenTokenValue errorhash_value = entry.getValue();
+                                            if(!errorhash_value.getBoolean()){
+                                                iserror = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    ParmVars.plog.setError(iserror);
+                                    ParmVars.plog.debuglog(1, "end");
                                 }
                             }
+                    }
+                    byte[] retval = null;
 
+
+                    PRequest cookierequest = pmt.configureRequest(prequest);
+                    if(cookierequest!=null){
+                        prequest = cookierequest;
+                        retval =  prequest.getByteMessage();
+                    }
+
+                    if ( modreq != null){
+                            // You have to use connection.setRequest() to make any changes take effect!
+                            if (contarray != null){
+                                    try {
+                                            prequest.setBody(contarray.getBytes());
+                                    }catch(Exception e){
+                                            ParmVars.plog.printException(e);
+                                    }
+                            }
+                            if(ParmVars.ProxyAuth.length()>0){
+                                    prequest.setHeader("Proxy-Authorization", ParmVars.ProxyAuth);// username:passwd => base64
+                            }
+                            retval =  prequest.getByteMessage();
+                    }else if(ParmVars.ProxyAuth.length()>0){
+                            prequest.setHeader("Proxy-Authorization", ParmVars.ProxyAuth);// username:passwd => base64
+                            retval = prequest.getByteMessage();
+                    }
+                    if(hasTrackRequest){
+
+                        AppParmsIni pini = null;
+                        Iterator<AppParmsIni> it = trackcsv.iterator();
+                        while(it.hasNext()){
+                            pini = it.next();
+                            ArrayList<AppValue> parmlist = pini.parmlist;
+                            Iterator<AppValue> pt = parmlist.iterator();
+                            boolean fetched;
+                            while(pt.hasNext()){
+                                    AppValue av = pt.next();
+                                    if(av.isEnabled()){
+                                        fetched = FetchRequest(prequest,  pini, av);
+                                    }
+                            }
                         }
-                        return retval;
-		}
 
-                return null;
+                    }
+                    return retval;
+            }
+
+            return null;
 	}
 
     int ResponseRun(String url,  byte[] response_bytes, String _enc){
@@ -2092,17 +2124,17 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 					pini = it.next();
                                         //if (pini.getType()==AppParmsIni.T_TRACK){
 
-                                                    ArrayList<AppValue> parmlist = pini.parmlist;
-                                                    Iterator<AppValue> pt = parmlist.iterator();
+                                                ArrayList<AppValue> parmlist = pini.parmlist;
+                                                Iterator<AppValue> pt = parmlist.iterator();
 
-                                                    while(pt.hasNext()){
-                                                            AppValue av = pt.next();
-                                                            if(av.isEnabled()){
-                                                                if (ParseResponse(url, presponse,  pini, av)){
-                                                                    updtcnt++;
-                                                                }
+                                                while(pt.hasNext()){
+                                                        AppValue av = pt.next();
+                                                        if(av.isEnabled()){
+                                                            if (ParseResponse(url, presponse,  pini, av)){
+                                                                updtcnt++;
                                                             }
-                                                    }
+                                                        }
+                                                }
                                         //}
 				}
 			}

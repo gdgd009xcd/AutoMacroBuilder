@@ -1,0 +1,39 @@
+AppParmsIni.typeval 
+置換箇所
+置換正規表現
+追跡元正規表現 
+追跡元tkname
+が一致し、
+
+そのうち１つが置換成功すれば、
+他がエラーでも無視。
+
+ParmGenHashMap errorhash;
+
+Key
+AppValue.TokenTypeNames tokentype=DEFAULT
+int fcnt = 0;
+String name = "TypeVal:" + AppParmsIni.typeval + "TargetPart:"+ AppValue.getValPart() + "TargetRegex:" + AppValue.value + "ResRegex:" + AppValue.resRegex + "TokenName:" + AppValue.token;
+
+Value
+url = ""
+value = 置換成功した場合の値。
+　　　　　失敗した場合は、nullをセット。
+b = 置換成功した場合は、trueをセット。
+　　　失敗した場合は、falseをセット。
+
+
+1) 　ParmGenHashMap errorhash = new ParmGenHashMap();
+    
+２）ParseRequest実行ループで、
+　　2-1)置換成功時
+　　　　HashMapにputする。
+　　2-2)置換失敗時
+　　　　(1) HashMapからgetし、すでに成功している場合は、NOP
+　　　　　　　getできないあるいはgetの返値b == falseの場合は、PUTする。
+３）ParseRequestループ終了時、
+　　HashMapをforループし、falseの結果が1件でもあったらerror
+
+　　
+
+

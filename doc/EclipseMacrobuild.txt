@@ -1,0 +1,12 @@
+Eclipse Neon
+
+1) 起動後
+　　Checkout projects from Git
+    (Import projects from Git)
+
+2) Clone URI
+    URL: https://gdgd009xcd@github.com/gdgd009xcd/MacroBuilder.git
+
+3) Enter Master passwd (linux only)
+
+4)  import as general project

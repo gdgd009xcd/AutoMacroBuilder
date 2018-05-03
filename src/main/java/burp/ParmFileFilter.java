@@ -5,6 +5,7 @@
 package burp;
 
 import java.io.File;
+import java.util.ResourceBundle;
 
 import javax.swing.filechooser.FileFilter;
 
@@ -14,6 +15,8 @@ import javax.swing.filechooser.FileFilter;
  */
 
 public class ParmFileFilter extends FileFilter{
+
+    private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
 
   public boolean accept(File f){
     /* ディレクトリなら無条件で表示する */
@@ -35,7 +38,7 @@ public class ParmFileFilter extends FileFilter{
   }
 
   public String getDescription(){
-    return "ParmGen設定";
+    return bundle.getString("ParmFileFilter.PARMGEN設定.text");
   }
 
   /* 拡張子を取り出す */

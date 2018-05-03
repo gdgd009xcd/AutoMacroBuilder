@@ -89,7 +89,9 @@
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="&#x6570;&#x5024;">
-                <Property name="tabTitle" type="java.lang.String" value="&#x6570;&#x5024;"/>
+                <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="SeqNumber.TabConstrains.tabTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </JTabbedPaneConstraints>
             </Constraint>
           </Constraints>
@@ -224,22 +226,30 @@
                     <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
                       <TableColumnModel selectionModel="0">
                         <Column maxWidth="-1" minWidth="-1" prefWidth="60" resizable="true">
-                          <Title/>
+                          <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                            <ResourceString bundle="burp/Bundle.properties" key="nParamTable.title0" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                          </Title>
                           <Editor/>
                           <Renderer/>
                         </Column>
                         <Column maxWidth="-1" minWidth="-1" prefWidth="60" resizable="true">
-                          <Title/>
+                          <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                            <ResourceString bundle="burp/Bundle.properties" key="nParamTable.title1" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                          </Title>
                           <Editor/>
                           <Renderer/>
                         </Column>
                         <Column maxWidth="-1" minWidth="-1" prefWidth="150" resizable="true">
-                          <Title/>
+                          <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                            <ResourceString bundle="burp/Bundle.properties" key="nParamTable.title2" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                          </Title>
                           <Editor/>
                           <Renderer/>
                         </Column>
                         <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
+                          <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                            <ResourceString bundle="burp/Bundle.properties" key="nParamTable.title3" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                          </Title>
                           <Editor/>
                           <Renderer/>
                         </Column>
@@ -281,7 +291,9 @@
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="&#x30ab;&#x30a6;&#x30f3;&#x30bf;&#x521d;&#x671f;&#x5024;"/>
+                    <TitledBorder title="&#x30ab;&#x30a6;&#x30f3;&#x30bf;&#x521d;&#x671f;&#x5024;">
+                      <ResourceString PropertyName="titleX" bundle="burp/Bundle.properties" key="jPanel2.border.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                    </TitledBorder>
                   </Border>
                 </Property>
               </Properties>
@@ -377,7 +389,9 @@
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="&#xff23;&#xff33;&#xff36;">
-                <Property name="tabTitle" type="java.lang.String" value="&#xff23;&#xff33;&#xff36;"/>
+                <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="SeqCSV.TabConstraints.tabTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </JTabbedPaneConstraints>
             </Constraint>
           </Constraints>
@@ -600,27 +614,37 @@
                     <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
                       <TableColumnModel selectionModel="0">
                         <Column maxWidth="-1" minWidth="-1" prefWidth="60" resizable="true">
-                          <Title/>
+                          <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                            <ResourceString bundle="burp/Bundle.properties" key="csvParamTable.title0" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                          </Title>
                           <Editor/>
                           <Renderer/>
                         </Column>
                         <Column maxWidth="-1" minWidth="-1" prefWidth="60" resizable="true">
-                          <Title/>
+                          <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                            <ResourceString bundle="burp/Bundle.properties" key="csvParamTable.title1" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                          </Title>
                           <Editor/>
                           <Renderer/>
                         </Column>
                         <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
+                          <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                            <ResourceString bundle="burp/Bundle.properties" key="csvParamTable.title2" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                          </Title>
                           <Editor/>
                           <Renderer/>
                         </Column>
                         <Column maxWidth="-1" minWidth="-1" prefWidth="150" resizable="true">
-                          <Title/>
+                          <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                            <ResourceString bundle="burp/Bundle.properties" key="csvParamTable.title3" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                          </Title>
                           <Editor/>
                           <Renderer/>
                         </Column>
                         <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
+                          <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                            <ResourceString bundle="burp/Bundle.properties" key="csvParamTable.title4" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                          </Title>
                           <Editor/>
                           <Renderer/>
                         </Column>
@@ -637,7 +661,9 @@
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="&#x30ab;&#x30a6;&#x30f3;&#x30bf;&#x521d;&#x671f;&#x5024;&#xff08;&#x8aad;&#x307f;&#x98db;&#x3070;&#x3057;&#x884c;&#x6570;&#xff09;"/>
+                    <TitledBorder title="&#x30ab;&#x30a6;&#x30f3;&#x30bf;&#x521d;&#x671f;&#x5024;&#xff08;&#x8aad;&#x307f;&#x98db;&#x3070;&#x3057;&#x884c;&#x6570;&#xff09;">
+                      <ResourceString PropertyName="titleX" bundle="burp/Bundle.properties" key="jPanel1.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                    </TitledBorder>
                   </Border>
                 </Property>
               </Properties>
@@ -690,7 +716,9 @@
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="&#x8ffd;&#x8de1;">
-                <Property name="tabTitle" type="java.lang.String" value="&#x8ffd;&#x8de1;"/>
+                <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="SeqResponse.TabConstraints.tabTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </JTabbedPaneConstraints>
             </Constraint>
           </Constraints>
@@ -828,62 +856,86 @@
                     <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
                       <TableColumnModel selectionModel="0">
                         <Column maxWidth="-1" minWidth="-1" prefWidth="60" resizable="true">
-                          <Title/>
+                          <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                            <ResourceString bundle="burp/Bundle.properties" key="trackTable.title0" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                          </Title>
                           <Editor/>
                           <Renderer/>
                         </Column>
                         <Column maxWidth="-1" minWidth="-1" prefWidth="60" resizable="true">
-                          <Title/>
+                          <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                            <ResourceString bundle="burp/Bundle.properties" key="trackTable.title1" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                          </Title>
                           <Editor/>
                           <Renderer/>
                         </Column>
                         <Column maxWidth="-1" minWidth="-1" prefWidth="150" resizable="true">
-                          <Title/>
+                          <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                            <ResourceString bundle="burp/Bundle.properties" key="trackTable.title2" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                          </Title>
                           <Editor/>
                           <Renderer/>
                         </Column>
                         <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
+                          <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                            <ResourceString bundle="burp/Bundle.properties" key="trackTable.title3" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                          </Title>
                           <Editor/>
                           <Renderer/>
                         </Column>
                         <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
+                          <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                            <ResourceString bundle="burp/Bundle.properties" key="trackTable.title4" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                          </Title>
                           <Editor/>
                           <Renderer/>
                         </Column>
                         <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
+                          <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                            <ResourceString bundle="burp/Bundle.properties" key="trackTable.title5" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                          </Title>
                           <Editor/>
                           <Renderer/>
                         </Column>
                         <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
+                          <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                            <ResourceString bundle="burp/Bundle.properties" key="trackTable.title6" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                          </Title>
                           <Editor/>
                           <Renderer/>
                         </Column>
                         <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
+                          <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                            <ResourceString bundle="burp/Bundle.properties" key="trackTable.title7" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                          </Title>
                           <Editor/>
                           <Renderer/>
                         </Column>
                         <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
+                          <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                            <ResourceString bundle="burp/Bundle.properties" key="trackTable.title8" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                          </Title>
                           <Editor/>
                           <Renderer/>
                         </Column>
                         <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
+                          <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                            <ResourceString bundle="burp/Bundle.properties" key="trackTable.title9" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                          </Title>
                           <Editor/>
                           <Renderer/>
                         </Column>
                         <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title noResource="true"/>
+                          <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor" noResource="true">
+                            <ResourceString bundle="burp/Bundle.properties" key="trackTable.title10" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                          </Title>
                           <Editor/>
                           <Renderer/>
                         </Column>
                         <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title noResource="true"/>
+                          <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor" noResource="true">
+                            <ResourceString bundle="burp/Bundle.properties" key="trackTable.title11" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                          </Title>
                           <Editor/>
                           <Renderer/>
                         </Column>
@@ -1205,8 +1257,10 @@
         <Container class="javax.swing.JPanel" name="ReqPanel">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="&#x9078;&#x629e;&#x30ea;&#x30af;&#x30a8;&#x30b9;&#x30c8;">
-                <Property name="tabTitle" type="java.lang.String" value="&#x9078;&#x629e;&#x30ea;&#x30af;&#x30a8;&#x30b9;&#x30c8;"/>
+              <JTabbedPaneConstraints tabName="&lt;ReqPanel.TabConstraints.tabTitle&gt;">
+                <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="ReqPanel.TabConstraints.tabTitle" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </JTabbedPaneConstraints>
             </Constraint>
           </Constraints>
@@ -1273,8 +1327,10 @@
         <Container class="javax.swing.JPanel" name="ResPanel">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="&#x9078;&#x629e;&#x30ec;&#x30b9;&#x30dd;&#x30f3;&#x30b9;">
-                <Property name="tabTitle" type="java.lang.String" value="&#x9078;&#x629e;&#x30ec;&#x30b9;&#x30dd;&#x30f3;&#x30b9;"/>
+              <JTabbedPaneConstraints tabName="&lt;ResPanel.TabConstraints.tabTitle&gt;">
+                <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="ResPanel.TabConstraints.tabTitle" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
               </JTabbedPaneConstraints>
             </Constraint>
           </Constraints>

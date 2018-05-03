@@ -50,6 +50,7 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
         valuefilter = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle(bundle.getString("ParmGenAutoTrack.title.text")); // NOI18N
 
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("burp/Bundle"); // NOI18N
         jLabel1.setText(bundle.getString("ParmGenAutoTrack.jLabel1.text")); // NOI18N

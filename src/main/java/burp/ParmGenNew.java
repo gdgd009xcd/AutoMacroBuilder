@@ -280,7 +280,7 @@ private void setAppParmsIni(){
         if(payloadposition==null){
             payloadposition = ap.getPayloadPositionName(AppValue.I_APPEND);
         }
-
+        String tkname = "";
         switch(m){
             case P_NUMBERMODEL:
                 row = new Object[]{_reqplace, false, nval, islastparam};
@@ -302,12 +302,16 @@ private void setAppParmsIni(){
                             urlencode = true;
                         }
                     }
+                    tkname = ParmVars.session.get(ParmGenSession.K_TOKEN);
+                    if(tkname==null||tkname.isEmpty()){
+                        tkname = name;
+                    }
                     row = new Object[]{_reqplace, false, nval,
                     ParmVars.session.get(ParmGenSession.K_RESPONSEURLREGEX),
                     ParmVars.session.get(ParmGenSession.K_RESPONSEREGEX),
                     ParmVars.session.get(ParmGenSession.K_RESPONSEPART),
                     ParmVars.session.get(ParmGenSession.K_RESPONSEPOSITION),
-                    ParmVars.session.get(ParmGenSession.K_TOKEN),
+                    tkname,
                     urlencode,-1,0,ParmVars.session.get(ParmGenSession.K_TOKENTYPE)
                     };
                 }else{
@@ -319,12 +323,16 @@ private void setAppParmsIni(){
                                 urlencode = true;
                             }
                         }
+                        tkname = ParmVars.session.get(ni, ParmGenSession.K_TOKEN);
+                        if(tkname==null||tkname.isEmpty()){
+                            tkname = name;
+                        }
                         row = new Object[]{_reqplace, false, nval,
                         ParmVars.session.get(ParmGenSession.K_RESPONSEURLREGEX),
                         ParmVars.session.get(ni, ParmGenSession.K_RESPONSEREGEX),
                         ParmVars.session.get(ni, ParmGenSession.K_RESPONSEPART),
                         ParmVars.session.get(ni, ParmGenSession.K_RESPONSEPOSITION),
-                        ParmVars.session.get(ni, ParmGenSession.K_TOKEN),
+                        tkname,
                         urlencode,-1,0,ParmVars.session.get(ni, ParmGenSession.K_TOKENTYPE)
                         };
                     }
@@ -577,10 +585,15 @@ private void setAppParmsIni(){
         nParamTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         nParamTable.getTableHeader().setReorderingAllowed(false);
         jScrollPane3.setViewportView(nParamTable);
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("burp/Bundle"); // NOI18N
         if (nParamTable.getColumnModel().getColumnCount() > 0) {
             nParamTable.getColumnModel().getColumn(0).setPreferredWidth(60);
+            nParamTable.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("ParmGenNew.nParamTable.title0.text")); // NOI18N
             nParamTable.getColumnModel().getColumn(1).setPreferredWidth(60);
+            nParamTable.getColumnModel().getColumn(1).setHeaderValue(bundle.getString("ParmGenNew.nParamTable.title1.text")); // NOI18N
             nParamTable.getColumnModel().getColumn(2).setPreferredWidth(150);
+            nParamTable.getColumnModel().getColumn(2).setHeaderValue(bundle.getString("ParmGenNew.nParamTable.title2.text")); // NOI18N
+            nParamTable.getColumnModel().getColumn(3).setHeaderValue(bundle.getString("ParmGenNew.nParamTable.title3.text")); // NOI18N
         }
 
         nParamAdd.setText(bundle.getString("ParmGenNew.追加.text")); // NOI18N
@@ -599,7 +612,7 @@ private void setAppParmsIni(){
 
         jLabel5.setText(bundle.getString("ParmGenNew.置換対象パス.text")); // NOI18N
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("カウンタ初期値"));
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("ParmGenNew.jPanel2.border.title.text"))); // NOI18N
 
         jLabel2.setText(bundle.getString("ParmGenNew.初期値.text")); // NOI18N
 
@@ -711,7 +724,7 @@ private void setAppParmsIni(){
                 .addContainerGap(77, Short.MAX_VALUE))
         );
 
-        ModelTabs.addTab("数値", SeqNumber);
+        ModelTabs.addTab(bundle.getString("ParmGenNew.SeqNumber.TabConstrains.tabTitle.text"), SeqNumber); // NOI18N
 
         jButton6.setText(bundle.getString("ParmGenNew.CSVファイル選択.text")); // NOI18N
         jButton6.addActionListener(new java.awt.event.ActionListener() {
@@ -806,11 +819,16 @@ private void setAppParmsIni(){
         jScrollPane4.setViewportView(csvParamTable);
         if (csvParamTable.getColumnModel().getColumnCount() > 0) {
             csvParamTable.getColumnModel().getColumn(0).setPreferredWidth(60);
+            csvParamTable.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("ParmGenNew.csvParamTable.title0.text")); // NOI18N
             csvParamTable.getColumnModel().getColumn(1).setPreferredWidth(60);
+            csvParamTable.getColumnModel().getColumn(1).setHeaderValue(bundle.getString("ParmGenNew.csvParamTable.title1.text")); // NOI18N
+            csvParamTable.getColumnModel().getColumn(2).setHeaderValue(bundle.getString("ParmGenNew.csvParamTable.title2.text")); // NOI18N
             csvParamTable.getColumnModel().getColumn(3).setPreferredWidth(150);
+            csvParamTable.getColumnModel().getColumn(3).setHeaderValue(bundle.getString("ParmGenNew.csvParamTable.title3.text")); // NOI18N
+            csvParamTable.getColumnModel().getColumn(4).setHeaderValue(bundle.getString("ParmGenNew.csvParamTable.title4.text")); // NOI18N
         }
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("カウンタ初期値（読み飛ばし行数）"));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("ParmGenNew.jPanel1.title.text"))); // NOI18N
 
         CSVrewind.setSelected(true);
         CSVrewind.setText(bundle.getString("ParmGenNew.カウンタを初期化する.text")); // NOI18N
@@ -905,7 +923,7 @@ private void setAppParmsIni(){
                 .addContainerGap(69, Short.MAX_VALUE))
         );
 
-        ModelTabs.addTab("ＣＳＶ", SeqCSV);
+        ModelTabs.addTab(bundle.getString("ParmGenNew.SeqCSV.TabConstraints.tabTitle.text"), SeqCSV); // NOI18N
 
         nParamAdd4.setText(bundle.getString("ParmGenNew.追加.text")); // NOI18N
         nParamAdd4.addActionListener(new java.awt.event.ActionListener() {
@@ -966,8 +984,20 @@ private void setAppParmsIni(){
         jScrollPane6.setViewportView(trackTable);
         if (trackTable.getColumnModel().getColumnCount() > 0) {
             trackTable.getColumnModel().getColumn(0).setPreferredWidth(60);
+            trackTable.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("ParmGenNew.trackTable.title0.text")); // NOI18N
             trackTable.getColumnModel().getColumn(1).setPreferredWidth(60);
+            trackTable.getColumnModel().getColumn(1).setHeaderValue(bundle.getString("ParmGenNew.trackTable.title1.text")); // NOI18N
             trackTable.getColumnModel().getColumn(2).setPreferredWidth(150);
+            trackTable.getColumnModel().getColumn(2).setHeaderValue(bundle.getString("ParmGenNew.trackTable.title2.text")); // NOI18N
+            trackTable.getColumnModel().getColumn(3).setHeaderValue(bundle.getString("ParmGenNew.trackTable.title3.text")); // NOI18N
+            trackTable.getColumnModel().getColumn(4).setHeaderValue(bundle.getString("ParmGenNew.trackTable.title4.text")); // NOI18N
+            trackTable.getColumnModel().getColumn(5).setHeaderValue(bundle.getString("ParmGenNew.trackTable.title5.text")); // NOI18N
+            trackTable.getColumnModel().getColumn(6).setHeaderValue(bundle.getString("ParmGenNew.trackTable.title6.text")); // NOI18N
+            trackTable.getColumnModel().getColumn(7).setHeaderValue(bundle.getString("ParmGenNew.trackTable.title7.text")); // NOI18N
+            trackTable.getColumnModel().getColumn(8).setHeaderValue(bundle.getString("ParmGenNew.trackTable.title8.text")); // NOI18N
+            trackTable.getColumnModel().getColumn(9).setHeaderValue(bundle.getString("ParmGenNew.trackTable.title9.text")); // NOI18N
+            trackTable.getColumnModel().getColumn(10).setHeaderValue(bundle.getString("ParmGenNew.trackTable.title10.text")); // NOI18N
+            trackTable.getColumnModel().getColumn(11).setHeaderValue(bundle.getString("ParmGenNew.trackTable.title11.text")); // NOI18N
         }
 
         jLabel9.setText(bundle.getString("ParmGenNew.置換対象パス.text")); // NOI18N
@@ -1023,7 +1053,7 @@ private void setAppParmsIni(){
                 .addGap(81, 81, 81))
         );
 
-        ModelTabs.addTab("追跡", SeqResponse);
+        ModelTabs.addTab(bundle.getString("ParmGenNew.SeqResponse.TabConstraints.tabTitle.text"), SeqResponse); // NOI18N
 
         jLabel1.setText(bundle.getString("ParmGenNew.対象パス.text")); // NOI18N
 
@@ -1212,7 +1242,7 @@ private void setAppParmsIni(){
                     .addContainerGap()))
         );
 
-        ResReqTabs.addTab("選択リクエスト", ReqPanel);
+        ResReqTabs.addTab(bundle.getString("ParmGenNew.ReqPanel.TabConstraints.tabTitle.text"), ReqPanel); // NOI18N
 
         ResponseArea.setText("HTTP/1.1 200 OK\nSet-Cookie: Formp=deleted; path=/; expires=Thu, 01-Jan-1970 00:00:01 GMT; secure\nContent-Length: 2969\nDate: Fri, 20 Jan 2012 06:48:25 GMT\nServer: Apache\nExpires: Thu, 19 Nov 1981 08:52:00 GMT\nCache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0\nPragma: no-cache\nKeep-Alive: timeout=3, max=100\nConnection: Keep-Alive\nContent-Type: text/html\n\n<sample>123</sample>\n<value>sfkdlajfklsdjfklas234234</value>");
         jScrollPane2.setViewportView(ResponseArea);
@@ -1251,7 +1281,7 @@ private void setAppParmsIni(){
                     .addContainerGap()))
         );
 
-        ResReqTabs.addTab("選択レスポンス", ResPanel);
+        ResReqTabs.addTab(bundle.getString("ParmGenNew.ResPanel.TabConstraints.tabTitle.text"), ResPanel); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

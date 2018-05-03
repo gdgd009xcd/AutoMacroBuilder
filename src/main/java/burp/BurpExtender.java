@@ -94,10 +94,6 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                                 ParmVars.plog.debuglog(0,"state:" + Integer.toString(pmt.getState()));
 
                             }
-
-                            //Cookie処理
-                            
-                            
                             
 
                             byte[] retval = pgen.Run(messageInfo.getRequest());
@@ -356,8 +352,8 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
 
             ArrayList<JMenuItem> items = new ArrayList<JMenuItem>();
 
-            JMenuItem item = new JMenuItem("■ParmGen■");
-            JMenuItem itemmacro = new JMenuItem("■AutoMacroBuilder■");
+            JMenuItem item = new JMenuItem("■Custom■");
+            JMenuItem itemmacro = new JMenuItem("■SendTo MacroBuilder■");
             messageInfo = icmi.getSelectedMessages();
 
             item.addActionListener(new java.awt.event.ActionListener() {
@@ -370,9 +366,10 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                     menuAddRequestsClicked(messageInfo);
                 }
             });
-
-            items.add(item);
+            
             items.add(itemmacro);
+            items.add(item);
+            
 
             return items;
         }

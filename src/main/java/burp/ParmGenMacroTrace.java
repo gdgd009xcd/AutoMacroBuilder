@@ -272,6 +272,7 @@ public class ParmGenMacroTrace {
 
                 byte[] byterequest = ppr.request.getByteMessage();
                 if(byterequest!=null){
+                    String noresponse = "";
                     String host = ppr.request.getHost();
                     int port = ppr.request.getPort();
                     boolean isSSL = ppr.request.isSSL();
@@ -287,9 +288,14 @@ public class ParmGenMacroTrace {
                         String res = new String(byteres, ParmVars.enc.getIANACharset());
                         PResponse ppres = new PResponse(res);
                         ParmVars.plog.debuglog(0, "Response PreMacro:" + ppres.status);
+                    }else if(byteres==null){
+                        byteres = new String("").getBytes();
+                        noresponse = "\nNo Response(NULL)";
                     }
+                    
+                
                     PRequestResponse pqrs = new PRequestResponse(new String(bytereq, ParmVars.enc.getIANACharset()),new String(byteres, ParmVars.enc.getIANACharset()));
-                    pqrs.setComments(ParmVars.plog.getComments());
+                    pqrs.setComments(ParmVars.plog.getComments() + noresponse);
                     pqrs.setError(ParmVars.plog.isError());
                     cit.set(pqrs);//更新
                 }

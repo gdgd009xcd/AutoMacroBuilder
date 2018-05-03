@@ -639,9 +639,18 @@ public class ResponseTracker extends javax.swing.JFrame implements InterfaceRege
         ParmVars.session.put(ParmGenSession.K_RESPONSEREGEX, regexpattern);
         ParmVars.session.put(ParmGenSession.K_RESPONSEPART, respart);
         int mcnt = ParmGenUtil.getRegexMatchpos(getRegex(), getOriginal());
-        ParmVars.session.put(ParmGenSession.K_RESPONSEPOSITION, Integer.toString(mcnt));
+        String poscnt = null;
+        
+        if(mcnt>0){
+            poscnt = Integer.toString(mcnt-1);
+        }
+        if(poscnt!=null){
+            ParmVars.session.put(ParmGenSession.K_RESPONSEPOSITION, poscnt);
+        }
         dispose();
-        new SelectRequest(bundle.getString("ResponseTracker.リクエスト選択.text"), parentwin, new ParmGenAddParms(parentwin, true), ParmGenNew.P_REQUESTTAB).setVisible(true);
+        if(poscnt!=null){
+            new SelectRequest(bundle.getString("ResponseTracker.リクエスト選択.text"), parentwin, new ParmGenAddParms(parentwin, true), ParmGenNew.P_REQUESTTAB).setVisible(true);
+        }
     }//GEN-LAST:event_jButton3ActionPerformed
 
     /**

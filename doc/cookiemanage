@@ -1,0 +1,38 @@
+﻿Set-Cookie: X=root; path=/
+Set-Cookie: X=lib; path=/lib
+
+
+GET /lib/ HTTP/1.1
+Host: localhost
+User-Agent: Mozilla/5.0 (X11; Linux i686; rv:52.0) Gecko/20100101 Firefox/52.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Cookie: X=lib; X=root
+Connection: close
+Upgrade-Insecure-Requests: 1
+
+PathはhashMapのキーにしない。
+
+1) Cookie.jarストアをHashMapに格納
+　　Hashkey: domain, name
+        Hashvalue: List<path, value>
+２）cookieparamsを順次ループ
+2-1) Hashkeyに一致するHashValueをとりだす
+2-2) HashValueを順次ループ
+2-2-1) pathに前方一致（長さの短い方を基準に比較）するvalue値をとりだし、
+　　　　cookieparamのcookieに設定。
+        value値がdelete/deletedの場合は、delcookiesリストに追加
+2-2-2)設定したvalue値をHashValueから削除。
+2-2-3)HashMapをHashKey, HashValueで更新。
+　　　　HashValueがカラの場合は、HashKeyで削除。
+
+3) delcookiesリストの内容でcookie削除
+
+for(ICookie cookie:iclist){
+                        String cname = cookie.getName();
+                        String cvalue = cookie.getValue();
+                        ppr.request.setCookie(cname, cvalue);//cookie.jarから更新
+                    }
+　　
+

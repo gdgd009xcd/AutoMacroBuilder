@@ -34,6 +34,7 @@ b = 置換成功した場合は、trueをセット。
 ３）ParseRequestループ終了時、
 　　HashMapをforループし、falseの結果が1件でもあったらerror
 
+
 　　
 
 

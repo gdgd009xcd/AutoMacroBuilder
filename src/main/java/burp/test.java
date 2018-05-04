@@ -55,7 +55,8 @@ public class test {
     	if(data==null)return null;
     	return data.replaceAll(LFSIGNEX, "");
     }
-
+    
+/**** main NOP 
     public static void main(String[] args) {
         //ParmGenCSV(String _filename, String _lang)
         ParmVars.parmfile = "xxx.csv";
@@ -174,5 +175,6 @@ public class test {
         
         
     }
+    * ************/
 
 }

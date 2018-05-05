@@ -1503,7 +1503,7 @@ class ParmGen {
 
         public static boolean hasTrackRequest=false;//==true: リクエストを追跡
         public static ParmGenTop twin = null;
-        public static boolean ProxyInScope = true;
+        public static boolean ProxyInScope = false;
         public static boolean IntruderInScope = true;
         public static boolean RepeaterInScope = true;
         public static boolean ScannerInScope = true;

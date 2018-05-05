@@ -95,15 +95,17 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
 
                             }
                             
+                            if(pmt!=null&&!pmt.isCurrentRequest()){
+                                byte[] retval = pgen.Run(messageInfo.getRequest());
+                                if ( retval != null){
+                                        messageInfo.setRequest(retval);
 
-                            byte[] retval = pgen.Run(messageInfo.getRequest());
+                                }
+                            }
  
 
 
-                            if ( retval != null){
-                                    messageInfo.setRequest(retval);
-
-                            }
+                            
 
  
                         }catch(Exception e){

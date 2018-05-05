@@ -116,10 +116,17 @@ public class ParmGenMacroTrace {
         }
     }
 
-    void startCurrentRequest(){
+    void startCurrentRequest(IHttpRequestResponse currentRequest){
         ParmVars.plog.clearComments();
         ParmVars.plog.setError(false);
         state = PMT_CURRENT_BEGIN;
+        ParmGen pgen = new ParmGen(this);
+        byte[] retval = pgen.Run(currentRequest.getRequest());
+        if ( retval != null){
+                currentRequest.setRequest(retval);
+
+        }
+        
     }
      //３）カレントリクエスト終了(レスポンス受信後)後に実行
     void endAfterCurrentRequest(PRequestResponse pqrs){
@@ -177,6 +184,10 @@ public class ParmGenMacroTrace {
         return false;
     }
 
+    boolean isCurrentRequest(){
+        return isCurrentRequest(stepno);
+    }
+    
     void EnableRequest(int _idx){
         if(rlist!=null&&rlist.size() > _idx){
             PRequestResponse prr = rlist.get(_idx);

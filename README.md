@@ -1,6 +1,6 @@
 AutoMacrobuilder for burpsuite.
 
-AutoMacroBuilder is an extension of burpsuite. This Extension records the transition sequence of the web application in the macro, tracks the anti-CSRF token, and executes it by burp tools(repeater/scanner/intruder..etc).
+AutoMacroBuilder is an extension of burpsuite. This Extension records the http request sequence of the web application in the macro, tracks the anti-CSRF token, and executes it by burp tools(repeater/scanner/intruder..etc).
 
 Click here below:　<BR>
 　　<A href="https://github.com/gdgd009xcd/AutoMacroBuilder/wiki/1.0-OverView">English</A><BR>

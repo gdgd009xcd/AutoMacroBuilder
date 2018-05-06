@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
@@ -37,13 +38,44 @@ public class ParmGenRegex extends javax.swing.JDialog {
     
     public static final String Escaperegex = "([\\[\\]\\{\\}\\(\\)\\*\\<\\>\\.\\?\\+\\\"\\\'\\$])";
     private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
-
+    private static  DefaultComboBoxModel comboModel_regextype = null;
+    private static  DefaultComboBoxModel comboModel_columnpolicy = null;
+    
     private void init(String regex, String orig){
         findplist.clear();
         fidx = -1;
         curr_regex = regex;
         curr_orig = orig;
     }
+    
+    // new される前に初期化。
+    static{
+        if(comboModel_regextype==null){
+            comboModel_regextype = new javax.swing.DefaultComboBoxModel(new String[] { 
+            java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGenRegex.comboModel_regextype_number.text"),
+            java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGenRegex.comboModel_regextype_number_alnum.text"),
+            java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGenRegex.comboModel_regextype_number_percent.text"),
+            java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGenRegex.comboModel_regextype_number_any.text"),
+            java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGenRegex.comboModel_regextype_number_lfany.text"),
+            java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGenRegex.comboModel_regextype_number_whitespc.text")
+            });
+        }
+
+        if(comboModel_columnpolicy==null){
+            comboModel_columnpolicy = new javax.swing.DefaultComboBoxModel(new String[] { 
+            java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGenRegex.comboModel_columnpolicy_fixed.text"),
+            java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGenRegex.comboModel_columnpolicy_以上（最小マッチ）.text"),
+            java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGenRegex.comboModel_columnpolicy_以上（最大マッチ）.text"),
+            java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGenRegex.comboModel_columnpolicy_以下.text"),
+            java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGenRegex.comboModel_columnpolicy_範囲.text"),
+            java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGenRegex.comboModel_columnpolicy_1以上（最小マッチ）.text"),
+            java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGenRegex.comboModel_columnpolicy_1以上（最大マッチ）.text"),
+            java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGenRegex.comboModel_columnpolicy_0以上（最小マッチ）.text"),
+            java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGenRegex.comboModel_columnpolicy_0以上（最大マッチ）.text")
+            });
+        }
+    }
+    
     /**
      * Creates new form sampleFrame
      */
@@ -69,7 +101,7 @@ public class ParmGenRegex extends javax.swing.JDialog {
     }
     
     public ParmGenRegex(String _reg, String _OriginalReadOnly){//読み取りのみ
-            initComponents();
+        initComponents();
         um = new UndoManager();
         To.setEnabled(false);
         parentwin = null;
@@ -420,11 +452,11 @@ public class ParmGenRegex extends javax.swing.JDialog {
 
         jLabel2.setText(bundle.getString("ParmGenRegex.オリジナル.text")); // NOI18N
 
-        RegexType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "数値", "英数字", "全角(%nn)", "任意(.*)", "改行含む任意", "ホワイトスペース" }));
+        RegexType.setModel(comboModel_regextype);
 
         jLabel3.setText(bundle.getString("ParmGenRegex.桁数.text")); // NOI18N
 
-        ColumnPolicy.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "固定", "以上（最小マッチ）", "以上（最大マッチ）", "以下", "範囲", "1以上（最小マッチ）", "1以上（最大マッチ）", "0以上（最小マッチ）", "0以上（最大マッチ）" }));
+        ColumnPolicy.setModel(comboModel_columnpolicy);
         ColumnPolicy.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ColumnPolicyActionPerformed(evt);
@@ -706,7 +738,9 @@ public class ParmGenRegex extends javax.swing.JDialog {
             To.setEnabled(true);
             FTlabel.setEnabled(true);
         }else if(column_policy_val.indexOf(bundle.getString("ParmGenRegex.以上.text"))!=-1||
-                column_policy_val.indexOf(bundle.getString("ParmGenRegex.以下.text"))!=-1){
+                column_policy_val.indexOf(bundle.getString("ParmGenRegex.以下.text"))!=-1||
+                column_policy_val.indexOf(bundle.getString("ParmGenRegex.固定.text"))!=-1
+                ){
             From.setEnabled(true);
             To.setEnabled(false);
             FTlabel.setEnabled(false);

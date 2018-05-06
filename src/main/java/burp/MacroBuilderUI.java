@@ -1080,6 +1080,25 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
     private void SaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveActionPerformed
         // TODO add your handling code here:
+        File cfile = new File(ParmVars.parmfile);
+        String dirname = cfile.getParent();
+        JFileChooser jfc = new JFileChooser(dirname);
+        jfc.setSelectedFile(cfile);
+        ParmFileFilter pFilter=new ParmFileFilter();
+        jfc.setFileFilter(pFilter);
+        if(jfc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            //code to handle choosed file here.
+            File file = jfc.getSelectedFile();
+            String name = file.getAbsolutePath().replaceAll("\\\\", "\\\\\\\\");
+            if(!pFilter.accept(file)){//拡張子無しの場合は付与
+                name += ".json";
+            }
+            ParmVars.parmfile = name;
+             //csv.save();
+             ParmGenCSV csv = new ParmGenCSV(null, pmt);
+             csv.jsonsave();
+            
+        }
     }//GEN-LAST:event_SaveActionPerformed
 
     private void MacroRequestMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MacroRequestMousePressed

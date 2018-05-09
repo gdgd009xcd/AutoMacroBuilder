@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.JOptionPane;
 import javax.swing.text.BadLocationException;
 
 
@@ -50,7 +51,7 @@ public class ResponseTracker extends javax.swing.JFrame implements InterfaceRege
         initComponents();
         matchpos = -1;
         regexpattern = null;
-        respart = "body";
+        respart = "responsebody";
         isheader = false;
         
     }
@@ -538,12 +539,14 @@ public class ResponseTracker extends javax.swing.JFrame implements InterfaceRege
         if(!FixedValue.isSelected()){
             quant = "+";
         }
-
-
-        
-        if (startpos > headerlength){
+        if(startpos < headerlength && endpos >= headerlength){
+            JOptionPane.showMessageDialog(this,"<HTML>header～bodyにまたがる範囲選択はできません。<BR>header/bodyどちらか一方を選択してください。</HTML>" ,  "範囲選択エラー", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        // headerlength == until response... headersCRLF...CRLFCRLF
+        if (endpos > headerlength){
             ParmVars.plog.AppendPrint("body endpos:" + Integer.toString(endpos) + " hlen:" + Integer.toString(headerlength));
-            respart = "body";
+            respart = "responsebody";
             isheader = false;
         }else{
             ParmVars.plog.AppendPrint("header endpos:" + Integer.toString(endpos) + " hlen:" + Integer.toString(headerlength));
@@ -610,7 +613,7 @@ public class ResponseTracker extends javax.swing.JFrame implements InterfaceRege
             }else{
                 inputtagregex = ParmGenRegex.getParsedRegexGroup(selected_value, quant);
             }
-            if(prefix!=null){
+            if(prefix!=null&&startpos!=headerlength){//開始位置＝＝body開始の場合は、prefix無し。
                     inputtagregex = ParmGenRegex.EscapeSpecials(prefix.val) + inputtagregex;
             }
             if(suffix!=null){
@@ -622,6 +625,10 @@ public class ResponseTracker extends javax.swing.JFrame implements InterfaceRege
             if (isMatched(99,startpos, endpos, inputtagregex, reqstr, groupvalues, false)){
                 ParmVars.plog.AppendPrint("matched any pattern validregex[" + inputtagregex + "]");
                 regexpattern = inputtagregex;
+                RegexPattern.setText(regexpattern);
+            }else{
+                String selected_value_escaped  = selected_value.replaceAll("(\r|\n)+", "(?:\\\\r|\\\\n)+?");
+                regexpattern = "(" + selected_value_escaped + ")";
                 RegexPattern.setText(regexpattern);
             }
         }

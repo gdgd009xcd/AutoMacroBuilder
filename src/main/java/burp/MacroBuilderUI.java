@@ -468,7 +468,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             }
         });
 
-        waitsec.setText("1");
+        waitsec.setText("0");
 
         MBResetToOriginal.setSelected(true);
         MBResetToOriginal.setText(bundle.getString("MacroBuilderUI.オリジナルにリセット.text")); // NOI18N

@@ -118,14 +118,15 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                         //
                     }else{
                         try {
-                            try{
+                            /***try{
                                 String request_string = new String(messageInfo.getRequest(), ParmVars.enc.getIANACharset());
                                 PRequest prequest = new PRequest(request_string);
                                 url = prequest.getURL();
                             }catch(Exception e){
                                 return;
-                            }
+                            }**/
                             PRequestResponse prs = new PRequestResponse(new String(messageInfo.getRequest(), ParmVars.enc.getIANACharset()), new String(messageInfo.getResponse(), ParmVars.enc.getIANACharset()));
+                            url = prs.request.getURL();
                             ParmVars.plog.debuglog(0, "=====ResponseRun start====== status:" + prs.response.status);
                             int updtcnt = pgen.ResponseRun(url, messageInfo.getResponse(), ParmVars.enc.getIANACharset());
                             ParmVars.plog.debuglog(0, "=====ResponseRun end======");
@@ -202,22 +203,41 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
             {
                 // update number sequeces...
                 if (messageIsRequest){
-
-                            try{
-                                    byte[] retval = pgen.Run(httpReqRes.getRequest());
-                                    if ( retval != null){
-                                        httpReqRes.setRequest(retval);
-                                    }
-                            }catch(Exception e){
-                                    ParmVars.plog.printlog(e.toString(), true);
-                            }
-                            // Update last request time and append cookies to request
-                }else{//Fetch Responses...
+                    ParmVars.plog.debuglog(0, "ProcessProxyMessage: messageIsRequest start");
+                    /***NOP...
                     try{
-                        String request_string = new String(httpReqRes.getRequest(), ParmVars.enc.getIANACharset());
-                        PRequest prequest = new PRequest(request_string);
+                            byte[] retval = pgen.Run(httpReqRes.getRequest());
+                            if ( retval != null){
+                                httpReqRes.setRequest(retval);
+                            }
+                    }catch(Exception e){
+                            ParmVars.plog.printlog(e.toString(), true);
+                    }
+                    * **********/
+                    // Update last request time and append cookies to request
+                }else{//Fetch Responses...
+                    ParmVars.plog.debuglog(0, "ProcessProxyMessage: messageIsResponse start");
+                    try{
+                        PRequestResponse prs = new PRequestResponse(new String(httpReqRes.getRequest(), ParmVars.enc.getIANACharset()), new String(httpReqRes.getResponse(), ParmVars.enc.getIANACharset()));
+                        String url = prs.request.getURL();
                         try {
-                            int updtcnt = pgen.ResponseRun(prequest.getURL(), httpReqRes.getResponse(), ParmVars.enc.getIANACharset());
+                            int updtcnt = pgen.ResponseRun(url, httpReqRes.getResponse(), ParmVars.enc.getIANACharset());
+                            if(pmt!=null){
+                            switch(pmt.getState()){
+                                case ParmGenMacroTrace.PMT_CURRENT_BEGIN://カレントリクエストが終了。
+                                    pmt.endAfterCurrentRequest(prs);
+                                    break;
+                                default:
+                                    break;
+                            }
+                            switch(pmt.getState()){
+                                case ParmGenMacroTrace.PMT_CURRENT_END:
+                                    pmt.startPostMacro();
+                                    break;
+                                default:
+                                    break;
+                            }
+                            }
                         } catch (Exception ex) {
                             Logger.getLogger(BurpExtender.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -225,7 +245,9 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                         ParmVars.plog.printException(e);
                     }
                     
+                    
                 }
+                ParmVars.plog.debuglog(0, "ProcessProxyMessage: End");
             }
         }
         catch (Exception e)

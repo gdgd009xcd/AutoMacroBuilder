@@ -720,20 +720,7 @@ class AppValue {
                 }
 		return null;
 	}
-	/***
-	void updateCount(AppParmsIni pini){
-		clearNoCount();
-		int r = pini.getRow();
 
-			if ( FetchResponse.loc.isExist(r, col)){
-				String gval = FetchResponse.loc.getLocVal(r, col);
-				String cval = pini.getStrCnt(valparttype, col, csvpos);
-				ParmVars.plog.debuglog(0, "**** Response Location updateCount update r/c=" + r + "/" + col );
-				ParmVars.plog.debuglog(0, "**** Response Location updateCount Location:" + gval + "count:" + cval);
-			}
-
-	}
-        * ***/
 
 	String replaceContents(int currentStepNo, AppParmsIni pini, String contents, ParmGenHashMap errorhash){
 		if (contents == null)
@@ -1063,6 +1050,11 @@ class AppParmsIni {
         public static final int T_TRACK_OLD_AVCNT = 6;
         public static final int T_TAMPER_AVCNT = 8;
 
+        public enum NumberCounterTypes {
+            NumberCount,
+            DateCount,
+        }
+        
         public boolean ispaused() {
             return pause;
         }
@@ -1252,15 +1244,16 @@ class AppParmsIni {
             	File cfile = new File(ParmVars.parmfile);
                 String dirname = cfile.getParent();
                 String filename = cfile.getName();
-                String []nvpairs = filename.split("[.]");
-                String name = nvpairs[0];
-                String ext = "";
-                if(!filename.equals(name)){
-	                for(String t: nvpairs){
-	                	ext = t;
-	                }
+                
+                int lastpos = filename.lastIndexOf(".");
+                int slen = filename.length();
+                String name = filename;
+                if(lastpos>0&& slen > lastpos){
+                    String prefix = filename.substring(0, lastpos);
+                    String suffix = filename.substring(lastpos+1);
+                    name = prefix;
                 }
-                cntfile = dirname + "\\" + name + Integer.toString(row) + ".txt";
+                cntfile = dirname + "\\" + name + "_" +Integer.toString(row) + ".txt";
             }
         }
 

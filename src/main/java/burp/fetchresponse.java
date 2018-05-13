@@ -344,50 +344,13 @@ class LocVal {
 		AppValue.TokenTypeNames _tokentype = av.tokentype;
 		if (urlmatch(url, r, c)) {
 
-			String body = presponse.getBody();
-
-			if (autotrack) {
-				// ParmGenParser parser = new ParmGenParser(body);
-				// ParmGenToken tkn = parser.fetchNameValue(name, fcnt,
-				// _tokentype);
-				ParmGenToken tkn = presponse.fetchNameValue(name, _tokentype, fcnt);
-				if (tkn != null) {
-					ParmGenTokenValue tval = tkn.getTokenValue();
-					if (tval != null) {
-						String v = tval.getValue();
-						if (v != null && !v.isEmpty()) {// value null値は追跡しない。
-							String comments = "*****FETCHRESPONSE auto track body r,c,p:" + r + "," + c + "," + fcnt + ": "	+ name + "=" + v;
-							printlog(comments);
-							ParmVars.plog.addComments(comments);
-							if (_uencode == true) {
-								String venc = v;
-								try {
-									venc = URLEncoder.encode(v, ParmVars.enc.getIANACharset());
-								} catch (UnsupportedEncodingException e) {
-									// NOP
-								}
-								v = venc;
-							}
-							String ONETIMEPASSWD = v.replaceAll(",", "%2C");
-
-							setLocVal(currentStepNo, fromStepNo, r, c, ONETIMEPASSWD, overwrite);
-							return true;
-						} else {
-							String comments = "xxxxx FAILED FETCHRESPONSE auto track body r,c,p:" + r + "," + c + ","
-									+ fcnt + ": " + name + "=" + "null";
-							printlog(comments);
-							ParmVars.plog.addComments(comments);
-						}
-					}
-				}
-			}
-
 			Matcher matcher = null;
 
-			if (regexes != null && av.resRegex != null && !av.resRegex.isEmpty()) {
-
+			if (regexes != null && av.resRegex != null && !av.resRegex.isEmpty()) {//extracted by regex
+                                String message = presponse.getMessage();
+                                
 				try {
-					matcher = regexes[r][c].matcher(body);
+					matcher = regexes[r][c].matcher(message);
 				} catch (Exception e) {
 					String comments =  "xxxxx EXCEPTION FETCHRESPONSE r,c:"+r +"," +c + ": " + name + " 正規表現[" + av.resRegex  + "] 例外：" + e.toString();
 					printlog(comments);
@@ -436,7 +399,45 @@ class LocVal {
 						}
 					}
 				}
-			}
+			}else{// extract parameter from parse response
+                            String body = presponse.getBody();
+
+                            if (autotrack) {
+                                // ParmGenParser parser = new ParmGenParser(body);
+                                // ParmGenToken tkn = parser.fetchNameValue(name, fcnt,
+                                // _tokentype);
+                                ParmGenToken tkn = presponse.fetchNameValue(name, _tokentype, fcnt);
+                                if (tkn != null) {
+                                    ParmGenTokenValue tval = tkn.getTokenValue();
+                                    if (tval != null) {
+                                        String v = tval.getValue();
+                                        if (v != null && !v.isEmpty()) {// value null値は追跡しない。
+                                                String comments = "*****FETCHRESPONSE auto track body r,c,p:" + r + "," + c + "," + fcnt + ": "	+ name + "=" + v;
+                                                printlog(comments);
+                                                ParmVars.plog.addComments(comments);
+                                                if (_uencode == true) {
+                                                        String venc = v;
+                                                        try {
+                                                                venc = URLEncoder.encode(v, ParmVars.enc.getIANACharset());
+                                                        } catch (UnsupportedEncodingException e) {
+                                                                // NOP
+                                                        }
+                                                        v = venc;
+                                                }
+                                                String ONETIMEPASSWD = v.replaceAll(",", "%2C");
+
+                                                setLocVal(currentStepNo, fromStepNo, r, c, ONETIMEPASSWD, overwrite);
+                                                return true;
+                                        } else {
+                                                String comments = "xxxxx FAILED FETCHRESPONSE auto track body r,c,p:" + r + "," + c + ","
+                                                                + fcnt + ": " + name + "=" + "null";
+                                                printlog(comments);
+                                                ParmVars.plog.addComments(comments);
+                                        }
+                                    }
+                                }
+                            }
+                        }
 		}
 		return false;
 	}

@@ -74,10 +74,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                         break;
                 }
                 ParmVars.plog.debuglog(0, "toolname:" + toolname);
-                if (/***
-                        (toolName == "intruder" && pgen.IntruderInScope )||
-                        (toolName == "repeater" && pgen.RepeaterInScope )||
-                        (toolName == "scanner" && pgen.ScannerInScope )***/
+                if (
                         (toolflag == IBurpExtenderCallbacks.TOOL_INTRUDER && pgen.IntruderInScope)||
                         (toolflag == IBurpExtenderCallbacks.TOOL_REPEATER && pgen.RepeaterInScope)||
                         (toolflag == IBurpExtenderCallbacks.TOOL_SCANNER && pgen.ScannerInScope)||
@@ -102,29 +99,16 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
 
                                 }
                             }
- 
 
-
-                            
-
- 
                         }catch(Exception e){
                             ParmVars.plog.debuglog(0, "RequestRun Exception");
                             ParmVars.plog.printException(e);
                         }
 
-                        // Update last request time and append cookies to request
-                        //messageInfo = deleteCookies(messageInfo);
-                        //
+                       
+                       
                     }else{
                         try {
-                            /***try{
-                                String request_string = new String(messageInfo.getRequest(), ParmVars.enc.getIANACharset());
-                                PRequest prequest = new PRequest(request_string);
-                                url = prequest.getURL();
-                            }catch(Exception e){
-                                return;
-                            }**/
                             PRequestResponse prs = new PRequestResponse(new String(messageInfo.getRequest(), ParmVars.enc.getIANACharset()), new String(messageInfo.getResponse(), ParmVars.enc.getIANACharset()));
                             url = prs.request.getURL();
                             ParmVars.plog.debuglog(0, "=====ResponseRun start====== status:" + prs.response.status);
@@ -174,20 +158,6 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
 
     /*public byte[]*/@Override
     public void  processProxyMessage(
-            /*****
-            int messageReference,
-            boolean messageIsRequest,
-            String remoteHost,
-            int remotePort,
-            boolean serviceIsHttps,
-            String httpMethod,
-            String url,
-            String resourceType,
-            String statusCode,
-            String responseContentType,
-            byte[] message,
-            int[] interceptAction
-            *****/
             boolean messageIsRequest,
              IInterceptedProxyMessage message
             )
@@ -204,17 +174,6 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                 // update number sequeces...
                 if (messageIsRequest){
                     ParmVars.plog.debuglog(0, "ProcessProxyMessage: messageIsRequest start");
-                    /***NOP...
-                    try{
-                            byte[] retval = pgen.Run(httpReqRes.getRequest());
-                            if ( retval != null){
-                                httpReqRes.setRequest(retval);
-                            }
-                    }catch(Exception e){
-                            ParmVars.plog.printlog(e.toString(), true);
-                    }
-                    * **********/
-                    // Update last request time and append cookies to request
                 }else{//Fetch Responses...
                     ParmVars.plog.debuglog(0, "ProcessProxyMessage: messageIsResponse start");
                     try{

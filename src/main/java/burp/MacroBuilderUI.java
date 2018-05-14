@@ -912,7 +912,8 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                             }
                             
                             String reg = ".{" + len + "}";
-                            String regex = "(?:[&=?]|^)" + token + "=(" + reg + ")";//埋め込み先の長さ設定が必要。
+                            String wwwurlreg = "[^&=]{" +len + "}";
+                            String regex = "(?:[&=?]|^)" + token + "=(" + wwwurlreg + ")";//埋め込み先の長さ設定が必要。
                             if (isformdata) {
                                 regex = "(?:[A-Z].* name=\"" + ParmGenUtil.escapeRegexChars(token) + "\".*(?:\\r|\\n|\\r\\n))(?:[A-Z].*(?:\\r|\\n|\\r\\n)){0,}(?:\\r|\\n|\\r\\n)(?:.*?)(" + reg + ")";
                             }

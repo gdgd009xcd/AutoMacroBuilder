@@ -1804,35 +1804,37 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                 boolean autotrack = false;
                 String rowcolstr = Integer.toString(row) + "," + Integer.toString(col);
 		//String path = new String(url);
-		int qpos = -1;
-                switch(av.getResTypeInt()){
-		//switch(av.resPartType & AppValue.C_VTYPE){
-		case AppValue.V_PATH://path
-                        //ParmVars.plog.debuglog(0, "ParseResponse: V_PATH " + rowcolstr);
-			break;
-		case AppValue.V_QUERY://query
-                        //ParmVars.plog.debuglog(0, "ParseResponse: V_QUERY " + rowcolstr);
-			break;
-		case AppValue.V_HEADER://header
-                        //ParmVars.plog.debuglog(0, "ParseResponse: V_HEADER " + rowcolstr);
-			//String[] headers=request.getHeaderNames();
-			//for(String header : headers){
-			rflag = FetchResponse.loc.headermatch(pmt.getStepNo(), av.fromStepNo,url, presponse, row, col, true,av.token, av);
-			break;
-                case AppValue.V_REQTRACKBODY://request追跡なのでNOP.
-                    break;
-                case AppValue.V_AUTOTRACKBODY://responseのbodyを追跡
-                    autotrack = true;
-		default:
-                        try {
-                            //body
-                            //ParmVars.plog.debuglog(0, "ParseResponse: V_BODY " + rowcolstr);
-                            rflag = FetchResponse.loc.bodymatch(pmt.getStepNo(),av.fromStepNo,url, presponse, row, col, true, autotrack, av,av.resRegexPos, av.token, av.urlencode);
-                        } catch (UnsupportedEncodingException ex) {
-                            Logger.getLogger(ParmGen.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-			break;
-		}
+                if(av.fromStepNo<0||av.fromStepNo==pmt.getStepNo()){
+                    int qpos = -1;
+                    switch(av.getResTypeInt()){
+                    //switch(av.resPartType & AppValue.C_VTYPE){
+                    case AppValue.V_PATH://path
+                            //ParmVars.plog.debuglog(0, "ParseResponse: V_PATH " + rowcolstr);
+                            break;
+                    case AppValue.V_QUERY://query
+                            //ParmVars.plog.debuglog(0, "ParseResponse: V_QUERY " + rowcolstr);
+                            break;
+                    case AppValue.V_HEADER://header
+                            //ParmVars.plog.debuglog(0, "ParseResponse: V_HEADER " + rowcolstr);
+                            //String[] headers=request.getHeaderNames();
+                            //for(String header : headers){
+                            rflag = FetchResponse.loc.headermatch(pmt.getStepNo(), av.fromStepNo,url, presponse, row, col, true,av.token, av);
+                            break;
+                    case AppValue.V_REQTRACKBODY://request追跡なのでNOP.
+                        break;
+                    case AppValue.V_AUTOTRACKBODY://responseのbodyを追跡
+                        autotrack = true;
+                    default:
+                            try {
+                                //body
+                                //ParmVars.plog.debuglog(0, "ParseResponse: V_BODY " + rowcolstr);
+                                rflag = FetchResponse.loc.bodymatch(pmt.getStepNo(),av.fromStepNo,url, presponse, row, col, true, autotrack, av,av.resRegexPos, av.token, av.urlencode);
+                            } catch (UnsupportedEncodingException ex) {
+                                Logger.getLogger(ParmGen.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                            break;
+                    }
+                }
 
 
 		return rflag;

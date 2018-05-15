@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -912,12 +913,20 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                             }
                             
                             String reg = ".{" + len + "}";
-                            String wwwurlreg = "[^&=]{" +len + "}";
+                            
+                            String wwwurlreg = "[^&=]+";
                             String regex = "(?:[&=?]|^)" + token + "=(" + wwwurlreg + ")";//埋め込み先の長さ設定が必要。
                             if (isformdata) {
                                 regex = "(?:[A-Z].* name=\"" + ParmGenUtil.escapeRegexChars(token) + "\".*(?:\\r|\\n|\\r\\n))(?:[A-Z].*(?:\\r|\\n|\\r\\n)){0,}(?:\\r|\\n|\\r\\n)(?:.*?)(" + reg + ")";
                             }
-                            apv.setURLencodedVal(regex);
+                            String encodedregex = regex;
+                            try {
+                                encodedregex = URLEncoder.encode(regex, ParmVars.enc.getIANACharset());
+                            } catch (UnsupportedEncodingException ex) {
+                                Logger.getLogger(MacroBuilderUI.class.getName()).log(Level.SEVERE, null, ex);
+                               
+                            }
+                            apv.setURLencodedVal(encodedregex);
                             apv.setresURL(".*" + restoken.request.getPath() + ".*");
                             apv.setresRegexURLencoded("");
                             int resvalpart = AppValue.V_AUTOTRACKBODY;

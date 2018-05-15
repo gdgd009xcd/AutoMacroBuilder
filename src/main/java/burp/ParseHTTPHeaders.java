@@ -1,11 +1,14 @@
 package burp;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ListIterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -814,6 +817,14 @@ class ParseHTTPHeaders {
             if(getBodyParams()!=null){
         	for(String[] pair: bodyparams){//bodyparams
         		if(pname.equals(pair[0]))return true;
+                        else{
+                            try {
+                                String decoded = URLDecoder.decode(pair[0], ParmVars.enc.getIANACharset());
+                                if(pname.equals(decoded)) return true;
+                            } catch (UnsupportedEncodingException ex) {
+                                Logger.getLogger(ParseHTTPHeaders.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
         	}
             }
             return false;
@@ -835,6 +846,15 @@ class ParseHTTPHeaders {
             if(queryparams!=null){
         	for(String[] pair: queryparams){//queryparams
         		if(pname.equals(pair[0]))return true;
+                        else{
+                            try {
+                                String decoded = URLDecoder.decode(pair[0], ParmVars.enc.getIANACharset());
+                                if(pname.equals(decoded)) return true;
+                            } catch (UnsupportedEncodingException ex) {
+                                Logger.getLogger(ParseHTTPHeaders.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                            
+                        }
         	}
             }
             return false;

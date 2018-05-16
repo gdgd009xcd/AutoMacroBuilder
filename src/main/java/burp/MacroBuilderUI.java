@@ -911,7 +911,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                                 paramname = tkparam.getTokenKey().GetName();
                             }
                             
-                            String reg = ".{" + len + "}";
+                            String reg = ".+";
                             
                             String wwwurlreg = "[^&=]+";
                             String regex = "(?:[&=?]|^)" + paramname + "=(" + wwwurlreg + ")";//埋め込み先の長さ設定が必要。

@@ -812,29 +812,34 @@ class ParseHTTPHeaders {
         	return charset;
         }
 
+        private boolean isEqualParam(String resname, String reqname){
+            if(resname.equals(reqname))return true;
+            else{
+                try {
+                    String decoded = URLDecoder.decode(reqname, ParmVars.enc.getIANACharset());
+                    if(resname.equals(decoded)) return true;
+                } catch (UnsupportedEncodingException ex) {
+                    Logger.getLogger(ParseHTTPHeaders.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            return false;
+        }
+        
         // body parameter
         public boolean hasBodyParam(String pname){
             if(getBodyParams()!=null){
         	for(String[] pair: bodyparams){//bodyparams
-        		if(pname.equals(pair[0]))return true;
-                        else{
-                            try {
-                                String decoded = URLDecoder.decode(pair[0], ParmVars.enc.getIANACharset());
-                                if(pname.equals(decoded)) return true;
-                            } catch (UnsupportedEncodingException ex) {
-                                Logger.getLogger(ParseHTTPHeaders.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-                        }
+                    if(isEqualParam(pname, pair[0]))return true;
         	}
             }
             return false;
         }
         
-        public ParmGenTokenValue getBodyTokenValue(String pname){
+        public ParmGenToken getBodyToken(String pname){
             if(getBodyParams()!=null){
         	for(String[] pair: bodyparams){//bodyparams
-        		if(pname.equals(pair[0])){
-                            return new ParmGenTokenValue("", pair[1], true);
+        		if(isEqualParam(pname, pair[0])){
+                            return new ParmGenToken(AppValue.TokenTypeNames.DEFAULT, "", pair[0], pair[1], true,0);
                         }
         	}
             }
@@ -845,26 +850,17 @@ class ParseHTTPHeaders {
         public boolean hasQueryParam(String pname){
             if(queryparams!=null){
         	for(String[] pair: queryparams){//queryparams
-        		if(pname.equals(pair[0]))return true;
-                        else{
-                            try {
-                                String decoded = URLDecoder.decode(pair[0], ParmVars.enc.getIANACharset());
-                                if(pname.equals(decoded)) return true;
-                            } catch (UnsupportedEncodingException ex) {
-                                Logger.getLogger(ParseHTTPHeaders.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-                            
-                        }
-        	}
+                    if(isEqualParam(pname, pair[0]))return true;
+         	}
             }
             return false;
         }
         
-        public ParmGenTokenValue getQueryTokenValue(String pname){
+        public ParmGenToken getQueryToken(String pname){
             if(queryparams!=null){
         	for(String[] pair: queryparams){//queryparams
-        		if(pname.equals(pair[0])){
-                            return new ParmGenTokenValue("", pair[1], true);
+        		if(isEqualParam(pname, pair[0])){
+                            return new ParmGenToken(AppValue.TokenTypeNames.DEFAULT, "", pair[0], pair[1], true,0);
                         }
         	}
             }

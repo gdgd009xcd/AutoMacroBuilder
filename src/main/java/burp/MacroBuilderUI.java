@@ -106,18 +106,20 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         int cpos = pmt.getCurrentRequest();
         if (rlist != null) {
             PRequestResponse pqr = rlist.get(cpos);
-            String reqstr = pqr.request.getMessage();
-            int len = ParmVars.displaylength > reqstr.length()?reqstr.length():ParmVars.displaylength;
-            Document  reqdoc = ParmGenUtil.createDoc(reqstr.substring(0,len));
-            if(reqdoc!=null){
-                MacroRequest.setDocument(reqdoc);
-            }
- 
-            String resstr = pqr.response.getMessage();
-            len = ParmVars.displaylength > resstr.length() ? resstr.length():ParmVars.displaylength;
-            Document resdoc = ParmGenUtil.createDoc(resstr.substring(0,len));
-            if(resdoc!=null){
-                MacroResponse.setDocument(resdoc);
+            if(pmt.isMBcurrentreqresdisplay()){
+                String reqstr = pqr.request.getMessage();
+                int len = ParmVars.displaylength > reqstr.length()?reqstr.length():ParmVars.displaylength;
+                Document  reqdoc = ParmGenUtil.createDoc(reqstr.substring(0,len));
+                if(reqdoc!=null){
+                    MacroRequest.setDocument(reqdoc);
+                }
+
+                String resstr = pqr.response.getMessage();
+                len = ParmVars.displaylength > resstr.length() ? resstr.length():ParmVars.displaylength;
+                Document resdoc = ParmGenUtil.createDoc(resstr.substring(0,len));
+                if(resdoc!=null){
+                    MacroResponse.setDocument(resdoc);
+                }
             }
 
             MacroComments.setText(pqr.getComments());
@@ -672,19 +674,14 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                 //String reqmess = ParmGenUtil.LFinsert(pqr.request.getMessage());
                 //MacroRequest.setText(reqmess);
                 ParmGenTextDoc reqdoc = new ParmGenTextDoc(MacroRequest);
-                byte[] binmess = pqr.request.getByteMessage();
-                String reqmess = "";
-                try {
-                    reqmess = ParmGenUtil.LFinsert(new String(binmess, "ISO8859-1"));
-                } catch (UnsupportedEncodingException ex) {
-                    Logger.getLogger(MacroBuilderUI.class.getName()).log(Level.SEVERE, null, ex);
-                    reqmess = "";
-                }
+                
+                String reqmess = pqr.request.getMessage();
+                
                 reqdoc.setText(reqmess);
 
 
 
-                String resmess = ParmGenUtil.LFinsert( pqr.response.getMessage());
+                String resmess = pqr.response.getMessage();
                 //MacroResponse.setText(resmess);
                 ParmGenTextDoc resdoc = new ParmGenTextDoc(MacroResponse);
                 resdoc.setText(resmess);
@@ -892,11 +889,11 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                             String token = tkn.getTokenKey().GetName();
                             //body or query ターゲットリクエストのtokenパラメータ
                             String valtype = "query";
-                            ParmGenTokenValue tkv = pqrs.request.getBodyTokenValue(token);
-                            if(tkv!=null){
+                            ParmGenToken tkparam = pqrs.request.getBodyToken(token);
+                            if(tkparam!=null){
                                 valtype = "body";
                             }else{
-                                tkv = pqrs.request.getQueryTokenValue(token);
+                                tkparam = pqrs.request.getQueryToken(token);
                             }
                             
                             apv.setValPart(valtype);
@@ -907,17 +904,19 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                             String value = tkn.getTokenValue().getValue();
                             apv.resFetchedValue = value;
                             int len = value.length();
-                            if(tkv!=null){
-                                int rlen = tkv.getValue().length();
+                            String paramname = token;
+                            if(tkparam!=null){
+                                int rlen = tkparam.getTokenValue().getValue().length();
                                 if(len<rlen) len = rlen;
+                                paramname = tkparam.getTokenKey().GetName();
                             }
                             
                             String reg = ".{" + len + "}";
                             
                             String wwwurlreg = "[^&=]+";
-                            String regex = "(?:[&=?]|^)" + token + "=(" + wwwurlreg + ")";//埋め込み先の長さ設定が必要。
+                            String regex = "(?:[&=?]|^)" + paramname + "=(" + wwwurlreg + ")";//埋め込み先の長さ設定が必要。
                             if (isformdata) {
-                                regex = "(?:[A-Z].* name=\"" + ParmGenUtil.escapeRegexChars(token) + "\".*(?:\\r|\\n|\\r\\n))(?:[A-Z].*(?:\\r|\\n|\\r\\n)){0,}(?:\\r|\\n|\\r\\n)(?:.*?)(" + reg + ")";
+                                regex = "(?:[A-Z].* name=\"" + ParmGenUtil.escapeRegexChars(paramname) + "\".*(?:\\r|\\n|\\r\\n))(?:[A-Z].*(?:\\r|\\n|\\r\\n)){0,}(?:\\r|\\n|\\r\\n)(?:.*?)(" + reg + ")";
                             }
                             String encodedregex = regex;
                             try {

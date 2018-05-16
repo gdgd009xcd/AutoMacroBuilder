@@ -44,6 +44,7 @@ public class ParmGenMacroTrace {
     boolean MBResetToOriginal =false;//==true オリジナルリクエストを実行。
     boolean MBcleartokencache = false;//開始時tokenキャッシュクリア
     boolean MBreplaceCookie = false;//==true Cookie引き継ぎ置き換え == false Cookie overwrite
+    boolean MBcurrentreqresdisplay = false;
     int waittimer = 1;//実行間隔(msec)
 
     ListIterator<PRequestResponse> oit = null;//オリジナル
@@ -105,6 +106,13 @@ public class ParmGenMacroTrace {
     }
     void setMBreplaceCookie(boolean b){
         MBreplaceCookie = b;
+    }
+    
+    void setMBcurrentreqresdisplay(boolean b){
+        MBcurrentreqresdisplay =b;
+    }
+    public boolean isMBcurrentreqresdisplay(){
+        return MBcurrentreqresdisplay; 
     }
     
     void setWaitTimer(String msec){

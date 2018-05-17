@@ -821,7 +821,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             //token追跡自動設定。。
             //ArrayList<ParmGenToken> tracktokenlist = new ArrayList<ParmGenToken>();
             ArrayList<ParmGenResToken> urltokens = new ArrayList<ParmGenResToken>();
-            Pattern patternw32 = Pattern.compile("\\w{32}");
+            Pattern patternw32 = ParmGenUtil.Pattern_compile("\\w{32}");
 
             List<AppParmsIni> newparms = new ArrayList<AppParmsIni>();//生成するパラメータ
             PRequestResponse respqrs = null;
@@ -913,7 +913,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                             
                             String reg = ".+";
                             
-                            String wwwurlreg = "[^&=]+";
+                            String wwwurlreg = "[^&=\\r\\n ]+";
                             String regex = "(?:[&=?]|^)" + paramname + "=(" + wwwurlreg + ")";//埋め込み先の長さ設定が必要。
                             if (isformdata) {
                                 regex = "(?:[A-Z].* name=\"" + ParmGenUtil.escapeRegexChars(paramname) + "\".*(?:\\r|\\n|\\r\\n))(?:[A-Z].*(?:\\r|\\n|\\r\\n)){0,}(?:\\r|\\n|\\r\\n)(?:.*?)(" + reg + ")";

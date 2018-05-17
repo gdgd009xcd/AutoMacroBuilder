@@ -132,7 +132,7 @@ public class SelectRequest extends javax.swing.JDialog {
 
         RequestEntity.setColumns(20);
         RequestEntity.setRows(5);
-        RequestEntity.setText("POST http://tss-cybozu.toppan.co.jp/cgi-bin/cbag/ag.exe? HTTP/1.1\nHost: tss-cybozu.toppan.co.jp\nUser-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; ja; rv:1.9.2.23) Gecko/20110920 Firefox/3.6.23 ( .NET CLR 3.5.30729; .NET4.0E)\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\nAccept-Language: ja,en-us;q=0.7,en;q=0.3\nAccept-Encoding: gzip,deflate\nAccept-Charset: Shift_JIS,utf-8;q=0.7,*;q=0.7\nKeep-Alive: 115\nProxy-Connection: keep-alive\nReferer: http://tss-cybozu.toppan.co.jp/cgi-bin/cbag/ag.exe\nContent-Type: application/x-www-form-urlencoded\nContent-Length: 111\n\ncsrf_ticket=&_System=login&_Login=1&LoginMethod=2&_Account=202241&Password=413vtz5w&Submit=%83%8D%83O%83C%83%93");
+        RequestEntity.setText("POST http://tss-xxxxxxxxxxx? HTTP/1.1\nHost: xxxxxxxxxxxxxxxxxxxx\nUser-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; ja; rv:1.9.2.23) Gecko/20110920 Firefox/3.6.23 ( .NET CLR 3.5.30729; .NET4.0E)\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\nAccept-Language: ja,en-us;q=0.7,en;q=0.3\nAccept-Encoding: gzip,deflate\nAccept-Charset: Shift_JIS,utf-8;q=0.7,*;q=0.7\nKeep-Alive: 115\nProxy-Connection: keep-alive");
         jScrollPane2.setViewportView(RequestEntity);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -148,8 +148,8 @@ public class SelectRequest extends javax.swing.JDialog {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE)
-                .addGap(36, 36, 36))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         jTabbedPane1.addTab(bundle.getString("SelectRequest.REQUEST.text"), jPanel1); // NOI18N

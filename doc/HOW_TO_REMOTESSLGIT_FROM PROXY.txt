@@ -22,9 +22,9 @@ sslVerify = false等のエラー表示。
       <id>proxy-http</id>
       <active>true</active>
       <protocol>http</protocol>
-      <host>proxy.toppan.co.jp</host>
+      <host>proxy.localhost</host>
       <port>8088</port>
-      <username>chikara_1.daike</username>
+      <username>daike</username>
       <password>z4yvtz6w1</password>
     </proxy>
   </proxies>

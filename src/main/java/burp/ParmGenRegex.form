@@ -344,14 +344,15 @@
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="burp/Bundle.properties" key="MULTILINE" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
             </Property>
+            <Property name="enabled" type="boolean" value="false"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JCheckBox" name="CASE_INSENSITIVE">
           <Properties>
-            <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="burp/Bundle.properties" key="&#x82f1;&#x5927;&#x5c0f;&#x6587;&#x5b57;&#x533a;&#x5225;&#x3057;&#x306a;&#x3044;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
             </Property>
+            <Property name="enabled" type="boolean" value="false"/>
           </Properties>
         </Component>
       </SubComponents>

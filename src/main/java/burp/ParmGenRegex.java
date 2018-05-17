@@ -138,7 +138,7 @@ public class ParmGenRegex extends javax.swing.JDialog {
         for(int i = 0;i < patterns.length; i++){
             for(int j = 0 ; j< 2; j++){
                 String strpattern = patterns[i] + grpclose[j];
-                Pattern pattern = Pattern.compile(strpattern);//数値
+                Pattern pattern = ParmGenUtil.Pattern_compile(strpattern);//数値
                 Matcher matcher = pattern.matcher(orig); 
                 if (matcher.find()){
                     regex = matcher.group();
@@ -165,7 +165,7 @@ public class ParmGenRegex extends javax.swing.JDialog {
     int  hasGroupRegex(String r){
         // (?:^|[^\\])(\([^?].*?\))
         String greg = "(?:^|[^\\\\])(\\([^?].*?\\))";//後方参照グループ
-        Pattern pattern = Pattern.compile(greg);
+        Pattern pattern = ParmGenUtil.Pattern_compile(greg);
         Matcher matcher = pattern.matcher(r);
         int gtotal = 0;
         while(matcher.find()){
@@ -224,7 +224,7 @@ public class ParmGenRegex extends javax.swing.JDialog {
             if(CASE_INSENSITIVE.isSelected()){
                 flags |= Pattern.CASE_INSENSITIVE;
             }
-            compiledregex = Pattern.compile(regex, flags);
+            compiledregex = ParmGenUtil.Pattern_compile(regex, flags);
             
             m = compiledregex.matcher(original);
         }catch(Exception e){
@@ -507,9 +507,10 @@ public class ParmGenRegex extends javax.swing.JDialog {
 
         MULTILINE.setSelected(true);
         MULTILINE.setText(bundle.getString("ParmGenRegex.MULTILINE.text")); // NOI18N
+        MULTILINE.setEnabled(false);
 
-        CASE_INSENSITIVE.setSelected(true);
         CASE_INSENSITIVE.setText(bundle.getString("ParmGenRegex.英大小文字区別しない.text")); // NOI18N
+        CASE_INSENSITIVE.setEnabled(false);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);

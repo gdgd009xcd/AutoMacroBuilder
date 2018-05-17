@@ -7,7 +7,7 @@ package burp;
 
 /**
  *
- * @author chikara_1.daike
+ * @author daike
  */
 public class ParmGenTokenValue {
     private String url;

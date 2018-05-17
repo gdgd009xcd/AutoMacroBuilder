@@ -371,7 +371,7 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
 
 
     private int parseValueType(String v, int defaultvaltype){
-        Pattern pattern = Pattern.compile("([0-9]+)");
+        Pattern pattern = ParmGenUtil.Pattern_compile("([0-9]+)");
         Matcher matcher = pattern.matcher(v);
         if (matcher.find()){
             String rv = matcher.group();
@@ -471,8 +471,8 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
         }
 
         if (!wholeval){
-            //Pattern pattern = Pattern.compile("([^0-9]*)(\\d+)([^0-9]*)");
-            Pattern pattern = Pattern.compile(prepostpattern + "(" + regpattern+ "+)" + prepostpattern);
+            //Pattern pattern = ParmGenUtil.Pattern_compile("([^0-9]*)(\\d+)([^0-9]*)");
+            Pattern pattern = ParmGenUtil.Pattern_compile(prepostpattern + "(" + regpattern+ "+)" + prepostpattern);
             Matcher matcher = pattern.matcher(v);
             if (matcher.find()){
                     String prestr = null;
@@ -517,9 +517,9 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
         }
 
         if ( isformdata){
-            return "(" + vreg + ")";
+            return "(.+)";
         }
-        return prefix + "(" + vreg + ")";
+        return prefix + "([^&=\\r\\n ]+)";
     }
 
     private void AddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddActionPerformed

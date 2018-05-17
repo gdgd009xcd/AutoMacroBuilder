@@ -310,7 +310,7 @@ class CSVFields{
 }
 
 class CSVParser {
-	static Pattern pattern = Pattern.compile("(\"[^\"]*(?:\"\"[^\"]*)*\"|[^,\"]*)[ \t]*?,");
+	static Pattern pattern = ParmGenUtil.Pattern_compile("(\"[^\"]*(?:\"\"[^\"]*)*\"|[^,\"]*)[ \t]*?,");
 	static Matcher matcher = null;
 	static String term = "A-----fd43214234897234----------~Terminator_---------89432091842390fdsaf---Z";
 
@@ -707,7 +707,7 @@ class AppValue {
                 valueregex = null;
 		try{
 			value = URLDecoder.decode(_value, ParmVars.enc.getIANACharset());
-			valueregex = Pattern.compile(value);
+			valueregex = ParmGenUtil.Pattern_compile(value);
 		}catch(Exception e){
 			exerr = e.toString();
                         valueregex = null;
@@ -1196,7 +1196,7 @@ class AppParmsIni {
 		exerr = null;
 		try{
 			url = _url;
-			urlregex = Pattern.compile(url);
+			urlregex = ParmGenUtil.Pattern_compile(url);
 
 		}catch(Exception e){
 			exerr = e.toString();
@@ -1621,7 +1621,8 @@ class ParmGen {
 	//		}
 	//		//printlog(header+" : " + request.getHeader(header), true);
 	//	}
-
+                if(av.toStepNo>0&&av.toStepNo!=pmt.getStepNo())return null;
+                
 		ArrayList<String []> headers = prequest.getHeaders();
 
 		String method = prequest.getMethod();
@@ -1782,15 +1783,17 @@ class ParmGen {
 	}
 
 boolean FetchRequest(PRequest prequest,   AppParmsIni pini, AppValue av){
-    String url = prequest.getURL();
-    int row,col;
-    row = pini.row;
-    col = av.col;
-    switch(av.getResTypeInt()){
-        case AppValue.V_REQTRACKBODY:
-            return FetchResponse.loc.reqbodymatch(pmt.getStepNo(), av.fromStepNo,url, prequest, row, col, true, av.resRegexPos, av.token);
-        default:
-            break;
+    if(av.fromStepNo<0||av.fromStepNo==pmt.getStepNo()){
+        String url = prequest.getURL();
+        int row,col;
+        row = pini.row;
+        col = av.col;
+        switch(av.getResTypeInt()){
+            case AppValue.V_REQTRACKBODY:
+                return FetchResponse.loc.reqbodymatch(pmt.getStepNo(), av.fromStepNo,url, prequest, row, col, true, av.resRegexPos, av.token);
+            default:
+                break;
+        }
     }
     return false;
 }
@@ -1966,7 +1969,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                                 if ( urlmatcher.find() ){
                                         //Content-Type: multipart/form-data; boundary=---------------------------30333176734664
                                         if (content_type != null && !content_type.equals("") && hasboundary ==false){//found
-                                                Pattern ctypepattern = Pattern.compile("multipart/form-data;.*?boundary=(.+)$");
+                                                Pattern ctypepattern = ParmGenUtil.Pattern_compile("multipart/form-data;.*?boundary=(.+)$");
                                                 Matcher ctypematcher = ctypepattern.matcher(content_type);
                                                 if ( ctypematcher.find()){
                                                         String Boundary = ctypematcher.group(1);

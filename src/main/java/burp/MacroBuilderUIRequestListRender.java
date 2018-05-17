@@ -14,7 +14,7 @@ import javax.swing.JList;
 
 /**
  *
- * @author chikara_1.daike
+ * @author daike
  */
 public class MacroBuilderUIRequestListRender extends DefaultListCellRenderer{
     ParmGenMacroTrace pmt;

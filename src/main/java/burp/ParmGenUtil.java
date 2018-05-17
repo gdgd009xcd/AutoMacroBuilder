@@ -102,7 +102,7 @@ public class ParmGenUtil {
 		ArrayList<String> glist = new ArrayList<String>();
 
 		String greg = "(?:^|[^\\\\])(\\([^?].*?\\))";//後方参照グループ
-		Pattern pattern = Pattern.compile(greg);
+		Pattern pattern = ParmGenUtil.Pattern_compile(greg);
 		Matcher matcher = pattern.matcher(r);
 		int gtotal = 0;
 		while(matcher.find()){
@@ -144,7 +144,7 @@ public class ParmGenUtil {
 
 	//target文字列中の検索正規表現regexのマッチカウント
 	public static int getRegexMatchpos(String regex, String target){
-		Pattern pattern = Pattern.compile(regex);
+		Pattern pattern = ParmGenUtil.Pattern_compile(regex);
 		Matcher matcher = pattern.matcher(target);
 		int mcnt = 0;
 		while(matcher.find()){
@@ -279,5 +279,13 @@ public class ParmGenUtil {
                 newdoc = null;
             }
             return newdoc;
+        }
+        
+        public static Pattern Pattern_compile(String regex){
+            return Pattern_compile(regex, 0);
+        }
+        
+        public static Pattern Pattern_compile(String regex, int opt){
+            return Pattern.compile(regex, opt|Pattern.MULTILINE);
         }
 }

@@ -128,7 +128,7 @@
         <Container class="javax.swing.JPanel" name="jPanel1">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="request">
+              <JTabbedPaneConstraints tabName="&lt;REQUEST&gt;">
                 <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="burp/Bundle.properties" key="REQUEST" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
                 </Property>
@@ -149,9 +149,9 @@
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="jScrollPane2" pref="168" max="32767" attributes="0"/>
-                      <EmptySpace min="-2" pref="36" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jScrollPane2" pref="192" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -168,7 +168,7 @@
                   <Properties>
                     <Property name="columns" type="int" value="20"/>
                     <Property name="rows" type="int" value="5"/>
-                    <Property name="text" type="java.lang.String" value="POST http://tss-cybozu.toppan.co.jp/cgi-bin/cbag/ag.exe? HTTP/1.1&#xa;Host: tss-cybozu.toppan.co.jp&#xa;User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; ja; rv:1.9.2.23) Gecko/20110920 Firefox/3.6.23 ( .NET CLR 3.5.30729; .NET4.0E)&#xa;Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8&#xa;Accept-Language: ja,en-us;q=0.7,en;q=0.3&#xa;Accept-Encoding: gzip,deflate&#xa;Accept-Charset: Shift_JIS,utf-8;q=0.7,*;q=0.7&#xa;Keep-Alive: 115&#xa;Proxy-Connection: keep-alive&#xa;Referer: http://tss-cybozu.toppan.co.jp/cgi-bin/cbag/ag.exe&#xa;Content-Type: application/x-www-form-urlencoded&#xa;Content-Length: 111&#xa;&#xa;csrf_ticket=&amp;_System=login&amp;_Login=1&amp;LoginMethod=2&amp;_Account=202241&amp;Password=413vtz5w&amp;Submit=%83%8D%83O%83C%83%93"/>
+                    <Property name="text" type="java.lang.String" value="POST http://tss-xxxxxxxxxxx? HTTP/1.1&#xa;Host: xxxxxxxxxxxxxxxxxxxx&#xa;User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; ja; rv:1.9.2.23) Gecko/20110920 Firefox/3.6.23 ( .NET CLR 3.5.30729; .NET4.0E)&#xa;Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8&#xa;Accept-Language: ja,en-us;q=0.7,en;q=0.3&#xa;Accept-Encoding: gzip,deflate&#xa;Accept-Charset: Shift_JIS,utf-8;q=0.7,*;q=0.7&#xa;Keep-Alive: 115&#xa;Proxy-Connection: keep-alive"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -178,7 +178,7 @@
         <Container class="javax.swing.JPanel" name="jPanel2">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="response">
+              <JTabbedPaneConstraints tabName="&lt;RESPONSE&gt;">
                 <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="burp/Bundle.properties" key="RESPONSE" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
                 </Property>

@@ -12,7 +12,7 @@ import java.util.Date;
 
 /**
  *
- * @author chikara_1.daike
+ * @author daike
  */
 public class BurpICookie implements ICookie{
     String domain;

@@ -20,7 +20,7 @@ import java.util.Base64;
 
 /**
  *
- * @author chikara_1.daike
+ * @author daike
  */
 public class ParmGenJSON {
     ArrayList<AppParmsIni> rlist;

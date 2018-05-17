@@ -201,7 +201,7 @@ public class ResponseTracker extends javax.swing.JFrame implements InterfaceRege
     }
     
     private boolean isMatched(int i, int s, int e, String regex, String reqstr, ArrayList<String> groupvalues, boolean first){
-        Pattern pattern = Pattern.compile(regex,Pattern.CASE_INSENSITIVE|Pattern.MULTILINE);//大文字小文字区別なし
+        Pattern pattern = ParmGenUtil.Pattern_compile(regex,Pattern.CASE_INSENSITIVE|Pattern.MULTILINE);
         Matcher matcher;
         matchpos = -1;
         try{
@@ -653,10 +653,10 @@ public class ResponseTracker extends javax.swing.JFrame implements InterfaceRege
         }
         if(poscnt!=null){
             ParmVars.session.put(ParmGenSession.K_RESPONSEPOSITION, poscnt);
-        }
-        dispose();
-        if(poscnt!=null){
+            dispose();
             new SelectRequest(bundle.getString("ResponseTracker.リクエスト選択.text"), parentwin, new ParmGenAddParms(parentwin, true), ParmGenNew.P_REQUESTTAB).setVisible(true);
+        }else{
+            JOptionPane.showMessageDialog(this,"<HTML>正規表現に誤りがあります。</HTML>" ,  "正規表現エラー", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButton3ActionPerformed
 

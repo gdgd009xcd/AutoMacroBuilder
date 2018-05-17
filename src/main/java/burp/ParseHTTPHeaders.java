@@ -58,8 +58,8 @@ class ParseHTTPHeaders {
 	boolean isrequest;// == true - request, false - response
 
 	private void init(){
-		valueregex = Pattern.compile("(([^\r\n:]*):{0,1}[ \t]*([^\r\n]*))(\r\n)");
-		//formdataregex = Pattern.compile("-{4,}[a-zA-Z0-9]+(?:\r\n)(?:[A-Z].* name=\"(.*?)\".*(?:\r\n))(?:[A-Z].*(?:\r\n)){0,}(?:\r\n)((?:.|\r|\n)*?)(?:\r\n)-{4,}[a-zA-Z0-9]+");
+		valueregex = ParmGenUtil.Pattern_compile("(([^\r\n:]*):{0,1}[ \t]*([^\r\n]*))(\r\n)");
+		//formdataregex = ParmGenUtil.Pattern_compile("-{4,}[a-zA-Z0-9]+(?:\r\n)(?:[A-Z].* name=\"(.*?)\".*(?:\r\n))(?:[A-Z].*(?:\r\n)){0,}(?:\r\n)((?:.|\r|\n)*?)(?:\r\n)-{4,}[a-zA-Z0-9]+");
 		formdataheader = "(?:[A-Z].* name=\"(.*?)\".*(?:\r\n))(?:[A-Z].*(?:\r\n)){0,}(?:\r\n)";
 		formdatafooter = "(?:\r\n)";
 
@@ -303,8 +303,8 @@ class ParseHTTPHeaders {
                                                                                     String[] boundaries = types[i].split("[=]");
                                                                                     if(boundaries.length>1){
                                                                                             boundary = boundaries[1];
-                                                                                            formdataheaderregex = Pattern.compile(formdataheader);
-                                                                                            formdatafooterregex = Pattern.compile(formdatafooter + "--" + boundary);
+                                                                                            formdataheaderregex = ParmGenUtil.Pattern_compile(formdataheader);
+                                                                                            formdatafooterregex = ParmGenUtil.Pattern_compile(formdatafooter + "--" + boundary);
                                                                                             formdata = true;
                                                                                     }
                                                                             }

@@ -137,7 +137,7 @@ class LocVal {
 	void setRegex(String pattern, int r, int c){
             if(isValid(r,c) && pattern != null && !pattern.isEmpty()){
                 try{
-                    regexes[r][c] = Pattern.compile(pattern);
+                    regexes[r][c] = ParmGenUtil.Pattern_compile(pattern);
                 }catch(Exception e){
                     ParmVars.plog.debuglog(0, "ERROR: setRegex " + e.toString());
                 }
@@ -147,7 +147,7 @@ class LocVal {
             if(isValid(r,c)&& pattern != null && !pattern.isEmpty()){
                 printlog("setURLRegex:r,c,url=" + strrowcol(r,c) + "," + pattern);
                 try{
-                    urlregexes[r][c] = Pattern.compile(pattern);
+                    urlregexes[r][c] = ParmGenUtil.Pattern_compile(pattern);
                 }catch(Exception e){
                     printlog("ERROR: setURLRegex " + e.toString());
                 }
@@ -510,35 +510,7 @@ class FetchResponse {
 	static {
 
 
-		//loc.setSticky();
-
-		//１）指定したポジションr,cの正規表現グループを指定
-		//発注取消用
-		//global.Location.setRegex("新規保存完了しました.*?\\<rr:Target name=\"OrderInfo\">\\<rr:Key name=\"ID\" value=\"([0-9A-Za-z,]+?)\"/>\\</rr:Target>\\<rr:Contents>\\<o:OrderInfo xmlns:o=\"http://animate\\.es-presso.jp/OrderInfo\" xmlns:lnk=\"http://esp\\.es-presso.jp/Link\">(?:\\r|\\n|\\t|[ ])*?<o:ID>\\<\\!\\[CDATA\\[(?:[0-9A-Za-z,]+?)\\]\\]\\>\\</o\\:ID\\>(?:\\r|\\n|\\t|[ ])*?<o:Cart>(?:\\r|\\n|\\t|[ ])*?<lnk:Link target=\"Cart\">(?:\\r|\\n|\\t|[ ])*?<lnk:Key name=\"ID\" value=\"(?:[0-9A-Za-z,]+?)\"/>", 0, 0);
-		//2-2-3.発注履歴カート番号承認実行
-		//発注取消用カートＩＤ Line:0
-		//https://musha.pub.toppan.co.jp:8463/animate/v1/Cart/Searchのレス。
-		//global.Location.setRegex("<c:ID>\\<\\!\\[CDATA\\[([A-Z]{2}(?:[0-9]|%2C|,)+)\\]\\]\\>\\<\\/c\\:ID>(?:\\r|\\n|\\t|[ ])*?<c:Name>\\<\\!\\[CDATA\\[TSS承認テストＡＡＡ１\\]\\]\\>\\<\\/c\\:Name>", 0, 0);
-		//オーダーＩＤhttps://musha.pub.toppan.co.jp:8463/animate/v1/Cart/Getのレス
-		//global.Location.setRegex("<o:ID>\\<\\!\\[CDATA\\[([A-Z]{2}(?:[0-9]|%2C|,)+)\\]\\]\\>\\</o:ID>", 0, 3);
-		//発注申請用 Line:2 https://musha.pub.toppan.co.jp:8463/animate/v1/OrderInfo/Create
-		//global.Location.setRegex("新規保存完了しました.*?\\<rr:Target name=\"OrderInfo\">\\<rr:Key name=\"ID\" value=\"([0-9A-Za-z,]+?)\"/>\\</rr:Target>\\<rr:Contents>\\<o:OrderInfo xmlns:o=\"http://animate\\.es-presso.jp/OrderInfo\" xmlns:lnk=\"http://esp\\.es-presso.jp/Link\">(?:\\r|\\n|\\t|[ ])*?<o:ID>\\<\\!\\[CDATA\\[(?:[0-9A-Za-z,]+?)\\]\\]\\>\\</o\\:ID\\>(?:\\r|\\n|\\t|[ ])*?<o:Cart>(?:\\r|\\n|\\t|[ ])*?<lnk:Link target=\"Cart\">(?:\\r|\\n|\\t|[ ])*?<lnk:Key name=\"ID\" value=\"(?:[0-9A-Za-z,]+?)\"/>", 2, 3);
-		//global.Location.setRegex("新規保存完了しました.*?\\<rr:Target name=\"OrderInfo\">\\<rr:Key name=\"ID\" value=\"(?:[0-9A-Za-z,]+?)\"/>\\</rr:Target>\\<rr:Contents>\\<o:OrderInfo xmlns:o=\"http://animate\\.es-presso.jp/OrderInfo\" xmlns:lnk=\"http://esp\\.es-presso.jp/Link\">(?:\\r|\\n|\\t|[ ])*?<o:ID>\\<\\!\\[CDATA\\[(?:[0-9A-Za-z,]+?)\\]\\]\\>\\</o\\:ID\\>(?:\\r|\\n|\\t|[ ])*?<o:Cart>(?:\\r|\\n|\\t|[ ])*?<lnk:Link target=\"Cart\">(?:\\r|\\n|\\t|[ ])*?<lnk:Key name=\"ID\" value=\"([0-9A-Za-z,]+?)\"/>", 2, 0);
-		//ランク削除
-		//global.Location.setRegex("<ic2:ID>\\<\\!\\[CDATA\\[(\\d+?)\\]\\]>\\</ic2:ID>(?:\\r|\\n|[ \\t])*?<ic2:Name>\\<\\!\\[CDATA\\[ＴＳＳＴＥＳＴランク１\\]\\]\\>\\</ic2:Name>", 4, 0);
-		//商品カテゴリ削除
-		//global.Location.setRegex("<ic1:ID>\\<\\!\\[CDATA\\[(\\d+?)\\]\\]>\\</ic1:ID>(?:\\r|\\n|[ \\t])*?<ic1:Name>\\<\\!\\[CDATA\\[ＴＳＳＴＥＳＴカテゴリ１\\]\\]\\>\\</ic1:Name>", 4, 0);
-		//発注分類削除
-		//global.Location.setRegex("<oc:ID>\\<\\!\\[CDATA\\[(\\d+?)\\]\\]>\\</oc:ID>(?:\\r|\\n|[ \\t])*?<oc:Name>\\<\\!\\[CDATA\\[ＴＳＳ発注分類１\\]\\]\\>\\<\\/oc:Name>", 5, 0);
-		//店舗削除
-		//global.Location.setRegex("<s:ID>\\<\\!\\[CDATA\\[(\\d+?)\\]\\]>\\</s:ID>(?:\\r|\\n|[ \\t])*?<s:Name>\\<\\!\\[CDATA\\[ＴＳＳ店舗１\\]\\]\\>\\<\\/s:Name>", 6, 0);
-
-		//loc.setURLRegex(".*test.kurashi-research.jp:(\\d+)/top.php.*", 0,0);
-		//loc.setRegex("'PU31', '00', 'exchange', '([a-z0-9]+)'",0,0);
-
-		// for test
-		//global.Location.setURLRegex(".*hello.php.*", 0,0);
-		//global.Location.setRegex("(Hello,world)",0,0);
+		
 	}
 }
 

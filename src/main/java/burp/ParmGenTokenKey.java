@@ -8,7 +8,7 @@ import java.util.Objects;
 
 /**
  *
- * @author chikara_1.daike
+ * @author daike
  */
 public class ParmGenTokenKey {
     private AppValue.TokenTypeNames tokentype;

@@ -221,7 +221,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
         try
         {
             // Create matcher
-            Pattern pattern = Pattern.compile("<!--\n{0,}.+?\n{0,}-->");
+            Pattern pattern = ParmGenUtil.Pattern_compile("<!--\n{0,}.+?\n{0,}-->");
             Matcher matcher = pattern.matcher(message);
             boolean printed = false;
 

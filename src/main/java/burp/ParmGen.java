@@ -1032,6 +1032,8 @@ class AppParmsIni {
 	int rndval = 1;
 	int row;
         Boolean pause =false;
+        private int TrackFromStep =-1;// StepNo== -1 any >0 TrackingFrom 
+        private int SetToStep = 0;// == 0 any > 0 SetTo 
 
         public static final int T_NUMBER = 0;//数値昇順
         public static final int T_RANDOM = 1;//乱数
@@ -1053,6 +1055,22 @@ class AppParmsIni {
         public enum NumberCounterTypes {
             NumberCount,
             DateCount,
+        }
+        
+        public void setTrackFromStep(int _step){
+            TrackFromStep = _step;
+        }
+        
+        public int getTrackFromStep(){
+            return TrackFromStep;
+        }
+        
+        public void setSetToStep(int _step){
+            SetToStep = _step;
+        }
+        
+        public int getSetToStep(){
+            return SetToStep;
         }
         
         public boolean ispaused() {
@@ -1966,7 +1984,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                             while(it.hasNext()) {
                                 pini = it.next();
                                 Matcher urlmatcher = pini.urlregex.matcher(url);
-                                if ( urlmatcher.find() ){
+                                if ( urlmatcher.find() && pmt.CurrentRequestIsSetToTarget(pini)){
                                         //Content-Type: multipart/form-data; boundary=---------------------------30333176734664
                                         if (content_type != null && !content_type.equals("") && hasboundary ==false){//found
                                                 Pattern ctypepattern = ParmGenUtil.Pattern_compile("multipart/form-data;.*?boundary=(.+)$");
@@ -2074,14 +2092,16 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                         Iterator<AppParmsIni> it = trackcsv.iterator();
                         while(it.hasNext()){
                             pini = it.next();
-                            ArrayList<AppValue> parmlist = pini.parmlist;
-                            Iterator<AppValue> pt = parmlist.iterator();
-                            boolean fetched;
-                            while(pt.hasNext()){
-                                    AppValue av = pt.next();
-                                    if(av.isEnabled()){
-                                        fetched = FetchRequest(prequest,  pini, av);
-                                    }
+                            if(pmt.CurrentRequestIsTrackFromTarget(pini)){
+                                ArrayList<AppValue> parmlist = pini.parmlist;
+                                Iterator<AppValue> pt = parmlist.iterator();
+                                boolean fetched;
+                                while(pt.hasNext()){
+                                        AppValue av = pt.next();
+                                        if(av.isEnabled()){
+                                            fetched = FetchRequest(prequest,  pini, av);
+                                        }
+                                }
                             }
                         }
 
@@ -2116,25 +2136,25 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 
 			if ( url != null ){
 
-				AppParmsIni pini = null;
-				Iterator<AppParmsIni> it = trackcsv.iterator();
-				while(it.hasNext()) {
-					pini = it.next();
-                                        //if (pini.getType()==AppParmsIni.T_TRACK){
+                            AppParmsIni pini = null;
+                            Iterator<AppParmsIni> it = trackcsv.iterator();
+                            while(it.hasNext()) {
+                                pini = it.next();
+                                if(pmt.CurrentRequestIsTrackFromTarget(pini)){
 
-                                                ArrayList<AppValue> parmlist = pini.parmlist;
-                                                Iterator<AppValue> pt = parmlist.iterator();
+                                    ArrayList<AppValue> parmlist = pini.parmlist;
+                                    Iterator<AppValue> pt = parmlist.iterator();
 
-                                                while(pt.hasNext()){
-                                                        AppValue av = pt.next();
-                                                        if(av.isEnabled()){
-                                                            if (ParseResponse(url, presponse,  pini, av)){
-                                                                updtcnt++;
-                                                            }
-                                                        }
-                                                }
-                                        //}
-				}
+                                    while(pt.hasNext()){
+                                        AppValue av = pt.next();
+                                        if(av.isEnabled()){
+                                            if (ParseResponse(url, presponse,  pini, av)){
+                                                updtcnt++;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
 			}
 		}
 

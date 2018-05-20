@@ -32,6 +32,19 @@ public class ParmGenTop extends javax.swing.JFrame {
     ParmGenMacroTrace pmt;
 
 
+    private void renderTable(){
+        AppParmsIni pini;
+        csv.rewindAppParmsIni();
+        int ri = 0;
+        String FromTo = "";
+        while((pini=csv.getNextAppParmsIni())!=null){
+            int FromStep = pini.getTrackFromStep();
+            int ToStep = pini.getSetToStep();
+            FromTo = (FromStep>-1?Integer.toString(FromStep):"any") + "->" + (ToStep>0?Integer.toString(ToStep):"any");
+            model.addRow(new Object[] {pini.pause, FromTo, pini.url, pini.getIniValDsp(), pini.getLenDsp(), pini.getTypeValDsp(),pini.getAppValuesDsp(),pini.getCurrentValue()});
+            ParamTopList.setRowHeight(ri++, default_rowheight * pini.getAppValuesLineCnt());
+        }
+    }
     /**
      * Creates new form ParmGenTop
      */
@@ -56,13 +69,7 @@ public class ParmGenTop extends javax.swing.JFrame {
         }
         LANGUAGE.setModel(cbmodel);
         LANGUAGE.setSelectedItem(ParmVars.enc.getIANACharset());
-        AppParmsIni pini;
-        csv.rewindAppParmsIni();
-        int ri = 0;
-        while((pini=csv.getNextAppParmsIni())!=null){
-            model.addRow(new Object[] {pini.pause, pini.url, pini.getIniValDsp(), pini.getLenDsp(), pini.getTypeValDsp(),pini.getAppValuesDsp(),pini.getCurrentValue()});
-            ParamTopList.setRowHeight(ri++, default_rowheight * pini.getAppValuesLineCnt());
-        }
+        renderTable();
         current_row = 0;
         ParmGen pg = new ParmGen(pmt,null);
         if(pg.ProxyInScope){
@@ -138,30 +145,17 @@ public class ParmGenTop extends javax.swing.JFrame {
             }
         }
         LANGUAGE.setSelectedItem(ParmVars.enc.getIANACharset());
-        AppParmsIni pini;
-        csv.rewindAppParmsIni();
-        int ri = 0;
+        
+
         cleartables();
-        while((pini=csv.getNextAppParmsIni())!=null){
-            model.addRow(new Object[] {pini.pause, pini.url, pini.getIniValDsp(), pini.getLenDsp(), pini.getTypeValDsp(),pini.getAppValuesDsp(),pini.getCurrentValue()});
-            ParamTopList.setRowHeight(ri++, default_rowheight * pini.getAppValuesLineCnt());
-        }
+        renderTable();
     }
 
     public void updateRowDisp(AppParmsIni pini){
 
         if(pini != null){//新規
             csv.add(pini);
-            //model.addRow(new Object[] {false, pini.url, pini.getIniValDsp(), pini.getLenDsp(), pini.getTypeValDsp(),pini.getAppValuesDsp(), pini.getCurrentValue()});
-        }/****else{//更新
-            pini = csv.getAppParmsIni(current_row);
-            model.insertRow(current_row, new Object[] {false, pini.url, pini.getIniValDsp(), pini.getLenDsp(), pini.getTypeValDsp(),pini.getAppValuesDsp(), pini.getCurrentValue()});
-            ParamTopList.setRowHeight(current_row, default_rowheight * pini.getAppValuesLineCnt());
-            int rowcnt = model.getRowCount();
-            if ( rowcnt > current_row+1){
-                model.removeRow(current_row+1);
-            }
-        }***/
+        }
         refreshRowDisp(false);
 
     }
@@ -263,20 +257,20 @@ public class ParmGenTop extends javax.swing.JFrame {
 
         ParamTopList.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, ".*/input.php.*", null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null}
+                {null, null, ".*/input.php.*", null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "停止", "置換対象パス", "初期値/CSVファイル", "桁数", "機能", "パターンリスト", "現在値"
+                "", "FromTo", "", "初期値/CSVファイル", "桁数", "機能", "パターンリスト", "現在値"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Boolean.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.Boolean.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                true, false, false, false, false, false, false
+                true, false, false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -293,17 +287,17 @@ public class ParmGenTop extends javax.swing.JFrame {
         if (ParamTopList.getColumnModel().getColumnCount() > 0) {
             ParamTopList.getColumnModel().getColumn(0).setPreferredWidth(35);
             ParamTopList.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("ParmGenTop.title0.text")); // NOI18N
-            ParamTopList.getColumnModel().getColumn(1).setPreferredWidth(200);
-            ParamTopList.getColumnModel().getColumn(1).setHeaderValue(bundle.getString("ParmGenTop.title1.text")); // NOI18N
-            ParamTopList.getColumnModel().getColumn(2).setPreferredWidth(150);
-            ParamTopList.getColumnModel().getColumn(2).setHeaderValue(bundle.getString("ParmGenTop.title2.text")); // NOI18N
-            ParamTopList.getColumnModel().getColumn(3).setPreferredWidth(40);
-            ParamTopList.getColumnModel().getColumn(3).setHeaderValue(bundle.getString("ParmGenTop.title3.text")); // NOI18N
-            ParamTopList.getColumnModel().getColumn(4).setPreferredWidth(60);
-            ParamTopList.getColumnModel().getColumn(4).setHeaderValue(bundle.getString("ParmGenTop.title4.text")); // NOI18N
-            ParamTopList.getColumnModel().getColumn(5).setPreferredWidth(200);
-            ParamTopList.getColumnModel().getColumn(5).setHeaderValue(bundle.getString("ParmGenTop.title5.text")); // NOI18N
-            ParamTopList.getColumnModel().getColumn(6).setHeaderValue(bundle.getString("ParmGenTop.title6.text")); // NOI18N
+            ParamTopList.getColumnModel().getColumn(2).setPreferredWidth(200);
+            ParamTopList.getColumnModel().getColumn(2).setHeaderValue(bundle.getString("ParmGenTop.title1.text")); // NOI18N
+            ParamTopList.getColumnModel().getColumn(3).setPreferredWidth(150);
+            ParamTopList.getColumnModel().getColumn(3).setHeaderValue(bundle.getString("ParmGenTop.title2.text")); // NOI18N
+            ParamTopList.getColumnModel().getColumn(4).setPreferredWidth(40);
+            ParamTopList.getColumnModel().getColumn(4).setHeaderValue(bundle.getString("ParmGenTop.title3.text")); // NOI18N
+            ParamTopList.getColumnModel().getColumn(5).setPreferredWidth(60);
+            ParamTopList.getColumnModel().getColumn(5).setHeaderValue(bundle.getString("ParmGenTop.title4.text")); // NOI18N
+            ParamTopList.getColumnModel().getColumn(6).setPreferredWidth(200);
+            ParamTopList.getColumnModel().getColumn(6).setHeaderValue(bundle.getString("ParmGenTop.title5.text")); // NOI18N
+            ParamTopList.getColumnModel().getColumn(7).setHeaderValue(bundle.getString("ParmGenTop.title6.text")); // NOI18N
         }
 
         LogfileOnOff.setText(bundle.getString("ParmGenTop.ログファイル出力.text")); // NOI18N

@@ -58,6 +58,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         pmt.setMBCookieFromJar(MBCookieFromJar.isSelected());
         pmt.setMBFinalResponse(FinalResponse.isSelected());
         pmt.setMBResetToOriginal(MBResetToOriginal.isSelected());
+        pmt.setMBmonitorofprocessing(MBmonitorofprocessing.isSelected());
         
 
     }
@@ -106,7 +107,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         int cpos = pmt.getCurrentRequest();
         if (rlist != null) {
             PRequestResponse pqr = rlist.get(cpos);
-            if(pmt.isMBcurrentreqresdisplay()){
+            if(pmt.isMBmonitorofprocessing()){
                 String reqstr = pqr.request.getMessage();
                 int len = ParmVars.displaylength > reqstr.length()?reqstr.length():ParmVars.displaylength;
                 Document  reqdoc = ParmGenUtil.createDoc(reqstr.substring(0,len));
@@ -187,6 +188,8 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         jLabel1 = new javax.swing.JLabel();
         jPanel7 = new javax.swing.JPanel();
         FinalResponse = new javax.swing.JCheckBox();
+        MBtoStepNo = new javax.swing.JCheckBox();
+        MBmonitorofprocessing = new javax.swing.JCheckBox();
 
         SendTo.setText(bundle.getString("MacroBuilderUI.SENDTO.text")); // NOI18N
 
@@ -286,6 +289,9 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
         paramlog.setPreferredSize(new java.awt.Dimension(847, 300));
 
+        jScrollPane6.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        MacroRequest.setEditorKit(new TextPaneLineWrapper());
         MacroRequest.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 MacroRequestMouseClicked(evt);
@@ -312,7 +318,10 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
         paramlog.addTab(bundle.getString("MacroBuilderUI.リクエスト.text"), jPanel1); // NOI18N
 
+        jScrollPane3.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
         MacroResponse.setColumns(20);
+        MacroResponse.setLineWrap(true);
         MacroResponse.setRows(5);
         MacroResponse.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -340,7 +349,10 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
         paramlog.addTab(bundle.getString("MacroBuilderUI.レスポンス.text"), jPanel2); // NOI18N
 
+        jScrollPane5.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
         MacroComments.setColumns(20);
+        MacroComments.setLineWrap(true);
         MacroComments.setRows(5);
         jScrollPane5.setViewportView(MacroComments);
 
@@ -481,7 +493,6 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             }
         });
 
-        MBfromStepNo.setSelected(true);
         MBfromStepNo.setText(bundle.getString("MacroBuilderUI.追跡FROM設定.text")); // NOI18N
 
         jLabel1.setText("Other Options(Usually, you do not need chage options below.)");
@@ -511,6 +522,16 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                 .addContainerGap())
         );
 
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("burp/Bundle"); // NOI18N
+        MBtoStepNo.setText(bundle.getString("MacroBuilderUI.MBtoStepNo.text")); // NOI18N
+
+        MBmonitorofprocessing.setText(bundle.getString("MacroBuilderUI.MBmonitorofprocessing.text")); // NOI18N
+        MBmonitorofprocessing.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MBmonitorofprocessingActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -536,14 +557,19 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                         .addGap(26, 26, 26))
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                                    .addComponent(jCheckBox2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(waitsec, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(45, 45, 45))
-                                .addComponent(MBResetToOriginal, javax.swing.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE)
-                                .addComponent(MBfromStepNo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                                        .addComponent(jCheckBox2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(waitsec, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(45, 45, 45))
+                                    .addComponent(MBResetToOriginal, javax.swing.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE)
+                                    .addComponent(MBfromStepNo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(26, 26, 26)
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(MBtoStepNo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(MBmonitorofprocessing, javax.swing.GroupLayout.DEFAULT_SIZE, 405, Short.MAX_VALUE)))
                             .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 402, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 826, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 33, Short.MAX_VALUE))))
@@ -588,11 +614,14 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jCheckBox2)
-                    .addComponent(waitsec, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(waitsec, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(MBmonitorofprocessing))
                 .addGap(18, 18, 18)
                 .addComponent(MBResetToOriginal)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(MBfromStepNo)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(MBfromStepNo)
+                    .addComponent(MBtoStepNo))
                 .addContainerGap())
             .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel4Layout.createSequentialGroup()
@@ -873,7 +902,8 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                         //パラメータ生成
                         AppParmsIni aparms = new AppParmsIni();
                         //request URL
-                        String TargetURLRegex = ".*" + pqrs.request.getPath() + ".*";
+                        //String TargetURLRegex = ".*" + pqrs.request.getPath() + ".*";
+                        String TargetURLRegex = ".*";//SetTo any 
                         boolean isformdata = pqrs.request.isFormData();
                         aparms.setUrl(TargetURLRegex);
                         aparms.len = 4;//default
@@ -883,7 +913,18 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                         aparms.csvname = "";
                         aparms.pause = false;
                         aparms.parmlist = new ArrayList<AppValue>();
-
+                        if(MBfromStepNo.isSelected()){
+                            aparms.setTrackFromStep(fromStepNo);
+                        }else{
+                            aparms.setTrackFromStep(-1);
+                        }
+                        
+                        if(MBtoStepNo.isSelected()){
+                            aparms.setSetToStep(pos);
+                        }else{
+                            aparms.setSetToStep(0);
+                        }
+                        
                         for (ParmGenToken tkn : requesttokenlist) {
                             AppValue apv = new AppValue();
                             String token = tkn.getTokenKey().GetName();
@@ -926,7 +967,8 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                                
                             }
                             apv.setURLencodedVal(encodedregex);
-                            apv.setresURL(".*" + restoken.request.getPath() + ".*");
+                            //apv.setresURL(".*" + restoken.request.getPath() + ".*");
+                            apv.setresURL(".*");//TrackFrom any URL
                             apv.setresRegexURLencoded("");
                             int resvalpart = AppValue.V_AUTOTRACKBODY;
                             switch (tkn.getTokenKey().GetTokenType()) {
@@ -1184,6 +1226,11 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         pmt.setMBreplaceCookie(MBreplaceCookie.isSelected());
     }//GEN-LAST:event_MBreplaceCookieActionPerformed
 
+    private void MBmonitorofprocessingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MBmonitorofprocessingActionPerformed
+        // TODO add your handling code here:
+        pmt.setMBmonitorofprocessing(MBmonitorofprocessing.isSelected());
+    }//GEN-LAST:event_MBmonitorofprocessingActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ClearMacro;
@@ -1194,7 +1241,9 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     private javax.swing.JCheckBox MBResetToOriginal;
     private javax.swing.JCheckBox MBcleatokenfromcache;
     private javax.swing.JCheckBox MBfromStepNo;
+    private javax.swing.JCheckBox MBmonitorofprocessing;
     private javax.swing.JCheckBox MBreplaceCookie;
+    private javax.swing.JCheckBox MBtoStepNo;
     private javax.swing.JTextArea MacroComments;
     private javax.swing.JEditorPane MacroRequest;
     private javax.swing.JTextArea MacroResponse;

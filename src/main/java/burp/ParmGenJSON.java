@@ -230,6 +230,10 @@ public class ParmGenJSON {
                                 aparms.csvname = GetString(ev, value, "");
                             }else if(name.toUpperCase().equals("PAUSE")){
                                 aparms.pause = Getboolean(ev,value, false);
+                            }else if(name.toUpperCase().equals("TRACKFROMSTEP")){
+                                aparms.setTrackFromStep(GetNumber(ev, value, 0));
+                            }else if(name.toUpperCase().equals("SETTOSTEP")){
+                                aparms.setSetToStep(GetNumber(ev, value, 0));
                             }
                         }else if(current!=null&&current.toUpperCase().equals("PREQUESTRESPONSE")){
                             if(name.toUpperCase().equals("PREQUEST")){

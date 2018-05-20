@@ -163,8 +163,8 @@ public class ParmGenRegex extends javax.swing.JDialog {
     }
     
     int  hasGroupRegex(String r){
-        // (?:^|[^\\])(\([^?].*?\))
-        String greg = "(?:^|[^\\\\])(\\([^?].*?\\))";//後方参照グループ
+        // (?:^|[^\\])(\([^?].*?\)|\(\))
+        String greg = "(?:^|[^\\\\])(\\([^?].*?\\)|\\(\\))";//後方参照グループ
         Pattern pattern = ParmGenUtil.Pattern_compile(greg);
         Matcher matcher = pattern.matcher(r);
         int gtotal = 0;

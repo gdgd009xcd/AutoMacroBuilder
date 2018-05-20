@@ -166,6 +166,8 @@ public class ParmGenCSV {
             AppParmsIni_prec.add("maxval", prec.maxval);
             AppParmsIni_prec.add("csvname", prec.typeval==AppParmsIni.T_CSV?escapeDelimiters(prec.frl.getFileName(), "UTF-8"):"");
             AppParmsIni_prec.add("pause", prec.pause);
+            AppParmsIni_prec.add("TrackFromStep", prec.getTrackFromStep());
+            AppParmsIni_prec.add("SetToStep", prec.getSetToStep());
 
             JsonArrayBuilder AppValue_List =Json.createArrayBuilder();
 
@@ -222,7 +224,7 @@ public class ParmGenCSV {
         pfile = null;
     }
 
-    public void save(){
+    public void save(){//NOP...
         //ファイル初期化
         try{
             pfile = new ParmGenWriteFile(ParmVars.parmfile);

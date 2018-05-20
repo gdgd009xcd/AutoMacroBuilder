@@ -44,7 +44,7 @@ public class ParmGenMacroTrace {
     boolean MBResetToOriginal =false;//==true オリジナルリクエストを実行。
     boolean MBcleartokencache = false;//開始時tokenキャッシュクリア
     boolean MBreplaceCookie = false;//==true Cookie引き継ぎ置き換え == false Cookie overwrite
-    boolean MBcurrentreqresdisplay = false;
+    boolean MBmonitorofprocessing = false;
     int waittimer = 1;//実行間隔(msec)
 
     ListIterator<PRequestResponse> oit = null;//オリジナル
@@ -108,11 +108,12 @@ public class ParmGenMacroTrace {
         MBreplaceCookie = b;
     }
     
-    void setMBcurrentreqresdisplay(boolean b){
-        MBcurrentreqresdisplay =b;
+    void setMBmonitorofprocessing(boolean b){
+        MBmonitorofprocessing =b;
     }
-    public boolean isMBcurrentreqresdisplay(){
-        return MBcurrentreqresdisplay; 
+    
+    public boolean isMBmonitorofprocessing(){
+        return MBmonitorofprocessing;
     }
     
     void setWaitTimer(String msec){
@@ -471,6 +472,26 @@ public class ParmGenMacroTrace {
        return false;
    }
 
+   boolean CurrentRequestIsTrackFromTarget(AppParmsIni pini){
+       int FromStepNo = pini.getTrackFromStep();
+       if(FromStepNo<0){
+           return true;
+       }else if(FromStepNo==stepno){
+           return true;
+       }
+       return false;
+   }
+   
+   boolean CurrentRequestIsSetToTarget(AppParmsIni pini){
+       int ToStepNo = pini.getSetToStep();
+       if(ToStepNo<1){
+           return true;
+       }else if(ToStepNo==stepno){
+           return true;
+       }
+       return false;
+   }
+   
    void setRecords(ArrayList <PRequestResponse> _rlist){
        //rlist = new ArrayList <PRequestResponse> (_rlist);//copy
        rlist = _rlist;//reference

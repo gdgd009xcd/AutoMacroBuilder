@@ -179,9 +179,10 @@
         <Component class="javax.swing.JTable" name="ParamTopList">
           <Properties>
             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-              <Table columnCount="7" rowCount="4">
-                <Column editable="true" title="&#x505c;&#x6b62;" type="java.lang.Boolean"/>
-                <Column editable="false" title="&#x7f6e;&#x63db;&#x5bfe;&#x8c61;&#x30d1;&#x30b9;" type="java.lang.String">
+              <Table columnCount="8" rowCount="4">
+                <Column editable="true" title="" type="java.lang.Boolean"/>
+                <Column editable="false" title="FromTo" type="java.lang.String"/>
+                <Column editable="false" title="" type="java.lang.String">
                   <Data value=".*/input.php.*"/>
                   <Data value="null"/>
                   <Data value="null"/>
@@ -201,6 +202,11 @@
                   <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                     <ResourceString bundle="burp/Bundle.properties" key="title0" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
                   </Title>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                  <Title/>
                   <Editor/>
                   <Renderer/>
                 </Column>

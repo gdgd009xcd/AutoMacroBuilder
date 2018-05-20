@@ -54,11 +54,12 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         pmt.setUI(this);
 
 
-        
+        pmt.setMBreplaceCookie(MBreplaceCookie.isSelected());
         pmt.setMBCookieFromJar(MBCookieFromJar.isSelected());
         pmt.setMBFinalResponse(FinalResponse.isSelected());
         pmt.setMBResetToOriginal(MBResetToOriginal.isSelected());
         pmt.setMBmonitorofprocessing(MBmonitorofprocessing.isSelected());
+        pmt.setMBreplaceTrackingParam(MBreplaceTrackingParam.isSelected());
         
 
     }
@@ -180,6 +181,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         MBCookieFromJar = new javax.swing.JCheckBox();
         jPanel6 = new javax.swing.JPanel();
         MBcleatokenfromcache = new javax.swing.JCheckBox();
+        MBreplaceTrackingParam = new javax.swing.JCheckBox();
         jSeparator1 = new javax.swing.JSeparator();
         jCheckBox2 = new javax.swing.JCheckBox();
         waitsec = new javax.swing.JTextField();
@@ -460,20 +462,35 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             }
         });
 
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("burp/Bundle"); // NOI18N
+        MBreplaceTrackingParam.setText(bundle.getString("MacroBuilderUI.MBreplaceTrackingParam.text")); // NOI18N
+        MBreplaceTrackingParam.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MBreplaceTrackingParamActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(MBcleatokenfromcache, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(MBcleatokenfromcache, javax.swing.GroupLayout.DEFAULT_SIZE, 797, Short.MAX_VALUE)
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addComponent(MBreplaceTrackingParam)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(MBreplaceTrackingParam)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(MBcleatokenfromcache)
-                .addGap(0, 43, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         jCheckBox2.setText("WaitTimer(sec)");
@@ -493,7 +510,13 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             }
         });
 
+        MBfromStepNo.setSelected(true);
         MBfromStepNo.setText(bundle.getString("MacroBuilderUI.追跡FROM設定.text")); // NOI18N
+        MBfromStepNo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MBfromStepNoActionPerformed(evt);
+            }
+        });
 
         jLabel1.setText("Other Options(Usually, you do not need chage options below.)");
 
@@ -522,7 +545,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                 .addContainerGap())
         );
 
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("burp/Bundle"); // NOI18N
+        MBtoStepNo.setSelected(true);
         MBtoStepNo.setText(bundle.getString("MacroBuilderUI.MBtoStepNo.text")); // NOI18N
 
         MBmonitorofprocessing.setText(bundle.getString("MacroBuilderUI.MBmonitorofprocessing.text")); // NOI18N
@@ -603,7 +626,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
                 .addComponent(jButton3)
                 .addGap(452, 452, 452)
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1231,6 +1254,15 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         pmt.setMBmonitorofprocessing(MBmonitorofprocessing.isSelected());
     }//GEN-LAST:event_MBmonitorofprocessingActionPerformed
 
+    private void MBreplaceTrackingParamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MBreplaceTrackingParamActionPerformed
+        // TODO add your handling code here:
+        pmt.setMBreplaceTrackingParam(MBreplaceTrackingParam.isSelected());
+    }//GEN-LAST:event_MBreplaceTrackingParamActionPerformed
+
+    private void MBfromStepNoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MBfromStepNoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_MBfromStepNoActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ClearMacro;
@@ -1243,6 +1275,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     private javax.swing.JCheckBox MBfromStepNo;
     private javax.swing.JCheckBox MBmonitorofprocessing;
     private javax.swing.JCheckBox MBreplaceCookie;
+    private javax.swing.JCheckBox MBreplaceTrackingParam;
     private javax.swing.JCheckBox MBtoStepNo;
     private javax.swing.JTextArea MacroComments;
     private javax.swing.JEditorPane MacroRequest;

@@ -722,7 +722,7 @@ class AppValue {
 	}
 
 
-	String replaceContents(int currentStepNo, AppParmsIni pini, String contents, ParmGenHashMap errorhash){
+	String replaceContents(ParmGenMacroTrace pmt, int currentStepNo, AppParmsIni pini, String contents, ParmGenHashMap errorhash){
 		if (contents == null)
 			return null;
 		if (valueregex == null)
@@ -780,7 +780,14 @@ class AppValue {
                                         }
                                         
                                 }
-
+                                if(pmt.isOverWriteCurrentRequestTrackigParam()){
+                                    int matchlen = matchval.length();
+                                    int strcntlen = strcnt.length();
+                                    int tail = matchlen - strcntlen;
+                                    if(tail > 0){
+                                        strcnt += matchval.substring(strcntlen);
+                                    }
+                                }
 				if (isnull) {// 値取得失敗時は、オリジナルに戻す。
 					strcnt = matchval;
 					//ParmVars.plog.setError(isnull);
@@ -1652,7 +1659,7 @@ class ParmGen {
 		//switch(av.valparttype & AppValue.C_VTYPE){
 		case AppValue.V_PATH://path
 			// path = url
-			String n_path = av.replaceContents(pmt.getStepNo(), pini, path, errorhash);
+			String n_path = av.replaceContents(pmt, pmt.getStepNo(), pini, path, errorhash);
 			if (n_path != null && !path.equals(n_path) ){
 				url = n_path;
 				ParmVars.plog.debuglog(1, " Original path[" + path + "]");
@@ -1666,7 +1673,7 @@ class ParmGen {
 			if ((qpos = url.indexOf('?'))!=-1){
 				path = url.substring(0,qpos);
 				String query = url.substring(qpos+1);
-				String n_query = av.replaceContents(pmt.getStepNo(),pini, query, errorhash);
+				String n_query = av.replaceContents(pmt,pmt.getStepNo(),pini, query, errorhash);
                                 ParmVars.plog.debuglog(1, query);
                                 ParmVars.plog.debuglog(1, n_query);
 				if ( n_query!=null && !query.equals(n_query) ){
@@ -1685,7 +1692,7 @@ class ParmGen {
 			int i = 0;
 			for(String[] nv : headers){
 				String hval = nv[0] + ": " + nv[1];//Cookie: value
-				String n_hval = av.replaceContents(pmt.getStepNo(),pini, hval, errorhash);
+				String n_hval = av.replaceContents(pmt, pmt.getStepNo(),pini, hval, errorhash);
 				if (n_hval !=null && !hval.equals(n_hval) ){
 					ParmVars.plog.debuglog(1, " Original header[" + hval + "]");
 					ParmVars.plog.debuglog(1, " Modified header[" + n_hval + "]");
@@ -1709,7 +1716,7 @@ class ParmGen {
                             }catch(UnsupportedEncodingException e){
                                     content = null;
                             }
-                            String n_content = av.replaceContents(pmt.getStepNo(),pini, content, errorhash);
+                            String n_content = av.replaceContents(pmt, pmt.getStepNo(),pini, content, errorhash);
                             if ( n_content != null && !content.equals(n_content) ){
                                     ParmVars.plog.debuglog(1, " Original body[" + content + "]");
                                     ParmVars.plog.debuglog(1, " Modified body[" + n_content + "]");
@@ -1758,7 +1765,7 @@ class ParmGen {
                                     }catch(UnsupportedEncodingException e){
                                             partdatastr = null;
                                     }
-                                    String n_partdatastr = av.replaceContents(pmt.getStepNo(), pini, partdatastr, errorhash);
+                                    String n_partdatastr = av.replaceContents(pmt, pmt.getStepNo(), pini, partdatastr, errorhash);
                                     if(n_partdatastr!=null && partdatastr != null && !partdatastr.equals(n_partdatastr) ){
                                         ParmVars.plog.debuglog(1, " Original body[" + partdatastr + "]");
                                         ParmVars.plog.debuglog(1, " Modified body[" + n_partdatastr + "]");

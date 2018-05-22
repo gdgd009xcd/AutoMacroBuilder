@@ -1,0 +1,19 @@
+JTextPaneで長いワードの折り返し。
+ Usage: jEditorPane1.setEditorKit(new TextPaneLineWrapper());
+ * 
+ * jScrollPane's 
+ *        set HorizontalScrollBarPolycy ; Never
+ *        set VerticalScrollBarPolycy; AS_NEEDED.
+
+
+
+JTextPane 表示がオーバーラップし、コンテンツがviewportからはみ出る。
+
+対策：jScrollPaneのプロパティ
+　　　　　レイアウト
+　　　　　　　　横方向サイズ
+　　　　　　　　縦方向サイズ
+　　　　　に具体値設定。
+.addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 955, Short.MAX_VALUE)
+
+.addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)

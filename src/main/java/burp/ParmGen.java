@@ -759,6 +759,17 @@ class AppValue {
 				ParmVars.plog.printLF();
 				boolean isnull = false;
                                 ParmGenTokenValue errorhash_value = null;
+                                
+                                if(pmt.isOverWriteCurrentRequestTrackigParam()){
+                                    int matchlen = matchval.length();
+                                    int strcntlen = strcnt.length();
+                                    int tail = matchlen - strcntlen;
+                                    if(tail > 0){
+                                        strcnt += matchval.substring(strcntlen);
+                                    }else if(tail<0){
+                                        strcnt = null;
+                                    }
+                                }
                                 if (strcnt != null) {
                                         ParmVars.plog.debuglog(0,
                                                         java.text.MessageFormat.format(java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGen.parameter_regex_msg1.text"), new Object[] {value, matchval, token, strcnt}));
@@ -779,14 +790,6 @@ class AppValue {
                                             errorhash.put(errorhash_key,errorhash_value);
                                         }
                                         
-                                }
-                                if(pmt.isOverWriteCurrentRequestTrackigParam()){
-                                    int matchlen = matchval.length();
-                                    int strcntlen = strcnt.length();
-                                    int tail = matchlen - strcntlen;
-                                    if(tail > 0){
-                                        strcnt += matchval.substring(strcntlen);
-                                    }
                                 }
 				if (isnull) {// 値取得失敗時は、オリジナルに戻す。
 					strcnt = matchval;

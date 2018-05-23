@@ -760,15 +760,21 @@ class AppValue {
 				boolean isnull = false;
                                 ParmGenTokenValue errorhash_value = null;
                                 
-                                if(pmt.isOverWriteCurrentRequestTrackigParam()){
-                                    int matchlen = matchval.length();
-                                    int strcntlen = strcnt.length();
-                                    int tail = matchlen - strcntlen;
-                                    if(tail > 0){
-                                        strcnt += matchval.substring(strcntlen);
-                                    }else if(tail<0){
-                                        strcnt = null;
+                                switch(pini.getType()){
+                                case AppParmsIni.T_TRACK:
+                                    if(pmt.isOverWriteCurrentRequestTrackigParam()){
+                                        int matchlen = matchval.length();
+                                        int strcntlen = strcnt.length();
+                                        int tail = matchlen - strcntlen;
+                                        if(tail > 0){
+                                            strcnt += matchval.substring(strcntlen);
+                                        }else if(tail<0){
+                                            strcnt = null;
+                                        }
                                     }
+                                default:
+                                    break;
+                                    
                                 }
                                 if (strcnt != null) {
                                         ParmVars.plog.debuglog(0,
@@ -1723,7 +1729,12 @@ class ParmGen {
                             if ( n_content != null && !content.equals(n_content) ){
                                     ParmVars.plog.debuglog(1, " Original body[" + content + "]");
                                     ParmVars.plog.debuglog(1, " Modified body[" + n_content + "]");
-                                            _contarray.initParmGenBinUtil(n_content.getBytes());
+                                    try {
+                                        _contarray.initParmGenBinUtil(n_content.getBytes(ParmVars.enc.getIANACharset()));
+                                    } catch (UnsupportedEncodingException ex) {
+                                        Logger.getLogger(ParmGen.class.getName()).log(Level.SEVERE, null, ex);
+                                        _contarray.initParmGenBinUtil(n_content.getBytes());
+                                    }
                                     return prequest;
                             }
 	        	}else{//multipart/form-data

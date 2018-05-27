@@ -30,11 +30,13 @@ import javax.swing.undo.UndoManager;
 public class ParmGenRegex extends javax.swing.JDialog {
 
     UndoManager um;
+    UndoManager original_um;
     int fidx;
     ArrayList<Integer> findplist;
     String curr_regex;
     String curr_orig;
-    InterfaceRegex parentwin;
+    InterfaceRegex parentwin =null;
+    InterfaceParmGenRegexSaveCancelAction regexactionwin= null;
     
     public static final String Escaperegex = "([\\[\\]\\{\\}\\(\\)\\*\\<\\>\\.\\?\\+\\\"\\\'\\$])";
     private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
@@ -82,8 +84,10 @@ public class ParmGenRegex extends javax.swing.JDialog {
     public ParmGenRegex(InterfaceRegex _parentwin) {
         initComponents();
         um = new UndoManager();
+        original_um = new UndoManager();
         To.setEnabled(false);
         parentwin = _parentwin;
+        regexactionwin = null;
         findplist = new ArrayList<Integer>();
         init(null, null);
         this.setModal(true);
@@ -98,25 +102,50 @@ public class ParmGenRegex extends javax.swing.JDialog {
 				um.addEdit(e.getEdit());
 			}
 		});
+        Document origdoc = OriginalText.getDocument();
+        //RegexTextのUndo/Redo
+        origdoc.addUndoableEditListener(new UndoableEditListener() {
+			public void undoableEditHappened(UndoableEditEvent e) {
+				//行われた編集(文字の追加や削除)をUndoManagerに登録
+				original_um.addEdit(e.getEdit());
+			}
+		});
     }
     
-    public ParmGenRegex(String _reg, String _OriginalReadOnly){//読み取りのみ
+    public ParmGenRegex(InterfaceParmGenRegexSaveCancelAction _actionwin, String _reg, String _Original){
         initComponents();
         um = new UndoManager();
+        original_um = new UndoManager();
         To.setEnabled(false);
         parentwin = null;
+        regexactionwin = _actionwin;
         findplist = new ArrayList<Integer>();
         init(null, null);
         this.setModal(true);
         RegexText.setText(_reg);
-        OriginalText.setText(_OriginalReadOnly);
+        OriginalText.setText(_Original);
         OriginalText.setCaretPosition(0);
-        Document rexdoc = RegexText.getDocument();
+        
+        if(regexactionwin!=null){
+            Save.setText(regexactionwin.getParmGenRegexSaveBtnText());
+            Cancel.setText(regexactionwin.getParmGenRegexCancelBtnText());
+        }
+        
+        
         //RegexTextのUndo/Redo
+        Document rexdoc = RegexText.getDocument();
         rexdoc.addUndoableEditListener(new UndoableEditListener() {
 			public void undoableEditHappened(UndoableEditEvent e) {
 				//行われた編集(文字の追加や削除)をUndoManagerに登録
 				um.addEdit(e.getEdit());
+			}
+		});
+        //RegexTextのUndo/Redo
+        Document origdoc = OriginalText.getDocument();
+        origdoc.addUndoableEditListener(new UndoableEditListener() {
+			public void undoableEditHappened(UndoableEditEvent e) {
+				//行われた編集(文字の追加や削除)をUndoManagerに登録
+				original_um.addEdit(e.getEdit());
 			}
 		});
     }
@@ -377,6 +406,9 @@ public class ParmGenRegex extends javax.swing.JDialog {
         UndoRedoMenu = new javax.swing.JPopupMenu();
         Undo = new javax.swing.JMenuItem();
         Redo = new javax.swing.JMenuItem();
+        OrigUndoRedoMenu = new javax.swing.JPopupMenu();
+        OrigUndo = new javax.swing.JMenuItem();
+        OrigRedo = new javax.swing.JMenuItem();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         RegexText = new javax.swing.JTextPane();
@@ -426,6 +458,22 @@ public class ParmGenRegex extends javax.swing.JDialog {
         });
         UndoRedoMenu.add(Redo);
 
+        OrigUndo.setText("Undo");
+        OrigUndo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                OrigUndoActionPerformed(evt);
+            }
+        });
+        OrigUndoRedoMenu.add(OrigUndo);
+
+        OrigRedo.setText("Redo");
+        OrigRedo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                OrigRedoActionPerformed(evt);
+            }
+        });
+        OrigUndoRedoMenu.add(OrigRedo);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle(bundle.getString("ParmGenRegex.正規表現テスト画面.text")); // NOI18N
 
@@ -446,6 +494,19 @@ public class ParmGenRegex extends javax.swing.JDialog {
         jScrollPane1.setViewportView(RegexText);
 
         OriginalText.setText("POST /travel/entry/ HTTP/1.1\nHost: 050plus-cp.com\nUser-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; ja; rv:1.9.2.23) Gecko/20110920 Firefox/3.6.23 ( .NET CLR 3.5.30729; .NET4.0E)\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\nAccept-Language: ja,en-us;q=0.7,en;q=0.3\nAccept-Encoding: gzip,deflate\nAccept-Charset: Shift_JIS,utf-8;q=0.7,*;q=0.7\nKeep-Alive: 115\nConnection: keep-alive\nReferer: https://050plus-cp.com/travel/entry/\nCookie: Formp=e70cja0sp2gcidna2baifhjp8g55kggj\nAuthorization: Basic MTEyMjozMzQ0\nContent-Type: application/x-www-form-urlencoded\nContent-Length: 86\n\nFormp=e70cja0sp2gcidna2baifhjp8g55kggj&_mode=user_confirm&_token=&next.x=107&next.y=12");
+        OriginalText.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                OriginalTextMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                OriginalTextMouseReleased(evt);
+            }
+        });
+        OriginalText.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                OriginalTextKeyPressed(evt);
+            }
+        });
         jScrollPane2.setViewportView(OriginalText);
 
         jLabel1.setText(bundle.getString("ParmGenRegex.正規表現.text")); // NOI18N
@@ -627,7 +688,11 @@ public class ParmGenRegex extends javax.swing.JDialog {
 
     private void CancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CancelActionPerformed
         // TODO add your handling code here:
-        setVisible(false);
+        if(regexactionwin!=null){
+            regexactionwin.ParmGenRegexCancelAction();
+        }
+        dispose();
+        //setVisible(false);
     }//GEN-LAST:event_CancelActionPerformed
 
     private void RegexTestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RegexTestActionPerformed
@@ -754,6 +819,11 @@ public class ParmGenRegex extends javax.swing.JDialog {
 
     private void SaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveActionPerformed
         // TODO add your handling code here:
+        if(regexactionwin!=null){
+            regexactionwin.ParmGenRegexSaveAction(OriginalText.getText());
+            dispose();
+            return;
+        }
         String regex = RegexText.getText();
         int gcnt = hasGroupRegex(regex);
         if(gcnt==1){
@@ -800,19 +870,20 @@ public class ParmGenRegex extends javax.swing.JDialog {
 
     private void RegexTextKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RegexTextKeyPressed
         // TODO add your handling code here:
-        switch (evt.getKeyCode()) {
-        case KeyEvent.VK_Z:	//CTRL+Zのとき、UNDO実行
-                if (evt.isControlDown() && um.canUndo()) {
-                        um.undo();
-                        evt.consume();
-                }
-                break;
-        case KeyEvent.VK_Y:	//CTRL+Yのとき、REDO実行
-                if (evt.isControlDown() && um.canRedo()) {
-                        um.redo();
-                }
-                break;
-        }
+
+            switch (evt.getKeyCode()) {
+            case KeyEvent.VK_Z:	//CTRL+Zのとき、UNDO実行
+                    if (evt.isControlDown() && um.canUndo()) {
+                            um.undo();
+                            evt.consume();
+                    }
+                    break;
+            case KeyEvent.VK_Y:	//CTRL+Yのとき、REDO実行
+                    if (evt.isControlDown() && um.canRedo()) {
+                            um.redo();
+                    }
+                    break;
+            }
     }//GEN-LAST:event_RegexTextKeyPressed
 
     private void UndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UndoActionPerformed
@@ -829,6 +900,51 @@ public class ParmGenRegex extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_RedoActionPerformed
 
+    private void OriginalTextMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_OriginalTextMousePressed
+        // TODO add your handling code here:
+        if(evt.isPopupTrigger()){
+            OrigUndoRedoMenu.show(evt.getComponent(), evt.getX(), evt.getY());
+        }
+    }//GEN-LAST:event_OriginalTextMousePressed
+
+    private void OriginalTextMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_OriginalTextMouseReleased
+        // TODO add your handling code here:
+        if(evt.isPopupTrigger()){
+            OrigUndoRedoMenu.show(evt.getComponent(), evt.getX(), evt.getY());
+        }
+    }//GEN-LAST:event_OriginalTextMouseReleased
+
+    private void OriginalTextKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_OriginalTextKeyPressed
+        // TODO add your handling code here:
+        switch (evt.getKeyCode()) {
+            case KeyEvent.VK_Z:	//CTRL+Zのとき、UNDO実行
+                    if (evt.isControlDown() && original_um.canUndo()) {
+                            original_um.undo();
+                            evt.consume();
+                    }
+                    break;
+            case KeyEvent.VK_Y:	//CTRL+Yのとき、REDO実行
+                    if (evt.isControlDown() && original_um.canRedo()) {
+                            original_um.redo();
+                    }
+                    break;
+            }
+    }//GEN-LAST:event_OriginalTextKeyPressed
+
+    private void OrigUndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OrigUndoActionPerformed
+        // TODO add your handling code here:
+        if ( original_um.canUndo()) {
+            original_um.undo();
+        }
+    }//GEN-LAST:event_OrigUndoActionPerformed
+
+    private void OrigRedoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OrigRedoActionPerformed
+        // TODO add your handling code here:
+        if (original_um.canRedo()) {
+            original_um.redo();
+        }
+    }//GEN-LAST:event_OrigRedoActionPerformed
+
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Add;
@@ -838,6 +954,9 @@ public class ParmGenRegex extends javax.swing.JDialog {
     private javax.swing.JLabel FTlabel;
     private javax.swing.JTextField From;
     private javax.swing.JCheckBox MULTILINE;
+    private javax.swing.JMenuItem OrigRedo;
+    private javax.swing.JMenuItem OrigUndo;
+    private javax.swing.JPopupMenu OrigUndoRedoMenu;
     private javax.swing.JTextPane OriginalText;
     private javax.swing.JMenuItem Redo;
     private javax.swing.JButton RegexTest;

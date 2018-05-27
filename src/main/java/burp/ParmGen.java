@@ -1583,7 +1583,7 @@ class ParmGen {
                         ParmGenStack<String> astack = new ParmGenStack<String>();
         		JsonParser parser = Json.createParser(new StringReader(jsondata));
         		String keyname = null;
-        		boolean errflg = false;
+        		boolean noerrflg = false;
         		ParmGenJSON gjson = new ParmGenJSON();
         		while (parser.hasNext()) {
         			JsonParser.Event event = parser.next();
@@ -1608,23 +1608,24 @@ class ParmGen {
         				break;
         			case START_OBJECT:
         			case END_OBJECT:
-        				errflg = gjson.Parse(astack,arraylevel, event, keyname, null);
+        				noerrflg = gjson.Parse(astack,arraylevel, event, keyname, null);
         				break;
         			case VALUE_TRUE:
         				bval = true;
         			case VALUE_FALSE:
-        				errflg = gjson.Parse(astack,arraylevel, event, keyname, bval);
+        				noerrflg = gjson.Parse(astack,arraylevel, event, keyname, bval);
         				break;
         			case VALUE_STRING:
         			case VALUE_NUMBER:
         				obj = parser.getString();
         			case VALUE_NULL:
-        				errflg = gjson.Parse(astack,arraylevel, event, keyname, obj);
+        				noerrflg = gjson.Parse(astack,arraylevel, event, keyname, obj);
         				break;
         			}
         		}
-        		if(errflg){
+        		if(noerrflg){
         			rlist = gjson.Getrlist();
+                                pmt.ui.clear();
                                 pmt.ui.addNewRequests(gjson.GetMacroRequests());
                                 int creq = gjson.getCurrentRequest();
                                 pmt.setCurrentRequest(creq);

@@ -235,6 +235,11 @@ public class ParmGenMacroTrace {
         return false;
     }
 
+    int getRlistCount(){
+        if(rlist==null) return 0;
+        return rlist.size();
+    }
+    
     synchronized void TWait(){
         if(waittimer>0){
             ParmVars.plog.debuglog(0, "....sleep Start:" + waittimer + "(msec)");
@@ -248,6 +253,22 @@ public class ParmGenMacroTrace {
     }
 
 
+    void updateOriginalRequest(int idx, PRequest _request){
+        if(originalrlist!=null&&originalrlist.size()>0){
+            PRequestResponse pqr = originalrlist.get(idx);
+            pqr.updateRequest(_request);
+            originalrlist.set(idx, pqr);
+        }
+    }
+    
+    PRequestResponse getOriginalRequest(int idx){
+        if(originalrlist!=null&&originalrlist.size()>0){
+            PRequestResponse pqr = originalrlist.get(idx);
+            return pqr;
+        }
+        return null;
+    }
+    
     //１）前処理マクロ開始
     void  startBeforePreMacro(){
         if(!MBcleartokencache){
@@ -505,11 +526,18 @@ public class ParmGenMacroTrace {
    }
    
    void setRecords(ArrayList <PRequestResponse> _rlist){
-       //rlist = new ArrayList <PRequestResponse> (_rlist);//copy
-       rlist = _rlist;//reference
-       originalrlist = new ArrayList <PRequestResponse>(_rlist);//copy
+        //rlist = new ArrayList <PRequestResponse> (_rlist);//copy
+        if(rlist==null){
+            rlist = _rlist;//reference共有
+            originalrlist = new ArrayList <PRequestResponse>(_rlist);//copy
+        }else{
+            originalrlist.addAll(new ArrayList <PRequestResponse>(_rlist));
+        }
+        ParmVars.plog.debuglog(0, "setRecords:" + rlist.size() + "/" + originalrlist.size());
+        
    }
-
+   
+   
    void ParseResponse(){
 	   if(rlist!=null){
 	       cit = rlist.listIterator();

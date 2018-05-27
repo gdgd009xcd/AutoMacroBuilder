@@ -29,6 +29,10 @@ public class PRequestResponse {
         disable = false;
     }
     
+    void updateRequest(PRequest _req){
+        request = _req;
+    }
+    
     void setComments(String _v){
         comments = _v;
     }

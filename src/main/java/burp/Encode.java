@@ -186,6 +186,20 @@ public enum Encode  {
         }
         return Encode.UTF_8;//default
     }
+    
+    public static boolean isExistEnc(String str){
+        // enum型全てを取得します。
+        Encode[] enumArray = Encode.values();
+
+        // 取得出来たenum型分ループします。
+        for(Encode enumStr : enumArray) {
+            // 引数とenum型の文字列部分を比較します。
+            if (str.toUpperCase().equals(enumStr.uppercasename.toString())){
+                return true;
+            }
+        }
+        return false;//default
+    }
 }
 
 

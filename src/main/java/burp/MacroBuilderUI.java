@@ -31,7 +31,7 @@ import javax.swing.text.Document;
  *
  * @author daike
  */
-public class MacroBuilderUI extends javax.swing.JPanel {
+public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfaceParmGenRegexSaveCancelAction {
 
     private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
 
@@ -39,6 +39,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     ParmGenMacroTrace pmt = null;
 
     DefaultListModel<String> RequestListModel = null;
+    int OriginalEditTarget = -1;
 
     /**
      * Creates new form MacroBuilderUI
@@ -85,12 +86,16 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         DefaultListModel lmodel = new DefaultListModel();
         AppParmsIni pini;
         if (_rlist != null) {
-            rlist = _rlist;
+            if(rlist==null){
+                rlist = _rlist;
+            }else{
+                rlist.addAll(_rlist);
+            }
             if (pmt != null) {
                 pmt.setRecords(_rlist);
                 pmt.ParseResponse();
             }
-            Iterator<PRequestResponse> it = _rlist.iterator();
+            Iterator<PRequestResponse> it = rlist.iterator();
             int ii = 0;
             while (it.hasNext()) {
 
@@ -133,6 +138,8 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         //RequestList.setModel(cmodel);
         RequestList.repaint();
     }
+    
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -152,6 +159,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         disableRequest = new javax.swing.JMenuItem();
         enableRequest = new javax.swing.JMenuItem();
         RequestEdit = new javax.swing.JPopupMenu();
+        showRequest = new javax.swing.JMenuItem();
         edit = new javax.swing.JMenuItem();
         ResponseShow = new javax.swing.JPopupMenu();
         show = new javax.swing.JMenuItem();
@@ -244,6 +252,15 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             }
         });
         jPopupMenu1.add(enableRequest);
+
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("burp/Bundle"); // NOI18N
+        showRequest.setText(bundle.getString("MacroBuilderUI.ShowRequest.text")); // NOI18N
+        showRequest.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                showRequestActionPerformed(evt);
+            }
+        });
+        RequestEdit.add(showRequest);
 
         edit.setText(bundle.getString("MacroBuilderUI.REQUESTEDIT.text")); // NOI18N
         edit.addActionListener(new java.awt.event.ActionListener() {
@@ -462,7 +479,6 @@ public class MacroBuilderUI extends javax.swing.JPanel {
             }
         });
 
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("burp/Bundle"); // NOI18N
         MBreplaceTrackingParam.setText(bundle.getString("MacroBuilderUI.MBreplaceTrackingParam.text")); // NOI18N
         MBreplaceTrackingParam.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -504,6 +520,7 @@ public class MacroBuilderUI extends javax.swing.JPanel {
 
         MBResetToOriginal.setSelected(true);
         MBResetToOriginal.setText(bundle.getString("MacroBuilderUI.オリジナルにリセット.text")); // NOI18N
+        MBResetToOriginal.setEnabled(false);
         MBResetToOriginal.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 MBResetToOriginalActionPerformed(evt);
@@ -1193,14 +1210,19 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         // TODO add your handling code here:
         String reg = "";
         //String orig = MacroRequest.getText();
-        Document docreq = MacroRequest.getDocument();
-        int rlen = docreq.getLength();
-        try {
-            String reqdata = docreq.getText(0, rlen);
-            new ParmGenRegex(reg,reqdata).setVisible(true);
-        } catch (BadLocationException ex) {
-            Logger.getLogger(MacroBuilderUI.class.getName()).log(Level.SEVERE, null, ex);
+        
+    
+        int pos = RequestList.getSelectedIndex();
+        if(pos<0)return;
+        if(pmt!=null){
+            PRequestResponse pqr = pmt.getOriginalRequest(pos);
+            if(pqr!=null){
+                OriginalEditTarget = pos;
+                String reqdata = pqr.request.getMessage();
+                new ParmGenRegex(this, reg,reqdata).setVisible(true);
+            }
         }
+      
         
     }//GEN-LAST:event_editActionPerformed
 
@@ -1208,7 +1230,8 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         // TODO add your handling code here:
         String reg = "";
         String orig = MacroResponse.getText();
-        new ParmGenRegex(reg,orig).setVisible(true);
+        OriginalEditTarget = -1;
+        new ParmGenRegex(this,reg,orig).setVisible(true);
     }//GEN-LAST:event_showActionPerformed
 
     private void MacroRequestMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MacroRequestMouseClicked
@@ -1263,6 +1286,24 @@ public class MacroBuilderUI extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_MBfromStepNoActionPerformed
 
+    private void showRequestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showRequestActionPerformed
+        // TODO add your handling code here:
+        // TODO add your handling code here:
+        String reg = "";
+        //String orig = MacroRequest.getText();
+        Document docreq = MacroRequest.getDocument();
+        int rlen = docreq.getLength();
+        try {
+            
+            OriginalEditTarget = -1;
+            String reqdata = docreq.getText(0, rlen);
+            
+            new ParmGenRegex(this, reg,reqdata).setVisible(true);
+        } catch (BadLocationException ex) {
+            Logger.getLogger(MacroBuilderUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_showRequestActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ClearMacro;
@@ -1312,7 +1353,38 @@ public class MacroBuilderUI extends javax.swing.JPanel {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTabbedPane paramlog;
     private javax.swing.JMenuItem show;
+    private javax.swing.JMenuItem showRequest;
     private javax.swing.JMenuItem targetRequest;
     private javax.swing.JTextField waitsec;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void ParmGenRegexSaveAction(String message) {
+        if(pmt!=null&&OriginalEditTarget!=-1){
+            PRequest request = new PRequest(message);
+            pmt.updateOriginalRequest(OriginalEditTarget, request);
+            OriginalEditTarget = -1;
+        }
+    }
+
+    @Override
+    public void ParmGenRegexCancelAction() {
+        OriginalEditTarget = -1;
+    }
+
+    @Override
+    public String getParmGenRegexSaveBtnText() {
+        if(OriginalEditTarget==-1){
+            return "Close";
+        }
+        return "Save";
+    }
+
+    @Override
+    public String getParmGenRegexCancelBtnText() {
+        if(OriginalEditTarget==-1){
+            return "Close";
+        }
+        return "Cancel";
+    }
 }

@@ -9,9 +9,12 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -27,6 +30,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
     BurpHelpers helpers;
     MacroBuilder mbr = null;
     ParmGenMacroTrace pmt = null;
+    IHttpRequestResponse[] selected_messageInfo = null;
 
 
     public void processHttpMessage(
@@ -267,9 +271,176 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
         }
     }
 
+    private Encode analyzeCharset(IHttpRequestResponse[] messageInfo){
+        String tcharset = "";
+        
+        HashMap<Encode, String> langs = new HashMap<Encode,String>();
+        for(int i = 0; i< messageInfo.length; i++){
+            if(messageInfo[i].getResponse()!=null){
+                if(tcharset.isEmpty()){
+                    String res;
+                    try {
+                        res = new String(messageInfo[i].getResponse(), ParmVars.enc.ISO_8859_1.getIANACharset());
+                        PResponse pres = new PResponse(res);
+                        tcharset = pres.getCharset();
+                        ParmVars.plog.debuglog(0,tcharset);
+                        if(!tcharset.isEmpty()){
+                            if(Encode.isExistEnc(tcharset)){
+                                langs.put(Encode.getEnum(tcharset), tcharset);
+                            }
+                        }
+                    } catch (UnsupportedEncodingException ex) {
+                        Logger.getLogger(BurpExtender.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                }
+            }
+        }
+        
+        for(Map.Entry<Encode, String> e : langs.entrySet()) {
+            Encode lang = e.getKey();
+            switch(lang){
+            case KOI8_R:
+            case Big5:
+            case Big5_HKSCS:
+            case EUC_JP:
+            case EUC_KR:
+            case GB18030:
+            case GB2312:
+            case GBK:
+            case IBM_Thai:
+            case IBM00858:
+            case IBM01140:
+            case IBM01141:
+            case IBM01142:
+            case IBM01143:
+            case IBM01144:
+            case IBM01145:
+            case IBM01146:
+            case IBM01147:
+            case IBM01148:
+            case IBM01149:
+            case IBM037:
+            case IBM1026:
+            case IBM1047:
+            case IBM273:
+            case IBM277:
+            case IBM278:
+            case IBM280:
+            case IBM284:
+            case IBM285:
+            case IBM297:
+            case IBM420:
+            case IBM424:
+            case IBM437:
+            case IBM500:
+            case IBM775:
+            case IBM850:
+            case IBM852:
+            case IBM855:
+            case IBM857:
+            case IBM860:
+            case IBM861:
+            case IBM862:
+            case IBM863:
+            case IBM864:
+            case IBM865:
+            case IBM866:
+            case IBM868:
+            case IBM869:
+            case IBM870:
+            case IBM871:
+            case IBM918:
+            case ISO_2022_CN:
+            case ISO_2022_JP:
+            case ISO_2022_KR:
+            case Shift_JIS:
+            case TIS_620:
+            case windows_1255:
+            case windows_1256:
+            case windows_1258:
+            case windows_31j:
+            case x_Big5_Solaris:
+            case x_euc_jp_linux:
+            case x_EUC_TW:
+            case x_eucJP_Open:
+            case x_IBM1006:
+            case x_IBM1025:
+            case x_IBM1046:
+            case x_IBM1097:
+            case x_IBM1098:
+            case x_IBM1112:
+            case x_IBM1122:
+            case x_IBM1123:
+            case x_IBM1124:
+            case x_IBM1381:
+            case x_IBM1383:
+            case x_IBM33722:
+            case x_IBM737:
+            case x_IBM856:
+            case x_IBM874:
+            case x_IBM875:
+            case x_IBM921:
+            case x_IBM922:
+            case x_IBM930:
+            case x_IBM933:
+            case x_IBM935:
+            case x_IBM937:
+            case x_IBM939:
+            case x_IBM942:
+            case x_IBM942C:
+            case x_IBM943:
+            case x_IBM943C:
+            case x_IBM948:
+            case x_IBM949:
+            case x_IBM949C:
+            case x_IBM950:
+            case x_IBM964:
+            case x_IBM970:
+            case x_ISCII91:
+            case x_ISO2022_CN_CNS:
+            case x_ISO2022_CN_GB:
+            case x_iso_8859_11:
+            case x_JISAutoDetect:
+            case x_Johab:
+            case x_MacArabic:
+            case x_MacCentralEurope:
+            case x_MacCroatian:
+            case x_MacCyrillic:
+            case x_MacDingbat:
+            case x_MacGreek:
+            case x_MacHebrew:
+            case x_MacIceland:
+            case x_MacRoman:
+            case x_MacRomania:
+            case x_MacSymbol:
+            case x_MacThai:
+            case x_MacTurkish:
+            case x_MacUkraine:
+            case x_MS950_HKSCS:
+            case x_mswin_936:
+            case x_PCK:
+            case x_windows_874:
+            case x_windows_949:
+            case x_windows_950:
+                return lang;
+            default:
+                
+                break;
+                    
+            }
+            
+        }
+        
+        
+        return Encode.UTF_8;
+    }
+    
     private ArrayList <PRequestResponse> convertMessageInfoToArray(IHttpRequestResponse[] messageInfo){
         ArrayList <PRequestResponse> messages = new ArrayList<PRequestResponse>() ;
         try {
+            
+            
             for(int i = 0; i< messageInfo.length; i++){
                 byte[] binreq = null;
                 String res = "";
@@ -279,7 +450,9 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                     iserv = messageInfo[i].getHttpService();
                 }
                 if(messageInfo[i].getResponse()!=null){
+                    
                     res = new String(messageInfo[i].getResponse(), ParmVars.enc.getIANACharset());
+                    
                 }
                 if(iserv != null){
                     boolean ssl = (iserv.getProtocol().toLowerCase().equals("https")?true:false);
@@ -325,7 +498,9 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
     }
 
 
-    class NewMenu implements IContextMenuFactory
+
+
+    class NewMenu implements IContextMenuFactory, InterfaceLangOKNG
     {
 
         IHttpRequestResponse[] messageInfo = null;
@@ -378,25 +553,33 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
             }
         }
 
+        
         public void menuAddRequestsClicked( IHttpRequestResponse[] messageInfo)
         {
-            try
-            {
-
-
+            if(pmt!=null){
+                if(pmt.getRlistCount()<=0){
+                    Encode lang = analyzeCharset(messageInfo);
+                    new LangSelectDialog(null, this, lang, false).setVisible(true);
+                }else{
+                    LangOK();
+                }
+            }
+        }
+        
+        @Override
+        public void LangOK() {
+            if(messageInfo!=null){
                 if(mbr!=null){
                 //選択したリクエストレスポンス
                     mbr.addNewRequests(
                         convertMessageInfoToArray(messageInfo));
                 }
-
-
             }
+        }
 
-            catch (Exception e)
-            {
-                ParmVars.plog.printException(e);
-            }
+        @Override
+        public void LangCANCEL() {
+            /*** NOP ****/
         }
     }
 

@@ -40,6 +40,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
 
     DefaultListModel<String> RequestListModel = null;
     int OriginalEditTarget = -1;
+    boolean EditTargetIsSSL = false;
 
     /**
      * Creates new form MacroBuilderUI
@@ -1219,6 +1220,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
             if(pqr!=null){
                 OriginalEditTarget = pos;
                 String reqdata = pqr.request.getMessage();
+                EditTargetIsSSL = pqr.request.isSSL();
                 new ParmGenRegex(this, reg,reqdata).setVisible(true);
             }
         }
@@ -1362,6 +1364,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     public void ParmGenRegexSaveAction(String message) {
         if(pmt!=null&&OriginalEditTarget!=-1){
             PRequest request = new PRequest(message);
+            request.setSSL(EditTargetIsSSL);
             pmt.updateOriginalRequest(OriginalEditTarget, request);
             OriginalEditTarget = -1;
         }

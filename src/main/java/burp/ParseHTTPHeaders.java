@@ -175,6 +175,10 @@ class ParseHTTPHeaders {
             isSSL = _ssl;
         }
         
+        void setPort(int _p){
+            port = _p;
+        }
+        
         ArrayList<String []> Parse(String httpmessage){//request or response
         	parsedheaderlength = 0;
         	Matcher m = valueregex.matcher(httpmessage);

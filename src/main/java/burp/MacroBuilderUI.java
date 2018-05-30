@@ -908,11 +908,22 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                     int fromStepNo = restoken.fromStepNo;
                     boolean RequesthasToken = false;
                     ArrayList<ParmGenToken> requesttokenlist = new ArrayList<ParmGenToken>();
-
+                    boolean JSONparam = false;
                     for (ParmGenToken tkn : restoken.tracktokenlist) {
                         String token = tkn.getTokenKey().GetName();
+                        ParmGenJSONDecoder reqjdecoder = new ParmGenJSONDecoder(pqrs.request.getBody());
+                        
+                        ArrayList<ParmGenToken> reqjtklist = reqjdecoder.parseJSON2Token();
+                        JSONparam = false;
+                        for(ParmGenToken reqtkn : reqjtklist){
+                            
+                            if(reqtkn.getTokenKey().GetName().equals(token)){
+                                JSONparam = true;
+                                break;
+                            }
+                        }
                         if(!addedtokens.containsKey(tkn.getTokenKey())){
-                            if (pqrs.request.hasQueryParam(token) || pqrs.request.hasBodyParam(token)) {
+                            if (pqrs.request.hasQueryParam(token) || pqrs.request.hasBodyParam(token) || JSONparam) {
                             	boolean valid = false;
                             	switch(tkn.getTokenKey().GetTokenType()){
                             	case ACTION:
@@ -973,7 +984,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                             //body or query ターゲットリクエストのtokenパラメータ
                             String valtype = "query";
                             ParmGenToken tkparam = pqrs.request.getBodyToken(token);
-                            if(tkparam!=null){
+                            if(tkparam!=null||JSONparam){
                                 valtype = "body";
                             }else{
                                 tkparam = pqrs.request.getQueryToken(token);
@@ -1000,6 +1011,9 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                             String regex = "(?:[&=?]|^)" + paramname + "=(" + wwwurlreg + ")";//埋め込み先の長さ設定が必要。
                             if (isformdata) {
                                 regex = "(?:[A-Z].* name=\"" + ParmGenUtil.escapeRegexChars(paramname) + "\".*(?:\\r|\\n|\\r\\n))(?:[A-Z].*(?:\\r|\\n|\\r\\n)){0,}(?:\\r|\\n|\\r\\n)(?:.*?)(" + reg + ")";
+                            }
+                            if(JSONparam){
+                                regex = "\"" + paramname + "\"(?:[\\t \\r\\n]*):(?:[\\t\\r\\n ]*)\"{0,1}(.+?)\"{0,1}(?:[\\t \\r\\n]*)(?:,|})";
                             }
                             String encodedregex = regex;
                             try {

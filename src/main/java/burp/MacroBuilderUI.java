@@ -481,6 +481,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
             }
         });
 
+        MBreplaceTrackingParam.setSelected(true);
         MBreplaceTrackingParam.setText(bundle.getString("MacroBuilderUI.MBreplaceTrackingParam.text")); // NOI18N
         MBreplaceTrackingParam.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -496,9 +497,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                 .addContainerGap()
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(MBcleatokenfromcache, javax.swing.GroupLayout.DEFAULT_SIZE, 797, Short.MAX_VALUE)
-                    .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addComponent(MBreplaceTrackingParam)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                    .addComponent(MBreplaceTrackingParam, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel6Layout.setVerticalGroup(

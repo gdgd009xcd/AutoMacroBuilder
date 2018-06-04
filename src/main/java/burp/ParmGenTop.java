@@ -42,7 +42,7 @@ public class ParmGenTop extends javax.swing.JFrame {
             int ToStep = pini.getSetToStep();
             FromTo = (FromStep>-1?Integer.toString(FromStep):"any") + "->" + (ToStep>0?Integer.toString(ToStep):"any");
             model.addRow(new Object[] {pini.pause, FromTo, pini.url, pini.getIniValDsp(), pini.getLenDsp(), pini.getTypeValDsp(),pini.getAppValuesDsp(),pini.getCurrentValue()});
-            ParamTopList.setRowHeight(ri++, default_rowheight * pini.getAppValuesLineCnt());
+            //ParamTopList.setRowHeight(ri++, default_rowheight * pini.getAppValuesLineCnt());
         }
     }
     /**

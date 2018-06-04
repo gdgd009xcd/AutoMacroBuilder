@@ -57,12 +57,12 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         pmt.setUI(this);
 
 
-        pmt.setMBreplaceCookie(MBreplaceCookie.isSelected());
+        pmt.setMBreplaceCookie(true);
         pmt.setMBCookieFromJar(MBCookieFromJar.isSelected());
         pmt.setMBFinalResponse(FinalResponse.isSelected());
         pmt.setMBResetToOriginal(MBResetToOriginal.isSelected());
         pmt.setMBmonitorofprocessing(MBmonitorofprocessing.isSelected());
-        pmt.setMBreplaceTrackingParam(MBreplaceTrackingParam.isSelected());
+        pmt.setMBreplaceTrackingParam(true);
         
 
     }
@@ -187,11 +187,9 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         jButton3 = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
-        MBreplaceCookie = new javax.swing.JCheckBox();
         MBCookieFromJar = new javax.swing.JCheckBox();
         jPanel6 = new javax.swing.JPanel();
         MBcleatokenfromcache = new javax.swing.JCheckBox();
-        MBreplaceTrackingParam = new javax.swing.JCheckBox();
         jSeparator1 = new javax.swing.JSeparator();
         jCheckBox2 = new javax.swing.JCheckBox();
         waitsec = new javax.swing.JTextField();
@@ -437,13 +435,6 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
 
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Cookies"));
 
-        MBreplaceCookie.setText(bundle.getString("MacroBuilderUI.REPLACE COOKIE.text")); // NOI18N
-        MBreplaceCookie.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                MBreplaceCookieActionPerformed(evt);
-            }
-        });
-
         MBCookieFromJar.setText(bundle.getString("MacroBuilderUI.開始時COOKIE.JARから引き継ぐ.text")); // NOI18N
         MBCookieFromJar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -457,19 +448,15 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(MBreplaceCookie, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(MBCookieFromJar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(MBCookieFromJar, javax.swing.GroupLayout.DEFAULT_SIZE, 797, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(MBreplaceCookie)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(MBCookieFromJar)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(40, Short.MAX_VALUE))
         );
 
         jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder("Tracking Params"));
@@ -481,33 +468,21 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
             }
         });
 
-        MBreplaceTrackingParam.setSelected(true);
-        MBreplaceTrackingParam.setText(bundle.getString("MacroBuilderUI.MBreplaceTrackingParam.text")); // NOI18N
-        MBreplaceTrackingParam.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                MBreplaceTrackingParamActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(MBcleatokenfromcache, javax.swing.GroupLayout.DEFAULT_SIZE, 797, Short.MAX_VALUE)
-                    .addComponent(MBreplaceTrackingParam, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(MBcleatokenfromcache, javax.swing.GroupLayout.DEFAULT_SIZE, 797, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(MBreplaceTrackingParam)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addContainerGap()
                 .addComponent(MBcleatokenfromcache)
-                .addContainerGap())
+                .addContainerGap(40, Short.MAX_VALUE))
         );
 
         jCheckBox2.setText("WaitTimer(sec)");
@@ -906,24 +881,34 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                     ParmGenResToken restoken = it.previous();
                     int fromStepNo = restoken.fromStepNo;
                     boolean RequesthasToken = false;
-                    ArrayList<ParmGenToken> requesttokenlist = new ArrayList<ParmGenToken>();
-                    boolean JSONparam = false;
+                    ArrayList<ParmGenTrackingToken> requesttokenlist = new ArrayList<ParmGenTrackingToken>();
+                    
                     for (ParmGenToken tkn : restoken.tracktokenlist) {
                         String token = tkn.getTokenKey().GetName();
-                        ParmGenJSONDecoder reqjdecoder = new ParmGenJSONDecoder(pqrs.request.getBody());
                         
-                        ArrayList<ParmGenToken> reqjtklist = reqjdecoder.parseJSON2Token();
-                        JSONparam = false;
-                        for(ParmGenToken reqtkn : reqjtklist){
-                            
-                            if(reqtkn.getTokenKey().GetName().equals(token)){
-                                JSONparam = true;
-                                break;
-                            }
-                        }
                         if(!addedtokens.containsKey(tkn.getTokenKey())){
-                            if (pqrs.request.hasQueryParam(token) || pqrs.request.hasBodyParam(token) || JSONparam) {
-                            	boolean valid = false;
+                            ParmGenJSONDecoder reqjdecoder = new ParmGenJSONDecoder(pqrs.request.getBody());
+                        
+                            ArrayList<ParmGenToken> reqjtklist = reqjdecoder.parseJSON2Token();
+
+
+                            ParmGenToken _QToken = null;
+                            ParmGenToken _RToken = null;
+                            ParmGenTrackingToken.RequestParamType rptype = ParmGenTrackingToken.RequestParamType.Nop;
+                            for(ParmGenToken reqtkn : reqjtklist){
+                                ParmVars.plog.debuglog(0, "response["+ token  + "] " + "request parsed [" + reqtkn.getTokenKey().GetName() + "] value[" + reqtkn.getTokenValue().getValue() + "]");
+                                if(reqtkn.getTokenKey().GetName().equals(token)){
+                                    _RToken = tkn;
+                                    _QToken = reqtkn;
+                                    rptype = ParmGenTrackingToken.RequestParamType.Json;
+                                    break;
+                                }
+                            }
+                            ParmGenToken query_token = pqrs.request.getQueryToken(token);
+                            ParmGenToken body_token = pqrs.request.getBodyToken(token);
+                            if (pqrs.request.hasQueryParam(token) || pqrs.request.hasBodyParam(token)) {
+                                
+                            	
                             	switch(tkn.getTokenKey().GetTokenType()){
                             	case ACTION:
                             	case HREF:
@@ -934,18 +919,41 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                                     String desturl = _pdesturl.getPath();
                                     ParmVars.plog.debuglog(0, "srcurl|desturl:[" + srcurl + "]|[" + desturl + "]");
                                     if(desturl.indexOf(srcurl)!=-1){
-                                            valid = true;
+                                        _RToken = tkn;
+                                        if(query_token !=null){
+                                            rptype = ParmGenTrackingToken.RequestParamType.Query;
+                                            _QToken = query_token;
+                                        }else if(body_token!=null){
+                                            if(pqrs.request.isFormData()){
+                                                rptype = ParmGenTrackingToken.RequestParamType.Form_data;
+                                            }else{
+                                                rptype = ParmGenTrackingToken.RequestParamType.X_www_form_urlencoded;
+                                            }
+                                            _QToken = body_token;
+                                        }
                                     }
                                     break;
                             	default:
-                                    valid = true;
+                                    _RToken = tkn;
+                                    if(query_token !=null){
+                                        rptype = ParmGenTrackingToken.RequestParamType.Query;
+                                        _QToken = query_token;
+                                    }else if(body_token!=null){
+                                        if(pqrs.request.isFormData()){
+                                            rptype = ParmGenTrackingToken.RequestParamType.Form_data;
+                                        }else{
+                                            rptype = ParmGenTrackingToken.RequestParamType.X_www_form_urlencoded;
+                                        }
+                                        _QToken = body_token;
+                                    }
                                     break;
                             	}
-                            	if(valid){
+                            	
+                            }
+                            if(rptype!=ParmGenTrackingToken.RequestParamType.Nop){
                                     RequesthasToken = true;
-                                    requesttokenlist.add(tkn);
+                                    requesttokenlist.add(new ParmGenTrackingToken(_QToken, _RToken, rptype));
                                     addedtokens.put(tkn.getTokenKey(), "");
-                            	}
                             }
                         }
                     }
@@ -977,43 +985,73 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                             aparms.setSetToStep(0);
                         }
                         
-                        for (ParmGenToken tkn : requesttokenlist) {
+                        for (ParmGenTrackingToken PGTtkn : requesttokenlist) {
                             AppValue apv = new AppValue();
-                            String token = tkn.getTokenKey().GetName();
+                            
+                            ParmGenToken _QToken = PGTtkn.getRequestToken();
+                            ParmGenToken _RToken = PGTtkn.getResponseToken();
+                            ParmGenTrackingToken.RequestParamType rptype = PGTtkn.getParamType();
+                            String token = _RToken.getTokenKey().GetName();
                             //body or query ターゲットリクエストのtokenパラメータ
                             String valtype = "query";
-                            ParmGenToken tkparam = pqrs.request.getBodyToken(token);
-                            if(tkparam!=null||JSONparam){
-                                valtype = "body";
-                            }else{
-                                tkparam = pqrs.request.getQueryToken(token);
+                            
+                            //ParmGenToken tkparam = pqrs.request.getBodyToken(token);
+                            switch(rptype){
+                                case Query:
+                                    break;
+                                default:
+                                    valtype = "body";
+                                    break;
                             }
+                            
                             
                             apv.setValPart(valtype);
                             apv.clearNoCount();
                             apv.csvpos = -1;
                             // (?:[&=?]+|^)token=(value)
 
-                            String value = tkn.getTokenValue().getValue();
+                            String value = _RToken.getTokenValue().getValue();
                             apv.resFetchedValue = value;
                             int len = value.length();
                             String paramname = token;
-                            if(tkparam!=null){
-                                int rlen = tkparam.getTokenValue().getValue().length();
+                            if(_QToken!=null){
+                                int rlen = _QToken.getTokenValue().getValue().length();
                                 if(len<rlen) len = rlen;
-                                paramname = tkparam.getTokenKey().GetName();
+                                paramname = _QToken.getTokenKey().GetName();
                             }
                             
-                            String reg = ".+";
+
+                            String regex = "(?:[&=?]|^)" + paramname + "=([^&=\\r\\n ;#]+)";//埋め込み先の長さ設定が必要。
+                            switch(rptype){
+                                case Form_data:
+                                    regex = "(?:[A-Z].* name=\"" + ParmGenUtil.escapeRegexChars(paramname) + "\".*(?:\\r|\\n|\\r\\n))(?:[A-Z].*(?:\\r|\\n|\\r\\n)){0,}(?:\\r|\\n|\\r\\n)(?:.*?)(.+)";
+                                    break;
+                                case Json:
+                                    regex = "\"" + paramname + "\"(?:[\\t \\r\\n]*):(?:[\\t\\r\\n ]*)\"(.+?)\"(?:[\\t \\r\\n]*)(?:,|})";
+                                    List<String> jsonmatchlist = ParmGenUtil.getRegexMatchGroups(regex, pqrs.request.getBody());
+                                    boolean jsonmatched = false;
+                                    String jsonvalue = _QToken.getTokenValue().getValue();
+                                    for(String v: jsonmatchlist){
+                                        if(jsonvalue.equals(v)){
+                                            jsonmatched = true;
+                                            break;
+                                        }
+                                    }
+                                    if(!jsonmatched){// "key": value
+                                        regex ="\"" + paramname + "\"(?:[\\t \\r\\n]*):(?:[\\t\\r\\n ]*)([^,:{}\\\"]+?)(?:[\\t \\r\\n]*)(?:,|})";
+                                        jsonmatchlist = ParmGenUtil.getRegexMatchGroups(regex, pqrs.request.getBody());
+                                        for(String v: jsonmatchlist){
+                                            if(jsonvalue.equals(v)){
+                                                jsonmatched = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    break;
+                            }
                             
-                            String wwwurlreg = "[^&=\\r\\n ]+";
-                            String regex = "(?:[&=?]|^)" + paramname + "=(" + wwwurlreg + ")";//埋め込み先の長さ設定が必要。
-                            if (isformdata) {
-                                regex = "(?:[A-Z].* name=\"" + ParmGenUtil.escapeRegexChars(paramname) + "\".*(?:\\r|\\n|\\r\\n))(?:[A-Z].*(?:\\r|\\n|\\r\\n)){0,}(?:\\r|\\n|\\r\\n)(?:.*?)(" + reg + ")";
-                            }
-                            if(JSONparam){
-                                regex = "\"" + paramname + "\"(?:[\\t \\r\\n]*):(?:[\\t\\r\\n ]*)\"{0,1}(.+?)\"{0,1}(?:[\\t \\r\\n]*)(?:,|})";
-                            }
+                            
+                            
                             String encodedregex = regex;
                             try {
                                 encodedregex = URLEncoder.encode(regex, ParmVars.enc.getIANACharset());
@@ -1026,7 +1064,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                             apv.setresURL(".*");//TrackFrom any URL
                             apv.setresRegexURLencoded("");
                             int resvalpart = AppValue.V_AUTOTRACKBODY;
-                            switch (tkn.getTokenKey().GetTokenType()) {
+                            switch (_RToken.getTokenKey().GetTokenType()) {
                             case LOCATION:
                                 resvalpart = AppValue.V_HEADER;
                                 break;
@@ -1037,7 +1075,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
 
                             }
                             apv.setresPartType(apv.getValPart(resvalpart));
-                            apv.resRegexPos = tkn.getTokenKey().GetFcnt();
+                            apv.resRegexPos = _RToken.getTokenKey().GetFcnt();
                             apv.token = token;
                             apv.urlencode = true;
                             if(MBfromStepNo.isSelected()){
@@ -1047,9 +1085,9 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                             }
                             
                             apv.toStepNo = pos;
-                            apv.tokentype = tkn.getTokenKey().GetTokenType();
+                            apv.tokentype = _RToken.getTokenKey().GetTokenType();
                             apv.col = aparms.parmlist.size();
-                            apv.setEnabled(tkn.isEnabled());
+                            apv.setEnabled(_RToken.isEnabled());
                             aparms.parmlist.add(apv);
                         }
                         aparms.setRowAndCntFile(row);
@@ -1068,7 +1106,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                 ArrayList<ParmGenToken> bodytklist = pgparser.getNameValues();
                 ParmGenArrayList tklist = new ParmGenArrayList();
                 ParmGenResToken trackurltoken = new ParmGenResToken();
-                trackurltoken.request = pqrs.request;
+                //trackurltoken.request = pqrs.request;
                 trackurltoken.tracktokenlist = new ArrayList<ParmGenToken>();
                 InterfaceCollection<ParmGenToken> ic = pqrs.response.getLocationTokens(tklist);
                 //JSON parse
@@ -1284,20 +1322,10 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton3ActionPerformed
 
-    private void MBreplaceCookieActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MBreplaceCookieActionPerformed
-        // TODO add your handling code here:
-        pmt.setMBreplaceCookie(MBreplaceCookie.isSelected());
-    }//GEN-LAST:event_MBreplaceCookieActionPerformed
-
     private void MBmonitorofprocessingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MBmonitorofprocessingActionPerformed
         // TODO add your handling code here:
         pmt.setMBmonitorofprocessing(MBmonitorofprocessing.isSelected());
     }//GEN-LAST:event_MBmonitorofprocessingActionPerformed
-
-    private void MBreplaceTrackingParamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MBreplaceTrackingParamActionPerformed
-        // TODO add your handling code here:
-        pmt.setMBreplaceTrackingParam(MBreplaceTrackingParam.isSelected());
-    }//GEN-LAST:event_MBreplaceTrackingParamActionPerformed
 
     private void MBfromStepNoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MBfromStepNoActionPerformed
         // TODO add your handling code here:
@@ -1332,8 +1360,6 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     private javax.swing.JCheckBox MBcleatokenfromcache;
     private javax.swing.JCheckBox MBfromStepNo;
     private javax.swing.JCheckBox MBmonitorofprocessing;
-    private javax.swing.JCheckBox MBreplaceCookie;
-    private javax.swing.JCheckBox MBreplaceTrackingParam;
     private javax.swing.JCheckBox MBtoStepNo;
     private javax.swing.JTextArea MacroComments;
     private javax.swing.JEditorPane MacroRequest;

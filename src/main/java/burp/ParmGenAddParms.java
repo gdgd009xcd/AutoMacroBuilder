@@ -114,6 +114,9 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
                 ReqParsedTableModel.addRow(new Object[]{"body", nv[0], nv[1]});
             }
         }
+        
+        //JSON request
+        
         if (rcnt<=0){
             ReqParsedTableModel.addRow(new Object[]{"body", "null", "null"});
         }

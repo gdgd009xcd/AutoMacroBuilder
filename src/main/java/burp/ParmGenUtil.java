@@ -152,6 +152,22 @@ public class ParmGenUtil {
 		}
 		return mcnt;
 	}
+        
+        public static ArrayList<String> getRegexMatchGroups(String regex, String searchTarget){
+            Pattern pattern = ParmGenUtil.Pattern_compile(regex);
+            Matcher matcher = pattern.matcher(searchTarget);
+            int mcnt = 0;
+            ArrayList<String> groups = new ArrayList<String>();
+            while(matcher.find()){
+               int gcnt = matcher.groupCount();
+
+               for(int i=1;i<=gcnt;i++){
+                   groups.add(matcher.group(i));
+               }
+
+            }
+            return groups;
+        }
 	
 	enum CharMODE {
 		NUMBER,

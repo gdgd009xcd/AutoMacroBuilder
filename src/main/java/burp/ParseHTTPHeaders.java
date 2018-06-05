@@ -833,11 +833,11 @@ class ParseHTTPHeaders {
             return false;
         }
         
-        // body parameter
-        public boolean hasBodyParam(String pname){
+        // body parameter same name & value
+        public boolean hasBodyParam(String pname, String value){
             if(getBodyParams()!=null){
         	for(String[] pair: bodyparams){//bodyparams
-                    if(isEqualParam(pname, pair[0]))return true;
+                    if(isEqualParam(pname, pair[0]) && isEqualParam(value, pair[1]))return true;
         	}
             }
             return false;
@@ -854,11 +854,11 @@ class ParseHTTPHeaders {
             return null;
         }
 
-        // query parameter
-        public boolean hasQueryParam(String pname){
+        // query parameter same name & value
+        public boolean hasQueryParam(String pname, String value){
             if(queryparams!=null){
         	for(String[] pair: queryparams){//queryparams
-                    if(isEqualParam(pname, pair[0]))return true;
+                    if(isEqualParam(pname, pair[0]) && isEqualParam(value, pair[1]))return true;
          	}
             }
             return false;

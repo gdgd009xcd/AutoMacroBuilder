@@ -885,7 +885,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                     
                     for (ParmGenToken tkn : restoken.tracktokenlist) {
                         String token = tkn.getTokenKey().GetName();
-                        
+                        String value = tkn.getTokenValue().getValue();
                         if(!addedtokens.containsKey(tkn.getTokenKey())){
                             ParmGenJSONDecoder reqjdecoder = new ParmGenJSONDecoder(pqrs.request.getBody());
                         
@@ -897,7 +897,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                             ParmGenTrackingToken.RequestParamType rptype = ParmGenTrackingToken.RequestParamType.Nop;
                             for(ParmGenToken reqtkn : reqjtklist){
                                 ParmVars.plog.debuglog(0, "response["+ token  + "] " + "request parsed [" + reqtkn.getTokenKey().GetName() + "] value[" + reqtkn.getTokenValue().getValue() + "]");
-                                if(reqtkn.getTokenKey().GetName().equals(token)){
+                                if(reqtkn.getTokenKey().GetName().equals(token)&& reqtkn.getTokenValue().getValue().equals(value)){// same name && value
                                     _RToken = tkn;
                                     _QToken = reqtkn;
                                     rptype = ParmGenTrackingToken.RequestParamType.Json;
@@ -906,7 +906,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                             }
                             ParmGenToken query_token = pqrs.request.getQueryToken(token);
                             ParmGenToken body_token = pqrs.request.getBodyToken(token);
-                            if (pqrs.request.hasQueryParam(token) || pqrs.request.hasBodyParam(token)) {
+                            if (pqrs.request.hasQueryParam(token, value) || pqrs.request.hasBodyParam(token, value)) {
                                 
                             	
                             	switch(tkn.getTokenKey().GetTokenType()){
@@ -1047,6 +1047,9 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                                             }
                                         }
                                     }
+                                    break;
+                                case X_www_form_urlencoded:
+                                    regex = "(?:[&=?]|^)" + paramname + "=([^&=]+)";
                                     break;
                             }
                             

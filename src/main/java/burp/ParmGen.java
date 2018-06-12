@@ -25,6 +25,7 @@ import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.logging.Level;
@@ -40,6 +41,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 
 
@@ -351,8 +353,11 @@ class AppValue {
 
 	public int csvpos;
 	public int col;
-	public String resURL = "";
-	public String resRegex = "";
+        private int trackkey = -1;
+	private String resURL = "";
+        private Pattern Pattern_resURL = null;
+	private String resRegex = "";
+        private Pattern Pattern_resRegex = null;
 	private int resPartType;
 	public int resRegexPos = -1;//追跡token　ページ内出現位置 0start
 	public String token;//追跡token　Name
@@ -417,6 +422,7 @@ class AppValue {
         private boolean enabled = true;//有効
 
         private void initctype(){
+            trackkey = -1;
             resFetchedValue = null;
             enabled = true;
             if(ctypestr==null){
@@ -500,6 +506,14 @@ class AppValue {
             urlencode = _urlenc;
         }
 
+        public void setTrackKey(int k){
+            trackkey = k;
+        }
+        
+        public int getTrackKey(){
+            return trackkey;
+        }
+        
         public boolean isEnabled(){
             return enabled;
         }
@@ -575,16 +589,44 @@ class AppValue {
         public void setresURL(String _url){
             if(_url==null)_url = "";
             resURL = _url.trim();
+            try{
+                Pattern_resURL = ParmGenUtil.Pattern_compile(resURL);
+            }catch(Exception e){
+                Pattern_resURL = null;
+                ParmVars.plog.debuglog(0, "ERROR: setresURL " + e.toString());
+            }
+        }
+        
+        public String getresURL(){
+            return resURL;
+        }
+        
+        public Pattern getPattern_resURL(){
+            return Pattern_resURL;
+        }
+        
+        public Pattern getPattern_resRegex(){
+            return Pattern_resRegex;
+        }
+        
+        public String getresRegex(){
+            return resRegex;
         }
 
         public void setresRegexURLencoded(String _regex){
             if(_regex==null)_regex = "";
-            resRegex = URLdecode(_regex);
+            setresRegex(URLdecode(_regex));
         }
 
         public void setresRegex(String _regex){
             if(_regex==null)_regex="";
             resRegex = _regex;
+            try{
+                Pattern_resRegex = ParmGenUtil.Pattern_compile(resRegex);
+            }catch(Exception e){
+                ParmVars.plog.debuglog(0, "ERROR: setresRegex " + e.toString());
+                Pattern_resRegex = null;
+            }
         }
 
         public void setresPartType(String respart){
@@ -755,7 +797,7 @@ class AppValue {
 				matchval = m.group(n+1);
 			}
 			if (spt != -1 && ept != -1) {
-				strcnt = pini.getStrCnt(tk,currentStepNo, toStepNo, valparttype, col, csvpos);
+				strcnt = pini.getStrCnt(this,tk,currentStepNo, toStepNo, valparttype,  csvpos);
 				ParmVars.plog.printLF();
 				boolean isnull = false;
                                 ParmGenTokenValue errorhash_value = null;
@@ -1031,8 +1073,8 @@ class FileReadLine {
 //
 class AppParmsIni {
         private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
-	public String url;
-	Pattern urlregex;
+	private String url;
+	private Pattern urlregex;
 	public ArrayList<AppValue> parmlist = null;
         Iterator<AppValue> it;
 	public int len = 4;
@@ -1046,7 +1088,7 @@ class AppParmsIni {
 	String cntfile = "";
 	String cstrcnt = null;
 	int rndval = 1;
-	int row;
+	public int row;
         Boolean pause =false;
         private int TrackFromStep =-1;// StepNo== -1 any >0 TrackingFrom 
         private int SetToStep = 0;// == 0 any > 0 SetTo 
@@ -1122,10 +1164,16 @@ class AppParmsIni {
 	}
 
         public void clearAppValues(){
-            parmlist = null;
+            if(parmlist!=null){
+                for(AppValue ap: parmlist){
+                    ParmGenTrackJarFactory.remove(ap.getTrackKey());
+                }
+            }
             parmlist = new ArrayList<AppValue>();
         }
+        
         public void addAppValue(AppValue app){
+            app.col = parmlist.size();
             parmlist.add(app);
         }
 
@@ -1233,17 +1281,26 @@ class AppParmsIni {
 			urlregex = ParmGenUtil.Pattern_compile(url);
 
 		}catch(Exception e){
-			exerr = e.toString();
+                    urlregex = null;
+                    exerr = e.toString();
 		}
 		return exerr;
 	}
+        
+        public String getUrl(){
+            return url;
+        }
+        
+        public Pattern getPatternUrl(){
+            return urlregex;
+        }
 
         AppParmsIni(String _URL, String _initval, String _type, String _len, ArrayList<AppValue> _apps, int _row){
             setUrl(_URL);
             inival = Integer.parseInt(_initval);
             type = _type;
             len = Integer.parseInt(_len);
-            row = _row;
+            setRowAndCntFile(_row);
             parmlist = _apps;
             crtGenFormat(false);
             rewindAppValues();
@@ -1318,7 +1375,7 @@ class AppParmsIni {
 		return nval;
 	}
 
-	String getGenValue(ParmGenTokenKey tk, int currentStepNo, int toStepNo, int _valparttype, int col, int csvpos){
+	String getGenValue(AppValue apv, ParmGenTokenKey tk, int currentStepNo, int toStepNo, int _valparttype,  int csvpos){
 		int n;
 		switch(typeval){
 		case T_NUMBER://number
@@ -1335,7 +1392,7 @@ class AppParmsIni {
 		case T_TRACK://loc
 			//if ( global.Location != void ){
 
-				return FetchResponse.loc.getLocVal(tk, currentStepNo, toStepNo, row, col);
+			return FetchResponse.loc.getLocVal(apv.getTrackKey(), tk, currentStepNo, toStepNo);
 			//}
 		default://csv
 			if ( frl != null){
@@ -1352,9 +1409,9 @@ class AppParmsIni {
 		return null;
 	}
 
-	String getStrCnt(ParmGenTokenKey tk, int currentStepNo, int toStepNo,int _valparttype, int col, int csvpos){
+	String getStrCnt(AppValue apv, ParmGenTokenKey tk, int currentStepNo, int toStepNo,int _valparttype,  int csvpos){
 		//if ( cstrcnt == null|| typeval == 3){
-				cstrcnt = getGenValue(tk, currentStepNo,toStepNo,_valparttype, col, csvpos);
+		cstrcnt = getGenValue(apv, tk, currentStepNo,toStepNo,_valparttype, csvpos);
 		//}
 		return cstrcnt;
 	}
@@ -1498,8 +1555,8 @@ class AppParmsIni {
                     return new Object[] {app.getValPart(), (app.isEnabled()?false:true), app.csvpos, app.value, app.isNoCount()?false:true};
                 case T_TRACK:
                     return new Object[] {app.getValPart(), (app.isEnabled()?false:true), app.value,
-                        app.resURL,
-                        app.resRegex,
+                        app.getresURL(),
+                        app.getresRegex(),
                         app.getResValPart(),
                         Integer.toString(app.resRegexPos),
                     app.token, app.urlencode, app.fromStepNo, app.toStepNo, app.tokentype.name()};
@@ -1525,10 +1582,10 @@ class ParmGen {
 
 	public static List<AppParmsIni> parmcsv = null;
         public static ArrayList<AppParmsIni> parmjson = null;
-        public static ArrayList<AppParmsIni> trackcsv = null;// response tracking
+
         private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
 
-        public static boolean hasTrackRequest=false;//==true: リクエストを追跡
+
         public static ParmGenTop twin = null;
         public static boolean ProxyInScope = false;
         public static boolean IntruderInScope = true;
@@ -1830,7 +1887,7 @@ boolean FetchRequest(PRequest prequest,   AppParmsIni pini, AppValue av){
         col = av.col;
         switch(av.getResTypeInt()){
             case AppValue.V_REQTRACKBODY:
-                return FetchResponse.loc.reqbodymatch(pmt.getStepNo(), av.fromStepNo,url, prequest, row, col, true, av.resRegexPos, av.token);
+                return FetchResponse.loc.reqbodymatch(av,pmt.getStepNo(), av.fromStepNo,url, prequest, row, col, true, av.resRegexPos, av.token);
             default:
                 break;
         }
@@ -1912,48 +1969,16 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 			if(parmcsv==null)return;
                         //colmax計算
                         
-			Iterator<AppParmsIni> api = parmcsv.iterator();
-                        int cmax = 0;
-                        for(AppParmsIni pini: parmcsv){
-                            if(pini.parmlist!=null){
-                                int _cm = pini.parmlist.size();
-                                if(cmax<_cm) cmax = _cm;
-                            }
-                        }
-			FetchResponse.loc = new LocVal(parmcsv.size(), cmax);                        
-			while(api.hasNext()){
-				AppParmsIni pini = api.next();
-				int row = pini.row;
-				Iterator<AppValue> apv = pini.parmlist.iterator();
-				if(pini.getType()==AppParmsIni.T_TRACK){
-					if(trackcsv==null){
-						trackcsv = new ArrayList<AppParmsIni>();
-					}
-					while(apv.hasNext()){
-						AppValue apval = apv.next();
-						if(apval.getResTypeInt()>=AppValue.V_REQTRACKBODY){
-							hasTrackRequest =true;
-						}
-
-						int col = apval.col;
-						//loc.setURLRegex(".*test.kurashi-research.jp:(\\d+)/top.php.*", 0,0);
-						//ParmVars.plog.debuglog(0, "r,c,resURL:" + Integer.toString(row) + "," + Integer.toString(col) + ","+ apval.resURL);
-						FetchResponse.loc.setURLRegex(apval.resURL, row, col);
-						//loc.setRegex("'PU31', '00', 'exchange', '([a-z0-9]+)'",0,0);
-						FetchResponse.loc.setRegex(apval.resRegex, row, col);
-					}
-					trackcsv.add(pini);
-
-				}
-			}
-			//debuglog(0, "loadCSV executed.");
+			
+			FetchResponse.loc = new LocVal();                        
+			
 		}
 	}
 
 	private void nullset(){
-		 parmcsv = null;trackcsv=null;
+		 parmcsv = null;
          FetchResponse.loc = null;
-         hasTrackRequest = false;
+
 	}
         public void reset(){
             nullset();
@@ -2005,7 +2030,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                             ListIterator<AppParmsIni> it = parmcsv.listIterator();
                             while(it.hasNext()) {
                                 pini = it.next();
-                                Matcher urlmatcher = pini.urlregex.matcher(url);
+                                Matcher urlmatcher = pini.getPatternUrl().matcher(url);
                                 if ( urlmatcher.find() && pmt.CurrentRequestIsSetToTarget(pini)){
                                         //Content-Type: multipart/form-data; boundary=---------------------------30333176734664
                                         if (content_type != null && !content_type.equals("") && hasboundary ==false){//found
@@ -2020,7 +2045,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                                                 }
                                                 hasboundary = true;
                                         }
-                                        ParmVars.plog.debuglog(0, "***URL正規表現[" + pini.url + "]マッチパターン[" + url + "]");
+                                        ParmVars.plog.debuglog(0, "***URL正規表現[" + pini.getUrl() + "]マッチパターン[" + url + "]");
                                         if( contarray == null ){
                                             /*****
                                                 byte[] bytes = null;
@@ -2108,26 +2133,34 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                             prequest.setHeader("Proxy-Authorization", ParmVars.ProxyAuth);// username:passwd => base64
                             retval = prequest.getByteMessage();
                     }
-                    if(hasTrackRequest){
 
-                        AppParmsIni pini = null;
-                        Iterator<AppParmsIni> it = trackcsv.iterator();
-                        while(it.hasNext()){
-                            pini = it.next();
-                            if(pmt.CurrentRequestIsTrackFromTarget(pini)){
-                                ArrayList<AppValue> parmlist = pini.parmlist;
-                                Iterator<AppValue> pt = parmlist.iterator();
-                                boolean fetched;
-                                while(pt.hasNext()){
-                                        AppValue av = pt.next();
-                                        if(av.isEnabled()){
-                                            fetched = FetchRequest(prequest,  pini, av);
+
+                    AppParmsIni pini = null;
+                    ListIterator<AppParmsIni> it = parmcsv.listIterator();
+                    while(it.hasNext()){
+                        pini = it.next();
+                        if(pmt.CurrentRequestIsTrackFromTarget(pini) && pini.getType()==AppParmsIni.T_TRACK){
+                            List<AppValue> parmlist = pini.parmlist;
+                            ListIterator<AppValue> pt = parmlist.listIterator();
+                            boolean fetched;
+                            boolean apvIsUpdated = false;
+                            while(pt.hasNext()){
+                                    AppValue av = pt.next();
+                                    if(av.isEnabled()&&av.getResTypeInt()>=AppValue.V_REQTRACKBODY){
+                                        fetched = FetchRequest(prequest,  pini, av);
+                                        if(fetched){
+                                            pt.set(av);
+                                            apvIsUpdated = true;
                                         }
-                                }
+                                    }
+                            }
+                            if(apvIsUpdated){
+                                it.set(pini);
                             }
                         }
-
                     }
+
+
                     return retval;
             }
 
@@ -2138,68 +2171,57 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 
         int updtcnt = 0;
 
-		if( trackcsv == null){
-			//ParmVars.plog.printlog("loadCSV failed. program has aborted\n", true);
-		}else{
-			// main loop
-			//Request request = connection.getRequest();
+	
+                // main loop
+                //Request request = connection.getRequest();
 
-                        String response_string = null;
-                        try{
-                            response_string = new String(response_bytes, _enc);
-                        }catch(Exception e){
-                            return -1;
-                        }
-                        PResponse presponse = new PResponse(response_string);
-			// check if we have parameters
-			// Construct a new HttpUrl object, since they are immutable
-			// This is a bit of a cheat!
-			//String url = request.getURL().toString();
+                String response_string = null;
+                try{
+                    response_string = new String(response_bytes, _enc);
+                }catch(Exception e){
+                    return -1;
+                }
+                PResponse presponse = new PResponse(response_string);
+                // check if we have parameters
+                // Construct a new HttpUrl object, since they are immutable
+                // This is a bit of a cheat!
+                //String url = request.getURL().toString();
 
-			if ( url != null ){
+                if ( url != null ){
 
-                            AppParmsIni pini = null;
-                            Iterator<AppParmsIni> it = trackcsv.iterator();
-                            while(it.hasNext()) {
-                                pini = it.next();
-                                if(pmt.CurrentRequestIsTrackFromTarget(pini)){
+                    AppParmsIni pini = null;
+                    ListIterator<AppParmsIni> it = parmcsv.listIterator();
+                    while(it.hasNext()) {
+                        pini = it.next();
 
-                                    ArrayList<AppValue> parmlist = pini.parmlist;
-                                    Iterator<AppValue> pt = parmlist.iterator();
+                        if(pmt.CurrentRequestIsTrackFromTarget(pini)&& pini.getType()==AppParmsIni.T_TRACK){
+                            boolean apvIsUpdated = false;
+                            List<AppValue> parmlist = pini.parmlist;
+                            ListIterator<AppValue> pt = parmlist.listIterator();
 
-                                    while(pt.hasNext()){
-                                        AppValue av = pt.next();
-                                        if(av.isEnabled()){
-                                            if (ParseResponse(url, presponse,  pini, av)){
-                                                updtcnt++;
-                                            }
-                                        }
+                            while(pt.hasNext()){
+                                AppValue av = pt.next();
+                                if(av.isEnabled()){
+                                    if (ParseResponse(url, presponse,  pini, av)){
+                                        pt.set(av);
+                                        updtcnt++;
+                                        apvIsUpdated = true;
                                     }
                                 }
                             }
-			}
-		}
+                            if(apvIsUpdated){
+                                it.set(pini);
+                            }
+                        }
+                    }
+                }
+
 
 		return updtcnt;
 	}
 
 
-/****
-	void ResponseCountUpdate(int r, int c){
-		AppParmsIni pini = null;
-		if ( parmcsv != null && parmcsv.size()>0){
-			if(r > -1 && r <= parmcsv.size()){
-				pini = parmcsv.get(r);
-				ArrayList<AppValue> parmlist = pini.parmlist;
-				AppValue av = null;
-				if ( c > -1 && c <= parmlist.size()){
-					av = parmlist.get(c);
-					av.updateCount(pini);
-				}
-			}
-		}
-	}
-        * ***/
+
 }
 
 

@@ -34,137 +34,84 @@ import java.util.HashMap;
 //
 
 class LocVal {
-	//
-	int noclear = 0;
-	int rmax = 1;
-	int cmax = COLMAX;
-        static final int COLMAX = 250;
-	boolean sticky = false;
-	String data_response = null;
-	//String [][] locarray = new String[rmax][cmax];
-        String [][] locarray;
-	//Pattern [][] regexes = new Pattern[rmax][cmax];
-        Pattern [][] regexes;
-	//Pattern [][] urlregexes = new Pattern[rmax][cmax];
-        Pattern [][] urlregexes;
-        //stepno
-        int [][] responseStepNos;
-	PLog _logger = null;
-	Encode _enc = null;
-	int rpos = 0;
-	int cpos = 0;
-        // Key: String token  int toStepNo Val: distance = responseStepNo - currentStepNo
-        HashMap<ParmGenTokenKey, Integer> distances;
-	//
-	LocVal (int _rmax, int _cmax){
-		_logger = ParmVars.plog;
+    //
+    int noclear = 0;
 
-		//pattern = "<AuthUpload>(?:.|\r|\n|\t)*?<password>([a-zA-Z0-9]+)</password>";
-		allocLocVal(_rmax, _cmax);
+    boolean sticky = false;
 
-		_enc = ParmVars.enc;
-		if(_enc == null  ){
-			_enc = Encode.UTF_8;
-		}
-		initLocVal();
+    //String [][] locarray = new String[rmax][cmax];
+    //String [][] locarray;
 
 
-	}
+    //stepno
+    //int [][] responseStepNos;
+    PLog _logger = null;
+    Encode _enc = null;
 
-        private String strrowcol(int r, int c){
-            return Integer.toString(r) + "," + Integer.toString(c);
-        }
+    // Key: String token  int toStepNo Val: distance = responseStepNo - currentStepNo
+    HashMap<ParmGenTokenKey, Integer> distances;
+    //
+    LocVal (){
+            _logger = ParmVars.plog;
 
-	void setSticky(){
-		sticky = true;
-		//printlog("***fetchresponse sticky***");
-	}
+            //pattern = "<AuthUpload>(?:.|\r|\n|\t)*?<password>([a-zA-Z0-9]+)</password>";
+            allocLocVal();
 
-        void allocLocVal(int _rmax, int _cmax){
-            if(_rmax>0&&_cmax>0){
-                rmax = _rmax;
-                cmax = _cmax;
-                locarray = new String[_rmax][cmax];
-                regexes = new Pattern[_rmax][cmax];
-                urlregexes = new Pattern[_rmax][cmax];
-                responseStepNos = new int[_rmax][cmax];
-                distances = new HashMap<ParmGenTokenKey, Integer> ();
-            }else{
-                rmax = 0;
-                locarray = null;
-                regexes = null;
-                urlregexes = null;
-                responseStepNos = null;
-                distances = null;
+            _enc = ParmVars.enc;
+            if(_enc == null  ){
+                    _enc = Encode.UTF_8;
             }
-        }
+            initLocVal();
 
-	void initLocVal(){
-		for(int i = 0; i< rmax; i++){
-			for(int j = 0 ; j<cmax ; j++){
-				locarray[i][j] = null;
-				regexes[i][j] = null;
-				urlregexes[i][j] = null;
-                                responseStepNos[i][j] = -1;
-			}
-		}
-                if(distances!=null){
-                    distances.clear();
-                }
-	}
 
-	void clearCachedLocVal(){
-		for(int i = 0; i< rmax; i++){
-			for(int j = 0 ; j<cmax ; j++){
-				locarray[i][j] = null;
-                                responseStepNos[i][j] = -1;
-			}
-		}
-	}
+    }
+
+    private String strrowcol(int r, int c){
+        return Integer.toString(r) + "," + Integer.toString(c);
+    }
+
+
+
+    private void allocLocVal(){
         
-        void clearDistances(){
+
+            distances = new HashMap<ParmGenTokenKey, Integer> ();
+        
+    }
+
+    private void initLocVal(){
+            clearCachedLocVal();
             if(distances!=null){
                 distances.clear();
             }
+    }
+
+    public void clearCachedLocVal(){
+            ParmGenTrackJarFactory.clear();
+    }
+
+    public void clearDistances(){
+        if(distances!=null){
+            distances.clear();
         }
+    }
+
         
-        void setStepNo(int snum, int r, int c){
-            if(isValid(r,c)){
-                responseStepNos[r][c] = snum;
-            }
-        }
 
-	void setRegex(String pattern, int r, int c){
-            if(isValid(r,c) && pattern != null && !pattern.isEmpty()){
-                try{
-                    regexes[r][c] = ParmGenUtil.Pattern_compile(pattern);
-                }catch(Exception e){
-                    ParmVars.plog.debuglog(0, "ERROR: setRegex " + e.toString());
-                }
-            }
-	}
-	void setURLRegex(String pattern, int r, int c){
-            if(isValid(r,c)&& pattern != null && !pattern.isEmpty()){
-                printlog("setURLRegex:r,c,url=" + strrowcol(r,c) + "," + pattern);
-                try{
-                    urlregexes[r][c] = ParmGenUtil.Pattern_compile(pattern);
-                }catch(Exception e){
-                    printlog("ERROR: setURLRegex " + e.toString());
-                }
-            }
-	}
+	
 
-	void clearResponse(){
-		data_response = null;
-	}
+	
 
-    String getLocVal(ParmGenTokenKey tk, int currentStepNo, int toStepNo, int r, int c) {
+    String getLocVal(int k, ParmGenTokenKey tk, int currentStepNo, int toStepNo) {
         String rval = null;
-        if (isValid(r, c)) {
+        ParmGenTrackingParam tkparam = ParmGenTrackJarFactory.get(k);
+        if (tkparam!=null) {
 
-            String v = locarray[r][c];
-            int responseStepNo = responseStepNos[r][c];
+            //String v = locarray[r][c];
+            //int responseStepNo = responseStepNos[r][c];
 
+            String v = tkparam.getValue();
+            int responseStepNo = tkparam.getResponseStepNo();
 
             //toStepNo <0 :currentStepNo == responseStepNo - toStepNo
             if (toStepNo < 0) {
@@ -204,56 +151,58 @@ class LocVal {
         return rval;
     }
 
-        int getStepNo(int r, int c){
-            if(isValid(r,c)){
-                return responseStepNos[r][c];
-            }
-            return -1;
+    private int getStepNo(int k){
+        ParmGenTrackingParam tkparam = ParmGenTrackJarFactory.get(k);
+        if(tkparam!=null){
+            //return responseStepNos[r][c];
+            return tkparam.getResponseStepNo();
         }
+        return -1;
+    }
 
-	void setLocVal(int currentStepNo, int fromStepNo, int r, int c, String val, boolean overwrite){
-            if(isValid(r,c)){
-		if ( locarray[r][c] == null ){
-			locarray[r][c] = val;
-		}else if(sticky == false||overwrite == true){
-			locarray[r][c] = val;
-		}else{
-			//printlog("setLocVal sticky r,c,noclear, locarray[r][c]:" + r + "," + c + "," + noclear + "," + locarray[r][c]);
-		}
-                if(fromStepNo<0||currentStepNo==fromStepNo){
-                    setStepNo(currentStepNo, r, c);
-                }
-            }
-		//printlog("setLocVal r,c,noclear, val:" + r + "," + c + "," + noclear + "," + val);
-	}
+    private int setLocVal(int k,int currentStepNo, int fromStepNo,  String val, boolean overwrite){
+        ParmGenTrackingParam tkparam = ParmGenTrackJarFactory.get(k);
+        if(tkparam==null){
+            k = ParmGenTrackJarFactory.create();
+            tkparam = ParmGenTrackJarFactory.get(k);
+        }
+        
+        //if ( locarray[r][c] == null ){
+        //        locarray[r][c] = val;
+        //}else if(sticky == false||overwrite == true){
+        //        locarray[r][c] = val;
+        //}
+        
+        String cachedval = tkparam.getValue();
+        if(cachedval==null){
+            tkparam.setValue(val);
+        }else if(sticky == false||overwrite == true){
+            tkparam.setValue(val);
+        }
+        
+        if(fromStepNo<0||currentStepNo==fromStepNo){
+            //setStepNo(currentStepNo, r, c);
+            tkparam.setResponseStepNo(currentStepNo);
+        }
+        
+        
+        ParmGenTrackJarFactory.put(k, tkparam);
+        
 
-	void copyLocVal(int fr, int fc, int tr, int tc){
-            if(isValid(fr,fc) && isValid(tr,tc)){
-		String v = locarray[fr][fc];
-                int stepno = responseStepNos[fr][fc];
-		setLocVal(stepno, -1, tr, tc, v, true);
-            }
-	}
+        return k;
+    }
 
-        boolean isValid(int r, int c){
-            if(rmax > 0 && r >= 0 && r < rmax && c >= 0 && c < cmax && cmax > 0){
-		return true;
+	//void copyLocVal(int fr, int fc, int tr, int tc){
+        //    if(isValid(fr,fc) && isValid(tr,tc)){
+	//	String v = locarray[fr][fc];
+        //        int stepno = responseStepNos[fr][fc];
+	//	setLocVal(stepno, -1, tr, tc, v, true);
+        //    }
+	//}
 
-            }
-            return false;
-	}
+        
 
-	boolean isExist(int r, int c){
-            if(isValid(r,c)){
-		if (locarray[r][c] == null ){
-			return false;
-		}
-            }else{
-                return false;
-            }
-            return true;
-	}
-
+	
 	int noClear(){
 		return noclear;
 	}
@@ -273,7 +222,7 @@ class LocVal {
 			boolean overwrite, String name, AppValue av) {
 		AppValue.TokenTypeNames _tokentype = av.tokentype;
 		String comments = "";
-		if (urlmatch(url, r, c)) {
+		if (urlmatch(av,url, r, c)) {
 			if (_tokentype == AppValue.TokenTypeNames.LOCATION) {
 				ParmGenToken tkn = presponse.fetchNameValue(name, _tokentype, 0);
 				if (tkn != null) {
@@ -284,7 +233,7 @@ class LocVal {
 							comments = "*****FETCHRESPONSE header r,c/ header: value" + r + "," + c + " => " + matchval;
 							printlog(comments);
 							ParmVars.plog.addComments(comments);
-							setLocVal(currentStepNo, fromStepNo, r, c, matchval, overwrite);
+							av.setTrackKey(setLocVal(av.getTrackKey(), currentStepNo, fromStepNo, matchval, overwrite));
 							return true;
 						}
 					} else {
@@ -293,7 +242,7 @@ class LocVal {
 						ParmVars.plog.addComments(comments);
 					}
 				}
-			} else if (regexes[r][c] != null) {
+			} else if (av.getPattern_resRegex() != null) {
 				//
 				int size = presponse.getHeadersCnt();
 				for (int i = 0; i < size; i++) {
@@ -303,7 +252,7 @@ class LocVal {
 					String hval = presponse.getHeaderLine(i);
 					Matcher matcher = null;
 					try {
-						matcher = regexes[r][c].matcher(hval);
+						matcher = av.getPattern_resRegex().matcher(hval);
 					} catch (Exception e) {
 						printlog("matcher例外：" + e.toString());
 					}
@@ -320,7 +269,7 @@ class LocVal {
 										+ " => " + matchval;
 								printlog(comments);
 								ParmVars.plog.addComments(comments);
-								setLocVal(currentStepNo, fromStepNo, r, c, matchval, overwrite);
+								av.setTrackKey(setLocVal(av.getTrackKey(), currentStepNo, fromStepNo, matchval, overwrite));
 								return true;
 							} else {
 								comments = "xxxxxIGNORED FETCHRESPONSE header r,c/ header: value" + r + "," + c + "/"
@@ -342,17 +291,17 @@ class LocVal {
 			boolean overwrite, boolean autotrack, AppValue av, int fcnt, String name, boolean _uencode)
 			throws UnsupportedEncodingException {
 		AppValue.TokenTypeNames _tokentype = av.tokentype;
-		if (urlmatch(url, r, c)) {
+		if (urlmatch(av,url, r, c)) {
 
 			Matcher matcher = null;
 
-			if (regexes != null && av.resRegex != null && !av.resRegex.isEmpty()) {//extracted by regex
+			if (av.getPattern_resRegex() != null && av.getresRegex() != null && !av.getresRegex().isEmpty()) {//extracted by regex
                                 String message = presponse.getMessage();
                                 
 				try {
-					matcher = regexes[r][c].matcher(message);
+					matcher = av.getPattern_resRegex().matcher(message);
 				} catch (Exception e) {
-					String comments =  "xxxxx EXCEPTION FETCHRESPONSE r,c:"+r +"," +c + ": " + name + " 正規表現[" + av.resRegex  + "] 例外：" + e.toString();
+					String comments =  "xxxxx EXCEPTION FETCHRESPONSE r,c:"+r +"," +c + ": " + name + " 正規表現[" + av.getresRegex()  + "] 例外：" + e.toString();
 					printlog(comments);
 					ParmVars.plog.addComments(comments);
 					matcher = null;
@@ -387,10 +336,11 @@ class LocVal {
 						String comments = "";
 
 						if (ONETIMEPASSWD != null && !ONETIMEPASSWD.isEmpty()) {// value値nullは追跡しない
-							comments = "*****FETCHRESPONSE body r,c:" + r + "," + c + ": " + name + "=" + ONETIMEPASSWD;
+							
+							av.setTrackKey(setLocVal(av.getTrackKey(), currentStepNo, fromStepNo, ONETIMEPASSWD, overwrite));
+                                                        comments = "*****FETCHRESPONSE body key/r,c:" + av.getTrackKey() + "/" + r + "," + c + ": " + name + "=" + ONETIMEPASSWD;
 							printlog(comments);
 							ParmVars.plog.addComments(comments);
-							setLocVal(currentStepNo, fromStepNo, r, c, ONETIMEPASSWD, overwrite);
 							return true;
 						} else {
 							comments = "xxxxxx FAILED FETCHRESPONSE body r,c:" + r + "," + c + ": " + name + "=" +  "null";
@@ -412,9 +362,7 @@ class LocVal {
                                     if (tval != null) {
                                         String v = tval.getValue();
                                         if (v != null && !v.isEmpty()) {// value null値は追跡しない。
-                                                String comments = "*****FETCHRESPONSE auto track body r,c,p:" + r + "," + c + "," + fcnt + ": "	+ name + "=" + v;
-                                                printlog(comments);
-                                                ParmVars.plog.addComments(comments);
+                                                
                                                 if (_uencode == true) {
                                                         String venc = v;
                                                         try {
@@ -426,7 +374,10 @@ class LocVal {
                                                 }
                                                 String ONETIMEPASSWD = v.replaceAll(",", "%2C");
 
-                                                setLocVal(currentStepNo, fromStepNo, r, c, ONETIMEPASSWD, overwrite);
+                                                av.setTrackKey(setLocVal(av.getTrackKey(), currentStepNo, fromStepNo, ONETIMEPASSWD, overwrite));
+                                                String comments = "*****FETCHRESPONSE auto track body key/r,c,p:" +av.getTrackKey()+ "/" + r + "," + c + "," + fcnt + ": "	+ name + "=" + v;
+                                                printlog(comments);
+                                                ParmVars.plog.addComments(comments);
                                                 return true;
                                         } else {
                                                 String comments = "xxxxx FAILED FETCHRESPONSE auto track body r,c,p:" + r + "," + c + ","
@@ -442,10 +393,10 @@ class LocVal {
 		return false;
 	}
 
-	boolean reqbodymatch(int currentStepNo, int fromStepNo, String url, PRequest prequest, int r, int c,
+	boolean reqbodymatch(AppValue av, int currentStepNo, int fromStepNo, String url, PRequest prequest, int r, int c,
 			boolean overwrite, int fcnt, String name) {
 		String comments = "";
-		if (urlmatch(url, r, c)) {
+		if (urlmatch(av,url, r, c)) {
 			ArrayList<String[]> namelist = prequest.getBodyParams();
 			Iterator<String[]> it = namelist.iterator();
 			while (it.hasNext()) {
@@ -456,7 +407,7 @@ class LocVal {
 								"******FETCH REQUEST body r,c: name=value:" + r + "," + c + ": " + nv[0] + "=" + nv[1];
 						printlog(comments);
 						ParmVars.plog.addComments(comments);
-						setLocVal(currentStepNo, fromStepNo, r, c, nv[1], overwrite);
+						av.setTrackKey(setLocVal(av.getTrackKey(), currentStepNo, fromStepNo, nv[1], overwrite));
 						return true;
 					} else {
 						comments = "xxxxxFAILED FETCH REQUEST body r,c: name=value:" + r + "," + c + ": " + nv[0]
@@ -472,22 +423,21 @@ class LocVal {
 	//
 	// URL match
 	//
-	boolean urlmatch(String url, int r, int c){
-                if (isValid(r,c)){
-                    try {
-                            if ( urlregexes[r][c] != null){
-                                    Matcher	matcher = urlregexes[r][c].matcher(url);
-                                    if ( matcher.find()){
-                                            //printlog("*****FETCHRESPONSE URL match:" + url);
-                                            ParmVars.plog.debuglog(0, " FETCH RESPONSE URL matched:[" + url + "]");
-                                            return true;
-                                    }
-                                    //printlog("urlmatch find failed:r,c,url, rmax=" + strrowcol(r,c) + "," + url + "," + Integer.toString(rmax));
+	boolean urlmatch(AppValue av, String url, int r, int c){
 
-                            }
-                    }catch (Exception e){
-                            printlog("matcher例外：" + e.toString());
-                    }
+                try {
+                        if ( av.getPattern_resURL() != null){
+                                Matcher	matcher = av.getPattern_resURL().matcher(url);
+                                if ( matcher.find()){
+                                        //printlog("*****FETCHRESPONSE URL match:" + url);
+                                        ParmVars.plog.debuglog(0, " FETCH RESPONSE URL matched:[" + url + "]");
+                                        return true;
+                                }
+                                //printlog("urlmatch find failed:r,c,url, rmax=" + strrowcol(r,c) + "," + url + "," + Integer.toString(rmax));
+
+                        }
+                }catch (Exception e){
+                        printlog("matcher例外：" + e.toString());
                 }
 		return false;
 	}

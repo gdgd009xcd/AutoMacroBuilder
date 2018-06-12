@@ -63,13 +63,24 @@ public class ParmGenCSV {
 
 
 
-
+    public List<AppParmsIni> getrecords(){
+        return records;
+    }
+    
     public void add(String URL, String initval, String valtype, String incval, ArrayList<AppValue> apps){
         int rowcnt = records.size();
+        if(rowcnt>0){
+                rowcnt = records.get(records.size()-1).getRow() + 1;
+        }
         records.add(new AppParmsIni(URL, initval, valtype, incval, apps, rowcnt));
     }
 
     public void add(AppParmsIni pini){
+        int rowcnt = records.size();
+        if(rowcnt>0){
+                rowcnt = records.get(records.size()-1).getRow() + 1;
+        }
+        pini.setRowAndCntFile(rowcnt);
         records.add(pini);
     }
 
@@ -159,7 +170,7 @@ public class ParmGenCSV {
             AppParmsIni prec = it.next();
             //String URL, String initval, String valtype, String incval, ArrayList<ParmGenParam> parms
             JsonObjectBuilder AppParmsIni_prec = Json.createObjectBuilder();
-            AppParmsIni_prec.add("URL", prec.url);
+            AppParmsIni_prec.add("URL", prec.getUrl());
             AppParmsIni_prec.add("len", prec.len);
             AppParmsIni_prec.add("typeval", prec.typeval);
             AppParmsIni_prec.add("inival", prec.inival);
@@ -182,8 +193,8 @@ public class ParmGenCSV {
                 AppValue_rec.add("isNoCount", param.isNoCount());
                 AppValue_rec.add("csvpos", param.csvpos);
                 AppValue_rec.add("value", escapeDelimiters(param.value, null));
-                AppValue_rec.add("resURL", param.resURL==null?"":param.resURL);
-                AppValue_rec.add("resRegex", (escapeDelimiters(param.resRegex, null)==null?"":escapeDelimiters(param.resRegex, null)));
+                AppValue_rec.add("resURL", param.getresURL()==null?"":param.getresURL());
+                AppValue_rec.add("resRegex", (escapeDelimiters(param.getresRegex(), null)==null?"":escapeDelimiters(param.getresRegex(), null)));
                 AppValue_rec.add("resValpart", param.getResValPart());
                 AppValue_rec.add("resRegexPos", param.resRegexPos);
                 AppValue_rec.add("token", param.token==null?"":param.token);
@@ -278,8 +289,8 @@ public class ParmGenCSV {
                         paramStr += QUOTE(escapeDelimiters(param.value, null), false);
                 }else{
                     paramStr += QUOTE(escapeDelimiters(param.value, null), true) +
-                        QUOTE(param.resURL, true) +
-                        QUOTE(escapeDelimiters(param.resRegex, null), true) +
+                        QUOTE(param.getresURL(), true) +
+                        QUOTE(escapeDelimiters(param.getresRegex(), null), true) +
                         QUOTE(param.getResValPart(), true) +
                         QUOTE(Integer.toString(param.resRegexPos), true)+
                             QUOTE(param.token, true) +
@@ -288,7 +299,7 @@ public class ParmGenCSV {
 
 
             }
-            pfile.print(QUOTE(prec.url, true) +
+            pfile.print(QUOTE(prec.getUrl(), true) +
                     QUOTE(Integer.toString(prec.len), true) +
                     QUOTE(prec.getTypeVal(), true) +
                     (prec.typeval==AppParmsIni.T_CSV?QUOTE(escapeDelimiters(prec.frl.getFileName(), "UTF-8"), true):QUOTE(Integer.toString(prec.inival), true)) +

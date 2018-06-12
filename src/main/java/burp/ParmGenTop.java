@@ -41,7 +41,7 @@ public class ParmGenTop extends javax.swing.JFrame {
             int FromStep = pini.getTrackFromStep();
             int ToStep = pini.getSetToStep();
             FromTo = (FromStep>-1?Integer.toString(FromStep):"any") + "->" + (ToStep>0?Integer.toString(ToStep):"any");
-            model.addRow(new Object[] {pini.pause, FromTo, pini.url, pini.getIniValDsp(), pini.getLenDsp(), pini.getTypeValDsp(),pini.getAppValuesDsp(),pini.getCurrentValue()});
+            model.addRow(new Object[] {pini.pause, FromTo, pini.getUrl(), pini.getIniValDsp(), pini.getLenDsp(), pini.getTypeValDsp(),pini.getAppValuesDsp(),pini.getCurrentValue()});
             //ParamTopList.setRowHeight(ri++, default_rowheight * pini.getAppValuesLineCnt());
         }
     }
@@ -155,13 +155,12 @@ public class ParmGenTop extends javax.swing.JFrame {
 
         if(pini != null){//新規
             csv.add(pini);
+            ParmGen pgen = new ParmGen(pmt, csv.getrecords());//update
         }
         refreshRowDisp(false);
 
     }
-    public void Modified(){
-        ParmGenNew_Modified = true;
-    }
+    
 /*
  *  テーブル全削除
  */
@@ -482,10 +481,8 @@ public class ParmGenTop extends javax.swing.JFrame {
 
     private void CancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CancelActionPerformed
         // TODO add your handling code here:
-        ParmGen pgen = new ParmGen(pmt,null);
-        if(ParmGenNew_Modified){
-            pgen.reset();
-        }
+        ParmGen pgen = new ParmGen(pmt);
+        
         pgen.disposeTop();
     }//GEN-LAST:event_CancelActionPerformed
 

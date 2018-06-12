@@ -136,7 +136,7 @@ private void setAppParmsIni(){
         Object[] row;
         switch(current_model){
             case P_NUMBERMODEL:
-                numberTargetURL.setText(rec.url);
+                numberTargetURL.setText(rec.getUrl());
                 NumberLen.setText(Integer.toString(rec.len));
                 NumberInit.setText(Integer.toString(rec.inival));
                 rec.rewindAppValues();
@@ -146,7 +146,7 @@ private void setAppParmsIni(){
                 ResReqTabs.remove(ResPanel);
                 break;
             case P_CSVMODEL:
-                csvTargetURL.setText(rec.url);
+                csvTargetURL.setText(rec.getUrl());
                 csvFilePath.setText(rec.frl.getFileName());
                 rec.rewindAppValues();
                 CSVSkipLine.setText(rec.getCurrentValue());
@@ -155,7 +155,7 @@ private void setAppParmsIni(){
                 }
                 break;
             case P_TRACKMODEL:
-                trackTargetURL.setText(rec.url);
+                trackTargetURL.setText(rec.getUrl());
                 TrackFrom.setText(Integer.toString(rec.getTrackFromStep()));
                 SetTo.setText(Integer.toString(rec.getSetToStep()));
                 rec.rewindAppValues();
@@ -164,7 +164,7 @@ private void setAppParmsIni(){
                 }
                 break;
              case P_TAMPERMODEL:
-                tamperTargetURL.setText(rec.url);
+                tamperTargetURL.setText(rec.getUrl());
                 rec.rewindAppValues();
                 while((row=rec.getNextAppValuesRow())!=null){
                     ParamTableModels[P_TAMPERMODEL].addRow(row);
@@ -1532,7 +1532,7 @@ private void setAppParmsIni(){
         switch(current_model){
             case P_NUMBERMODEL:
                 rec.setType(AppParmsIni.T_NUMBER_NAME);
-                rec.url = numberTargetURL.getText();
+                rec.setUrl(numberTargetURL.getText());
                 rec.len = ParmGenUtil.parseMaxInt(NumberLen.getText());
                 if(rec.len>10){
                     rec.len = 10;
@@ -1546,7 +1546,7 @@ private void setAppParmsIni(){
                 break;
             case P_CSVMODEL:
                 rec.setType(AppParmsIni.T_CSV_NAME);
-                rec.url = csvTargetURL.getText();
+                rec.setUrl(csvTargetURL.getText());
                 rec.frl = new FileReadLine(csvFilePath.getText(), true);
                 if(CSVrewind.isSelected()){
                     rec.inival = ParmGenUtil.parseMinInt(CSVSkipLine.getText());
@@ -1555,7 +1555,7 @@ private void setAppParmsIni(){
                 break;
             case P_TRACKMODEL:
                 rec.setType(AppParmsIni.T_TRACK_NAME);
-                rec.url = trackTargetURL.getText();
+                rec.setUrl(trackTargetURL.getText());
                 rec.inival = AppParmsIni.T_TRACK_AVCNT;
                 int fromStep = -1;
                 try{
@@ -1646,7 +1646,7 @@ private void setAppParmsIni(){
         }
         rec.crtGenFormat(lastEntryNocount);
         parentwin.updateRowDisp(addrec);
-        parentwin.Modified();
+        
         dispose();
 
     }//GEN-LAST:event_SaveParmActionPerformed

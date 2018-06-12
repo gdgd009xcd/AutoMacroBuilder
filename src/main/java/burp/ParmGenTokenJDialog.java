@@ -39,7 +39,7 @@ public class ParmGenTokenJDialog extends javax.swing.JDialog {
             if(pini.parmlist!=null){
                 for(AppValue ap: pini.parmlist){
                     tkey = new ParmGenTokenKey(ap.tokentype, ap.token, ap.resRegexPos);
-                    tval = new ParmGenTokenValue(ap.resURL, ap.resFetchedValue, ap.isEnabled());
+                    tval = new ParmGenTokenValue(ap.getresURL(), ap.resFetchedValue, ap.isEnabled());
                     map.put(tkey, tval);
                 }
             }

@@ -686,7 +686,9 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                         messages)
                         );
             }
-            pgen.twin.setVisible(true);
+            
+            pgen.twin.VisibleWhenJSONSaved(this);
+            
         }
     }//GEN-LAST:event_customActionPerformed
 
@@ -702,20 +704,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                 //DefaultListModel lmodel = new DefaultListModel();
 
                 PRequestResponse pqr = rlist.get(pos);
-/***
-                Reader reqrd = new java.io.StringReader(ParmGenUtil.LFinsert(pqr.request.getMessage()));
 
-                try {
-                    MacroRequest.setVisible(false);
-                    ParmVars.plog.debuglog(0, "before read");
-                    ;
-                    MacroRequest.read(reqrd, null);
-                    ParmVars.plog.debuglog(0, "read done");
-                    MacroRequest.setVisible(true);
-                } catch (IOException ex) {
-                    ParmVars.plog.printException(ex);
-                }
-                * ***/
                 //String reqmess = ParmGenUtil.LFinsert(pqr.request.getMessage());
                 //MacroRequest.setText(reqmess);
                 ParmGenTextDoc reqdoc = new ParmGenTextDoc(MacroRequest);

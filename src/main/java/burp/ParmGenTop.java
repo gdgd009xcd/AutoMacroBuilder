@@ -4,6 +4,7 @@
  */
 package burp;
 
+import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -157,8 +158,39 @@ public class ParmGenTop extends javax.swing.JFrame {
             csv.add(pini);
             ParmGen pgen = new ParmGen(pmt, csv.getrecords());//update
         }
+        //overwirte
+        ParmGenCSV csv = new ParmGenCSV(null, pmt);
+        csv.jsonsave();
+        
         refreshRowDisp(false);
 
+    }
+    
+    public void VisibleWhenJSONSaved(Component dialogparent){
+        if(!ParmVars.isSaved()){
+            File cfile = new File(ParmVars.parmfile);
+            String dirname = cfile.getParent();
+            JFileChooser jfc = new JFileChooser(dirname);
+            jfc.setSelectedFile(cfile);
+            ParmFileFilter pFilter=new ParmFileFilter();
+            jfc.setFileFilter(pFilter);
+            if(jfc.showSaveDialog(dialogparent) == JFileChooser.APPROVE_OPTION) {
+                //code to handle choosed file here.
+                File file = jfc.getSelectedFile();
+                String name = file.getAbsolutePath().replaceAll("\\\\", "\\\\\\\\");
+                if(!pFilter.accept(file)){//拡張子無しの場合は付与
+                    name += ".json";
+                }
+                ParmVars.parmfile = name;
+                 //csv.save();
+                 ParmGenCSV csv = new ParmGenCSV(null, pmt);
+                 csv.jsonsave();
+
+            }
+        }
+        if(ParmVars.isSaved()){
+            this.setVisible(true);
+        }
     }
     
 /*
@@ -241,6 +273,7 @@ public class ParmGenTop extends javax.swing.JFrame {
         });
 
         Save.setText(bundle.getString("ParmGenTop.保存.text")); // NOI18N
+        Save.setEnabled(false);
         Save.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 SaveActionPerformed(evt);
@@ -300,6 +333,7 @@ public class ParmGenTop extends javax.swing.JFrame {
         }
 
         LogfileOnOff.setText(bundle.getString("ParmGenTop.ログファイル出力.text")); // NOI18N
+        LogfileOnOff.setEnabled(false);
         LogfileOnOff.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 LogfileOnOffActionPerformed(evt);
@@ -451,8 +485,8 @@ public class ParmGenTop extends javax.swing.JFrame {
                 name += ".json";
             }
             ParmVars.parmfile = name;
-             //csv.save();
-             csv.jsonsave();
+            //csv.save();
+            csv.jsonsave();
             //reset ParmGen
             ParmGen pgen = new ParmGen(pmt, null);
 
@@ -505,6 +539,9 @@ public class ParmGenTop extends javax.swing.JFrame {
             if(current_row>0){
                 current_row--;
             }
+            ParmGenCSV csv = new ParmGenCSV(null, pmt);
+            csv.jsonsave();
+
         }
     }//GEN-LAST:event_DelActionPerformed
 

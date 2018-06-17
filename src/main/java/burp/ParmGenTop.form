@@ -154,6 +154,7 @@
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
           <ResourceString bundle="burp/Bundle.properties" key="&#x4fdd;&#x5b58;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
         </Property>
+        <Property name="enabled" type="boolean" value="false"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="SaveActionPerformed"/>
@@ -266,6 +267,7 @@
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
           <ResourceString bundle="burp/Bundle.properties" key="&#x30ed;&#x30b0;&#x30d5;&#x30a1;&#x30a4;&#x30eb;&#x51fa;&#x529b;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
         </Property>
+        <Property name="enabled" type="boolean" value="false"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="LogfileOnOffActionPerformed"/>

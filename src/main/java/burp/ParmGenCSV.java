@@ -130,6 +130,8 @@ public class ParmGenCSV {
             return;
         }
 
+        
+        
         //JSON pretty print
         Map<String, Object> properties = new HashMap<>(1);
         properties.put(JsonGenerator.PRETTY_PRINTING, true);
@@ -192,7 +194,7 @@ public class ParmGenCSV {
                 AppValue_rec.add("isEnabled", param.isEnabled());
                 AppValue_rec.add("isNoCount", param.isNoCount());
                 AppValue_rec.add("csvpos", param.csvpos);
-                AppValue_rec.add("value", escapeDelimiters(param.value, null));
+                AppValue_rec.add("value", escapeDelimiters(param.getVal(), null));
                 AppValue_rec.add("resURL", param.getresURL()==null?"":param.getresURL());
                 AppValue_rec.add("resRegex", (escapeDelimiters(param.getresRegex(), null)==null?"":escapeDelimiters(param.getresRegex(), null)));
                 AppValue_rec.add("resValpart", param.getResValPart());
@@ -233,6 +235,7 @@ public class ParmGenCSV {
 
         pfile.close();
         pfile = null;
+        ParmVars.Saved();
     }
 
     public void save(){//NOP...
@@ -286,9 +289,9 @@ public class ParmGenCSV {
                         (param.csvpos == -1?"":(":" +Integer.toString(param.csvpos)))
                         , true) ;
                 if (prec.typeval != AppParmsIni.T_TRACK){
-                        paramStr += QUOTE(escapeDelimiters(param.value, null), false);
+                        paramStr += QUOTE(escapeDelimiters(param.getVal(), null), false);
                 }else{
-                    paramStr += QUOTE(escapeDelimiters(param.value, null), true) +
+                    paramStr += QUOTE(escapeDelimiters(param.getVal(), null), true) +
                         QUOTE(param.getresURL(), true) +
                         QUOTE(escapeDelimiters(param.getresRegex(), null), true) +
                         QUOTE(param.getResValPart(), true) +

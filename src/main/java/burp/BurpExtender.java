@@ -545,7 +545,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                         convertMessageInfoToArray(messageInfo))
                         );
                 }
-                pgen.twin.setVisible(true);
+                pgen.twin.VisibleWhenJSONSaved(mbr.getUiComponent());
             }
             catch (Exception e)
             {

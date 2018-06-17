@@ -1648,6 +1648,7 @@ private void setAppParmsIni(){
         parentwin.updateRowDisp(addrec);
         
         dispose();
+        
 
     }//GEN-LAST:event_SaveParmActionPerformed
 

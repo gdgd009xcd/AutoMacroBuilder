@@ -247,7 +247,7 @@ class PLog {
 class ParmVars {
 	// グローバルパラメータ
 	static String projectdir;
-	static String parmfile;
+	static String parmfile =  "";
 	static PLog plog;
 	static Encode enc;
 	static String formdataenc;//iso8859-1 encoding is fully  mapped binaries for form-data binaries.
@@ -257,6 +257,7 @@ class ParmVars {
 	static String ProxyAuth;
 	static ParmGenSession session;
         static int displaylength = 10000;// JTextArea/JTextPane等swingの表示バイト数
+        private static boolean issaved = false;
 
 	//
 	// static変数初期化
@@ -291,6 +292,14 @@ class ParmVars {
 		ProxyAuth = "";
 		session = new ParmGenSession();
 	}
+        
+        public static boolean isSaved(){
+            return issaved;
+        }
+        
+        public static void Saved(){
+            issaved = true;
+        }
 	//
 	//
 	// HTTP Request parser
@@ -348,8 +357,8 @@ class AppValue {
 //置換位置,置換しない,  value, Name,  Attack,   Advance,   Position,   URLencode
 	public String valpart;//置換位置
 	private int valparttype;// 0-path, 1-query, 2-body  3-header   16(10000) bit == no count 32(100000) == no modify
-	public String value = null;//value リクエストパラメータの正規表現文字列
-	Pattern valueregex;//リクエストパラメータの正規表現
+	private String value = null;//value リクエストパラメータの正規表現文字列
+	private Pattern valueregex;//リクエストパラメータの正規表現
 
 	public int csvpos;
 	public int col;
@@ -436,7 +445,7 @@ class AppValue {
         }
 
         AppValue(){
-            value = null;
+            setVal(null);
             initctype();
             resRegexPos = -1;
         }
@@ -445,7 +454,8 @@ class AppValue {
             initctype();
             setValPart(_Type);
             setEnabled(!_disabled);//NOT
-            value = _value;
+            //value = _value;
+            setVal(_value);
             resRegexPos = -1;
         }
 
@@ -454,7 +464,8 @@ class AppValue {
             setValPart(_Type);
             setEnabled(!_disabled);//NOT
             csvpos = _csvpos;
-            value = _value;
+            //value = _value;
+            setVal(_value);
             resRegexPos = -1;
             if(increment){
                 clearNoCount();
@@ -467,7 +478,8 @@ class AppValue {
             initctype();
             setValPart(_Type);
             setEnabled(!_disabled);//NOT
-            value = _value;
+            //value = _value;
+            setVal(_value);
             resRegexPos = -1;
             if(increment){
                 clearNoCount();
@@ -481,7 +493,8 @@ class AppValue {
             initctype();
             setValPart(_Type);
             setEnabled(!_disabled);//NOT
-            value = _value;
+            //value = _value;
+            setVal(_value);
             setresURL(_resURL);
             setresRegex(_resRegex);
             setresPartType(_resPartType);
@@ -499,7 +512,8 @@ class AppValue {
             setValPart(_Type);
             setEnabled(!_disabled);//NOT
             token = _name;
-            value = _value;
+            //value = _value;
+            setVal(_value);
             tamattack = _tamattack;
             tamadvance = _tamadvance;
             payloadposition = _payloadposition;
@@ -745,23 +759,35 @@ class AppValue {
         }
 
 	String  setURLencodedVal(String _value){
-		String exerr = null;
-                valueregex = null;
-		try{
-			value = URLDecoder.decode(_value, ParmVars.enc.getIANACharset());
-			valueregex = ParmGenUtil.Pattern_compile(value);
-		}catch(Exception e){
-			exerr = e.toString();
-                        valueregex = null;
-		}
-		if ( valpart.length()<=0){
-			exerr = "valpart is empty";
-		}
-                if(exerr!=null){
-                    ParmVars.plog.debuglog(0, "ERROR: setURLencodedVal [" + value+  "] ERR:"  + exerr);
-                }
-		return null;
+            String exerr = null;
+            valueregex = null;
+            try{
+                    value = URLDecoder.decode(_value, ParmVars.enc.getIANACharset());
+                    valueregex = ParmGenUtil.Pattern_compile(value);
+            }catch(Exception e){
+                    exerr = e.toString();
+                    valueregex = null;
+            }
+            if ( valpart.length()<=0){
+                    exerr = "valpart is empty";
+            }
+            if(exerr!=null){
+                ParmVars.plog.debuglog(0, "ERROR: setURLencodedVal [" + value+  "] ERR:"  + exerr);
+            }
+            return null;
 	}
+        
+        void setVal(String _value){
+            valueregex = null;
+            value = _value;
+            if(value!=null){
+                valueregex = ParmGenUtil.Pattern_compile(value);
+            }
+        }
+        
+        String getVal(){
+            return value;
+        }
 
 
 	String replaceContents(ParmGenMacroTrace pmt, int currentStepNo, AppParmsIni pini, String contents, ParmGenHashMap errorhash){
@@ -1548,21 +1574,21 @@ class AppParmsIni {
                 app = it.next();
                 switch(typeval){
                 case T_NUMBER:
-                     return new Object[] {app.getValPart(), (app.isEnabled()?false:true), app.value, app.isNoCount()?false:true};
+                     return new Object[] {app.getValPart(), (app.isEnabled()?false:true), app.getVal(), app.isNoCount()?false:true};
                 case T_RANDOM:
                     break;
                 case T_CSV:
-                    return new Object[] {app.getValPart(), (app.isEnabled()?false:true), app.csvpos, app.value, app.isNoCount()?false:true};
+                    return new Object[] {app.getValPart(), (app.isEnabled()?false:true), app.csvpos, app.getVal(), app.isNoCount()?false:true};
                 case T_TRACK:
-                    return new Object[] {app.getValPart(), (app.isEnabled()?false:true), app.value,
+                    return new Object[] {app.getValPart(), (app.isEnabled()?false:true), app.getVal(),
                         app.getresURL(),
                         app.getresRegex(),
                         app.getResValPart(),
                         Integer.toString(app.resRegexPos),
                     app.token, app.urlencode, app.fromStepNo, app.toStepNo, app.tokentype.name()};
                 case T_TAMPER:
-                    return new Object[] {app.getValPart(), (app.isEnabled()?false:true), app.value,
-app.getValPart(), (app.isEnabled()?false:true), app.value,
+                    return new Object[] {app.getValPart(), (app.isEnabled()?false:true), app.getVal(),
+app.getValPart(), (app.isEnabled()?false:true), app.getVal(),
                         app.token,
                         app.tamattack,
                         app.tamadvance,

@@ -400,11 +400,23 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
         
         int selidx = ValReplacePart.getSelectedIndex();
         if(selidx==VT_DEFAULT){
-            if(parentwin.getCurrentModel()==ParmGenNew.P_TRACKMODEL){
-                selidx = VT_FIXED;//追跡のデフォルトは固定値
-            }else{
-                selidx = parseValueType(v, defaultvaltype);
+            switch(parentwin.getCurrentModel()){
+                case ParmGenNew.P_TRACKMODEL:
+                    selidx = VT_FIXED;//追跡のデフォルトは固定値
+                    break;
+                case ParmGenNew.P_NUMBERMODEL:
+                    selidx = VT_NUMBER;//デフォルトは可変数値
+                    break;
+                default:
+                    selidx = parseValueType(v, defaultvaltype);
+                    break;
+                
             }
+            //if(parentwin.getCurrentModel()==ParmGenNew.P_TRACKMODEL){
+            //    selidx = VT_FIXED;//追跡のデフォルトは固定値
+            //}else{
+            //    selidx = parseValueType(v, defaultvaltype);
+            //}
         }
         switch(selidx){
             case VT_NUMBERFIXED:

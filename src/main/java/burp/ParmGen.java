@@ -1713,6 +1713,7 @@ class ParmGen {
                                 int creq = gjson.getCurrentRequest();
                                 pmt.setCurrentRequest(creq);
                                 pmt.ui.Redraw();
+                                ParmVars.Saved();
         		}else{
         			ParmVars.plog.printError("JSON load failed.");
         		}

@@ -835,7 +835,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
             //先頭ページのレスポンスのcharsetを取得
             PRequestResponse toppage = orglist.get(0);
             String tcharset = toppage.response.getCharset();
-            ParmVars.enc = Encode.getEnum(tcharset);
+            //ParmVars.enc = Encode.getEnum(tcharset);
 
             String tknames[] = {//予約語
                 "PHPSESSID",
@@ -1172,6 +1172,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
             ParmVars.parmfile = name;
             ParmGen pgen = new ParmGen(pmt, null);
             pgen.reset();//再読み込み
+            
         }
         
     }//GEN-LAST:event_LoadActionPerformed

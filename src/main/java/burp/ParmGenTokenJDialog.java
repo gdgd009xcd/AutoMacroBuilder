@@ -220,10 +220,11 @@ public class ParmGenTokenJDialog extends javax.swing.JDialog {
                 appit.set(aini);
             }
             
-            //トークン一覧のチェックON/OFFをnewparmsに反映
-            ParmGenCSV csv = new ParmGenCSV(newparms, pmt);
-            csv.jsonsave();
+            
         }
+        //トークン一覧のチェックON/OFFをnewparmsに反映
+        ParmGenCSV csv = new ParmGenCSV(newparms, pmt);
+        csv.jsonsave();
         dispose();
     }//GEN-LAST:event_OKActionPerformed
 

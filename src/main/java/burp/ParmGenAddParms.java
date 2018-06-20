@@ -38,6 +38,7 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
     public static final int VT_ALPHANUM=4;
     public static final int VT_FIXED = 5;
     public static final int VT_PARAMVALUE = 6;
+    public static final int VT_NUMCOUNTER = 7;
     private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
     private static  DefaultComboBoxModel comboModel = null;
     private int[] ListSelectionModel;
@@ -405,7 +406,7 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
                     selidx = VT_FIXED;//追跡のデフォルトは固定値
                     break;
                 case ParmGenNew.P_NUMBERMODEL:
-                    selidx = VT_NUMBER;//デフォルトは可変数値
+                    selidx = VT_NUMCOUNTER;
                     break;
                 default:
                     selidx = parseValueType(v, defaultvaltype);
@@ -419,6 +420,11 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
             //}
         }
         switch(selidx){
+            case VT_NUMCOUNTER:
+                fixed = false;
+                regpattern = "\\d";
+                prepostpattern = "([^0-9]*)";
+                break;
             case VT_NUMBERFIXED:
                 fixed = true;
                 regpattern = "\\d";
@@ -584,7 +590,7 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
                 }
                 int defaultvaltype = VT_ALPHANUMFIXED;
                 if(parentwin.getCurrentModel()==ParmGenNew.P_NUMBERMODEL){
-                    defaultvaltype = VT_NUMBERFIXED;
+                    defaultvaltype = VT_NUMCOUNTER;
                 }
                 parentwin.addParamToSelectedModel(reqplace, pname, k, headerpref + cookiepref + pathpref + getValueRegex(pvalue, ispath, iscookie, isheader,defaultvaltype, iswholepath), isformdata, islastparam);
 

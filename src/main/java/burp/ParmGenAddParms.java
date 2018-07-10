@@ -97,7 +97,7 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
             ppos++;
         }
 
-        Iterator<String[]> it = selected_request.queryparams.iterator();
+        Iterator<String[]> it = selected_request.getQueryParams().iterator();
         int rcnt = 0;
         while(it.hasNext()){
             rcnt++;

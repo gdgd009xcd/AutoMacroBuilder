@@ -262,11 +262,15 @@ public class ParmGenMacroTrace {
     }
     
     PRequestResponse getOriginalRequest(int idx){
-        if(originalrlist!=null&&originalrlist.size()>0){
+        if(originalrlist!=null&&originalrlist.size()>0&&idx>-1&&idx<originalrlist.size()){
             PRequestResponse pqr = originalrlist.get(idx);
             return pqr;
         }
         return null;
+    }
+    
+    PRequestResponse getCurrentOriginalRequest(){
+        return getOriginalRequest(getCurrentRequestPos());
     }
     
     //１）前処理マクロ開始
@@ -496,7 +500,7 @@ public class ParmGenMacroTrace {
        return null;
     }
 
-    int getCurrentRequest(){
+    int getCurrentRequestPos(){
         return selected_request;
     }
 
@@ -666,7 +670,7 @@ public class ParmGenMacroTrace {
     void JSONSave(JsonObjectBuilder builder){
         if(builder!=null){
             if(originalrlist!=null){
-                builder.add("CurrentRequest" , getCurrentRequest());
+                builder.add("CurrentRequest" , getCurrentRequestPos());
                 JsonArrayBuilder Request_List =Json.createArrayBuilder();
                 JsonObjectBuilder Request_rec = Json.createObjectBuilder();
                 for(PRequestResponse pqr: originalrlist){

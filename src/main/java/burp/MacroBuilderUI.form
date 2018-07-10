@@ -602,7 +602,15 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="MBcleatokenfromcache" pref="797" max="32767" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="MBcleatokenfromcache" pref="797" max="32767" attributes="0"/>
+                              <Group type="102" attributes="0">
+                                  <Component id="TrackMode" min="-2" pref="101" max="-2" attributes="0"/>
+                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <Component id="jLabel3" min="-2" pref="374" max="-2" attributes="0"/>
+                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                              </Group>
+                          </Group>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -612,7 +620,12 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="MBcleatokenfromcache" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace pref="40" max="32767" attributes="0"/>
+                          <EmptySpace pref="10" max="32767" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="TrackMode" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -627,6 +640,28 @@
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="MBcleatokenfromcacheActionPerformed"/>
                   </Events>
+                </Component>
+                <Component class="javax.swing.JComboBox" name="TrackMode">
+                  <Properties>
+                    <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                      <StringArray count="2">
+                        <StringItem index="0" value="replace"/>
+                        <StringItem index="1" value="baseline"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="toolTipText" type="java.lang.String" value="&lt;HTML&gt;&#xa;[baseline] mode:&lt;BR&gt;&#xa;the token parameter value is changed only the baseline part , so which can test by burp tools.&lt;BR&gt;&#xa;&lt;BR&gt;&#xa;you can add test pattern in parameter value, e.g. &apos;||&apos;&lt;BR&gt;&#xa;ex.&lt;BR&gt;&#xa;token=8B12C123&apos;||&apos; ===&gt; token=A912D8VC&apos;||&apos;&lt;BR&gt;&#xa;&lt;BR&gt;&#xa;[Replace] mode:&lt;BR&gt;&#xa;the token parameter value is completely replaced with tracking value, so which cannot test by burp tools.&lt;BR&gt;&#xa;ex.&lt;BR&gt;&#xa;token=8B12C123&apos;||&apos; ===&gt; token=A912D8VC&lt;BR&gt;"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="TrackModeActionPerformed"/>
+                  </Events>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+                  </AuxValues>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabel3">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="parameter value replace completely / baseline change "/>
+                  </Properties>
                 </Component>
               </SubComponents>
             </Container>

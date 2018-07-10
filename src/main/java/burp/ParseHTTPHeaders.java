@@ -37,10 +37,12 @@ class ParseHTTPHeaders {
 	int port;
 	public ArrayList<String> pathparams;
 	public ArrayList<String[]> cookieparams;
-
-	public ArrayList<String[]> queryparams;
+        private HashMap<String, String> hashqueryparams;
+        private HashMap<String, String> hashbodyparams;
+	private ArrayList<String[]> queryparams;
 	private ArrayList<String[]> bodyparams;
 	ArrayList<String []> headers;
+        HashMap<String, ParmGenHeader> hkeyUpper_Headers = null;// key is UpperCase
 	public HashMap<String,ArrayList<String[]>> set_cookieparams;//String Key, ArrayList name=value pair
 	String content_type; // Content-Type: image/gif
 	String content_subtype;
@@ -53,36 +55,43 @@ class ParseHTTPHeaders {
 
 	String body;
 	byte[] bytebody;
+        ParmGenBinUtil binbody = null;
+        String strbody = null;
 
 	String message;// when update method(Ex. setXXX) is called, then this value must set to null;
 	boolean isrequest;// == true - request, false - response
 
 	private void init(){
-		valueregex = ParmGenUtil.Pattern_compile("(([^\r\n:]*):{0,1}[ \t]*([^\r\n]*))(\r\n)");
-		//formdataregex = ParmGenUtil.Pattern_compile("-{4,}[a-zA-Z0-9]+(?:\r\n)(?:[A-Z].* name=\"(.*?)\".*(?:\r\n))(?:[A-Z].*(?:\r\n)){0,}(?:\r\n)((?:.|\r|\n)*?)(?:\r\n)-{4,}[a-zA-Z0-9]+");
-		formdataheader = "(?:[A-Z].* name=\"(.*?)\".*(?:\r\n))(?:[A-Z].*(?:\r\n)){0,}(?:\r\n)";
-		formdatafooter = "(?:\r\n)";
+            binbody = null;
+            strbody = null;
+            valueregex = ParmGenUtil.Pattern_compile("(([^\r\n:]*):{0,1}[ \t]*([^\r\n]*))(\r\n)");
+            //formdataregex = ParmGenUtil.Pattern_compile("-{4,}[a-zA-Z0-9]+(?:\r\n)(?:[A-Z].* name=\"(.*?)\".*(?:\r\n))(?:[A-Z].*(?:\r\n)){0,}(?:\r\n)((?:.|\r|\n)*?)(?:\r\n)-{4,}[a-zA-Z0-9]+");
+            formdataheader = "(?:[A-Z].* name=\"(.*?)\".*(?:\r\n))(?:[A-Z].*(?:\r\n)){0,}(?:\r\n)";
+            formdatafooter = "(?:\r\n)";
 
-		isSSL = false;
-		crlf = false;
-		isrequest = false;
-		message = null;
-		pathparams = new ArrayList<String>();
-		cookieparams = new ArrayList<String[]>();
-		set_cookieparams = new HashMap<String,ArrayList<String[]>>();
-		charset = "";
-		content_type = "";
-		content_subtype = "";
-		queryparams = new ArrayList<String[]>();
-		bodyparams = null;
-		boundary = null;
-		formdata = false;
-		content_length = 0;
-		body = null;
-		bytebody = null;
-		path_pref_url = "";
-		parsedheaderlength = 0;
-		isHeaderModified = true;
+            isSSL = false;
+            crlf = false;
+            isrequest = false;
+            message = null;
+            pathparams = new ArrayList<String>();
+            cookieparams = new ArrayList<String[]>();
+            set_cookieparams = new HashMap<String,ArrayList<String[]>>();
+            charset = "";
+            content_type = "";
+            content_subtype = "";
+            queryparams = new ArrayList<String[]>();
+            hashqueryparams = new HashMap<String, String>();
+            hkeyUpper_Headers = new HashMap<String, ParmGenHeader>();
+            bodyparams = null;
+            hashbodyparams = null;
+            boundary = null;
+            formdata = false;
+            content_length = 0;
+            body = null;
+            bytebody = null;
+            path_pref_url = "";
+            parsedheaderlength = 0;
+            isHeaderModified = true;
 	}
 
 	//public ParseHTTPHeaders(){
@@ -266,6 +275,7 @@ class ParseHTTPHeaders {
                                                                                     nvpair[1] = new String("");
                                                                             }
                                                                             queryparams.add(nvpair);
+                                                                            hashqueryparams.put(decodedParamName(nvpair[0]), nvpair[1]);
 
                                                                     }
                                                             }
@@ -278,6 +288,8 @@ class ParseHTTPHeaders {
                                             nv[0] = new String(name.trim());
                                             nv[1] = new String(value.trim());
                                             headers.add(nv);
+                                            ParmGenHeader pgheader = new ParmGenHeader(nv[0], nv[1]);
+                                            hkeyUpper_Headers.put(pgheader.getKeyUpper(), pgheader);
                                             port = 80;//default
                                             if (nv[0].toLowerCase().startsWith("host")) {
                                                     String[] hasport = nv[1].split("[:]");
@@ -380,9 +392,14 @@ class ParseHTTPHeaders {
         }
 
 
+        public ArrayList<String[]> getQueryParams(){
+            return queryparams;
+        }
+        
         public ArrayList<String[]> getBodyParams(){
             if ( isrequest==true&&bodyparams==null){
                 bodyparams = new ArrayList<String[]>();
+                hashbodyparams = new HashMap<String, String>();
                 if ( boundary == null){
                     //application/x-www-form-urlencoded
                     String[] parms = body.split("[&]");
@@ -400,7 +417,10 @@ class ParseHTTPHeaders {
                             }else{
                                 nvpair[1] = new String("");
                             }
-                            if(nvpair[0]!=null) bodyparams.add(nvpair);
+                            if(nvpair[0]!=null) {
+                                bodyparams.add(nvpair);
+                                hashbodyparams.put(decodedParamName(nvpair[0]), nvpair[1]);
+                            }
                         }
                     }
                 }else{//multipart/form-data
@@ -441,6 +461,7 @@ class ParseHTTPHeaders {
                                 ParmVars.plog.debuglog(1, "name[" + nvpair[0] + "]");
                                 if(fgcnt>0){
                                     bodyparams.add(nvpair);
+                                    hashbodyparams.put(decodedParamName(nvpair[0]), nvpair[1]);
                                 }
                             }catch(Exception e){
                                 ParmVars.plog.printException(e);
@@ -807,6 +828,13 @@ class ParseHTTPHeaders {
 		}
 		return -1;
 	}
+        
+        ParmGenHeader getParmGenHeader(String name){
+            if(hkeyUpper_Headers!=null&&name!=null){
+                return hkeyUpper_Headers.get(name.toUpperCase());
+            }
+            return null;
+        }
 
         String getContent_Type(){
             return content_type;
@@ -831,6 +859,16 @@ class ParseHTTPHeaders {
                 }
             }
             return false;
+        }
+        
+        public String decodedParamName(String _name){
+            try {
+                String decoded = URLDecoder.decode(_name, ParmVars.enc.getIANACharset());
+                return decoded;
+            } catch (UnsupportedEncodingException ex) {
+                Logger.getLogger(ParseHTTPHeaders.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return _name;
         }
         
         // body parameter same name & value
@@ -873,6 +911,80 @@ class ParseHTTPHeaders {
         	}
             }
             return null;
+        }
+        
+        public String getQueryParamValue(String _name){
+            if(hashqueryparams!=null){
+                return hashqueryparams.get(_name);
+            }
+            return null;
+        }
+        
+        public String getBodyParamValue(String _name){
+            if(hashbodyparams==null){
+                getBodyParams();
+            }
+            return hashbodyparams.get(_name);
+        }
+        
+        public String getBoundary(){
+            if(boundary==null){
+                ParmGenHeader pgh = getParmGenHeader("Content-Type");
+                if(pgh!=null){
+                    String content_type = pgh.getValue();
+                    Pattern ctypepattern = ParmGenUtil.Pattern_compile("multipart/form-data;.*?boundary=(.+)$");
+                    Matcher ctypematcher = ctypepattern.matcher(content_type);
+                    if ( ctypematcher.find()){
+                        boundary = ctypematcher.group(1);
+                        boundary = "--" + boundary;//
+                        return boundary;
+                    }
+                }
+            }
+            return null;
+        }
+        
+        public byte[] getBodyBytes(){
+            if(bytebody!=null){
+                return bytebody;
+            }else{
+                byte[] requestbytes = getByteMessage();
+                ParmGenBinUtil warray = new ParmGenBinUtil(requestbytes);
+                try{
+                    //ParmVars.plog.debuglog(1,"request length : " + Integer.toString(warray.length()) + "/" + Integer.toString(prequest.getParsedHeaderLength()));
+                    if(warray.length()>getParsedHeaderLength()){
+                        bytebody = warray.subBytes(getParsedHeaderLength());
+                        return bytebody;
+                    }
+                }catch(Exception e ){
+                    
+                }
+            }
+            return null;
+        }
+        public ParmGenBinUtil getBinBody(){
+            if(binbody == null ){
+                byte[] bdata = getBodyBytes();
+                if(bdata !=null){
+                    binbody =  new ParmGenBinUtil(bdata);
+                }
+            }
+            return binbody;
+        }
+        
+        public String getStringBody(){
+            if(strbody==null){
+                byte[] bdata = getBodyBytes();
+                if(bdata!=null){
+
+                    try {
+                        strbody = new String(bdata, ParmVars.enc.getIANACharset());
+                    } catch (UnsupportedEncodingException ex) {
+                        Logger.getLogger(ParseHTTPHeaders.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+            return strbody;
         }
 }
 

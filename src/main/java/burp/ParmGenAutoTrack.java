@@ -316,7 +316,7 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
             }
 
             namepos.clear();
-            Iterator<String[]> it = rs.request.queryparams.iterator();
+            Iterator<String[]> it = rs.request.getQueryParams().iterator();
             int rcnt = 0;
             while(it.hasNext()){
                 rcnt++;

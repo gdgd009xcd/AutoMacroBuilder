@@ -62,11 +62,26 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         pmt.setMBFinalResponse(FinalResponse.isSelected());
         pmt.setMBResetToOriginal(MBResetToOriginal.isSelected());
         pmt.setMBmonitorofprocessing(MBmonitorofprocessing.isSelected());
-        pmt.setMBreplaceTrackingParam(true);
+        
+        pmt.setMBreplaceTrackingParam(isReplaceMode());
         
 
     }
 
+    boolean isReplaceMode(){
+        boolean mode = true;
+        String selected = (String)TrackMode.getSelectedItem();
+        if(selected!=null){
+            if(selected.equals("replace")){
+                return true;
+            }else{
+                return false;
+            }
+        }
+        return true;
+        
+    }
+    
     ParmGenMacroTrace getParmGenMacroTrace() {
         return pmt;
     }
@@ -112,7 +127,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     }
 
     void updateCurrentReqRes() {
-        int cpos = pmt.getCurrentRequest();
+        int cpos = pmt.getCurrentRequestPos();
         if (rlist != null) {
             PRequestResponse pqr = rlist.get(cpos);
             if(pmt.isMBmonitorofprocessing()){
@@ -190,6 +205,8 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         MBCookieFromJar = new javax.swing.JCheckBox();
         jPanel6 = new javax.swing.JPanel();
         MBcleatokenfromcache = new javax.swing.JCheckBox();
+        TrackMode = new javax.swing.JComboBox<>();
+        jLabel3 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
         jCheckBox2 = new javax.swing.JCheckBox();
         waitsec = new javax.swing.JTextField();
@@ -468,13 +485,29 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
             }
         });
 
+        TrackMode.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "replace", "baseline" }));
+        TrackMode.setToolTipText("<HTML>\n[baseline] mode:<BR>\nthe token parameter value is changed only the baseline part , so which can test by burp tools.<BR>\n<BR>\nyou can add test pattern in parameter value, e.g. '||'<BR>\nex.<BR>\ntoken=8B12C123'||' ===> token=A912D8VC'||'<BR>\n<BR>\n[Replace] mode:<BR>\nthe token parameter value is completely replaced with tracking value, so which cannot test by burp tools.<BR>\nex.<BR>\ntoken=8B12C123'||' ===> token=A912D8VC<BR>");
+        TrackMode.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                TrackModeActionPerformed(evt);
+            }
+        });
+
+        jLabel3.setText("parameter value replace completely / baseline change ");
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(MBcleatokenfromcache, javax.swing.GroupLayout.DEFAULT_SIZE, 797, Short.MAX_VALUE)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(MBcleatokenfromcache, javax.swing.GroupLayout.DEFAULT_SIZE, 797, Short.MAX_VALUE)
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addComponent(TrackMode, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 374, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel6Layout.setVerticalGroup(
@@ -482,7 +515,11 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(MBcleatokenfromcache)
-                .addContainerGap(40, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(TrackMode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3))
+                .addContainerGap())
         );
 
         jCheckBox2.setText("WaitTimer(sec)");
@@ -1342,6 +1379,11 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         }
     }//GEN-LAST:event_showRequestActionPerformed
 
+    private void TrackModeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TrackModeActionPerformed
+        // TODO add your handling code here:
+        pmt.setMBreplaceTrackingParam(isReplaceMode());
+    }//GEN-LAST:event_TrackModeActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ClearMacro;
@@ -1365,6 +1407,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     private javax.swing.JButton Save;
     private javax.swing.JMenuItem Scanner;
     private javax.swing.JMenu SendTo;
+    private javax.swing.JComboBox<String> TrackMode;
     private javax.swing.JButton custom;
     private javax.swing.JMenuItem disableRequest;
     private javax.swing.JMenuItem edit;
@@ -1373,6 +1416,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;

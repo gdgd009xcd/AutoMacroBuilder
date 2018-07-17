@@ -46,6 +46,7 @@ public class ParmGenMacroTrace {
     boolean MBreplaceCookie = false;//==true Cookie引き継ぎ置き換え == false Cookie overwrite
     boolean MBmonitorofprocessing = false;
     boolean MBreplaceTrackingParam = false;
+    boolean MBrepeaterModeIsBaseline =  false;
     int waittimer = 1;//実行間隔(msec)
 
     ListIterator<PRequestResponse> oit = null;//オリジナル
@@ -121,6 +122,9 @@ public class ParmGenMacroTrace {
         MBreplaceTrackingParam = _b;
     }
     
+    void setMBrepeaterModeIsBaseline(boolean _b){
+        MBrepeaterModeIsBaseline = _b;
+    }
 
     boolean isOverWriteCurrentRequestTrackigParam(){
         return !MBreplaceTrackingParam && isCurrentRequest();
@@ -602,6 +606,10 @@ public class ParmGenMacroTrace {
         return MBFinalResponse;
     }
 
+    boolean isMBrepeaterModeIsBaseline(){
+        return MBrepeaterModeIsBaseline;
+    }
+    
     int getStepNo(){
         return stepno;
     }

@@ -25,6 +25,7 @@ public class BurpMacroStartAction implements ISessionHandlingAction {
     @Override
     public void performAction(IHttpRequestResponse currentrequest, IHttpRequestResponse[] executedmacros) {
         tr.startBeforePreMacro();//前処理マクロを実行。
+        ParmVars.plog.debuglog(0, "performAction ====tool====");
         tr.startCurrentRequest(currentrequest);
     }
     

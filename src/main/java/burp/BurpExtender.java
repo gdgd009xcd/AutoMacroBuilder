@@ -19,8 +19,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.AbstractButton;
+import javax.swing.JCheckBoxMenuItem;
 
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 
 
@@ -31,6 +34,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
     MacroBuilder mbr = null;
     ParmGenMacroTrace pmt = null;
     IHttpRequestResponse[] selected_messageInfo = null;
+    JCheckBoxMenuItem repeatermodeitem = null;
 
 
     public void processHttpMessage(
@@ -96,6 +100,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
 
                             }
                             
+
                             if(pmt!=null&&!pmt.isCurrentRequest()){
                                 byte[] retval = pgen.Run(messageInfo.getRequest());
                                 if ( retval != null){
@@ -509,10 +514,29 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
         public List<JMenuItem> createMenuItems(IContextMenuInvocation icmi) {
 
             ArrayList<JMenuItem> items = new ArrayList<JMenuItem>();
+            
+            int toolflg = icmi.getToolFlag();
 
             JMenuItem item = new JMenuItem("■Custom■");
             JMenuItem itemmacro = new JMenuItem("■SendTo MacroBuilder■");
+            
+            if(toolflg==IBurpExtenderCallbacks.TOOL_REPEATER){
+                repeatermodeitem = new JCheckBoxMenuItem("■Repeater Baseline■");
+                repeatermodeitem.setToolTipText("Repeater Baseline: if checked , then You can tamper tracking tokens which is such like CSRF tokens with repeater.");
+                repeatermodeitem.setSelected(pmt.isMBrepeaterModeIsBaseline());
+                repeatermodeitem.addActionListener(new java.awt.event.ActionListener() {
+                    public void actionPerformed(java.awt.event.ActionEvent evt) {
+                        AbstractButton aButton = (AbstractButton) evt.getSource();
+                        boolean selected = aButton.getModel().isSelected();
+                        toggleRepeaterMode(messageInfo, selected);
+                        }
+                });
+            
+            }else{
+                repeatermodeitem = null;
+            }
             messageInfo = icmi.getSelectedMessages();
+            
 
             item.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -525,8 +549,13 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                 }
             });
             
+            
             items.add(itemmacro);
             items.add(item);
+            if(repeatermodeitem!=null){
+                items.add(repeatermodeitem);
+            }
+            
             
 
             return items;
@@ -566,6 +595,16 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
             }
         }
         
+        public void toggleRepeaterMode( IHttpRequestResponse[] messageInfo, boolean selected){
+           
+            if(pmt.isMBrepeaterModeIsBaseline()){
+                pmt.setMBrepeaterModeIsBaseline(false);
+            }else{
+                pmt.setMBrepeaterModeIsBaseline(true);
+            }
+                
+        }
+                
         @Override
         public void LangOK() {
             if(messageInfo!=null){

@@ -490,7 +490,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         });
 
         TrackMode.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "replace", "baseline" }));
-        TrackMode.setToolTipText("<HTML>\n[baseline] mode:<BR>\nthe token parameter value is changed only the baseline part , so which you can tamper by burp tools.<BR>\n<BR>\nyou can add test pattern in parameter value, e.g. '||'<BR>\nex.<BR>\ntoken=8B12C123'||' ===> token=A912D8VC'||'<BR>\n<BR>\n[replace] mode:<BR>\nthe token parameter value is completely replaced with tracking value, so which you cannot tamper by burp tools.<BR>\nex.<BR>\ntoken=8B12C123'||' ===> token=A912D8VC<BR>");
+        TrackMode.setToolTipText("<HTML>\n[baseline] mode:<BR>\nthe token parameter value is changed only the baseline part , so which you can tamper by burp tools.<BR>\n<BR>\nyou can add test pattern in parameter value, e.g. '||'<BR>\nex.<BR>\ntoken=8B12C123'||' ===> token=A912D8VC'||'<BR><BR>\nNote: Repeater has No baseline request, so  before when you use repeater, you should select \"■Update Baseline■\" menu in Repeater popup menu.<BR>\n<BR>\n[replace] mode:<BR>\nthe token parameter value is completely replaced with tracking value, so which you cannot tamper by burp tools.<BR>\nex.<BR>\ntoken=8B12C123'||' ===> token=A912D8VC<BR>");
         TrackMode.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 TrackModeActionPerformed(evt);
@@ -498,7 +498,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         });
 
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabel3.setText("<HTML>\n<DL>\n<LI>baseline: you can test(tamper) tracking parameters with scanner/intruder which has baseline request.<BR>\nNote: Repeater has No baseline request, so  before when you use repeater, you should select \"update baseline\" menu.\n<LI>replace: you can't test(tamper) tracking parameters which is completely replaced with tracked value.\n<DL>\n</HTML>");
+        jLabel3.setText("<HTML>\n<DL>\n<LI>baseline: you can test(tamper) tracking parameters with scanner/intruder which has baseline request.<BR>\nNote: Repeater has No baseline request, so  before when you use repeater, <BR>you should select \"■Update Baseline■\" menu in Repeater popup menu.\n<LI>replace: you can't test(tamper) tracking parameters which is completely replaced with tracked value.\n<DL>\n</HTML>");
         jLabel3.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
@@ -707,7 +707,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 850, Short.MAX_VALUE)
         );
 
         getAccessibleContext().setAccessibleName("");

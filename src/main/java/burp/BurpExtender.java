@@ -34,7 +34,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
     MacroBuilder mbr = null;
     ParmGenMacroTrace pmt = null;
     IHttpRequestResponse[] selected_messageInfo = null;
-    JCheckBoxMenuItem repeatermodeitem = null;
+    JMenuItem repeatermodeitem = null;
 
 
     public void processHttpMessage(
@@ -150,7 +150,9 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                                         break;
                                     case ParmGenMacroTrace.PMT_POSTMACRO_NULL:
                                         ParmVars.plog.debuglog(0, "====postmacro response NULL========");
+                                        pmt.nullState();
                                     default:
+                                        
                                         break;
                                 }
                             }
@@ -521,14 +523,14 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
             JMenuItem itemmacro = new JMenuItem("■SendTo MacroBuilder■");
             
             if(toolflg==IBurpExtenderCallbacks.TOOL_REPEATER){
-                repeatermodeitem = new JCheckBoxMenuItem("■Repeater Baseline■");
-                repeatermodeitem.setToolTipText("Repeater Baseline: if checked , then You can tamper tracking tokens which is such like CSRF tokens with repeater.");
-                repeatermodeitem.setSelected(pmt.isMBrepeaterModeIsBaseline());
+                repeatermodeitem = new JMenuItem("■Update Baseline■");
+                repeatermodeitem.setToolTipText("Update Baseline: You can tamper tracking tokens which is such like CSRF tokens with repeater.");
+                
                 repeatermodeitem.addActionListener(new java.awt.event.ActionListener() {
                     public void actionPerformed(java.awt.event.ActionEvent evt) {
-                        AbstractButton aButton = (AbstractButton) evt.getSource();
-                        boolean selected = aButton.getModel().isSelected();
-                        toggleRepeaterMode(messageInfo, selected);
+                        
+                        
+                        UpdateRepeaterBaseline(messageInfo);
                         }
                 });
             
@@ -595,12 +597,11 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
             }
         }
         
-        public void toggleRepeaterMode( IHttpRequestResponse[] messageInfo, boolean selected){
+        public void UpdateRepeaterBaseline( IHttpRequestResponse[] messageInfo){
            
-            if(pmt.isMBrepeaterModeIsBaseline()){
-                pmt.setMBrepeaterModeIsBaseline(false);
-            }else{
-                pmt.setMBrepeaterModeIsBaseline(true);
+            if(pmt!=null&&messageInfo!=null&& messageInfo.length>0){
+                IHttpRequestResponse minfo = messageInfo[0];
+                pmt.setRepeaterBaseLine(convertMessageInfoToPRR(minfo));
             }
                 
         }
@@ -635,6 +636,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
         pmt = new ParmGenMacroTrace(callbacks);
         //セッション管理
         callbacks.registerSessionHandlingAction(new BurpMacroStartAction(pmt));
+        callbacks.registerSessionHandlingAction(new BurpRepeaterAction(pmt));
         //callbacks.registerSessionHandlingAction(new BurpMacroLogAction());
     	//コンテキストメニューの追加：　マウス右クリックポップアップメニュー->[my menu item]
         callbacks.registerContextMenuFactory(new NewMenu());

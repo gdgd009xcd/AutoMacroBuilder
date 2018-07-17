@@ -37,6 +37,7 @@ public class ParmGenMacroTrace {
     ArrayList<String> set_cookienames = null;//レスポンスのSet-Cookie値の名前リスト
     int selected_request = 0;//現在選択しているカレントのリクエスト
     int stepno = -1;//実行中のリクエスト番号
+    PRequestResponse repeaterbaseline = null;// Repeater's baseline request.
     
     boolean MBCookieUpdate = false;//==true Cookie更新
     boolean MBCookieFromJar = false;//==true 開始時Cookie.jarから引き継ぐ
@@ -46,7 +47,8 @@ public class ParmGenMacroTrace {
     boolean MBreplaceCookie = false;//==true Cookie引き継ぎ置き換え == false Cookie overwrite
     boolean MBmonitorofprocessing = false;
     boolean MBreplaceTrackingParam = false;
-    boolean MBrepeaterModeIsBaseline =  false;
+    boolean MBtoolIsRepeater = false;
+    
     int waittimer = 1;//実行間隔(msec)
 
     ListIterator<PRequestResponse> oit = null;//オリジナル
@@ -122,12 +124,17 @@ public class ParmGenMacroTrace {
         MBreplaceTrackingParam = _b;
     }
     
-    void setMBrepeaterModeIsBaseline(boolean _b){
-        MBrepeaterModeIsBaseline = _b;
+    void setMBtoolIsRepeater(boolean _b){
+        MBtoolIsRepeater = _b;
     }
+    
 
     boolean isOverWriteCurrentRequestTrackigParam(){
         return !MBreplaceTrackingParam && isCurrentRequest();
+    }
+    
+    boolean isToolIsRepeater(){
+        return MBtoolIsRepeater;
     }
     
     void setWaitTimer(String msec){
@@ -585,6 +592,11 @@ public class ParmGenMacroTrace {
    void nullState(){
        state = PMT_POSTMACRO_NULL;
        stepno = -1;
+       setMBtoolIsRepeater(false);
+   }
+   
+   void setRepeaterBaseLine(PRequestResponse _baseline){
+       repeaterbaseline = _baseline;
    }
 
    //
@@ -606,12 +618,12 @@ public class ParmGenMacroTrace {
         return MBFinalResponse;
     }
 
-    boolean isMBrepeaterModeIsBaseline(){
-        return MBrepeaterModeIsBaseline;
-    }
-    
     int getStepNo(){
         return stepno;
+    }
+    
+    PRequestResponse getRepeaterBaseline(){
+        return repeaterbaseline;
     }
 
     void sendToRepeater(int pos){

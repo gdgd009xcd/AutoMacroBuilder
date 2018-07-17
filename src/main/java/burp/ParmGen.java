@@ -2076,7 +2076,14 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                     PRequestResponse org_PRequestResponse = pmt.getCurrentOriginalRequest();
                     PRequest org_Request =null;
                     if(pmt.isCurrentRequest()&&pmt.isOverWriteCurrentRequestTrackigParam()){
-                        org_Request = org_PRequestResponse.request;
+                        if(pmt.isToolIsRepeater()){
+                            PRequestResponse repeaterPRR = pmt.getRepeaterBaseline();
+                            if(repeaterPRR!=null){
+                                org_Request = repeaterPRR.request;
+                            }
+                        }else{
+                            org_Request = org_PRequestResponse.request;
+                        }
                     }
                     
                     boolean hasboundary = false;

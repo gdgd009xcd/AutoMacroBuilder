@@ -941,6 +941,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                             }
                             ParmGenToken query_token = pqrs.request.getQueryToken(token);
                             ParmGenToken body_token = pqrs.request.getBodyToken(token);
+                            ParmVars.plog.debuglog(0, "token[" + token + "] value[" + value + "]");
                             if (pqrs.request.hasQueryParam(token, value) || pqrs.request.hasBodyParam(token, value)) {
                                 
                             	

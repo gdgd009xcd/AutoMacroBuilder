@@ -43,6 +43,12 @@ if(isset($_SESSION['imgfile'])){
     $imgfile = "";
 }
 
+if(isset($_SESSION['showfile'])){
+    $showfile = $_SESSION['showfile'];
+}else{
+    $showfile = "";
+}
+
 if ( empty($subject) ||
      empty($contents) ||
      empty($imgfile) ||
@@ -76,7 +82,7 @@ if ( empty($subject) ||
 <th>宛先</th><td><?php echo $mailaddr; ?></td>
 </tr>
 <tr>
-<th>ファイル</th><td><?php echo $imgfile; ?></td>
+<th>ファイル</th><td><A HREF="<?php echo $showfile; ?>" ><?php echo $imgfile; ?></A></td>
 </tr>
 </table><BR>
 

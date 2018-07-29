@@ -102,7 +102,12 @@ class ParseHTTPHeaders {
 		init();
 		ArrayList<String []> dummy = Parse(httpmessage);
 	}
+        
         ParseHTTPHeaders(String _h, int _p, boolean _isssl, byte[] _binmessage){
+		construct(_h, _p, _isssl, _binmessage);
+	}
+        
+        public void construct(String _h, int _p, boolean _isssl, byte[] _binmessage){
 		init();
                 String httpmessage;
                 try {
@@ -121,8 +126,6 @@ class ParseHTTPHeaders {
                 } catch (UnsupportedEncodingException ex) {
                     ParmVars.plog.printException(ex);
                 }
-
-
 	}
 
         public String getHost() {
@@ -188,7 +191,7 @@ class ParseHTTPHeaders {
             port = _p;
         }
         
-        ArrayList<String []> Parse(String httpmessage){//request or response
+        private ArrayList<String []> Parse(String httpmessage){//request or response
         	parsedheaderlength = 0;
         	Matcher m = valueregex.matcher(httpmessage);
         	String name = "";
@@ -287,9 +290,16 @@ class ParseHTTPHeaders {
                                             nv = new String[2];
                                             nv[0] = new String(name.trim());
                                             nv[1] = new String(value.trim());
+                                            int hi = headers.size();
                                             headers.add(nv);
-                                            ParmGenHeader pgheader = new ParmGenHeader(nv[0], nv[1]);
-                                            hkeyUpper_Headers.put(pgheader.getKeyUpper(), pgheader);
+                                            ParmGenHeader pgheader = new ParmGenHeader(hi, nv[0], nv[1]);
+                                            ParmGenHeader existheader = hkeyUpper_Headers.get(pgheader.getKeyUpper());
+                                            if(existheader!=null){
+                                                existheader.addValue(hi, nv[1]);
+                                                hkeyUpper_Headers.put(existheader.getKeyUpper(), existheader);
+                                            }else{
+                                                hkeyUpper_Headers.put(pgheader.getKeyUpper(), pgheader);
+                                            }
                                             port = 80;//default
                                             if (nv[0].toLowerCase().startsWith("host")) {
                                                     String[] hasport = nv[1].split("[:]");
@@ -490,6 +500,7 @@ class ParseHTTPHeaders {
 		nv[0] = new String(name);
 		nv[1] = new String(value);
 		headers.set(i, nv);
+                updateParmGenHeader(i, nv[0], nv[1]);
 		message = null;
                 isHeaderModified = true;
 	}
@@ -497,21 +508,32 @@ class ParseHTTPHeaders {
 	void setHeader(String name, String value){
 		int i = findHeader(name);
 		if (i >= 0){
-			setHeader(i, name, value);
+                    setHeader(i, name, value);
 		}else{//追加
                     String[] nv = new String[2];
                     nv[0] = new String(name);
                     nv[1] = new String(value);
+                    i = headers.size();
                     headers.add(nv);
                 }
+                updateParmGenHeader(i, name, value);
+                message = null;
                 isHeaderModified = true;
 	}
 
         void removeHeader(String name){
-            int i = findHeader(name);
-		if (i >= 0){
-			headers.remove(i);
-		}
+            ParmGenHeader phg = getParmGenHeader(name);
+            if(phg!=null){
+                ListIterator<ParmGenBeen> it = phg.getValuesIter();
+                while(it.hasNext()){
+                    ParmGenBeen been = it.next();
+                    headers.remove(been.i);
+                    it.remove();
+                }
+                hkeyUpper_Headers.remove(name.toUpperCase());
+                message = null;
+                isHeaderModified = true;
+            }
         }
 
 	void setBody(byte[] _bval){
@@ -521,6 +543,7 @@ class ParseHTTPHeaders {
                 } catch (UnsupportedEncodingException ex) {
                     ParmVars.plog.printException(ex);
                 }
+                binbody = null;
 		message = null;
 	}
 
@@ -561,6 +584,7 @@ class ParseHTTPHeaders {
             }
             setHeader("Cookie", cookiedata);
             ParmVars.plog.debuglog(0, "Cookie:" + cookiedata);
+            message = null;
             isHeaderModified = true;
         }
 
@@ -805,6 +829,13 @@ class ParseHTTPHeaders {
 		}
 		return null;
 	}
+        
+        String[] getHeaderNV(int i){
+            if ( headers!=null&&i >= 0 && headers.size() > i){
+                return headers.get(i);
+            }
+            return null;
+        }
 
 	ArrayList<String []> getHeaders(){
 		return headers;
@@ -835,6 +866,37 @@ class ParseHTTPHeaders {
             }
             return null;
         }
+        
+        private void updateParmGenHeader(int i, String name, String value){
+            if(hkeyUpper_Headers!=null&&name!=null){
+                ParmGenHeader phg = getParmGenHeader(name);
+                if(phg!=null){
+                    ListIterator<ParmGenBeen> it = phg.getValuesIter();
+                    boolean beenupdated = false;
+                    while(it.hasNext()){
+                        ParmGenBeen been = it.next();
+                        if(been.i==i){
+                            been.v = value;
+                            it.set(been);
+                            beenupdated = true;
+                        }
+                    }
+                    if(!beenupdated){
+                        phg.addValue(i, value);
+                    }
+                    hkeyUpper_Headers.put(phg.getKeyUpper(), phg);
+                }else{
+                    phg = new ParmGenHeader(i, name, value);
+                    hkeyUpper_Headers.put(phg.getKeyUpper(), phg);
+                }
+            }
+        }
+        
+
+        
+        HashMap<String, ParmGenHeader> getheadersHash(){
+            return hkeyUpper_Headers;
+        }
 
         String getContent_Type(){
             return content_type;
@@ -854,7 +916,7 @@ class ParseHTTPHeaders {
                 try {
                     String decoded = URLDecoder.decode(reqname, ParmVars.enc.getIANACharset());
                     if(resname.equals(decoded)) return true;
-                } catch (UnsupportedEncodingException ex) {
+                } catch (Exception ex) {
                     Logger.getLogger(ParseHTTPHeaders.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -865,7 +927,7 @@ class ParseHTTPHeaders {
             try {
                 String decoded = URLDecoder.decode(_name, ParmVars.enc.getIANACharset());
                 return decoded;
-            } catch (UnsupportedEncodingException ex) {
+            } catch (Exception ex) {
                 Logger.getLogger(ParseHTTPHeaders.class.getName()).log(Level.SEVERE, null, ex);
             }
             return _name;
@@ -931,14 +993,20 @@ class ParseHTTPHeaders {
             if(boundary==null){
                 ParmGenHeader pgh = getParmGenHeader("Content-Type");
                 if(pgh!=null){
-                    String content_type = pgh.getValue();
-                    Pattern ctypepattern = ParmGenUtil.Pattern_compile("multipart/form-data;.*?boundary=(.+)$");
-                    Matcher ctypematcher = ctypepattern.matcher(content_type);
-                    if ( ctypematcher.find()){
-                        boundary = ctypematcher.group(1);
-                        boundary = "--" + boundary;//
-                        return boundary;
+                    ListIterator<ParmGenBeen> it = pgh.getValuesIter();
+                    if(it!=null&&it.hasNext()){//先頭のヘッダーを取り出す。
+                        ParmGenBeen been = it.next();
+                        String content_type = been.v;
+                        Pattern ctypepattern = ParmGenUtil.Pattern_compile("multipart/form-data;.*?boundary=(.+)$");
+                        Matcher ctypematcher = ctypepattern.matcher(content_type);
+                        if ( ctypematcher.find()){
+                            boundary = ctypematcher.group(1);
+                            boundary = "--" + boundary;//
+                            return boundary;
+                        }
                     }
+                        
+                    
                 }
             }
             return null;

@@ -185,7 +185,7 @@ public class ParmGenJSON {
                             }else if(current!=null&&current.toUpperCase().equals("PREQUESTRESPONSE")){
                                 if(PRequest64!=null){
                                     //byte[] binreq = Base64.decode(PRequest64);
-                                    byte[] binreq = Base64.getDecoder().decode(PRequest64);
+                                    byte[] binreq = Base64.getDecoder().decode(PRequest64);//same as decode(src.getBytes(StandardCharsets.ISO_8859_1))
                                     //byte[] binres = Base64.decode(PResponse64);
 
                                     String res= null;

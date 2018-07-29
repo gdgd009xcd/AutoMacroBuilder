@@ -5,22 +5,32 @@
  */
 package burp;
 
+import java.util.ArrayList;
+import java.util.ListIterator;
+
+
+
 /**
  *
  * @author daike
  */
 public class ParmGenHeader {
     private String name;
-    private String value;
+    private ArrayList<ParmGenBeen> values = null;
     private String key_uppername;
+ 
     
-    ParmGenHeader(String _n, String _v){
+    ParmGenHeader(int _i, String _n, String _v){
         name = _n;
-        value = _v;
         key_uppername = _n;
         if(name!=null){
             key_uppername = name.toUpperCase();
         }
+        values = new ArrayList<ParmGenBeen>();
+        ParmGenBeen been = new ParmGenBeen();
+        been.v = _v;
+        been.i = _i;
+        values.add(been);
         
     }
     
@@ -28,12 +38,27 @@ public class ParmGenHeader {
         return name;
     }
     
-    public String getValue(){
-        return value;
-    }
+    
     
     public String getKeyUpper(){
         return key_uppername;
     }
     
+    public void addValue(int _i, String _v){
+        ParmGenBeen been = new ParmGenBeen();
+        been.i = _i;
+        been.v = _v;
+        values.add(been);
+    }
+    
+    public ListIterator<ParmGenBeen> getValuesIter(){
+        return values.listIterator();
+    }
+    
+    public int getValuesSize(){
+        return values.size();
+    }
+    
 }
+
+   

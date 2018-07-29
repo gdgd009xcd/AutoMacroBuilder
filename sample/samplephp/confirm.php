@@ -28,6 +28,7 @@ $contents = $_POST['contents'];
 $mailaddr = $_POST['mailaddr'];
 $imgfile = $_FILES['imgfile']['name'];
 $tmp_path = $_FILES['imgfile']['tmp_name'];
+$filetype = $_FILES['imgfile']['type'];
 
 if ( empty($subject) ||
      empty($contents) ||
@@ -69,6 +70,13 @@ $_SESSION['contents'] =  $contents;
 $_SESSION['mailaddr'] =  $mailaddr;
 $_SESSION['imgfile'] =  $imgfile;
 $_SESSION['tmp_path'] =  $tmp_path;
+
+$uploadTo = "/tmp/$imgfile";
+if(move_uploaded_file($tmp_path, $uploadTo)==TRUE){
+   $_SESSION['showfile'] = 'showfile.php?path=' . $uploadTo;
+   $_SESSION['filetype'] = $filetype;
+}
+
 
 ?>
 <html>

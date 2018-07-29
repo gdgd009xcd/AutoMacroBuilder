@@ -30,7 +30,7 @@ public class ParmGenMacroTrace {
 
     MacroBuilderUI ui = null;
     IBurpExtenderCallbacks callbacks;
-    Charset charset = StandardCharsets.UTF_8;
+    Charset charset = StandardCharsets.ISO_8859_1;
     ArrayList <PRequestResponse> rlist = null;//マクロ実行後の全リクエストレスポンス
     ArrayList <PRequestResponse> originalrlist = null; //オリジナルリクエストレスポンス
     //ArrayList <ParmGenParser> csrflist = null;//引き継ぎhidden値リスト
@@ -697,7 +697,7 @@ public class ParmGenMacroTrace {
                     byte[] qbin = pqr.request.getByteMessage();
                     byte[] rbin = pqr.response.getByteMessage();
                     //byte[] encodedBytes = Base64.encodeBase64(qbin);
-                    String qbase64 =new String(Base64.getEncoder().encode(qbin), charset);
+                    String qbase64 =Base64.getEncoder().encodeToString(qbin);// same as new String(encode(src), StandardCharsets.ISO_8859_1)
                     /*
                     try {
                         qbase64 = new String(encodedBytes,"ISO-8859-1");
@@ -706,7 +706,7 @@ public class ParmGenMacroTrace {
                     }
                     */
                     //encodedBytes = Base64.encodeBase64(rbin);
-                    String rbase64 = new String(Base64.getEncoder().encode(rbin), charset);
+                    String rbase64 = Base64.getEncoder().encodeToString(rbin);
                     /*
                     try {
                         rbase64 = new String(encodedBytes, "ISO-8859-1");

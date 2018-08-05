@@ -42,6 +42,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     int OriginalEditTarget = -1;
     boolean EditTargetIsSSL = false;
     int EditTargetPort = 0;
+    Encode EditPageEnc = Encode.ISO_8859_1;
 
     /**
      * Creates new form MacroBuilderUI
@@ -490,7 +491,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         });
 
         TrackMode.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "replace", "baseline" }));
-        TrackMode.setToolTipText("<HTML>\n[baseline] mode:<BR>\nthe token parameter value is changed only the baseline part , so which you can tamper by burp tools.<BR>\n<BR>\nyou can add test pattern in parameter value, e.g. '||'<BR>\nex.<BR>\ntoken=8B12C123'||' ===> token=A912D8VC'||'<BR><BR>\nNote: Repeater has No baseline request, so  before when you use repeater, you should select \"■Update Baseline■\" menu in Repeater popup menu.<BR>\n<BR>\n[replace] mode:<BR>\nthe token parameter value is completely replaced with tracking value, so which you cannot tamper by burp tools.<BR>\nex.<BR>\ntoken=8B12C123'||' ===> token=A912D8VC<BR>");
+        TrackMode.setToolTipText("<HTML>\n[baseline] mode:<BR>\nthe token parameter value is changed only the baseline part , so which you can tamper by burp tools.<BR>\n<BR>\nyou can add test pattern in parameter value, e.g. '||'<BR>\nex.<BR>\ntoken=8B12C123'||' ===> token=A912D8VC'||'<BR><BR>\nNote:  In baseline mode,if you encounter problem which fails tracking tokens, you should select \"■update baseline■\" menu in BurpTool's popup menu.<BR>\n<BR>\n[replace] mode:<BR>\nthe token parameter value is completely replaced with tracking value, so which you cannot tamper by burp tools.<BR>\nex.<BR>\ntoken=8B12C123'||' ===> token=A912D8VC<BR>");
         TrackMode.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 TrackModeActionPerformed(evt);
@@ -498,7 +499,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         });
 
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabel3.setText("<HTML>\n<DL>\n<LI>baseline: you can test(tamper) tracking parameters with scanner/intruder which has baseline request.<BR>\nNote: Repeater has No baseline request, so  before when you use repeater, <BR>you should select \"■Update Baseline■\" menu in Repeater popup menu.\n<LI>replace: you can't test(tamper) tracking parameters which is completely replaced with tracked value.\n<DL>\n</HTML>");
+        jLabel3.setText("<HTML>\n<DL>\n<LI>baseline: you can test(tamper) tracking tokens with scanner/intruder/repeater which has baseline request.<BR>\nNote:  In baseline mode, if you encounter problems which fails tracking tokens,<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;you should select \"■update baseline■\" menu in BurpTool's popup menu.<BR>\n<LI>replace: you can't test(tamper) tracking tokens which is completely replaced with tracked value.\n<DL>\n</HTML>");
         jLabel3.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
@@ -1314,6 +1315,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                 String reqdata = pqr.request.getMessage();
                 EditTargetIsSSL = pqr.request.isSSL();
                 EditTargetPort = pqr.request.getPort();
+                EditPageEnc = pqr.request.getPageEnc();
                 new ParmGenRegex(this, reg,reqdata).setVisible(true);
             }
         }
@@ -1451,10 +1453,16 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     @Override
     public void ParmGenRegexSaveAction(String message) {
         if(pmt!=null&&OriginalEditTarget!=-1){
-            PRequest request = new PRequest(message);
-            request.setSSL(EditTargetIsSSL);
-            request.setPort(EditTargetPort);
-            pmt.updateOriginalRequest(OriginalEditTarget, request);
+            PRequest request;
+            try {
+                request = new PRequest(message.getBytes(EditPageEnc.getIANACharset()),EditPageEnc);
+                request.setSSL(EditTargetIsSSL);
+                request.setPort(EditTargetPort);
+                pmt.updateOriginalRequest(OriginalEditTarget, request);
+            } catch (UnsupportedEncodingException ex) {
+                Logger.getLogger(MacroBuilderUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
             OriginalEditTarget = -1;
         }
     }

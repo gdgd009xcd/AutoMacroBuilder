@@ -118,10 +118,15 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                        
                     }else{
                         try {
-                            PRequestResponse prs = new PRequestResponse(new String(messageInfo.getRequest(), ParmVars.enc.getIANACharset()), new String(messageInfo.getResponse(), ParmVars.enc.getIANACharset()));
+                            IHttpService iserv = messageInfo.getHttpService();
+                            String host = iserv.getHost();
+                            int port = iserv.getPort();
+                            boolean isSSL = (iserv.getProtocol().toLowerCase().equals("https")?true:false);
+                            //PRequestResponse prs = new PRequestResponse(new String(messageInfo.getRequest(), ParmVars.enc.getIANACharset()), new String(messageInfo.getResponse(), ParmVars.enc.getIANACharset()));
+                            PRequestResponse prs = new PRequestResponse(host, port, isSSL, messageInfo.getRequest(), messageInfo.getResponse(), ParmVars.enc);
                             url = prs.request.getURL();
                             ParmVars.plog.debuglog(0, "=====ResponseRun start====== status:" + prs.response.status);
-                            int updtcnt = pgen.ResponseRun(url, messageInfo.getResponse(), ParmVars.enc.getIANACharset());
+                            int updtcnt = pgen.ResponseRun(url, messageInfo.getResponse(), ParmVars.enc);
                             ParmVars.plog.debuglog(0, "=====ResponseRun end======");
                             if(pmt!=null){
                                 switch(pmt.getState()){
@@ -177,7 +182,12 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
         try
         {
 
-            IHttpRequestResponse httpReqRes = message.getMessageInfo();
+            IHttpRequestResponse messageInfo = message.getMessageInfo();
+            IHttpService iserv = messageInfo.getHttpService();
+            String host = iserv.getHost();
+            int port = iserv.getPort();
+            boolean isSSL = (iserv.getProtocol().toLowerCase().equals("https")?true:false);
+            //PRequestResponse prs = new PRequestResponse(new String(messageInfo.getRequest(), ParmVars.enc.getIANACharset()), new String(messageInfo.getResponse(), ParmVars.enc.getIANACharset()));
 
             ParmGen pgen = new ParmGen(pmt);
             if (pgen.ProxyInScope)
@@ -188,10 +198,10 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                 }else{//Fetch Responses...
                     ParmVars.plog.debuglog(0, "ProcessProxyMessage: messageIsResponse start");
                     try{
-                        PRequestResponse prs = new PRequestResponse(new String(httpReqRes.getRequest(), ParmVars.enc.getIANACharset()), new String(httpReqRes.getResponse(), ParmVars.enc.getIANACharset()));
+                        PRequestResponse prs = new PRequestResponse(host, port, isSSL, messageInfo.getRequest(), messageInfo.getResponse(), ParmVars.enc);
                         String url = prs.request.getURL();
                         try {
-                            int updtcnt = pgen.ResponseRun(url, httpReqRes.getResponse(), ParmVars.enc.getIANACharset());
+                            int updtcnt = pgen.ResponseRun(url, messageInfo.getResponse(), ParmVars.enc);
                             if(pmt!=null){
                             switch(pmt.getState()){
                                 case ParmGenMacroTrace.PMT_CURRENT_BEGIN://カレントリクエストが終了。
@@ -285,21 +295,14 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
         for(int i = 0; i< messageInfo.length; i++){
             if(messageInfo[i].getResponse()!=null){
                 if(tcharset.isEmpty()){
-                    String res;
-                    try {
-                        res = new String(messageInfo[i].getResponse(), ParmVars.enc.ISO_8859_1.getIANACharset());
-                        PResponse pres = new PResponse(res);
-                        tcharset = pres.getCharset();
-                        ParmVars.plog.debuglog(0,tcharset);
-                        if(!tcharset.isEmpty()){
-                            if(Encode.isExistEnc(tcharset)){
-                                langs.put(Encode.getEnum(tcharset), tcharset);
-                            }
+                    PResponse pres = new PResponse(messageInfo[i].getResponse(), Encode.ISO_8859_1);
+                    tcharset = pres.getCharset();
+                    ParmVars.plog.debuglog(0,tcharset);
+                    if(tcharset!=null&&!tcharset.isEmpty()){
+                        if(Encode.isExistEnc(tcharset)){
+                            langs.put(Encode.getEnum(tcharset), tcharset);
                         }
-                    } catch (UnsupportedEncodingException ex) {
-                        Logger.getLogger(BurpExtender.class.getName()).log(Level.SEVERE, null, ex);
                     }
-
                 }
             }
         }
@@ -449,7 +452,8 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
             
             
             for(int i = 0; i< messageInfo.length; i++){
-                byte[] binreq = null;
+                byte[] binreq = new String("").getBytes(Encode.ISO_8859_1.getIANACharset());//length 0 String byte
+                byte[] binres = new String("").getBytes(Encode.ISO_8859_1.getIANACharset());//length 0 String byte
                 String res = "";
                 IHttpService iserv = null;
                 if (messageInfo[i].getRequest() != null){
@@ -457,15 +461,13 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                     iserv = messageInfo[i].getHttpService();
                 }
                 if(messageInfo[i].getResponse()!=null){
-                    
-                    res = new String(messageInfo[i].getResponse(), ParmVars.enc.getIANACharset());
-                    
+                    binres = messageInfo[i].getResponse();
                 }
                 if(iserv != null){
                     boolean ssl = (iserv.getProtocol().toLowerCase().equals("https")?true:false);
-                    messages.add(new PRequestResponse(iserv.getHost(), iserv.getPort(), ssl, binreq, res));
+                    messages.add(new PRequestResponse(iserv.getHost(), iserv.getPort(), ssl, binreq, binres, ParmVars.enc));
                 }else{
-                    messages.add(new PRequestResponse("", res));
+                    messages.add(new PRequestResponse("", 0, false, binreq, binres, ParmVars.enc));
                 }
             }
         }catch(Exception e){
@@ -479,22 +481,21 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
        PRequestResponse prr = null;
         try {
 
-                String req = "";
-                String res = "";
+                byte[] binreq = new String("").getBytes(Encode.ISO_8859_1.getIANACharset());//length 0 String byte
+                byte[] binres = new String("").getBytes(Encode.ISO_8859_1.getIANACharset());//length 0 String byte
                 IHttpService iserv = null;
-                byte[] binreq = null;
                 if (messageInfo.getRequest() != null){
                     binreq = messageInfo.getRequest();
                     iserv = messageInfo.getHttpService();
                 }
                 if(messageInfo.getResponse()!=null){
-                    res = new String(messageInfo.getResponse(), ParmVars.enc.getIANACharset());
+                    binres = messageInfo.getResponse();
                 }
                 if(iserv !=null){
                     boolean ssl = (iserv.getProtocol().toLowerCase().equals("https")?true:false);
-                    prr = new PRequestResponse(iserv.getHost(), iserv.getPort(), ssl, binreq, res);
+                    prr = new PRequestResponse(iserv.getHost(), iserv.getPort(), ssl, binreq, binres, ParmVars.enc);
                 }else{
-                    prr = new PRequestResponse("", res);
+                    prr = new PRequestResponse("", 0, false, binreq, binres, ParmVars.enc);
                 }
 
         }catch(Exception e){
@@ -522,15 +523,15 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
             JMenuItem item = new JMenuItem("■Custom■");
             JMenuItem itemmacro = new JMenuItem("■SendTo MacroBuilder■");
             
-            if(toolflg==IBurpExtenderCallbacks.TOOL_REPEATER){
+            if(pmt.isBaseLineMode()){
                 repeatermodeitem = new JMenuItem("■Update Baseline■");
-                repeatermodeitem.setToolTipText("Update Baseline: You can tamper tracking tokens which is such like CSRF tokens with repeater.");
+                repeatermodeitem.setToolTipText("Update Baseline: You can tamper tracking tokens which is such like CSRF tokens with repeater/intruder/scanner.");
                 
                 repeatermodeitem.addActionListener(new java.awt.event.ActionListener() {
                     public void actionPerformed(java.awt.event.ActionEvent evt) {
                         
                         
-                        UpdateRepeaterBaseline(messageInfo);
+                        UpdateToolBaseline(messageInfo);
                         }
                 });
             
@@ -597,11 +598,12 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
             }
         }
         
-        public void UpdateRepeaterBaseline( IHttpRequestResponse[] messageInfo){
+        public void UpdateToolBaseline( IHttpRequestResponse[] messageInfo){
            
             if(pmt!=null&&messageInfo!=null&& messageInfo.length>0){
                 IHttpRequestResponse minfo = messageInfo[0];
-                pmt.setRepeaterBaseLine(convertMessageInfoToPRR(minfo));
+                
+                pmt.setToolBaseLine(convertMessageInfoToPRR(minfo));
             }
                 
         }
@@ -636,7 +638,6 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
         pmt = new ParmGenMacroTrace(callbacks);
         //セッション管理
         callbacks.registerSessionHandlingAction(new BurpMacroStartAction(pmt));
-        callbacks.registerSessionHandlingAction(new BurpRepeaterAction(pmt));
         //callbacks.registerSessionHandlingAction(new BurpMacroLogAction());
     	//コンテキストメニューの追加：　マウス右クリックポップアップメニュー->[my menu item]
         callbacks.registerContextMenuFactory(new NewMenu());

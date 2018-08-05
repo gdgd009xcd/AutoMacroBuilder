@@ -37,7 +37,7 @@ public class ParmGenMacroTrace {
     ArrayList<String> set_cookienames = null;//レスポンスのSet-Cookie値の名前リスト
     int selected_request = 0;//現在選択しているカレントのリクエスト
     int stepno = -1;//実行中のリクエスト番号
-    PRequestResponse repeaterbaseline = null;// Repeater's baseline request.
+    PRequestResponse toolbaseline = null;// Repeater's baseline request.
     
     boolean MBCookieUpdate = false;//==true Cookie更新
     boolean MBCookieFromJar = false;//==true 開始時Cookie.jarから引き継ぐ
@@ -47,7 +47,7 @@ public class ParmGenMacroTrace {
     boolean MBreplaceCookie = false;//==true Cookie引き継ぎ置き換え == false Cookie overwrite
     boolean MBmonitorofprocessing = false;
     boolean MBreplaceTrackingParam = false;
-    boolean MBtoolIsRepeater = false;
+
     
     int waittimer = 1;//実行間隔(msec)
 
@@ -124,17 +124,13 @@ public class ParmGenMacroTrace {
         MBreplaceTrackingParam = _b;
     }
     
-    void setMBtoolIsRepeater(boolean _b){
-        MBtoolIsRepeater = _b;
-    }
     
+    boolean isBaseLineMode(){
+        return !MBreplaceTrackingParam;
+    }
 
     boolean isOverWriteCurrentRequestTrackigParam(){
         return !MBreplaceTrackingParam && isCurrentRequest();
-    }
-    
-    boolean isToolIsRepeater(){
-        return MBtoolIsRepeater;
     }
     
     void setWaitTimer(String msec){
@@ -342,6 +338,7 @@ public class ParmGenMacroTrace {
                     String host = ppr.request.getHost();
                     int port = ppr.request.getPort();
                     boolean isSSL = ppr.request.isSSL();
+                    Encode _pageenc = ppr.request.getPageEnc();
                     BurpIHttpService bserv = new BurpIHttpService(host, port, isSSL);
                     ParmVars.plog.debuglog(0, "Request PreMacro:" + stepno + " "+ host + " " + ppr.request.method + " "+ ppr.request.url);
                     //byte[] byteres = callbacks.makeHttpRequest(host,port, isSSL, byterequest);
@@ -350,17 +347,16 @@ public class ParmGenMacroTrace {
                     IHttpRequestResponse IHReqRes = callbacks.makeHttpRequest(bserv, byterequest);
                     byte[] bytereq = IHReqRes.getRequest();
                     byte[] byteres = IHReqRes.getResponse();
-                    if(byteres!=null&&byteres.length>0){
-                        String res = new String(byteres, ParmVars.enc.getIANACharset());
-                        PResponse ppres = new PResponse(res);
-                        ParmVars.plog.debuglog(0, "Response PreMacro:" + ppres.status);
-                    }else if(byteres==null){
-                        byteres = new String("").getBytes();
+                    if(bytereq==null){//Impossible..
+                        bytereq = new String("").getBytes(Encode.ISO_8859_1.getIANACharset());
+                    }
+                    if(byteres==null){
+                        byteres = new String("").getBytes(Encode.ISO_8859_1.getIANACharset());
                         noresponse = "\nNo Response(NULL)";
                     }
                     
                 
-                    PRequestResponse pqrs = new PRequestResponse(new String(bytereq, ParmVars.enc.getIANACharset()),new String(byteres, ParmVars.enc.getIANACharset()));
+                    PRequestResponse pqrs = new PRequestResponse(host, port, isSSL, bytereq, byteres, _pageenc);
                     pqrs.setComments(ParmVars.plog.getComments() + noresponse);
                     pqrs.setError(ParmVars.plog.isError());
                     cit.set(pqrs);//更新
@@ -453,6 +449,7 @@ public class ParmGenMacroTrace {
                         String host = ppr.request.getHost();
                         int port = ppr.request.getPort();
                         boolean isSSL = ppr.request.isSSL();
+                        Encode _pageenc = ppr.request.getPageEnc();
                         BurpIHttpService bserv = new BurpIHttpService(host, port, isSSL);
                         ParmVars.plog.debuglog(0, "Request PostMacro:" + stepno + " "+ host + " " + ppr.request.method + " "+ ppr.request.url);
                         //byte[] byteres = callbacks.makeHttpRequest(host,port, isSSL, byterequest);
@@ -461,16 +458,13 @@ public class ParmGenMacroTrace {
                         postmacro_RequestResponse = callbacks.makeHttpRequest(bserv, byterequest);
                         byte[] bytereq = postmacro_RequestResponse.getRequest();
                         byte[] byteres = postmacro_RequestResponse.getResponse();
-                        if(postmacro_RequestResponse!=null){
-
-                            if(byteres.length>0){
-                                String res;
-                                res = new String(byteres, ParmVars.enc.getIANACharset());
-                                PResponse ppres = new PResponse(res);
-                                ParmVars.plog.debuglog(0, "Response PostMacro: " + ppres.status);
-                            }
+                        if(bytereq==null){
+                            bytereq = new String("").getBytes();
                         }
-                        PRequestResponse pqrs = new PRequestResponse(new String(bytereq, ParmVars.enc.getIANACharset()),new String(byteres, ParmVars.enc.getIANACharset()));
+                        if(byteres == null){
+                            byteres = new String("").getBytes();
+                        }
+                        PRequestResponse pqrs = new PRequestResponse(host, port, isSSL, bytereq, byteres, _pageenc);
                         pqrs.setComments(ParmVars.plog.getComments());
                         pqrs.setError(ParmVars.plog.isError());
                         cit.set(pqrs);//更新
@@ -561,7 +555,7 @@ public class ParmGenMacroTrace {
 	       HashMap<String,String> uniquecookies = new HashMap<String, String>();
 	       while(cit.hasNext()){
 	           PRequestResponse prr = cit.next();
-	           ParmVars.plog.debuglog(0, "body lenght=" + prr.response.getBodyLength());
+
 	           //ParmGenParser pgparser = new ParmGenParser(prr.response.getBody(), "[type=\"hidden\"],[type=\"HIDDEN\"]");
 
 	           //csrflist.add(pgparser);
@@ -592,11 +586,10 @@ public class ParmGenMacroTrace {
    void nullState(){
        state = PMT_POSTMACRO_NULL;
        stepno = -1;
-       setMBtoolIsRepeater(false);
    }
    
-   void setRepeaterBaseLine(PRequestResponse _baseline){
-       repeaterbaseline = _baseline;
+   void setToolBaseLine(PRequestResponse _baseline){
+       toolbaseline = _baseline;
    }
 
    //
@@ -622,8 +615,8 @@ public class ParmGenMacroTrace {
         return stepno;
     }
     
-    PRequestResponse getRepeaterBaseline(){
-        return repeaterbaseline;
+    PRequestResponse getToolBaseline(){
+        return toolbaseline;
     }
 
     void sendToRepeater(int pos){
@@ -633,15 +626,16 @@ public class ParmGenMacroTrace {
                 pqr = originalrlist.get(pos);
             }
 	        if(pqr!=null){
-	        	String host = pqr.request.getHost();
-	        	int port = pqr.request.getPort();
-	        	boolean useHttps = pqr.request.isSSL();
-	        	callbacks.sendToRepeater(
-	                    host,
-	                    port,
-	                    useHttps,
-	                    pqr.request.getByteMessage(),
-	                    "MacroBuilder:" + pos);
+                    setToolBaseLine(pqr);
+                    String host = pqr.request.getHost();
+                    int port = pqr.request.getPort();
+                    boolean useHttps = pqr.request.isSSL();
+                    callbacks.sendToRepeater(
+                        host,
+                        port,
+                        useHttps,
+                        pqr.request.getByteMessage(),
+                        "MacroBuilder:" + pos);
 	        }
     	}
 
@@ -653,14 +647,15 @@ public class ParmGenMacroTrace {
                 pqr = originalrlist.get(pos);
             }
 	        if(pqr!=null){
-	        	String host = pqr.request.getHost();
-	        	int port = pqr.request.getPort();
-	        	boolean useHttps = pqr.request.isSSL();
-	        	IScanQueueItem que =callbacks.doActiveScan(
-	                    host,
-	                    port,
-	                    useHttps,
-	                    pqr.request.getByteMessage()
+                    setToolBaseLine(null);
+                    String host = pqr.request.getHost();
+                    int port = pqr.request.getPort();
+                    boolean useHttps = pqr.request.isSSL();
+                    IScanQueueItem que =callbacks.doActiveScan(
+                        host,
+                        port,
+                        useHttps,
+                        pqr.request.getByteMessage()
 	            );
 	        }
     	}
@@ -673,15 +668,16 @@ public class ParmGenMacroTrace {
                 pqr = originalrlist.get(pos);
             }
 	        if(pqr!=null){
-	        	String host = pqr.request.getHost();
-	        	int port = pqr.request.getPort();
-	        	boolean useHttps = pqr.request.isSSL();
-	        	callbacks.sendToIntruder(
-	                    host,
-	                    port,
-	                    useHttps,
-	                    pqr.request.getByteMessage()
-	                    );
+                    setToolBaseLine(null);
+                    String host = pqr.request.getHost();
+                    int port = pqr.request.getPort();
+                    boolean useHttps = pqr.request.isSSL();
+                    callbacks.sendToIntruder(
+                        host,
+                        port,
+                        useHttps,
+                        pqr.request.getByteMessage()
+                        );
 	        }
     	}
 

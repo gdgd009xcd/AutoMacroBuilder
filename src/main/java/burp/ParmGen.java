@@ -791,7 +791,7 @@ class AppValue {
         }
 
 
-	String[] replaceContents(ParmGenMacroTrace pmt, int currentStepNo, AppParmsIni pini, String contents, String org_contents,ParmGenHashMap errorhash){
+	String[] replaceContents(ParmGenMacroTrace pmt, int currentStepNo, AppParmsIni pini, String contents, String org_contents_iso8859,ParmGenHashMap errorhash){
 		if (contents == null)
 			return null;
 		if (valueregex == null)
@@ -812,8 +812,8 @@ class AppValue {
 		Matcher m = valueregex.matcher(contents);
                 Matcher m_org = null;
                 
-                if(org_contents!=null){
-                    m_org = valueregex.matcher(org_contents);
+                if(org_contents_iso8859!=null){
+                    m_org = valueregex.matcher(org_contents_iso8859);
                    
                 }
 
@@ -844,6 +844,7 @@ class AppValue {
                                     o_spt = m_org.start(n+1);
                                     o_ept = m_org.end(n+1);
                                     org_matchval = m_org.group(n+1);
+                                    
                                 }
                             }
                         }
@@ -857,7 +858,7 @@ class AppValue {
                                 String org_newval = strcnt;
                                 if(org_matchval!=null){
                                     ParmGenStringDiffer differ = new ParmGenStringDiffer(org_matchval, matchval);
-                                    
+                                    ParmVars.plog.debuglog(0, "org_matchval[" + org_matchval + "] matchval[" + matchval + "]");
                                     strcnt = differ.replaceOrgMatchedValue(strcnt);
                                     
                                 }
@@ -891,9 +892,9 @@ class AppValue {
 				cpt = ept;
 				tailcontents = contents.substring(ept);
                                 if(org_matchval!=null){
-                                    o_newcontents += org_contents.substring(o_cpt, o_spt) + org_newval;
+                                    o_newcontents += org_contents_iso8859.substring(o_cpt, o_spt) + org_newval;
                                     o_cpt = o_ept;
-                                    o_tailcontents = org_contents.substring(o_ept);
+                                    o_tailcontents = org_contents_iso8859.substring(o_ept);
                                 }
 			}
 		}
@@ -903,7 +904,7 @@ class AppValue {
 		}
                 o_newcontents = o_newcontents + o_tailcontents;
                 if(o_newcontents.length() == 0){
-                    o_newcontents = org_contents;
+                    o_newcontents = org_contents_iso8859;
                 }
                 nv[0] = newcontents;
                 nv[1] = o_newcontents;
@@ -1781,7 +1782,7 @@ class ParmGen {
                 String orig_path = null;
                 String orig_query = null;
                 ParmGenBinUtil org_contarray = null;
-                String org_content = null;
+                String org_content_iso8859 = null;
                 
                 if(org_request!=null){
                     orig_url = org_request.getURL();
@@ -1791,7 +1792,7 @@ class ParmGen {
                         orig_query = orig_url.substring(o_qpos+1);
                     }
                     org_contarray = org_request.getBinBody();
-                    org_content = org_request.getStringBody();
+                    org_content_iso8859 = org_request.getISO8859BodyString();
                     
                 }
 		ParmVars.plog.debuglog(1, "method[" + method + "] request[" + url + "]");
@@ -1811,7 +1812,7 @@ class ParmGen {
                                     ParmVars.plog.debuglog(1, " Modified path[" + n_path + "]");
                                     //request.setURL(new HttpUrl(url));
                                     prequest.setURL(url);
-                                    if(org_request!=null&&o_path!=null){
+                                    if(org_request!=null&&o_path!=null&&pmt.getToolBaseline()!=null){
                                         org_request.setURL(o_path);
                                     }
                                     return prequest;
@@ -1833,7 +1834,7 @@ class ParmGen {
                                             ParmVars.plog.debuglog(1, " Modified path[" + n_query + "]");
                                             //request.setURL(new HttpUrl(url));
                                             prequest.setURL(url);
-                                            if(org_request!=null&&orig_path!=null&&o_query!=null){
+                                            if(org_request!=null&&orig_path!=null&&o_query!=null&&pmt.getToolBaseline()!=null){
                                                 String o_url = orig_path + "?" + o_query;
                                                 org_request.setURL(o_url);
                                             }
@@ -1884,7 +1885,7 @@ class ParmGen {
                                                 String htitle = nv[0] + ": ";
                                                 n_hval = n_hval.substring(htitle.length());
                                                 prequest.setHeader(been.i, nv[0], n_hval);
-                                                if(org_request!=null&&o_been!=null&&onv!=null&&o_hval!=null){
+                                                if(org_request!=null&&o_been!=null&&onv!=null&&o_hval!=null&&pmt.getToolBaseline()!=null){
                                                     o_hval = o_hval.substring(htitle.length());
                                                     org_request.setHeader(o_been.i, onv[0], o_hval);
                                                 }
@@ -1906,10 +1907,10 @@ class ParmGen {
                             }catch(UnsupportedEncodingException e){
                                 content = null;
                             }
-                            nvcont = av.replaceContents(pmt, pmt.getStepNo(),pini, content, org_content, errorhash);
+                            nvcont = av.replaceContents(pmt, pmt.getStepNo(),pini, content, org_content_iso8859, errorhash);
                             if(nvcont!=null){
                                 String n_content = nvcont[0];
-                                String neworg_content = nvcont[1];
+                                String neworg_content_iso8859 = nvcont[1];
                             
                                 if ( n_content != null && !content.equals(n_content) ){
                                     ParmVars.plog.debuglog(1, " Original body[" + content + "]");
@@ -1920,14 +1921,14 @@ class ParmGen {
                                         Logger.getLogger(ParmGen.class.getName()).log(Level.SEVERE, null, ex);
                                         _contarray.initParmGenBinUtil(n_content.getBytes());
                                     }
-                                    if(org_request!=null&&org_content!=null&&neworg_content!=null){
+                                    if(org_request!=null&&org_content_iso8859!=null&&neworg_content_iso8859!=null&&pmt.getToolBaseline()!=null){
                                         try {// bodyの入れ替え
-                                            org_request.setBody(neworg_content.getBytes(ParmVars.enc.getIANACharset()));
+                                            org_request.setBody(neworg_content_iso8859.getBytes(Encode.ISO_8859_1.getIANACharset()));
                                             byte[] bmessage = org_request.getByteMessage();
                                             String host = org_request.getHost();
                                             int port = org_request.getPort();
                                             boolean ssl = org_request.isSSL();
-                                            org_request.construct(host, port, ssl, bmessage);
+                                            org_request.construct(host, port, ssl, bmessage, ParmVars.enc);
                                         } catch (UnsupportedEncodingException ex) {
                                             Logger.getLogger(ParmGen.class.getName()).log(Level.SEVERE, null, ex);
                                         }
@@ -1947,7 +1948,7 @@ class ParmGen {
                             byte[] headerseparator = {0x0d, 0x0a, 0x0d, 0x0a};//<CR><LF><CR><LF>
                             byte[] partheader = null;
                             String partenc = "";
-                            String neworg_content = null;
+                            String neworg_content_iso8859 = null;
                             boolean org_content_isupdated = false;
                             while ( (npos=_contarray.indexOf(boundaryarray.getBytes(), cpos))!=-1){
                                 if(cpos!=0){//cpos->npos == partdata
@@ -1981,10 +1982,10 @@ class ParmGen {
                                     }catch(UnsupportedEncodingException e){
                                             partdatastr = null;
                                     }
-                                    nvcont = av.replaceContents(pmt, pmt.getStepNo(), pini, partdatastr, org_content, errorhash);
+                                    nvcont = av.replaceContents(pmt, pmt.getStepNo(), pini, partdatastr, org_content_iso8859, errorhash);
                                     if(nvcont!=null){
                                         String n_partdatastr = nvcont[0];
-                                        neworg_content = nvcont[1];
+                                        neworg_content_iso8859 = nvcont[1];
 
                                         if(n_partdatastr!=null && partdatastr != null && !partdatastr.equals(n_partdatastr) ){
                                             ParmVars.plog.debuglog(1, " Original body[" + partdatastr + "]");
@@ -1995,8 +1996,8 @@ class ParmGen {
                                                 ParmVars.plog.printException(e);
                                                 n_array.concat(n_partdatastr.getBytes());
                                             }
-                                            if(org_request!=null&&org_content!=null&&neworg_content!=null){
-                                                org_content = neworg_content;
+                                            if(org_request!=null&&org_content_iso8859!=null&&neworg_content_iso8859!=null){
+                                                org_content_iso8859 = neworg_content_iso8859;
                                                 org_content_isupdated = true;
                                             }
                                             partupdt = true;
@@ -2023,14 +2024,14 @@ class ParmGen {
                                 //_contarray = n_array;
                                 _contarray.initParmGenBinUtil(n_array.getBytes());
                                 if(org_content_isupdated){
-                                    if(org_request!=null&&org_content!=null){
+                                    if(org_request!=null&&org_content_iso8859!=null&&pmt.getToolBaseline()!=null){
                                         try {// bodyの入れ替え
-                                            org_request.setBody(org_content.getBytes(ParmVars.enc.getIANACharset()));
+                                            org_request.setBody(org_content_iso8859.getBytes(Encode.ISO_8859_1.getIANACharset()));
                                             byte[] bmessage = org_request.getByteMessage();
                                             String host = org_request.getHost();
                                             int port = org_request.getPort();
                                             boolean ssl = org_request.isSSL();
-                                            org_request.construct(host, port, ssl, bmessage);
+                                            org_request.construct(host, port, ssl, bmessage, ParmVars.enc);
                                         } catch (UnsupportedEncodingException ex) {
                                             Logger.getLogger(ParmGen.class.getName()).log(Level.SEVERE, null, ex);
                                         }
@@ -2155,12 +2156,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
         }
 
 	byte[] Run(byte[] requestbytes){
-            String request_string = null;
-            try{
-                request_string = new String(requestbytes, ParmVars.enc.getIANACharset());
-            }catch(Exception e){
-                ParmVars.plog.printException(e);
-            }
+            
             ParmGenBinUtil boundaryarray = null;
             ParmGenBinUtil contarray = null;
            
@@ -2168,7 +2164,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
             if( parmcsv == null || parmcsv.size()<=0){
                 //NOP
                 if(pmt.isRunning()){
-                    PRequest prequest = new PRequest(request_string);
+                    PRequest prequest = new PRequest(requestbytes, ParmVars.enc);
                     PRequest cookierequest = pmt.configureRequest(prequest);
                     if(cookierequest!=null) {
                         return cookierequest.getByteMessage();
@@ -2179,7 +2175,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                     ParmGenHashMap errorhash = new ParmGenHashMap();
                     
                     //Request request = connection.getRequest();
-                    PRequest prequest = new PRequest(request_string);
+                    PRequest prequest = new PRequest(requestbytes, ParmVars.enc);
 
                     // check if we have parameters
                     // Construct a new HttpUrl object, since they are immutable
@@ -2192,12 +2188,10 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                     PRequestResponse org_PRequestResponse = pmt.getCurrentOriginalRequest();//copy
                     PRequest org_Request =null;
                     if(pmt.isCurrentRequest()&&pmt.isOverWriteCurrentRequestTrackigParam()){
-                        if(pmt.isToolIsRepeater()){
-                            PRequestResponse repeaterPRR = pmt.getRepeaterBaseline();//reference
-                            if(repeaterPRR!=null){
-                                org_Request = repeaterPRR.request;
-                            }
-                        }else{
+                        PRequestResponse repeaterPRR = pmt.getToolBaseline();//reference
+                        if(repeaterPRR!=null){
+                            org_Request = repeaterPRR.request;
+                        }else{//intruder or scanner..
                             org_Request = org_PRequestResponse.request;
                         }
                     }
@@ -2336,7 +2330,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
             return null;
 	}
 
-    int ResponseRun(String url,  byte[] response_bytes, String _enc){
+    int ResponseRun(String url,  byte[] response_bytes, Encode _pageenc){
 
         int updtcnt = 0;
 
@@ -2344,13 +2338,8 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                 // main loop
                 //Request request = connection.getRequest();
 
-                String response_string = null;
-                try{
-                    response_string = new String(response_bytes, _enc);
-                }catch(Exception e){
-                    return -1;
-                }
-                PResponse presponse = new PResponse(response_string);
+               
+                PResponse presponse = new PResponse(response_bytes, _pageenc);
                 // check if we have parameters
                 // Construct a new HttpUrl object, since they are immutable
                 // This is a bit of a cheat!

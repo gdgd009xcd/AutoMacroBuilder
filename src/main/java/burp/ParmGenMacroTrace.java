@@ -147,7 +147,11 @@ public class ParmGenMacroTrace {
         ParmVars.plog.setError(false);
         state = PMT_CURRENT_BEGIN;
         ParmGen pgen = new ParmGen(this);
-        byte[] retval = pgen.Run(currentRequest.getRequest());
+        IHttpService iserv = currentRequest.getHttpService();
+        String host = iserv.getHost();
+        int port = iserv.getPort();
+        boolean isSSL = (iserv.getProtocol().toLowerCase().equals("https")?true:false);
+        byte[] retval = pgen.Run(host, port, isSSL, currentRequest.getRequest());
         if ( retval != null){
                 currentRequest.setRequest(retval);
 

@@ -102,7 +102,11 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                             
 
                             if(pmt!=null&&!pmt.isCurrentRequest()){
-                                byte[] retval = pgen.Run(messageInfo.getRequest());
+                                IHttpService iserv = messageInfo.getHttpService();
+                                String host = iserv.getHost();
+                                int port = iserv.getPort();
+                                boolean isSSL = (iserv.getProtocol().toLowerCase().equals("https")?true:false);
+                                byte[] retval = pgen.Run(host, port, isSSL, messageInfo.getRequest());
                                 if ( retval != null){
                                         messageInfo.setRequest(retval);
 

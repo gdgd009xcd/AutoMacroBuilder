@@ -5,9 +5,9 @@ class PRequest extends ParseHTTPHeaders {
 	//	super();
 	//}
 	
-	PRequest(byte[] _bin, Encode _pageenc){
-		super(_bin, _pageenc);
-	}
+	//PRequest(byte[] _bin, Encode _pageenc){
+	//	super(_bin, _pageenc);
+	//}
         PRequest(String h, int p, boolean ssl, byte[] _binmessage, Encode _pageenc){
 		super(h, p, ssl, _binmessage, _pageenc);
 	}

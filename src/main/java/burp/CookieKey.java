@@ -24,6 +24,13 @@ public class CookieKey implements Comparable<CookieKey> {
         
     }
     
+    String getDomain(){
+        return domain;
+    }
+    
+    String getName(){
+        return name;
+    }
     
     // HashMap
     @Override

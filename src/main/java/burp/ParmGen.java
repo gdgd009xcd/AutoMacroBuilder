@@ -2155,7 +2155,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
             initMain(null);
         }
 
-	byte[] Run(byte[] requestbytes){
+	byte[] Run(String _h, int port, boolean isSSL, byte[] requestbytes){
             
             ParmGenBinUtil boundaryarray = null;
             ParmGenBinUtil contarray = null;
@@ -2164,7 +2164,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
             if( parmcsv == null || parmcsv.size()<=0){
                 //NOP
                 if(pmt.isRunning()){
-                    PRequest prequest = new PRequest(requestbytes, ParmVars.enc);
+                    PRequest prequest = new PRequest(_h, port, isSSL, requestbytes, ParmVars.enc);
                     PRequest cookierequest = pmt.configureRequest(prequest);
                     if(cookierequest!=null) {
                         return cookierequest.getByteMessage();
@@ -2175,7 +2175,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                     ParmGenHashMap errorhash = new ParmGenHashMap();
                     
                     //Request request = connection.getRequest();
-                    PRequest prequest = new PRequest(requestbytes, ParmVars.enc);
+                    PRequest prequest = new PRequest(_h, port, isSSL, requestbytes, ParmVars.enc);
 
                     // check if we have parameters
                     // Construct a new HttpUrl object, since they are immutable

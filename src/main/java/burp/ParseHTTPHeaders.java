@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ListIterator;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -145,6 +146,7 @@ class ParseHTTPHeaders {
                         port = _p;
                         isSSL = _isssl;
                     }
+                    ParmVars.plog.debuglog(0, "construct isRequest/host/port/SSL" +(isRequest()?"REQUEST": "RESPONSE")+ host + "/" + port + "/" + (isSSL?"SSL":"NOSSL"));
                 }
 	}
 
@@ -615,6 +617,7 @@ class ParseHTTPHeaders {
             if(cookiemap==null||cookiemap.size()==0){
                 return false;
             }
+            ParmVars.plog.debuglog(0, "!!SetCookies Called.cookiemap.size/cookieparams.size=" +  cookiemap.size() + "/" + cookieparams.size());
             ListIterator<String[]> it = cookieparams.listIterator();
             String domain = host;
             String cookiedata = "";
@@ -627,6 +630,15 @@ class ParseHTTPHeaders {
                 CookieKey ckey = new CookieKey(domain, nv[0]);
                 ArrayList<CookiePathValue> cpvlist = cookiemap.get(ckey);
                 
+                if(cpvlist==null){
+                    ParmVars.plog.debuglog(0, "nomatch cookieparams domain/name:[" + domain +"/" + nv[0] + "]");
+                    for(Entry<CookieKey, ArrayList<CookiePathValue>> entry: cookiemap.entrySet()){
+                        CookieKey key = entry.getKey();
+                        ArrayList<CookiePathValue> cpvalue = entry.getValue();
+                        
+                        ParmVars.plog.debuglog(0, "cookiemap.domain/name[" + key.getDomain() + "/" + key.getName() + "]");
+                    }
+                }
                 if(cpvlist!=null){
                     Collections.sort(cpvlist, new PathComparator().reversed());
                     ListIterator<CookiePathValue> itv = cpvlist.listIterator();

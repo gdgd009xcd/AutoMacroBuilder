@@ -15,12 +15,12 @@ public class PRequestResponse {
     Boolean disable = false;//==true no execute.
     boolean iserror = false;
     
-    public PRequestResponse(byte[] brequest, byte[] bresponse , Encode _pageenc){
-        request = new PRequest(brequest, _pageenc);
-        response = new PResponse(bresponse, _pageenc);
-        comments = null;
-        disable = false;
-    }
+    //public PRequestResponse(byte[] brequest, byte[] bresponse , Encode _pageenc){
+    //    request = new PRequest(brequest, _pageenc);
+    //    response = new PResponse(bresponse, _pageenc);
+    //    comments = null;
+    //    disable = false;
+    //}
     
     public PRequestResponse(String h, int p, boolean ssl, byte[] _binrequest, byte[] _binresponse, Encode _pageenc){
         request = new PRequest(h, p, ssl,_binrequest, _pageenc);

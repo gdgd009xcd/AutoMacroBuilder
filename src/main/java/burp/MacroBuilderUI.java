@@ -1455,7 +1455,9 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         if(pmt!=null&&OriginalEditTarget!=-1){
             PRequest request;
             try {
-                request = new PRequest(message.getBytes(EditPageEnc.getIANACharset()),EditPageEnc);
+                PRequestResponse pqr = pmt.getOriginalRequest(OriginalEditTarget);
+                PRequest origrequest = pqr.request;
+                request = new PRequest(origrequest.getHost(), origrequest.getPort(), origrequest.isSSL(), message.getBytes(EditPageEnc.getIANACharset()),EditPageEnc);
                 request.setSSL(EditTargetIsSSL);
                 request.setPort(EditTargetPort);
                 pmt.updateOriginalRequest(OriginalEditTarget, request);

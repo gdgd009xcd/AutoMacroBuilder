@@ -59,7 +59,9 @@ public class ParmGenRegex extends javax.swing.JDialog {
             java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGenRegex.comboModel_regextype_number_percent.text"),
             java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGenRegex.comboModel_regextype_number_any.text"),
             java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGenRegex.comboModel_regextype_number_lfany.text"),
-            java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGenRegex.comboModel_regextype_number_whitespc.text")
+            java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGenRegex.comboModel_regextype_number_whitespc.text"),
+            java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGenRegex.comboModel_regextype_number_jsonstr.text"),
+            java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGenRegex.comboModel_regextype_number_jsonnum.text"),
             });
         }
 
@@ -746,6 +748,7 @@ public class ParmGenRegex extends javax.swing.JDialog {
             regprefix = ".";
         }else if(regextype_val.equals(bundle.getString("ParmGenRegex.改行含む任意.text"))){
             regprefix = "(?:\\r|\\n|.)";
+        
         }else{
             regprefix = "\\s";//ホワイトスペース（改行含む）
         }
@@ -783,7 +786,15 @@ public class ParmGenRegex extends javax.swing.JDialog {
         if(isselectedregex){
             regex = getParsedRegexRaw(selectedtext, null);
         }
-        
+        String jsonname = "name";
+        if(selectedtext!=null&&selectedtext.length()>0){
+            jsonname = selectedtext;
+        }
+        if(regextype_val.equals(bundle.getString("ParmGenRegex.comboModel_regextype_number_jsonstr.text"))){
+            regex = "\"" + jsonname + "\"(?:[\\t \\r\\n]*):(?:[\\t\\r\\n ]*)\"(.+?)\"(?:[\\t \\r\\n]*)(?:,|})";
+        }else if(regextype_val.equals(bundle.getString("ParmGenRegex.comboModel_regextype_number_jsonnum.text"))){
+            regex ="\"" + jsonname + "\"(?:[\\t \\r\\n]*):(?:[\\t\\r\\n ]*)([^,:{}\\\"]+?)(?:[\\t \\r\\n]*)(?:,|})";
+        }
         try{
             if(isselectedregex){
                 RegexText.replaceSelection(regex);

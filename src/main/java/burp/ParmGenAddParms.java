@@ -72,6 +72,8 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
         csv = parentwin.getCSV();
         Select_ReplaceTargetURL.removeAllItems();
         PRequestResponse selected_message = ParmGenCSV.selected_messages.get(0);
+        int mpos = selected_message.getMacroPos();
+        ParmVars.session.put(ParmGenSession.K_TOPOS, Integer.toString(mpos));
         selected_request = selected_message.request;
         String newtargetURL = ".*" + selected_request.getPath() + ".*";
         Select_ReplaceTargetURL.addItem(newtargetURL);
@@ -598,6 +600,17 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
         }
         String url = (String)Select_ReplaceTargetURL.getSelectedItem();
         if(url!=null)  parentwin.updateTargetURL(url);
+        String pstr = ParmVars.session.get(ParmGenSession.K_FROMPOS);
+        int frompos = -1;
+        if(pstr!=null){
+            frompos = Integer.parseInt(pstr);
+        }
+        pstr = ParmVars.session.get(ParmGenSession.K_TOPOS);
+        int topos = 0;
+        if(pstr!=null){
+            topos = Integer.parseInt(pstr);
+        }
+        parentwin.updateFromToPos(frompos, topos);
         dispose();
     }//GEN-LAST:event_AddActionPerformed
 

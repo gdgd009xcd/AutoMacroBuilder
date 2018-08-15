@@ -29,6 +29,8 @@ public class ParmGenSession {
     public static final String K_TAMPERPOSITION = "tamperposition";
     public static final String K_TARGETPARAM = "targetparam";
     public static final String K_PAYLOADPOSITION = "payloadposition";
+    public static final String K_FROMPOS = "frompos";
+    public static final String K_TOPOS = "topos";
 
     
     

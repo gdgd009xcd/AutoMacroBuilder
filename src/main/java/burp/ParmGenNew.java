@@ -347,6 +347,11 @@ private void setAppParmsIni(){
             model.addRow(row);
         }
     }
+    public void updateFromToPos(int frompos, int topos){
+        TrackFrom.setText(Integer.toString(frompos));
+        SetTo.setText(Integer.toString(topos));
+    }
+    
     /*
      * current_modelのtargetURLを更新
      */

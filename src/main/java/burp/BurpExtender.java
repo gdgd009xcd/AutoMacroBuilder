@@ -450,7 +450,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
         return Encode.UTF_8;
     }
     
-    private ArrayList <PRequestResponse> convertMessageInfoToArray(IHttpRequestResponse[] messageInfo){
+    private ArrayList <PRequestResponse> convertMessageInfoToArray(IHttpRequestResponse[] messageInfo, int toolflg){
         ArrayList <PRequestResponse> messages = new ArrayList<PRequestResponse>() ;
         try {
             
@@ -469,6 +469,16 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                 }
                 if(iserv != null){
                     boolean ssl = (iserv.getProtocol().toLowerCase().equals("https")?true:false);
+                    switch(toolflg){
+                        case IBurpExtenderCallbacks.TOOL_INTRUDER:
+                            //remove special § chars
+                            PRequest cleanreq = new PRequest(iserv.getHost(), iserv.getPort(), ssl, binreq, Encode.ISO_8859_1).newRequestWithRemoveSpecialChars(null);
+                            binreq = cleanreq.getByteMessage();
+                            break;
+                        default:
+                            break;
+                    }
+                    
                     messages.add(new PRequestResponse(iserv.getHost(), iserv.getPort(), ssl, binreq, binres, ParmVars.enc));
                 }else{
                     messages.add(new PRequestResponse("", 0, false, binreq, binres, ParmVars.enc));
@@ -516,20 +526,21 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
     {
 
         IHttpRequestResponse[] messageInfo = null;
+        int toolflg = -1;
 
         @Override
         public List<JMenuItem> createMenuItems(IContextMenuInvocation icmi) {
 
             ArrayList<JMenuItem> items = new ArrayList<JMenuItem>();
             
-            int toolflg = icmi.getToolFlag();
+            toolflg = icmi.getToolFlag();
 
             JMenuItem item = new JMenuItem("■Custom■");
             JMenuItem itemmacro = new JMenuItem("■SendTo MacroBuilder■");
             
-            if(pmt.isBaseLineMode()){
+            if(pmt.isBaseLineMode()&&toolflg==IBurpExtenderCallbacks.TOOL_REPEATER){
                 repeatermodeitem = new JMenuItem("■Update Baseline■");
-                repeatermodeitem.setToolTipText("Update Baseline: You can tamper tracking tokens which is such like CSRF tokens with repeater/intruder/scanner.");
+                repeatermodeitem.setToolTipText("Update Baseline: You can tamper tracking tokens which is such like CSRF tokens with repeater.");
                 
                 repeatermodeitem.addActionListener(new java.awt.event.ActionListener() {
                     public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -547,7 +558,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
 
             item.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    menuItemClicked(messageInfo);
+                    menuItemClicked(messageInfo, toolflg);
                 }
             });
             itemmacro.addActionListener(new java.awt.event.ActionListener() {
@@ -568,7 +579,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
             return items;
         }
 
-        public void menuItemClicked( IHttpRequestResponse[] messageInfo)
+        public void menuItemClicked( IHttpRequestResponse[] messageInfo, int toolflg)
         {
             try
             {
@@ -578,7 +589,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                 ParmGen pgen = new ParmGen(pmt, null);//csv読み込み。LANG（ParmVars.enc）を設定。
                 if(pgen.twin==null){
                     pgen.twin = new ParmGenTop(pmt, new ParmGenCSV(pmt,
-                        convertMessageInfoToArray(messageInfo))
+                        convertMessageInfoToArray(messageInfo, toolflg))
                         );
                 }
                 pgen.twin.VisibleWhenJSONSaved(mbr.getUiComponent());
@@ -618,7 +629,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                 if(mbr!=null){
                 //選択したリクエストレスポンス
                     mbr.addNewRequests(
-                        convertMessageInfoToArray(messageInfo));
+                        convertMessageInfoToArray(messageInfo, toolflg));
                 }
             }
         }

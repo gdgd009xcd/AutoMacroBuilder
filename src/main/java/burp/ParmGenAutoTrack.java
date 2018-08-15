@@ -250,6 +250,8 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
                 model.removeRow(0);
             }
             PRequestResponse rs = ParmGenCSV.selected_messages.get(0);
+            int mpos = rs.getMacroPos();
+            ParmVars.session.put(ParmGenSession.K_FROMPOS, Integer.toString(mpos));
             String body = rs.response.getBody();
             AppValue ap = new AppValue();
             //Locationパラメータ取得

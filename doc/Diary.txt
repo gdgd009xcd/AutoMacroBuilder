@@ -1,0 +1,7 @@
+20180813
+　◎MacroBuilderからのcustomボタンTrackFrom/SetTo に選択
+　　リクエストのポジションNoをセット。
+　・カスタム機能のマニュアル作成
+　◎final macroresponseオフの場合、postマクロは実行しない
+　・フルオートマクロスキャナー
+　・Date format対応

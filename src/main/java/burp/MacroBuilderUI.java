@@ -724,6 +724,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                 if(values.length>0){
                     int i = Integer.parseInt(values[0]);
                     PRequestResponse pqr = rlist.get(i);
+                    pqr.setMacroPos(i);
                     messages.add(pqr);
                 }
             }

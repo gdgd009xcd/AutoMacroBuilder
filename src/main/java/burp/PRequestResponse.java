@@ -14,6 +14,7 @@ public class PRequestResponse {
     String comments;
     Boolean disable = false;//==true no execute.
     boolean iserror = false;
+    int macropos = -1;
     
     //public PRequestResponse(byte[] brequest, byte[] bresponse , Encode _pageenc){
     //    request = new PRequest(brequest, _pageenc);
@@ -62,5 +63,13 @@ public class PRequestResponse {
     }
     void setError(boolean b){
         iserror = b;
+    }
+    
+    void setMacroPos(int _p){
+        macropos = _p;
+    }
+    
+    int getMacroPos(){
+        return macropos;
     }
 }

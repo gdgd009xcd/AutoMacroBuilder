@@ -425,60 +425,62 @@ public class ParmGenMacroTrace {
     void  startPostMacro(){
         state = PMT_POSTMACRO_BEGIN;
         postmacro_RequestResponse = null;
-        //後処理マクロ　selected_request+1 ～最後まで実行。
-        stepno = selected_request + 1;
-        ParmVars.plog.debuglog(0, "BEGIN PostMacro");
-        try{
-            if(cit!=null&&oit!=null){
-                List<ICookie> iclist = callbacks.getCookieJarContents();//Burp's cookie.jar
-                int n = stepno;
-                while(cit.hasNext() && oit.hasNext()){
-                    stepno = n;
-                    TWait();
-                    n++;
+        if(isMBFinalResponse()){
+            //後処理マクロ　selected_request+1 ～最後まで実行。
+            stepno = selected_request + 1;
+            ParmVars.plog.debuglog(0, "BEGIN PostMacro");
+            try{
+                if(cit!=null&&oit!=null){
+                    List<ICookie> iclist = callbacks.getCookieJarContents();//Burp's cookie.jar
+                    int n = stepno;
+                    while(cit.hasNext() && oit.hasNext()){
+                        stepno = n;
+                        TWait();
+                        n++;
 
-                    PRequestResponse ppr = cit.next();
-                    PRequestResponse opr = oit.next();
-                    if(ppr.isDisabled()){
-                        continue;
-                    }
-                    postmacro_RequestResponse = null;
-                    if(MBResetToOriginal){
-                        ppr = opr;
-                    }
-                   
-
-                    byte[] byterequest = ppr.request.getByteMessage();
-                    if(byterequest!=null){
-                        String host = ppr.request.getHost();
-                        int port = ppr.request.getPort();
-                        boolean isSSL = ppr.request.isSSL();
-                        Encode _pageenc = ppr.request.getPageEnc();
-                        BurpIHttpService bserv = new BurpIHttpService(host, port, isSSL);
-                        ParmVars.plog.debuglog(0, "Request PostMacro:" + stepno + " "+ host + " " + ppr.request.method + " "+ ppr.request.url);
-                        //byte[] byteres = callbacks.makeHttpRequest(host,port, isSSL, byterequest);
-                        ParmVars.plog.clearComments();
-                        ParmVars.plog.setError(false);
-                        postmacro_RequestResponse = callbacks.makeHttpRequest(bserv, byterequest);
-                        byte[] bytereq = postmacro_RequestResponse.getRequest();
-                        byte[] byteres = postmacro_RequestResponse.getResponse();
-                        if(bytereq==null){
-                            bytereq = new String("").getBytes();
+                        PRequestResponse ppr = cit.next();
+                        PRequestResponse opr = oit.next();
+                        if(ppr.isDisabled()){
+                            continue;
                         }
-                        if(byteres == null){
-                            byteres = new String("").getBytes();
+                        postmacro_RequestResponse = null;
+                        if(MBResetToOriginal){
+                            ppr = opr;
                         }
-                        PRequestResponse pqrs = new PRequestResponse(host, port, isSSL, bytereq, byteres, _pageenc);
-                        pqrs.setComments(ParmVars.plog.getComments());
-                        pqrs.setError(ParmVars.plog.isError());
-                        cit.set(pqrs);//更新
 
+
+                        byte[] byterequest = ppr.request.getByteMessage();
+                        if(byterequest!=null){
+                            String host = ppr.request.getHost();
+                            int port = ppr.request.getPort();
+                            boolean isSSL = ppr.request.isSSL();
+                            Encode _pageenc = ppr.request.getPageEnc();
+                            BurpIHttpService bserv = new BurpIHttpService(host, port, isSSL);
+                            ParmVars.plog.debuglog(0, "Request PostMacro:" + stepno + " "+ host + " " + ppr.request.method + " "+ ppr.request.url);
+                            //byte[] byteres = callbacks.makeHttpRequest(host,port, isSSL, byterequest);
+                            ParmVars.plog.clearComments();
+                            ParmVars.plog.setError(false);
+                            postmacro_RequestResponse = callbacks.makeHttpRequest(bserv, byterequest);
+                            byte[] bytereq = postmacro_RequestResponse.getRequest();
+                            byte[] byteres = postmacro_RequestResponse.getResponse();
+                            if(bytereq==null){
+                                bytereq = new String("").getBytes();
+                            }
+                            if(byteres == null){
+                                byteres = new String("").getBytes();
+                            }
+                            PRequestResponse pqrs = new PRequestResponse(host, port, isSSL, bytereq, byteres, _pageenc);
+                            pqrs.setComments(ParmVars.plog.getComments());
+                            pqrs.setError(ParmVars.plog.isError());
+                            cit.set(pqrs);//更新
+
+                        }
                     }
                 }
+            } catch (Exception ex) {
+              ParmVars.plog.printException(ex);
             }
-          } catch (Exception ex) {
-            ParmVars.plog.printException(ex);
-          }
+        }
         cit = null;
         if(postmacro_RequestResponse!=null){
             state = PMT_POSTMACRO_END;
@@ -593,6 +595,7 @@ public class ParmGenMacroTrace {
    }
    
    void setToolBaseLine(PRequestResponse _baseline){
+       
        toolbaseline = _baseline;
    }
 

@@ -165,7 +165,8 @@ public class ParmGenCSVLoader extends javax.swing.JFrame {
                 ParmVars.session.put(i, ParmGenSession.K_COLUMN, Integer.toString(colpos));
             }
             dispose();
-            new SelectRequest(bundle.getString("ParmGenCSVLoader.リクエスト選択.text"), parentwin, new ParmGenAddParms((ParmGenNew)parentwin, true), ParmGenNew.P_REQUESTTAB).setVisible(true);
+            //new SelectRequest(bundle.getString("ParmGenCSVLoader.リクエスト選択.text"), parentwin, new ParmGenAddParms((ParmGenNew)parentwin, true), ParmGenNew.P_REQUESTTAB).setVisible(true);
+            new ParmGenAddParms((ParmGenNew)parentwin, true).setVisible(true);
         }
     }//GEN-LAST:event_CSelectActionPerformed
 

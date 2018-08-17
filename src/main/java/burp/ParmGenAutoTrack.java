@@ -251,6 +251,9 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
             }
             PRequestResponse rs = ParmGenCSV.selected_messages.get(0);
             int mpos = rs.getMacroPos();
+            if(mpos<-1){
+                mpos = -1;
+            }
             ParmVars.session.put(ParmGenSession.K_FROMPOS, Integer.toString(mpos));
             String body = rs.response.getBody();
             AppValue ap = new AppValue();

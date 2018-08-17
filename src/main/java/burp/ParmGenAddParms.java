@@ -73,6 +73,9 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
         Select_ReplaceTargetURL.removeAllItems();
         PRequestResponse selected_message = ParmGenCSV.selected_messages.get(0);
         int mpos = selected_message.getMacroPos();
+        if(mpos<0){
+            mpos = 0;
+        }
         ParmVars.session.put(ParmGenSession.K_TOPOS, Integer.toString(mpos));
         selected_request = selected_message.request;
         String newtargetURL = ".*" + selected_request.getPath() + ".*";
@@ -542,13 +545,35 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
         if ( isformdata){
             return "(.+)";
         }
-        return prefix + "([^&=\\r\\n ]+)";
+        if(isheader || ispath){
+            return prefix + "([^\\r\\n\\t ]+)";
+        }else if(iscookie){
+            return prefix + "([^\\r\\n\\t;\\= ]+)";
+        }
+        return prefix + "([^&=\\r\\n\\t ]+)";
     }
 
     private void AddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddActionPerformed
         // TODO add your handling code here:
         int[] rowsSelected = ReqParsedTable.getSelectedRows();
-
+        String url = (String)Select_ReplaceTargetURL.getSelectedItem();
+        String fromstr = ParmVars.session.get(ParmGenSession.K_FROMPOS);
+        int frompos = -1;
+        if(fromstr!=null){
+            frompos = Integer.parseInt(fromstr);
+        }
+        String tostr = ParmVars.session.get(ParmGenSession.K_TOPOS);
+        int topos = 0;
+        if(tostr!=null){
+            topos = Integer.parseInt(tostr);
+        }
+        parentwin.updateFromToPos(frompos, topos);
+        
+        if(topos>0){//SetTo specified. then  URL target is any match
+            url = ".*";
+        }
+        if(url!=null)  parentwin.updateTargetURL(url);
+        
 
         for (int k=0; k<rowsSelected.length; k++){
             String reqplace = (String)ReqParsedTableModel.getValueAt(rowsSelected[k], 0);//位置
@@ -598,19 +623,7 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
 
             }
         }
-        String url = (String)Select_ReplaceTargetURL.getSelectedItem();
-        if(url!=null)  parentwin.updateTargetURL(url);
-        String pstr = ParmVars.session.get(ParmGenSession.K_FROMPOS);
-        int frompos = -1;
-        if(pstr!=null){
-            frompos = Integer.parseInt(pstr);
-        }
-        pstr = ParmVars.session.get(ParmGenSession.K_TOPOS);
-        int topos = 0;
-        if(pstr!=null){
-            topos = Integer.parseInt(pstr);
-        }
-        parentwin.updateFromToPos(frompos, topos);
+        
         dispose();
     }//GEN-LAST:event_AddActionPerformed
 

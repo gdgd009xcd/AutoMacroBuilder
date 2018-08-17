@@ -81,7 +81,7 @@ class PLog {
 		//    例：".*/project/index.php.*", 4, number, 1,"body", "myname(\w+)","query", "myvalue(\w+)", "path", "id/\/(\w+)\/"
 		//
 
-		logname = projectdir + "\\AppScanPermGen.log";
+		logname = projectdir + ParmVars.fileSep +"AppScanPermGen.log";
 		LogfileOn = false;// default disable file output
 		File logfile = new File(logname);
 		if ( ! logfile.exists()){
@@ -259,39 +259,42 @@ class ParmVars {
 	static ParmGenSession session;
         static int displaylength = 10000;// JTextArea/JTextPane等swingの表示バイト数
         private static boolean issaved = false;
+        static String fileSep = "/";//maybe unix filesystem.
 
 	//
 	// static変数初期化
 	//
 	static {
-		formdataenc = "ISO-8859-1";
-		File desktop = new File(System.getProperty("user.home"), "Desktop");
-		if (! desktop.exists()){
-			projectdir = System.getenv("HOMEDRIVE") + "\\" + System.getenv("HOMEPATH") + "\\\u30c7\u30b9\u30af\u30c8\u30c3\u30d7";
-			desktop = new File(projectdir);
-			if (! desktop.exists()){
-				projectdir = System.getenv("HOMEDRIVE") + "\\" + System.getenv("HOMEPATH") + "\\Desktop";
-			}
-		}else{
-			projectdir = desktop.getAbsolutePath();
-		}
-		desktop = null;
-		File newdir = new File(projectdir + "\\ParmGenParms");
+            fileSep = System.getProperty("file.separator");
+            formdataenc = "ISO-8859-1";
+            File desktop = new File(System.getProperty("user.home"), "Desktop");
+            if (! desktop.exists()){
+                    projectdir = System.getenv("HOMEDRIVE") + fileSep + System.getenv("HOMEPATH") + fileSep + "\u30c7\u30b9\u30af\u30c8\u30c3\u30d7";
+                    desktop = new File(projectdir);
+                    if (! desktop.exists()){
+                            projectdir = System.getenv("HOMEDRIVE") + fileSep + System.getenv("HOMEPATH") + fileSep + "Desktop";
+                    }
+            }else{
+                    projectdir = desktop.getAbsolutePath();
+            }
+            desktop = null;
+            /****
+            File newdir = new File(projectdir + fileSep + "ParmGenParms");
 
-		if (! newdir.exists()){
-			if(newdir.mkdirs()){
-				projectdir =newdir.getAbsolutePath();
-			}
-		}else{
-			projectdir =newdir.getAbsolutePath();
-		}
-		newdir = null;
-
-		parmfile = projectdir + "\\AppParmGen.json";
-		plog = new PLog(projectdir);
-		enc = Encode.UTF_8;// default encoding.
-		ProxyAuth = "";
-		session = new ParmGenSession();
+            if (! newdir.exists()){
+                    if(newdir.mkdirs()){
+                            projectdir =newdir.getAbsolutePath();
+                    }
+            }else{
+                    projectdir =newdir.getAbsolutePath();
+            }
+            newdir = null;
+            *********/
+            parmfile = projectdir + fileSep + "MacroBuilder.json";
+            plog = new PLog(projectdir);
+            enc = Encode.UTF_8;// default encoding.
+            ProxyAuth = "";
+            session = new ParmGenSession();
 	}
         
         public static boolean isSaved(){

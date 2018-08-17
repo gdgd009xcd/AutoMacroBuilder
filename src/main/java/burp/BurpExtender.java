@@ -147,6 +147,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                                     default:
                                         break;
                                 }
+                                int percent = -1;
                                 switch(pmt.getState()){
                                     case ParmGenMacroTrace.PMT_POSTMACRO_END:
                                         //カレントリクエストをpostマクロレスポンスの内容で更新
@@ -156,13 +157,18 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                                         }
                                         mbr.updateCurrentReqRes();
                                         pmt.nullState();
+                                        percent = pmt.getScanQuePercentage();
                                         break;
                                     case ParmGenMacroTrace.PMT_POSTMACRO_NULL:
                                         ParmVars.plog.debuglog(0, "====postmacro response NULL========");
                                         pmt.nullState();
+                                        percent = pmt.getScanQuePercentage();
                                     default:
                                         
                                         break;
+                                }
+                                if(percent != -1){
+                                    ParmVars.plog.debuglog(0, "ActiveScan [" + percent + "]%");
                                 }
                             }
                         } catch (Exception ex) {

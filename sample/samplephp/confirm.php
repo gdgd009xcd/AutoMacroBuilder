@@ -30,16 +30,21 @@ $imgfile = $_FILES['imgfile']['name'];
 $tmp_path = $_FILES['imgfile']['tmp_name'];
 $filetype = $_FILES['imgfile']['type'];
 
+$savepath = session_save_path();
+
+$mailfile = $savepath . "/mail.txt";
+$oldmail = file_get_contents($mailfile);
+
 if ( empty($subject) ||
      empty($contents) ||
-     empty($mailaddr) ){
+     empty($mailaddr) || $mailaddr === $oldmail){
      $_SESSION['token2'] = $randomval;
 ?>
 
 <html>
 <head>
 <tltle>
-お問い合わせ入力
+inquiry input:お問い合わせ入力
 </tltle>
 </head>
 <body>
@@ -53,7 +58,7 @@ if ( empty($subject) ||
 <TEXTAREA name="contents" rows="4" cols="40"><?php echo $contents; ?></textarea><BR>
 mail<BR>
 <input type="text" name="mailaddr" value="<?php echo $mailaddr; ?>" size="10" ><BR>
-<input type="submit"  value="確認">
+<input type="submit"  value="confirm:確認">
 </form>
 
 <P>
@@ -82,7 +87,7 @@ if(move_uploaded_file($tmp_path, $uploadTo)==TRUE){
 <html>
 <head>
 <tltle>
-お問い合わせ確認
+inquiry confirm:お問い合わせ確認
 </tltle>
 </head>
 <body>
@@ -91,26 +96,26 @@ if(move_uploaded_file($tmp_path, $uploadTo)==TRUE){
 
 <form action="complete.php" method="POST">
 <input type="hidden" name="token3" value="<?php echo $randomval; ?>">
-下記の内容をご確認の上、送信ボタンを押してください。<BR>
+下記の内容をご確認の上、送信ボタンを押してください。confirm your input below.<BR>
 <table border="1">
 <tr>
-<th>件名</th><td><?php echo $subject; ?></td>
+<th>件名subject</th><td><?php echo $subject; ?></td>
 </tr>
 <tr>
-<th>お問い合わせ内容</th><td><?php echo $contents; ?></td>
+<th>お問い合わせ内容message</th><td><?php echo $contents; ?></td>
 </tr>
 <tr>
-<th>宛先</th><td><?php echo $mailaddr; ?></td>
+<th>宛先mailaddr</th><td><?php echo $mailaddr; ?></td>
 </tr>
 <tr>
-<th>ファイル</th><td><?php echo $imgfile; ?></td>
+<th>ファイルfile</th><td><?php echo $imgfile; ?></td>
 </tr>
 <tr>
-<th>ファイル格納先</th><td><?php echo $tmp_path; ?></td>
+<th>ファイル格納先file stored path</th><td><?php echo $tmp_path; ?></td>
 </tr>
 </table>
 
-<input type="submit"  value="送信">
+<input type="submit"  value="complete">
 </form>
 
 <P>

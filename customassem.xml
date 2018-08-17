@@ -1,5 +1,5 @@
 <assembly>
-  <id>jar-with-dependencies-alpha</id>  <!-- ここだけ変更 -->
+  <id>jar-with-dependencies</id>  <!-- ここだけ変更 -->
   <formats>
     <format>jar</format>
   </formats>

@@ -47,6 +47,8 @@ public class ParmGenMacroTrace {
     boolean MBreplaceCookie = false;//==true Cookie引き継ぎ置き換え == false Cookie overwrite
     boolean MBmonitorofprocessing = false;
     boolean MBreplaceTrackingParam = false;
+    IScanQueueItem scanque = null;//scanner's queue
+    
 
     
     int waittimer = 1;//実行間隔(msec)
@@ -419,8 +421,6 @@ public class ParmGenMacroTrace {
     }
 
 
-
-
     //４）後処理マクロの開始
     void  startPostMacro(){
         state = PMT_POSTMACRO_BEGIN;
@@ -447,7 +447,6 @@ public class ParmGenMacroTrace {
                         if(MBResetToOriginal){
                             ppr = opr;
                         }
-
 
                         byte[] byterequest = ppr.request.getByteMessage();
                         if(byterequest!=null){
@@ -632,18 +631,18 @@ public class ParmGenMacroTrace {
             if(MBResetToOriginal){
                 pqr = originalrlist.get(pos);
             }
-	        if(pqr!=null){
-                    setToolBaseLine(pqr);
-                    String host = pqr.request.getHost();
-                    int port = pqr.request.getPort();
-                    boolean useHttps = pqr.request.isSSL();
-                    callbacks.sendToRepeater(
-                        host,
-                        port,
-                        useHttps,
-                        pqr.request.getByteMessage(),
-                        "MacroBuilder:" + pos);
-	        }
+            if(pqr!=null){
+                setToolBaseLine(pqr);
+                String host = pqr.request.getHost();
+                int port = pqr.request.getPort();
+                boolean useHttps = pqr.request.isSSL();
+                callbacks.sendToRepeater(
+                    host,
+                    port,
+                    useHttps,
+                    pqr.request.getByteMessage(),
+                    "MacroBuilder:" + pos);
+            }
     	}
 
     }
@@ -653,39 +652,48 @@ public class ParmGenMacroTrace {
             if(MBResetToOriginal){
                 pqr = originalrlist.get(pos);
             }
-	        if(pqr!=null){
-                    setToolBaseLine(null);
-                    String host = pqr.request.getHost();
-                    int port = pqr.request.getPort();
-                    boolean useHttps = pqr.request.isSSL();
-                    IScanQueueItem que =callbacks.doActiveScan(
-                        host,
-                        port,
-                        useHttps,
-                        pqr.request.getByteMessage()
-	            );
-	        }
+            if(pqr!=null){
+                setToolBaseLine(null);
+                String host = pqr.request.getHost();
+                int port = pqr.request.getPort();
+                boolean useHttps = pqr.request.isSSL();
+                scanque =callbacks.doActiveScan(
+                    host,
+                    port,
+                    useHttps,
+                    pqr.request.getByteMessage()
+                );
+            }
     	}
 
     }
+    
+    int getScanQuePercentage(){
+        if(scanque!=null){
+            byte b = scanque.getPercentageComplete();
+            return b & 0xff;
+        }
+        return -1;
+    }
+    
     void sendToIntruder(int pos){
     	if(rlist!=null&&rlist.size()>0){
 	    PRequestResponse pqr = rlist.get(pos);
             if(MBResetToOriginal){
                 pqr = originalrlist.get(pos);
             }
-	        if(pqr!=null){
-                    setToolBaseLine(null);
-                    String host = pqr.request.getHost();
-                    int port = pqr.request.getPort();
-                    boolean useHttps = pqr.request.isSSL();
-                    callbacks.sendToIntruder(
-                        host,
-                        port,
-                        useHttps,
-                        pqr.request.getByteMessage()
-                        );
-	        }
+            if(pqr!=null){
+                setToolBaseLine(null);
+                String host = pqr.request.getHost();
+                int port = pqr.request.getPort();
+                boolean useHttps = pqr.request.isSSL();
+                callbacks.sendToIntruder(
+                    host,
+                    port,
+                    useHttps,
+                    pqr.request.getByteMessage()
+                    );
+            }
     	}
 
     }

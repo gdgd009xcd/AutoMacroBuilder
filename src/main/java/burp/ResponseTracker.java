@@ -409,8 +409,6 @@ public class ResponseTracker extends javax.swing.JFrame implements InterfaceRege
         ResponseArea.setRows(5);
         jScrollPane1.setViewportView(ResponseArea);
 
-        RegexPattern.setText("jTextField2");
-
         jButton2.setText(bundle.getString("ResponseTracker.1)値選択.text")); // NOI18N
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -446,7 +444,7 @@ public class ResponseTracker extends javax.swing.JFrame implements InterfaceRege
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addGap(58, 58, 58)
-                        .addComponent(jLabel1)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

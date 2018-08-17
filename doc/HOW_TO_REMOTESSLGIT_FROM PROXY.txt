@@ -25,7 +25,7 @@ sslVerify = false等のエラー表示。
       <host>proxy.localhost</host>
       <port>8088</port>
       <username>daike</username>
-      <password>z4yvtz6w1</password>
+      <password>xis4yv9tz6wz</password>
     </proxy>
   </proxies>
   <mirrors>

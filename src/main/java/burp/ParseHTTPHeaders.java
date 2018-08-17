@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ListIterator;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -37,10 +38,12 @@ class ParseHTTPHeaders {
 	int port;
 	public ArrayList<String> pathparams;
 	public ArrayList<String[]> cookieparams;
-
-	public ArrayList<String[]> queryparams;
+        private HashMap<String, String> hashqueryparams;
+        private HashMap<String, String> hashbodyparams;
+	private ArrayList<String[]> queryparams;
 	private ArrayList<String[]> bodyparams;
 	ArrayList<String []> headers;
+        HashMap<String, ParmGenHeader> hkeyUpper_Headers = null;// key is UpperCase
 	public HashMap<String,ArrayList<String[]>> set_cookieparams;//String Key, ArrayList name=value pair
 	String content_type; // Content-Type: image/gif
 	String content_subtype;
@@ -51,53 +54,85 @@ class ParseHTTPHeaders {
 	int content_length;
 	boolean formdata;
 
-	String body;
+	String body;//encode = pageenc. maybe body's binary data != bytebody, because pageencoding affect it.
 	byte[] bytebody;
-
+        ParmGenBinUtil binbody = null;
+        String iso8859bodyString = null;
+        //form-data 以外は、ページエンコードでOK。
+        //form-dataのみ、セパレータ単位でエンコードする処理が必要。
+        private Encode pageenc = Encode.ISO_8859_1;//default
+        
+        
 	String message;// when update method(Ex. setXXX) is called, then this value must set to null;
-	boolean isrequest;// == true - request, false - response
+	private boolean isrequest;// == true - request, false - response
 
 	private void init(){
-		valueregex = ParmGenUtil.Pattern_compile("(([^\r\n:]*):{0,1}[ \t]*([^\r\n]*))(\r\n)");
-		//formdataregex = ParmGenUtil.Pattern_compile("-{4,}[a-zA-Z0-9]+(?:\r\n)(?:[A-Z].* name=\"(.*?)\".*(?:\r\n))(?:[A-Z].*(?:\r\n)){0,}(?:\r\n)((?:.|\r|\n)*?)(?:\r\n)-{4,}[a-zA-Z0-9]+");
-		formdataheader = "(?:[A-Z].* name=\"(.*?)\".*(?:\r\n))(?:[A-Z].*(?:\r\n)){0,}(?:\r\n)";
-		formdatafooter = "(?:\r\n)";
+            pageenc = Encode.ISO_8859_1;
+            binbody = null;
+            iso8859bodyString = null;
+            valueregex = ParmGenUtil.Pattern_compile("(([^\r\n:]*):{0,1}[ \t]*([^\r\n]*))(\r\n)");
+            //formdataregex = ParmGenUtil.Pattern_compile("-{4,}[a-zA-Z0-9]+(?:\r\n)(?:[A-Z].* name=\"(.*?)\".*(?:\r\n))(?:[A-Z].*(?:\r\n)){0,}(?:\r\n)((?:.|\r|\n)*?)(?:\r\n)-{4,}[a-zA-Z0-9]+");
+            formdataheader = "(?:[A-Z].* name=\"(.*?)\".*(?:\r\n))(?:[A-Z].*(?:\r\n)){0,}(?:\r\n)";
+            formdatafooter = "(?:\r\n)";
 
-		isSSL = false;
-		crlf = false;
-		isrequest = false;
-		message = null;
-		pathparams = new ArrayList<String>();
-		cookieparams = new ArrayList<String[]>();
-		set_cookieparams = new HashMap<String,ArrayList<String[]>>();
-		charset = "";
-		content_type = "";
-		content_subtype = "";
-		queryparams = new ArrayList<String[]>();
-		bodyparams = null;
-		boundary = null;
-		formdata = false;
-		content_length = 0;
-		body = null;
-		bytebody = null;
-		path_pref_url = "";
-		parsedheaderlength = 0;
-		isHeaderModified = true;
+            isSSL = false;
+            crlf = false;
+            isrequest = false;
+            message = null;
+            pathparams = new ArrayList<String>();
+            cookieparams = new ArrayList<String[]>();
+            set_cookieparams = new HashMap<String,ArrayList<String[]>>();
+            charset = "";
+            content_type = "";
+            content_subtype = "";
+            queryparams = new ArrayList<String[]>();
+            hashqueryparams = new HashMap<String, String>();
+            hkeyUpper_Headers = new HashMap<String, ParmGenHeader>();
+            bodyparams = null;
+            hashbodyparams = null;
+            boundary = null;
+            formdata = false;
+            content_length = 0;
+            bytebody = null;
+            path_pref_url = "";
+            parsedheaderlength = 0;
+            isHeaderModified = true;
 	}
 
 	//public ParseHTTPHeaders(){
 	//	init();
 	//}
 
-	ParseHTTPHeaders(String httpmessage){
-		init();
-		ArrayList<String []> dummy = Parse(httpmessage);
+	ParseHTTPHeaders(byte[] _binmessage, Encode _penc){
+            construct("", 0, false, _binmessage, _penc);
 	}
-        ParseHTTPHeaders(String _h, int _p, boolean _isssl, byte[] _binmessage){
-		init();
-                String httpmessage;
+        
+        ParseHTTPHeaders(String _h, int _p, boolean _isssl, byte[] _binmessage, Encode _penc){
+		construct(_h, _p, _isssl, _binmessage, _penc);
+	}
+        
+        private String httpMessageString(byte[] _binmessage, Encode _penc){
+            pageenc = _penc;
+            String httpmessage = null;
+            try {
+                httpmessage = new String(_binmessage, pageenc.getIANACharset());
+            } catch (UnsupportedEncodingException ex) {
+                pageenc = Encode.ISO_8859_1;//falling default enc
                 try {
-                    httpmessage = new String(_binmessage, ParmVars.enc.getIANACharset());
+                    httpmessage = new String(_binmessage, pageenc.getIANACharset());
+                } catch (UnsupportedEncodingException ex1) {
+                    Logger.getLogger(ParseHTTPHeaders.class.getName()).log(Level.SEVERE, null, ex1);
+                    httpmessage = null;
+                }
+            }
+            return httpmessage;
+        }
+        
+        public void construct(String _h, int _p, boolean _isssl, byte[] _binmessage, Encode _penc){
+		init();
+                String httpmessage = httpMessageString(_binmessage, _penc);
+                
+                if(httpmessage!=null){
                     ArrayList<String []> dummy = Parse(httpmessage);
                     int hlen = getParsedHeaderLength();
                     ParmGenBinUtil warray = new ParmGenBinUtil(_binmessage);
@@ -105,15 +140,14 @@ class ParseHTTPHeaders {
                         byte[] _body = warray.subBytes(hlen);
                         setBody(_body);
                     }
-                    //parse後に明示的に設定。
-                    host = _h;
-                    port = _p;
-                    isSSL = _isssl;
-                } catch (UnsupportedEncodingException ex) {
-                    ParmVars.plog.printException(ex);
+                    if(isRequest()){
+                        //parse後に明示的に設定。
+                        host = _h;
+                        port = _p;
+                        isSSL = _isssl;
+                    }
+                    //ParmVars.plog.debuglog(0, "construct isRequest/host/port/SSL" +(isRequest()?"REQUEST": "RESPONSE")+ host + "/" + port + "/" + (isSSL?"SSL":"NOSSL"));
                 }
-
-
 	}
 
         public String getHost() {
@@ -136,10 +170,10 @@ class ParseHTTPHeaders {
             return formdata;
         }
 
-        public int getBodyLength() {
+        private int getStringBodyLength() {
             if (body!=null){
                 try{
-                    int blen =  body.getBytes(ParmVars.enc.getIANACharset()).length;
+                    int blen =  body.getBytes(pageenc.getIANACharset()).length;
                     return blen;
                 }catch(UnsupportedEncodingException e){
                     ParmVars.plog.printException(e);
@@ -152,7 +186,7 @@ class ParseHTTPHeaders {
             String h = getHeaderOnly();
             if (h!=null){
                 try{
-                    int blen =  h.getBytes(ParmVars.enc.getIANACharset()).length;
+                    int blen =  h.getBytes(pageenc.getIANACharset()).length;
                     return blen;
                 }catch(UnsupportedEncodingException e){
                     ParmVars.plog.printException(e);
@@ -179,7 +213,7 @@ class ParseHTTPHeaders {
             port = _p;
         }
         
-        ArrayList<String []> Parse(String httpmessage){//request or response
+        private ArrayList<String []> Parse(String httpmessage){//request or response
         	parsedheaderlength = 0;
         	Matcher m = valueregex.matcher(httpmessage);
         	String name = "";
@@ -191,187 +225,200 @@ class ParseHTTPHeaders {
                     message = null;
                     boundary = null;
                     while(m.find()){
-                            int gcnt = m.groupCount();
-                            if ( gcnt > 1){
-                                    rec = m.group(1);
-                            }
-                            if ( gcnt > 2){
-                                    name = m.group(2);
-                            }
-                            if ( gcnt > 3){
-                                    value = m.group(3);
-                            }
-                            if ( name.length() <= 0 && value.length() <= 0 ){
-                                    crlf = true;
-                                    int epos = m.end(gcnt);
-                                    parsedheaderlength = epos;
-                                    body = httpmessage.substring(epos);
-                                    break;
-                            }else{
-                                    if ( frec ){//start-line
-                                            nv = rec.split("[ \t]+" , 3);
-                                            //request nv[0] method nv[1] url nv[2] protocol
-                                            if ( nv.length > 2){
-                                                    method = nv[0];
+                        name = "";
+                        value = "";
+                        rec = "";
+                        int gcnt = m.groupCount();
+                        if ( gcnt > 1){
+                                rec = m.group(1);
+                        }
+                        if ( gcnt > 2){
+                                name = m.group(2);
+                        }
+                        if ( gcnt > 3){
+                                value = m.group(3);
+                        }
+                        if ( name.length() <= 0 && value.length() <= 0 ){//found crlfcrlf　separator between header and body. 
+                                crlf = true;
+                                int epos = m.end(gcnt);
+                                parsedheaderlength = epos;
+                                body = httpmessage.substring(epos);
+                                break;
+                        }else{
+                                if ( frec ){//start-line
+                                        nv = rec.split("[ \t]+" , 3);
+                                        //request nv[0] method nv[1] url nv[2] protocol
+                                        if ( nv.length > 2){
+                                                method = nv[0];
 
-                                                    String lowerline = method.toLowerCase();
+                                                String lowerline = method.toLowerCase();
 
-                                                    if ( lowerline.startsWith("http") ){//response
-                                                            isrequest = false;
-                                                            protocol = nv[0];
-                                                            status = nv[1];
-                                                            reason = nv[2];
-                                                            set_cookieparams.clear();
-                                                    }else{//request;
-                                                            isrequest = true;
-                                                            method = nv[0];
-                                                            url = nv[1];
-                                                            String[] parms = url.split("[?&]");
-                                                            if (parms.length > 0){
-                                                                    path = parms[0];
-                                                                    String lowerpath = path.toLowerCase();
-                                                                    if(lowerpath.startsWith("http")){
-                                                                            path_pref_url = "http";
-                                                                            isSSL = false;
-                                                                            if(lowerpath.startsWith("https")){
-                                                                                    path_pref_url = "https";
-                                                                                    isSSL = true;
-                                                                            }
-                                                                            String[] actualpaths = path.split("[/]");
-                                                                            String resultpath = "/";
-                                                                            for(int k = 0; k < actualpaths.length; k++){
-                                                                                    if(k>2){
-                                                                                            resultpath += (resultpath.equals("/")?"":"/") + actualpaths[k];
-                                                                                    }
-                                                                            }
-                                                                            path = resultpath;
-                                                                    }
-                                                                    if(!path.isEmpty()){
-                                                                            String[] pathlist = path.split("[/]");
-                                                                            for(int j=1; j<pathlist.length;j++){
-                                                                                    pathparams.add(pathlist[j]);
-                                                                            }
-                                                                    }
-                                                            }
-                                                            if (parms.length > 1){
-                                                                    for(int i = 1; i < parms.length; i++){
-                                                                            String [] nv = parms[i].trim().split("=");
-                                                                            String [] nvpair = new String[2];
-                                                                            if (nv.length > 0){
-                                                                                    nvpair[0] = new String(nv[0]);
-                                                                            }
-                                                                            if (nv.length > 1){
-                                                                                    nvpair[1] = new String(nv[1]);
-                                                                            }else{
-                                                                                    nvpair[1] = new String("");
-                                                                            }
-                                                                            queryparams.add(nvpair);
+                                                if ( lowerline.startsWith("http") ){//response
+                                                        isrequest = false;
+                                                        protocol = nv[0];
+                                                        status = nv[1];
+                                                        reason = nv[2];
+                                                        set_cookieparams.clear();
+                                                }else{//request;
+                                                        isrequest = true;
+                                                        method = nv[0];
+                                                        url = nv[1];
+                                                        String[] parms = url.split("[?&]");
+                                                        if (parms.length > 0){
+                                                                path = parms[0];
+                                                                String lowerpath = path.toLowerCase();
+                                                                if(lowerpath.startsWith("http")){
+                                                                        path_pref_url = "http";
+                                                                        isSSL = false;
+                                                                        if(lowerpath.startsWith("https")){
+                                                                                path_pref_url = "https";
+                                                                                isSSL = true;
+                                                                        }
+                                                                        String[] actualpaths = path.split("[/]");
+                                                                        String resultpath = "/";
+                                                                        for(int k = 0; k < actualpaths.length; k++){
+                                                                                if(k>2){
+                                                                                        resultpath += (resultpath.equals("/")?"":"/") + actualpaths[k];
+                                                                                }
+                                                                        }
+                                                                        path = resultpath;
+                                                                }
+                                                                if(!path.isEmpty()){
+                                                                        String[] pathlist = path.split("[/]");
+                                                                        for(int j=1; j<pathlist.length;j++){
+                                                                                pathparams.add(pathlist[j]);
+                                                                        }
+                                                                }
+                                                        }
+                                                        if (parms.length > 1){
+                                                                for(int i = 1; i < parms.length; i++){
+                                                                        String [] nv = parms[i].trim().split("=");
+                                                                        String [] nvpair = new String[2];
+                                                                        if (nv.length > 0){
+                                                                                nvpair[0] = new String(nv[0]);
+                                                                        }
+                                                                        if (nv.length > 1){
+                                                                                nvpair[1] = new String(nv[1]);
+                                                                        }else{
+                                                                                nvpair[1] = new String("");
+                                                                        }
+                                                                        queryparams.add(nvpair);
+                                                                        hashqueryparams.put(decodedParamName(nvpair[0], pageenc), nvpair[1]);
 
-                                                                    }
-                                                            }
-                                                            protocol = nv[2];
-                                                    }
-                                            }
-                                            frec = false;
-                                    }else{//headers
-                                            nv = new String[2];
-                                            nv[0] = new String(name.trim());
-                                            nv[1] = new String(value.trim());
-                                            headers.add(nv);
-                                            port = 80;//default
-                                            if (nv[0].toLowerCase().startsWith("host")) {
-                                                    String[] hasport = nv[1].split("[:]");
-                                                    if(hasport.length>1){
-                                                            port = Integer.parseInt(hasport[1]);
-                                                    }
-                                                    if(hasport.length>0){
-                                                            host = hasport[0];
-                                                    }
+                                                                }
+                                                        }
+                                                        protocol = nv[2];
+                                                }
+                                        }
+                                        frec = false;
+                                }else{//headers
+                                        nv = new String[2];
+                                        nv[0] = new String(name.trim());
+                                        nv[1] = new String(value.trim());
+                                        int hi = headers.size();
+                                        headers.add(nv);
+                                        ParmGenHeader pgheader = new ParmGenHeader(hi, nv[0], nv[1]);
+                                        ParmGenHeader existheader = hkeyUpper_Headers.get(pgheader.getKeyUpper());
+                                        if(existheader!=null){
+                                            existheader.addValue(hi, nv[1]);
+                                            hkeyUpper_Headers.put(existheader.getKeyUpper(), existheader);
+                                        }else{
+                                            hkeyUpper_Headers.put(pgheader.getKeyUpper(), pgheader);
+                                        }
+                                        port = 80;//default
+                                        if (nv[0].toLowerCase().startsWith("host")) {
+                                                String[] hasport = nv[1].split("[:]");
+                                                if(hasport.length>1){
+                                                        port = Integer.parseInt(hasport[1]);
+                                                }
+                                                if(hasport.length>0){
+                                                        host = hasport[0];
+                                                }
 
-                                            }
-                                            if (nv[0].toLowerCase().startsWith("content-type")) {
-                                                    String[] types = nv[1].split("[ ;\t]");
+                                        }
+                                        if (nv[0].toLowerCase().startsWith("content-type")) {
+                                                String[] types = nv[1].split("[ ;\t]");
 
-                                                    for(int i = 0;i<types.length;i++){
-                                                            if(types[i].toLowerCase().startsWith("charset")){
-                                                                    String[] csets = types[i].split("[ \t=]");
-                                                                    charset = "";
-                                                                    for(String v: csets){
-                                                                            charset = v;
-                                                                    }
-                                                            }else{
-                                                                    int slpos = types[i].indexOf("/");
-                                                                    if ( slpos > 0){// type/subtype
-                                                                            content_type = types[i].substring(0, slpos).toLowerCase();
-                                                                            if(types[i].length() > slpos+1){
-                                                                                    content_subtype = types[i].substring(slpos+1, types[i].length()).toLowerCase();
-                                                                            }
-                                                                    }else{
-                                                                            if ( types[i].toLowerCase().startsWith("boundary=")){
-                                                                                    String[] boundaries = types[i].split("[=]");
-                                                                                    if(boundaries.length>1){
-                                                                                            boundary = boundaries[1];
-                                                                                            formdataheaderregex = ParmGenUtil.Pattern_compile(formdataheader);
-                                                                                            formdatafooterregex = ParmGenUtil.Pattern_compile(formdatafooter + "--" + boundary);
-                                                                                            formdata = true;
-                                                                                    }
-                                                                            }
-                                                                    }
-                                                            }
-                                                    }
-                                            }else if(nv[0].toLowerCase().startsWith("content-length")){
-                                                    content_length = Integer.parseInt(nv[1]);
-                                            }else if(nv[0].toLowerCase().startsWith("cookie")){
-                                                    String[] cookies = nv[1].split("[\r\n;]");
-                                                    cookieparams.clear();
-                                                    for(int ck = 0; ck < cookies.length; ck++){
-                                                            String[] cnv = cookies[ck].trim().split("[=]");
-                                                            if(cnv.length>1){
-                                                                    String[] nvpair = new String[2];
-                                                                    nvpair[0] = new String(cnv[0]);
-                                                                    nvpair[1] = new String(cnv[1]);
-                                                                    cookieparams.add(nvpair);
-                                                            }
-                                                    }
-                                            }else if(nv[0].toLowerCase().startsWith("set-cookie")){//レスポンスのSet-Cookie値
-                                                    String[] cookies = nv[1].split("[\r\n;]");
-                                                    String setckey = null;
-                                                    String setcval = null;
-                                                    ArrayList<String[]> setclist = new ArrayList<String[]>();
-                                                    for(int ck = 0; ck < cookies.length; ck++){
-                                                            String[] cnv = cookies[ck].trim().split("[=]");
-                                                            String[] nvpair = new String[2];
-                                                            if(cnv.length>1){
-                                                                    nvpair[0] = new String(cnv[0]);
-                                                                    nvpair[1] = new String(cnv[1]);
-                                                                    if(ck==0){//cookie name=value
-                                                                                    setckey = nvpair[0];
-                                                                                    setcval = nvpair[1];
-                                                                    }
-                                                                    setclist.add(nvpair);
-                                                                    //ParmVars.plog.debuglog(0, "Set-Cookie: K[" + setckey + "] " + nvpair[0] + "=" + nvpair[1]);
+                                                for(int i = 0;i<types.length;i++){
+                                                        if(types[i].toLowerCase().startsWith("charset")){
+                                                                String[] csets = types[i].split("[ \t=]");
+                                                                charset = "";
+                                                                for(String v: csets){
+                                                                        charset = v;
+                                                                }
+                                                        }else{
+                                                                int slpos = types[i].indexOf("/");
+                                                                if ( slpos > 0){// type/subtype
+                                                                        content_type = types[i].substring(0, slpos).toLowerCase();
+                                                                        if(types[i].length() > slpos+1){
+                                                                                content_subtype = types[i].substring(slpos+1, types[i].length()).toLowerCase();
+                                                                        }
+                                                                }else{
+                                                                        if ( types[i].toLowerCase().startsWith("boundary=")){
+                                                                                String[] boundaries = types[i].split("[=]");
+                                                                                if(boundaries.length>1){
+                                                                                        boundary = boundaries[1];
+                                                                                        formdataheaderregex = ParmGenUtil.Pattern_compile(formdataheader);
+                                                                                        formdatafooterregex = ParmGenUtil.Pattern_compile(formdatafooter + "--" + boundary);
+                                                                                        formdata = true;
+                                                                                }
+                                                                        }
+                                                                }
+                                                        }
+                                                }
+                                        }else if(nv[0].toLowerCase().startsWith("content-length")){
+                                                content_length = Integer.parseInt(nv[1]);
+                                        }else if(nv[0].toLowerCase().startsWith("cookie")){
+                                                String[] cookies = nv[1].split("[\r\n;]");
+                                                cookieparams.clear();
+                                                for(int ck = 0; ck < cookies.length; ck++){
+                                                        String[] cnv = cookies[ck].trim().split("[=]");
+                                                        if(cnv.length>1){
+                                                                String[] nvpair = new String[2];
+                                                                nvpair[0] = new String(cnv[0]);
+                                                                nvpair[1] = new String(cnv[1]);
+                                                                cookieparams.add(nvpair);
+                                                        }
+                                                }
+                                        }else if(nv[0].toLowerCase().startsWith("set-cookie")){//レスポンスのSet-Cookie値
+                                                String[] cookies = nv[1].split("[\r\n;]");
+                                                String setckey = null;
+                                                String setcval = null;
+                                                ArrayList<String[]> setclist = new ArrayList<String[]>();
+                                                for(int ck = 0; ck < cookies.length; ck++){
+                                                        String[] cnv = cookies[ck].trim().split("[=]");
+                                                        String[] nvpair = new String[2];
+                                                        if(cnv.length>1){
+                                                                nvpair[0] = new String(cnv[0]);
+                                                                nvpair[1] = new String(cnv[1]);
+                                                                if(ck==0){//cookie name=value
+                                                                                setckey = nvpair[0];
+                                                                                setcval = nvpair[1];
+                                                                }
+                                                                setclist.add(nvpair);
+                                                                //ParmVars.plog.debuglog(0, "Set-Cookie: K[" + setckey + "] " + nvpair[0] + "=" + nvpair[1]);
 
-                                                            }else{
-                                                                    if(cnv[0].toLowerCase().startsWith("httponly")){
-                                                                            nvpair[0] = new String("httponly");
-                                                                            nvpair[1] = new String(cnv[0]);
-                                                                    }else if(cnv[0].toLowerCase().startsWith("secure")){
-                                                                            nvpair[0] = new String("secure");
-                                                                            nvpair[1] = new String(cnv[0]);
-                                                                    }
-                                                                    setclist.add(nvpair);
-                                                                    //ParmVars.plog.debuglog(0, "Set-Cookie: K[" + setckey + "] " + nvpair[0] + "=" + nvpair[1]);
-                                                            }
-                                                    }
-                                                    if(setckey!=null){
-                                                            set_cookieparams.put(setckey, setclist);
-                                                    }
-                                            }
+                                                        }else{
+                                                                if(cnv[0].toLowerCase().startsWith("httponly")){
+                                                                        nvpair[0] = new String("httponly");
+                                                                        nvpair[1] = new String(cnv[0]);
+                                                                }else if(cnv[0].toLowerCase().startsWith("secure")){
+                                                                        nvpair[0] = new String("secure");
+                                                                        nvpair[1] = new String(cnv[0]);
+                                                                }
+                                                                setclist.add(nvpair);
+                                                                //ParmVars.plog.debuglog(0, "Set-Cookie: K[" + setckey + "] " + nvpair[0] + "=" + nvpair[1]);
+                                                        }
+                                                }
+                                                if(setckey!=null){
+                                                        set_cookieparams.put(setckey, setclist);
+                                                }
+                                        }
 
 
-                                    }
+                                }
 
-                            }
+                        }
 
                     }
 
@@ -380,9 +427,14 @@ class ParseHTTPHeaders {
         }
 
 
+        public ArrayList<String[]> getQueryParams(){
+            return queryparams;
+        }
+        
         public ArrayList<String[]> getBodyParams(){
             if ( isrequest==true&&bodyparams==null){
                 bodyparams = new ArrayList<String[]>();
+                hashbodyparams = new HashMap<String, String>();
                 if ( boundary == null){
                     //application/x-www-form-urlencoded
                     String[] parms = body.split("[&]");
@@ -400,7 +452,10 @@ class ParseHTTPHeaders {
                             }else{
                                 nvpair[1] = new String("");
                             }
-                            if(nvpair[0]!=null) bodyparams.add(nvpair);
+                            if(nvpair[0]!=null) {
+                                bodyparams.add(nvpair);
+                                hashbodyparams.put(decodedParamName(nvpair[0], pageenc), nvpair[1]);
+                            }
                         }
                     }
                 }else{//multipart/form-data
@@ -441,6 +496,7 @@ class ParseHTTPHeaders {
                                 ParmVars.plog.debuglog(1, "name[" + nvpair[0] + "]");
                                 if(fgcnt>0){
                                     bodyparams.add(nvpair);
+                                    hashbodyparams.put(decodedParamName(nvpair[0], pageenc), nvpair[1]);
                                 }
                             }catch(Exception e){
                                 ParmVars.plog.printException(e);
@@ -469,6 +525,7 @@ class ParseHTTPHeaders {
 		nv[0] = new String(name);
 		nv[1] = new String(value);
 		headers.set(i, nv);
+                updateParmGenHeader(i, nv[0], nv[1]);
 		message = null;
                 isHeaderModified = true;
 	}
@@ -476,30 +533,42 @@ class ParseHTTPHeaders {
 	void setHeader(String name, String value){
 		int i = findHeader(name);
 		if (i >= 0){
-			setHeader(i, name, value);
+                    setHeader(i, name, value);
 		}else{//追加
                     String[] nv = new String[2];
                     nv[0] = new String(name);
                     nv[1] = new String(value);
+                    i = headers.size();
                     headers.add(nv);
                 }
+                updateParmGenHeader(i, name, value);
+                message = null;
                 isHeaderModified = true;
 	}
 
         void removeHeader(String name){
-            int i = findHeader(name);
-		if (i >= 0){
-			headers.remove(i);
-		}
+            ParmGenHeader phg = getParmGenHeader(name);
+            if(phg!=null){
+                ListIterator<ParmGenBeen> it = phg.getValuesIter();
+                while(it.hasNext()){
+                    ParmGenBeen been = it.next();
+                    headers.remove(been.i);
+                    it.remove();
+                }
+                hkeyUpper_Headers.remove(name.toUpperCase());
+                message = null;
+                isHeaderModified = true;
+            }
         }
 
 	void setBody(byte[] _bval){
                 bytebody = _bval;
                 try {
-                    body = new String(bytebody, ParmVars.enc.getIANACharset());
+                    body = new String(bytebody, pageenc.getIANACharset());
                 } catch (UnsupportedEncodingException ex) {
                     ParmVars.plog.printException(ex);
                 }
+                binbody = null;
 		message = null;
 	}
 
@@ -540,6 +609,7 @@ class ParseHTTPHeaders {
             }
             setHeader("Cookie", cookiedata);
             ParmVars.plog.debuglog(0, "Cookie:" + cookiedata);
+            message = null;
             isHeaderModified = true;
         }
 
@@ -558,6 +628,7 @@ class ParseHTTPHeaders {
                 String[] nv = it.next();
                 CookieKey ckey = new CookieKey(domain, nv[0]);
                 ArrayList<CookiePathValue> cpvlist = cookiemap.get(ckey);
+                
                 
                 if(cpvlist!=null){
                     Collections.sort(cpvlist, new PathComparator().reversed());
@@ -688,13 +759,13 @@ class ParseHTTPHeaders {
             return status;
         }
 
-	String getMessage(){
+	String getMessage(){//return String in pageenc encoding 
 
 		if ( message != null ){
 			return message;
 		}
 
-                int blen = getBodyLength();
+                int blen = getStringBodyLength();
                 setHeader("Content-Length", Integer.toString(blen));
 
 		StringBuilder sb = new StringBuilder();
@@ -728,7 +799,7 @@ class ParseHTTPHeaders {
                     String headerpart = new String(sb);
                     ParmGenBinUtil rawmessage = new ParmGenBinUtil();
                     try {
-                        rawmessage = new ParmGenBinUtil(headerpart.getBytes(ParmVars.enc.getIANACharset()));
+                        rawmessage = new ParmGenBinUtil(headerpart.getBytes(pageenc.getIANACharset()));
                         if(bytebody!=null){
                             rawmessage.concat(bytebody);
                         }
@@ -740,7 +811,7 @@ class ParseHTTPHeaders {
                 }else{//String bodyから
                     String strmess = getMessage();
                     try{
-                        byte[] binmess =  strmess.getBytes(ParmVars.enc.getIANACharset());
+                        byte[] binmess =  strmess.getBytes(pageenc.getIANACharset());
                         return binmess;
                     }catch(UnsupportedEncodingException e){
                         ParmVars.plog.printException(e);
@@ -784,6 +855,13 @@ class ParseHTTPHeaders {
 		}
 		return null;
 	}
+        
+        String[] getHeaderNV(int i){
+            if ( headers!=null&&i >= 0 && headers.size() > i){
+                return headers.get(i);
+            }
+            return null;
+        }
 
 	ArrayList<String []> getHeaders(){
 		return headers;
@@ -807,6 +885,44 @@ class ParseHTTPHeaders {
 		}
 		return -1;
 	}
+        
+        ParmGenHeader getParmGenHeader(String name){
+            if(hkeyUpper_Headers!=null&&name!=null){
+                return hkeyUpper_Headers.get(name.toUpperCase());
+            }
+            return null;
+        }
+        
+        private void updateParmGenHeader(int i, String name, String value){
+            if(hkeyUpper_Headers!=null&&name!=null){
+                ParmGenHeader phg = getParmGenHeader(name);
+                if(phg!=null){
+                    ListIterator<ParmGenBeen> it = phg.getValuesIter();
+                    boolean beenupdated = false;
+                    while(it.hasNext()){
+                        ParmGenBeen been = it.next();
+                        if(been.i==i){
+                            been.v = value;
+                            it.set(been);
+                            beenupdated = true;
+                        }
+                    }
+                    if(!beenupdated){
+                        phg.addValue(i, value);
+                    }
+                    hkeyUpper_Headers.put(phg.getKeyUpper(), phg);
+                }else{
+                    phg = new ParmGenHeader(i, name, value);
+                    hkeyUpper_Headers.put(phg.getKeyUpper(), phg);
+                }
+            }
+        }
+        
+
+        
+        HashMap<String, ParmGenHeader> getheadersHash(){
+            return hkeyUpper_Headers;
+        }
 
         String getContent_Type(){
             return content_type;
@@ -824,13 +940,23 @@ class ParseHTTPHeaders {
             if(resname.equals(reqname))return true;
             else{
                 try {
-                    String decoded = URLDecoder.decode(reqname, ParmVars.enc.getIANACharset());
+                    String decoded = URLDecoder.decode(reqname, pageenc.getIANACharset());
                     if(resname.equals(decoded)) return true;
-                } catch (UnsupportedEncodingException ex) {
+                } catch (Exception ex) {
                     Logger.getLogger(ParseHTTPHeaders.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
             return false;
+        }
+        
+        public String decodedParamName(String _name, Encode enc){
+            try {
+                String decoded = URLDecoder.decode(_name, enc.getIANACharset());
+                return decoded;
+            } catch (Exception ex) {
+                Logger.getLogger(ParseHTTPHeaders.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return _name;
         }
         
         // body parameter same name & value
@@ -873,6 +999,90 @@ class ParseHTTPHeaders {
         	}
             }
             return null;
+        }
+        
+        public String getQueryParamValue(String _name){
+            if(hashqueryparams!=null){
+                return hashqueryparams.get(_name);
+            }
+            return null;
+        }
+        
+        public String getBodyParamValue(String _name){
+            if(hashbodyparams==null){
+                getBodyParams();
+            }
+            return hashbodyparams.get(_name);
+        }
+        
+        public String getBoundary(){
+            if(boundary==null){
+                ParmGenHeader pgh = getParmGenHeader("Content-Type");
+                if(pgh!=null){
+                    ListIterator<ParmGenBeen> it = pgh.getValuesIter();
+                    if(it!=null&&it.hasNext()){//先頭のヘッダーを取り出す。
+                        ParmGenBeen been = it.next();
+                        String content_type = been.v;
+                        Pattern ctypepattern = ParmGenUtil.Pattern_compile("multipart/form-data;.*?boundary=(.+)$");
+                        Matcher ctypematcher = ctypepattern.matcher(content_type);
+                        if ( ctypematcher.find()){
+                            boundary = ctypematcher.group(1);
+                            boundary = "--" + boundary;//
+                            return boundary;
+                        }
+                    }
+                        
+                    
+                }
+            }
+            return null;
+        }
+        
+        public byte[] getBodyBytes(){
+            if(bytebody!=null){
+                return bytebody;
+            }else{
+                byte[] requestbytes = getByteMessage();
+                ParmGenBinUtil warray = new ParmGenBinUtil(requestbytes);
+                try{
+                    //ParmVars.plog.debuglog(1,"request length : " + Integer.toString(warray.length()) + "/" + Integer.toString(prequest.getParsedHeaderLength()));
+                    if(warray.length()>getParsedHeaderLength()){
+                        bytebody = warray.subBytes(getParsedHeaderLength());
+                        return bytebody;
+                    }
+                }catch(Exception e ){
+                    
+                }
+            }
+            return null;
+        }
+        public ParmGenBinUtil getBinBody(){
+            if(binbody == null ){
+                byte[] bdata = getBodyBytes();
+                if(bdata !=null){
+                    binbody =  new ParmGenBinUtil(bdata);
+                }
+            }
+            return binbody;
+        }
+        
+        public String getISO8859BodyString(){
+            if(iso8859bodyString==null){
+                byte[] bdata = getBodyBytes();
+                if(bdata!=null){
+
+                    try {
+                        iso8859bodyString = new String(bdata, Encode.ISO_8859_1.getIANACharset());
+                    } catch (UnsupportedEncodingException ex) {
+                        Logger.getLogger(ParseHTTPHeaders.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+            return iso8859bodyString;
+        }
+        
+        public Encode getPageEnc(){
+            return pageenc;
         }
 }
 

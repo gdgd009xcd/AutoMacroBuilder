@@ -42,6 +42,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     int OriginalEditTarget = -1;
     boolean EditTargetIsSSL = false;
     int EditTargetPort = 0;
+    Encode EditPageEnc = Encode.ISO_8859_1;
 
     /**
      * Creates new form MacroBuilderUI
@@ -62,11 +63,26 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         pmt.setMBFinalResponse(FinalResponse.isSelected());
         pmt.setMBResetToOriginal(MBResetToOriginal.isSelected());
         pmt.setMBmonitorofprocessing(MBmonitorofprocessing.isSelected());
-        pmt.setMBreplaceTrackingParam(true);
+        
+        pmt.setMBreplaceTrackingParam(isReplaceMode());
         
 
     }
 
+    boolean isReplaceMode(){
+        boolean mode = true;
+        String selected = (String)TrackMode.getSelectedItem();
+        if(selected!=null){
+            if(selected.equals("replace")){
+                return true;
+            }else{
+                return false;
+            }
+        }
+        return true;
+        
+    }
+    
     ParmGenMacroTrace getParmGenMacroTrace() {
         return pmt;
     }
@@ -112,7 +128,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     }
 
     void updateCurrentReqRes() {
-        int cpos = pmt.getCurrentRequest();
+        int cpos = pmt.getCurrentRequestPos();
         if (rlist != null) {
             PRequestResponse pqr = rlist.get(cpos);
             if(pmt.isMBmonitorofprocessing()){
@@ -190,6 +206,8 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         MBCookieFromJar = new javax.swing.JCheckBox();
         jPanel6 = new javax.swing.JPanel();
         MBcleatokenfromcache = new javax.swing.JCheckBox();
+        TrackMode = new javax.swing.JComboBox<>();
+        jLabel3 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
         jCheckBox2 = new javax.swing.JCheckBox();
         waitsec = new javax.swing.JTextField();
@@ -278,7 +296,11 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         });
         ResponseShow.add(show);
 
-        jPanel4.setPreferredSize(new java.awt.Dimension(871, 1180));
+        setPreferredSize(new java.awt.Dimension(873, 850));
+
+        jScrollPane2.setPreferredSize(new java.awt.Dimension(873, 900));
+
+        jPanel4.setPreferredSize(new java.awt.Dimension(871, 1300));
 
         jScrollPane1.setAutoscrolls(true);
 
@@ -468,13 +490,30 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
             }
         });
 
+        TrackMode.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "replace", "baseline" }));
+        TrackMode.setToolTipText("<HTML>\n[baseline] mode:<BR>\nthe token parameter value is changed only the baseline part , so which you can tamper by burp tools.<BR>\n<BR>\nyou can add test pattern in parameter value, e.g. '||'<BR>\nex.<BR>\ntoken=8B12C123'||' ===> token=A912D8VC'||'<BR><BR>\nNote:  In baseline mode,if you encounter problem which fails tracking tokens, you should select \"■update baseline■\" menu in BurpTool's popup menu.<BR>\n<BR>\n[replace] mode:<BR>\nthe token parameter value is completely replaced with tracking value, so which you cannot tamper by burp tools.<BR>\nex.<BR>\ntoken=8B12C123'||' ===> token=A912D8VC<BR>");
+        TrackMode.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                TrackModeActionPerformed(evt);
+            }
+        });
+
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel3.setText("<HTML>\n<DL>\n<LI>baseline: you can test(tamper) tracking tokens with scanner/intruder/repeater which has baseline request.<BR>\nNote:  In baseline mode, if you encounter problems which fails tracking tokens,<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;you should select \"■update baseline■\" menu in BurpTool's popup menu.<BR>\n<LI>replace: you can't test(tamper) tracking tokens which is completely replaced with tracked value.\n<DL>\n</HTML>");
+        jLabel3.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(MBcleatokenfromcache, javax.swing.GroupLayout.DEFAULT_SIZE, 797, Short.MAX_VALUE)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(MBcleatokenfromcache, javax.swing.GroupLayout.DEFAULT_SIZE, 797, Short.MAX_VALUE)
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addComponent(TrackMode, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel6Layout.setVerticalGroup(
@@ -482,7 +521,15 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(MBcleatokenfromcache)
-                .addContainerGap(40, Short.MAX_VALUE))
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(131, 131, 131))
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addGap(27, 27, 27)
+                        .addComponent(TrackMode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
         jCheckBox2.setText("WaitTimer(sec)");
@@ -552,7 +599,6 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSeparator1)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -571,8 +617,10 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                                     .addComponent(Save, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(26, 26, 26))
+                    .addComponent(jSeparator1)
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 402, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel4Layout.createSequentialGroup()
                                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
@@ -580,15 +628,14 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                                         .addGap(18, 18, 18)
                                         .addComponent(waitsec, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(45, 45, 45))
-                                    .addComponent(MBResetToOriginal, javax.swing.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE)
-                                    .addComponent(MBfromStepNo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addComponent(MBResetToOriginal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(MBfromStepNo, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(26, 26, 26)
                                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(MBtoStepNo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(MBmonitorofprocessing, javax.swing.GroupLayout.DEFAULT_SIZE, 405, Short.MAX_VALUE)))
-                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 402, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(MBmonitorofprocessing, javax.swing.GroupLayout.PREFERRED_SIZE, 405, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 826, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 33, Short.MAX_VALUE))))
+                        .addGap(0, 0, Short.MAX_VALUE))))
             .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel4Layout.createSequentialGroup()
                     .addContainerGap()
@@ -620,12 +667,12 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                 .addGap(452, 452, 452)
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(12, 12, 12)
+                .addGap(18, 18, 18)
                 .addComponent(jLabel1)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -638,17 +685,17 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(MBfromStepNo)
                     .addComponent(MBtoStepNo))
-                .addContainerGap())
+                .addContainerGap(65, Short.MAX_VALUE))
             .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel4Layout.createSequentialGroup()
                     .addGap(30, 30, 30)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(866, Short.MAX_VALUE)))
+                    .addContainerGap(986, Short.MAX_VALUE)))
             .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel4Layout.createSequentialGroup()
                     .addGap(337, 337, 337)
                     .addComponent(paramlog, javax.swing.GroupLayout.PREFERRED_SIZE, 353, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(490, Short.MAX_VALUE)))
+                    .addContainerGap(610, Short.MAX_VALUE)))
         );
 
         jScrollPane2.setViewportView(jPanel4);
@@ -657,14 +704,14 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 1165, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 850, Short.MAX_VALUE)
         );
+
+        getAccessibleContext().setAccessibleName("");
     }// </editor-fold>//GEN-END:initComponents
 
     private void customActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customActionPerformed
@@ -677,6 +724,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                 if(values.length>0){
                     int i = Integer.parseInt(values[0]);
                     PRequestResponse pqr = rlist.get(i);
+                    pqr.setMacroPos(i);
                     messages.add(pqr);
                 }
             }
@@ -895,6 +943,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                             }
                             ParmGenToken query_token = pqrs.request.getQueryToken(token);
                             ParmGenToken body_token = pqrs.request.getBodyToken(token);
+                            ParmVars.plog.debuglog(0, "token[" + token + "] value[" + value + "]");
                             if (pqrs.request.hasQueryParam(token, value) || pqrs.request.hasBodyParam(token, value)) {
                                 
                             	
@@ -1267,6 +1316,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                 String reqdata = pqr.request.getMessage();
                 EditTargetIsSSL = pqr.request.isSSL();
                 EditTargetPort = pqr.request.getPort();
+                EditPageEnc = pqr.request.getPageEnc();
                 new ParmGenRegex(this, reg,reqdata).setVisible(true);
             }
         }
@@ -1342,6 +1392,11 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         }
     }//GEN-LAST:event_showRequestActionPerformed
 
+    private void TrackModeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TrackModeActionPerformed
+        // TODO add your handling code here:
+        pmt.setMBreplaceTrackingParam(isReplaceMode());
+    }//GEN-LAST:event_TrackModeActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ClearMacro;
@@ -1365,6 +1420,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     private javax.swing.JButton Save;
     private javax.swing.JMenuItem Scanner;
     private javax.swing.JMenu SendTo;
+    private javax.swing.JComboBox<String> TrackMode;
     private javax.swing.JButton custom;
     private javax.swing.JMenuItem disableRequest;
     private javax.swing.JMenuItem edit;
@@ -1373,6 +1429,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -1397,10 +1454,18 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     @Override
     public void ParmGenRegexSaveAction(String message) {
         if(pmt!=null&&OriginalEditTarget!=-1){
-            PRequest request = new PRequest(message);
-            request.setSSL(EditTargetIsSSL);
-            request.setPort(EditTargetPort);
-            pmt.updateOriginalRequest(OriginalEditTarget, request);
+            PRequest request;
+            try {
+                PRequestResponse pqr = pmt.getOriginalRequest(OriginalEditTarget);
+                PRequest origrequest = pqr.request;
+                request = new PRequest(origrequest.getHost(), origrequest.getPort(), origrequest.isSSL(), message.getBytes(EditPageEnc.getIANACharset()),EditPageEnc);
+                request.setSSL(EditTargetIsSSL);
+                request.setPort(EditTargetPort);
+                pmt.updateOriginalRequest(OriginalEditTarget, request);
+            } catch (UnsupportedEncodingException ex) {
+                Logger.getLogger(MacroBuilderUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
             OriginalEditTarget = -1;
         }
     }

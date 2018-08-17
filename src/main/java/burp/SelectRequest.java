@@ -50,7 +50,23 @@ public class SelectRequest extends javax.swing.JDialog {
             col.setPreferredWidth(colsize[i]);
         }
         this.setModal(true);
-        selected_message_idx = 0;
+        switch(_panelno){
+            case ParmGenNew.P_RESPONSETAB:
+                selected_message_idx = 0;
+                break;
+            default:
+                int size = RequestTable.getRowCount();
+                if(size<=0){
+                    size = 0;
+                }else{
+                    size--;
+                }
+                selected_message_idx = size;
+                break;
+        }
+        RequestTable.setRowSelectionInterval(selected_message_idx, selected_message_idx);
+        RequestTableMouseClicked(null);
+        
 
     }
 

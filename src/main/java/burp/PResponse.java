@@ -10,8 +10,8 @@ class PResponse extends ParseHTTPHeaders {
 	//	super();
 	//}
 
-	PResponse(String httpmessage){
-		super(httpmessage);
+	PResponse(byte[] bin, Encode _pageenc){
+		super(bin, _pageenc);
                 map = null;
                 htmlparser = null;
                 jsonparser = null;

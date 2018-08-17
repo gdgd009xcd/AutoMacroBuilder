@@ -283,6 +283,15 @@ private void setAppParmsIni(){
             payloadposition = ap.getPayloadPositionName(AppValue.I_APPEND);
         }
         String tkname = "";
+        String responseURLregex = ParmVars.session.get(ParmGenSession.K_RESPONSEURLREGEX);
+        String frompos = TrackFrom.getText();
+        int fromnum = 0;
+        if(frompos!=null&&!frompos.isEmpty()){
+            fromnum = Integer.parseInt(frompos);
+            if(fromnum>-1){//TrackFrom is specified. then Tracking From target URL is any match 
+                responseURLregex = ".*";
+            }
+        }
         switch(m){
             case P_NUMBERMODEL:
                 row = new Object[]{_reqplace, false, nval, islastparam};
@@ -309,7 +318,7 @@ private void setAppParmsIni(){
                         tkname = name;
                     }
                     row = new Object[]{_reqplace, false, nval,
-                    ParmVars.session.get(ParmGenSession.K_RESPONSEURLREGEX),
+                    responseURLregex,
                     ParmVars.session.get(ParmGenSession.K_RESPONSEREGEX),
                     ParmVars.session.get(ParmGenSession.K_RESPONSEPART),
                     ParmVars.session.get(ParmGenSession.K_RESPONSEPOSITION),
@@ -330,7 +339,7 @@ private void setAppParmsIni(){
                             tkname = name;
                         }
                         row = new Object[]{_reqplace, false, nval,
-                        ParmVars.session.get(ParmGenSession.K_RESPONSEURLREGEX),
+                        responseURLregex,
                         ParmVars.session.get(ni, ParmGenSession.K_RESPONSEREGEX),
                         ParmVars.session.get(ni, ParmGenSession.K_RESPONSEPART),
                         ParmVars.session.get(ni, ParmGenSession.K_RESPONSEPOSITION),
@@ -347,6 +356,11 @@ private void setAppParmsIni(){
             model.addRow(row);
         }
     }
+    public void updateFromToPos(int frompos, int topos){
+        TrackFrom.setText(Integer.toString(frompos));
+        SetTo.setText(Integer.toString(topos));
+    }
+    
     /*
      * current_modelのtargetURLを更新
      */

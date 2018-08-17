@@ -162,9 +162,6 @@
       </SubComponents>
     </Container>
     <Component class="javax.swing.JTextField" name="RegexPattern">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="jTextField2"/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="jButton2">
       <Properties>

@@ -14,17 +14,18 @@ public class PRequestResponse {
     String comments;
     Boolean disable = false;//==true no execute.
     boolean iserror = false;
+    int macropos = -1;
     
-    public PRequestResponse(String _request_string, String _response_string){
-        request = new PRequest(_request_string);
-        response = new PResponse(_response_string);
-        comments = null;
-        disable = false;
-    }
+    //public PRequestResponse(byte[] brequest, byte[] bresponse , Encode _pageenc){
+    //    request = new PRequest(brequest, _pageenc);
+    //    response = new PResponse(bresponse, _pageenc);
+    //    comments = null;
+    //    disable = false;
+    //}
     
-    public PRequestResponse(String h, int p, boolean ssl, byte[] _binrequest, String _response_string){
-        request = new PRequest(h, p, ssl,_binrequest);
-        response = new PResponse(_response_string);
+    public PRequestResponse(String h, int p, boolean ssl, byte[] _binrequest, byte[] _binresponse, Encode _pageenc){
+        request = new PRequest(h, p, ssl,_binrequest, _pageenc);
+        response = new PResponse(_binresponse, _pageenc);
         comments = null;
         disable = false;
     }
@@ -62,5 +63,13 @@ public class PRequestResponse {
     }
     void setError(boolean b){
         iserror = b;
+    }
+    
+    void setMacroPos(int _p){
+        macropos = _p;
+    }
+    
+    int getMacroPos(){
+        return macropos;
     }
 }

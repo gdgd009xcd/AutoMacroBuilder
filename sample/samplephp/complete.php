@@ -43,6 +43,12 @@ if(isset($_SESSION['imgfile'])){
     $imgfile = "";
 }
 
+if(isset($_SESSION['showfile'])){
+    $showfile = $_SESSION['showfile'];
+}else{
+    $showfile = "";
+}
+
 if ( empty($subject) ||
      empty($contents) ||
      empty($imgfile) ||
@@ -52,35 +58,42 @@ if ( empty($subject) ||
     exit(0);
 }
 
+$savepath = session_save_path();
+$mailfile = $savepath . "/mail.txt";
+$oldmail = file_put_contents($mailfile, $mailaddr);
+
+
 
 ?>
 <html>
 <head>
 <tltle>
-お問い合わせ　完了
+inquiry completed:お問い合わせ　完了
 </tltle>
 </head>
 <body>
 
 <P> user:<?php echo $user; ?>
-
-お問い合わせを下記の内容で受け賜りました。<BR>
+<?php
+echo "<P>fileput result:" . $oldmail . "<P><BR>";
+?>
+お問い合わせを下記の内容で受け賜りました。We accepted your inquiry with the contents below. <BR>
 <table border="1">
 <tr>
-<th>件名</th><td><?php echo $subject; ?></td>
+<th>件名subject</th><td><?php echo $subject; ?></td>
 </tr>
 <tr>
-<th>お問い合わせ内容</th><td><?php echo $contents; ?></td>
+<th>お問い合わせ内容message</th><td><?php echo $contents; ?></td>
 </tr>
 <tr>
-<th>宛先</th><td><?php echo $mailaddr; ?></td>
+<th>宛先mailaddr</th><td><?php echo $mailaddr; ?></td>
 </tr>
 <tr>
-<th>ファイル</th><td><?php echo $imgfile; ?></td>
+<th>ファイルfile</th><td><A HREF="<?php echo $showfile; ?>" ><?php echo $imgfile; ?></A></td>
 </tr>
 </table><BR>
 
-<A HREF="mypage.php">マイページに戻る</A><BR>
+<A HREF="mypage.php">マイページに戻るgo back to mypage</A><BR>
 <P>
 <A HREF="logout.php">logout</A>
 </body>

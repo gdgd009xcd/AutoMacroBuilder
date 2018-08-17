@@ -25,6 +25,7 @@ import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
@@ -80,7 +81,7 @@ class PLog {
 		//    例：".*/project/index.php.*", 4, number, 1,"body", "myname(\w+)","query", "myvalue(\w+)", "path", "id/\/(\w+)\/"
 		//
 
-		logname = projectdir + "\\AppScanPermGen.log";
+		logname = projectdir + ParmVars.fileSep +"AppScanPermGen.log";
 		LogfileOn = false;// default disable file output
 		File logfile = new File(logname);
 		if ( ! logfile.exists()){
@@ -258,39 +259,42 @@ class ParmVars {
 	static ParmGenSession session;
         static int displaylength = 10000;// JTextArea/JTextPane等swingの表示バイト数
         private static boolean issaved = false;
+        static String fileSep = "/";//maybe unix filesystem.
 
 	//
 	// static変数初期化
 	//
 	static {
-		formdataenc = "ISO-8859-1";
-		File desktop = new File(System.getProperty("user.home"), "Desktop");
-		if (! desktop.exists()){
-			projectdir = System.getenv("HOMEDRIVE") + "\\" + System.getenv("HOMEPATH") + "\\\u30c7\u30b9\u30af\u30c8\u30c3\u30d7";
-			desktop = new File(projectdir);
-			if (! desktop.exists()){
-				projectdir = System.getenv("HOMEDRIVE") + "\\" + System.getenv("HOMEPATH") + "\\Desktop";
-			}
-		}else{
-			projectdir = desktop.getAbsolutePath();
-		}
-		desktop = null;
-		File newdir = new File(projectdir + "\\ParmGenParms");
+            fileSep = System.getProperty("file.separator");
+            formdataenc = "ISO-8859-1";
+            File desktop = new File(System.getProperty("user.home"), "Desktop");
+            if (! desktop.exists()){
+                    projectdir = System.getenv("HOMEDRIVE") + fileSep + System.getenv("HOMEPATH") + fileSep + "\u30c7\u30b9\u30af\u30c8\u30c3\u30d7";
+                    desktop = new File(projectdir);
+                    if (! desktop.exists()){
+                            projectdir = System.getenv("HOMEDRIVE") + fileSep + System.getenv("HOMEPATH") + fileSep + "Desktop";
+                    }
+            }else{
+                    projectdir = desktop.getAbsolutePath();
+            }
+            desktop = null;
+            /****
+            File newdir = new File(projectdir + fileSep + "ParmGenParms");
 
-		if (! newdir.exists()){
-			if(newdir.mkdirs()){
-				projectdir =newdir.getAbsolutePath();
-			}
-		}else{
-			projectdir =newdir.getAbsolutePath();
-		}
-		newdir = null;
-
-		parmfile = projectdir + "\\AppParmGen.json";
-		plog = new PLog(projectdir);
-		enc = Encode.UTF_8;// default encoding.
-		ProxyAuth = "";
-		session = new ParmGenSession();
+            if (! newdir.exists()){
+                    if(newdir.mkdirs()){
+                            projectdir =newdir.getAbsolutePath();
+                    }
+            }else{
+                    projectdir =newdir.getAbsolutePath();
+            }
+            newdir = null;
+            *********/
+            parmfile = projectdir + fileSep + "MacroBuilder.json";
+            plog = new PLog(projectdir);
+            enc = Encode.UTF_8;// default encoding.
+            ProxyAuth = "";
+            session = new ParmGenSession();
 	}
         
         public static boolean isSaved(){
@@ -790,7 +794,7 @@ class AppValue {
         }
 
 
-	String replaceContents(ParmGenMacroTrace pmt, int currentStepNo, AppParmsIni pini, String contents, ParmGenHashMap errorhash){
+	String[] replaceContents(ParmGenMacroTrace pmt, int currentStepNo, AppParmsIni pini, String contents, String org_contents_iso8859,ParmGenHashMap errorhash){
 		if (contents == null)
 			return null;
 		if (valueregex == null)
@@ -804,17 +808,30 @@ class AppValue {
                         tk = new ParmGenTokenKey(AppValue.TokenTypeNames.DEFAULT, token, toStepNo);
 		}
 
+                String[] nv = new String[2];
+                
                 String errKeyName = "TypeVal:" + Integer.toString(pini.typeval) + " TargetPart:"+ getValPart() + " TargetRegex:" + value + " ResRegex:" + resRegex + " TokenName:" + token;
                 ParmGenTokenKey errorhash_key = new ParmGenTokenKey(AppValue.TokenTypeNames.DEFAULT, errKeyName, 0);
 		Matcher m = valueregex.matcher(contents);
+                Matcher m_org = null;
+                
+                if(org_contents_iso8859!=null){
+                    m_org = valueregex.matcher(org_contents_iso8859);
+                   
+                }
 
 		String newcontents = "";
 		String tailcontents = "";
+                String o_newcontents = "";
+                String o_tailcontents = "";
 		String strcnt = null;
-		int cpt = 0;
+		int cpt = 0;int o_cpt = 0;
+                
 		while (m.find()) {
 			int spt = -1;
 			int ept = -1;
+                        int o_spt = -1;
+                        int o_ept = -1;
 			int gcnt = m.groupCount();
 			String matchval = null;
 			for(int n = 0; n < gcnt ; n++){
@@ -822,26 +839,30 @@ class AppValue {
 				ept = m.end(n+1);
 				matchval = m.group(n+1);
 			}
+                        String org_matchval = null;
+                        if(m_org!=null){
+                            if(m_org.find()){
+                                int org_gcnt = m_org.groupCount();
+                                for(int n = 0; n < org_gcnt ; n++){
+                                    o_spt = m_org.start(n+1);
+                                    o_ept = m_org.end(n+1);
+                                    org_matchval = m_org.group(n+1);
+                                    
+                                }
+                            }
+                        }
+                        
+                       
 			if (spt != -1 && ept != -1) {
 				strcnt = pini.getStrCnt(this,tk,currentStepNo, toStepNo, valparttype,  csvpos);
 				ParmVars.plog.printLF();
 				boolean isnull = false;
                                 ParmGenTokenValue errorhash_value = null;
-                                
-                                switch(pini.getType()){
-                                case AppParmsIni.T_TRACK:
-                                    if(pmt.isOverWriteCurrentRequestTrackigParam()){
-                                        int matchlen = matchval.length();
-                                        int strcntlen = strcnt.length();
-                                        int tail = matchlen - strcntlen;
-                                        if(tail > 0){
-                                            strcnt += matchval.substring(strcntlen);
-                                        }else if(tail<0){
-                                            strcnt = null;
-                                        }
-                                    }
-                                default:
-                                    break;
+                                String org_newval = strcnt;
+                                if(org_matchval!=null){
+                                    ParmGenStringDiffer differ = new ParmGenStringDiffer(org_matchval, matchval);
+                                    ParmVars.plog.debuglog(0, "org_matchval[" + org_matchval + "] matchval[" + matchval + "]");
+                                    strcnt = differ.replaceOrgMatchedValue(strcnt);
                                     
                                 }
                                 if (strcnt != null) {
@@ -867,18 +888,30 @@ class AppValue {
                                 }
 				if (isnull) {// 値取得失敗時は、オリジナルに戻す。
 					strcnt = matchval;
+                                        org_newval = org_matchval;
 					//ParmVars.plog.setError(isnull);
 				}
 				newcontents += contents.substring(cpt, spt) + strcnt;
 				cpt = ept;
 				tailcontents = contents.substring(ept);
+                                if(org_matchval!=null){
+                                    o_newcontents += org_contents_iso8859.substring(o_cpt, o_spt) + org_newval;
+                                    o_cpt = o_ept;
+                                    o_tailcontents = org_contents_iso8859.substring(o_ept);
+                                }
 			}
 		}
 		newcontents = newcontents + tailcontents;
 		if ( newcontents.length() == 0 ){
 			newcontents = contents;
 		}
-		return newcontents;
+                o_newcontents = o_newcontents + o_tailcontents;
+                if(o_newcontents.length() == 0){
+                    o_newcontents = org_contents_iso8859;
+                }
+                nv[0] = newcontents;
+                nv[1] = o_newcontents;
+		return nv;
 	}
 }
 
@@ -1729,7 +1762,7 @@ class ParmGen {
 
 
 
-	PRequest ParseRequest(PRequest prequest,  ParmGenBinUtil boundaryarray, ParmGenBinUtil _contarray, AppParmsIni pini, AppValue av, ParmGenHashMap errorhash)  {
+	PRequest ParseRequest(PRequest prequest,  PRequest org_request, ParmGenBinUtil boundaryarray, ParmGenBinUtil _contarray, AppParmsIni pini, AppValue av, ParmGenHashMap errorhash)  {
 
 
 	//	String[] headers=request.getHeaderNames();
@@ -1742,61 +1775,128 @@ class ParmGen {
 	//	}
                 if(av.toStepNo>0&&av.toStepNo!=pmt.getStepNo())return null;
                 
-		ArrayList<String []> headers = prequest.getHeaders();
-
-		String method = prequest.getMethod();
+		//ArrayList<String []> headers = prequest.getHeaders();
+                
+                
+                String method = prequest.getMethod();
 		String url = prequest.getURL();
 		String path = new String(url);
+                String orig_url = null;
+                String orig_path = null;
+                String orig_query = null;
+                ParmGenBinUtil org_contarray = null;
+                String org_content_iso8859 = null;
+                
+                if(org_request!=null){
+                    orig_url = org_request.getURL();
+                    int o_qpos = -1;
+                    if((o_qpos = orig_url.indexOf('?'))!=-1){
+                        orig_path = url.substring(0,o_qpos);
+                        orig_query = orig_url.substring(o_qpos+1);
+                    }
+                    org_contarray = org_request.getBinBody();
+                    org_content_iso8859 = org_request.getISO8859BodyString();
+                    
+                }
 		ParmVars.plog.debuglog(1, "method[" + method + "] request[" + url + "]");
 		int qpos = -1;
+                String[] nvcont = null;
                 switch(av.getTypeInt()){
 		//switch(av.valparttype & AppValue.C_VTYPE){
 		case AppValue.V_PATH://path
 			// path = url
-			String n_path = av.replaceContents(pmt, pmt.getStepNo(), pini, path, errorhash);
-			if (n_path != null && !path.equals(n_path) ){
-				url = n_path;
-				ParmVars.plog.debuglog(1, " Original path[" + path + "]");
-				ParmVars.plog.debuglog(1, " Modified path[" + n_path + "]");
-				//request.setURL(new HttpUrl(url));
-				prequest.setURL(url);
-				return prequest;
-			}
+			nvcont = av.replaceContents(pmt, pmt.getStepNo(), pini, path, orig_url, errorhash);
+                        if(nvcont!=null){
+                            String n_path = nvcont[0];
+                            String o_path = nvcont[1];
+                            if (n_path != null && !path.equals(n_path) ){
+                                    url = n_path;
+                                    ParmVars.plog.debuglog(1, " Original path[" + path + "]");
+                                    ParmVars.plog.debuglog(1, " Modified path[" + n_path + "]");
+                                    //request.setURL(new HttpUrl(url));
+                                    prequest.setURL(url);
+                                    if(org_request!=null&&o_path!=null&&pmt.getToolBaseline()!=null){
+                                        org_request.setURL(o_path);
+                                    }
+                                    return prequest;
+                            }
+                        }
 			break;
 		case AppValue.V_QUERY://query
 			if ((qpos = url.indexOf('?'))!=-1){
 				path = url.substring(0,qpos);
 				String query = url.substring(qpos+1);
-				String n_query = av.replaceContents(pmt,pmt.getStepNo(),pini, query, errorhash);
-                                ParmVars.plog.debuglog(1, query);
-                                ParmVars.plog.debuglog(1, n_query);
-				if ( n_query!=null && !query.equals(n_query) ){
-					url = path + '?' + n_query;
-					ParmVars.plog.debuglog(1, " Original query[" + query + "]");
-					ParmVars.plog.debuglog(1, " Modified path[" + n_query + "]");
-					//request.setURL(new HttpUrl(url));
-					prequest.setURL(url);
-					return prequest;
-				}
+				nvcont= av.replaceContents(pmt,pmt.getStepNo(),pini, query, orig_query, errorhash);
+                                
+                                if(nvcont!=null){
+                                    String n_query = nvcont[0];
+                                    String o_query = nvcont[1];
+                                    if ( n_query!=null && !query.equals(n_query) ){
+                                            url = path + '?' + n_query;
+                                            ParmVars.plog.debuglog(1, " Original query[" + query + "]");
+                                            ParmVars.plog.debuglog(1, " Modified path[" + n_query + "]");
+                                            //request.setURL(new HttpUrl(url));
+                                            prequest.setURL(url);
+                                            if(org_request!=null&&orig_path!=null&&o_query!=null&&pmt.getToolBaseline()!=null){
+                                                String o_url = orig_path + "?" + o_query;
+                                                org_request.setURL(o_url);
+                                            }
+                                            return prequest;
+                                    }
+                                }
 			}
 			break;
 		case AppValue.V_HEADER://header
 			//String[] headers=request.getHeaderNames();
 			//for(String header : headers){
-			int i = 0;
-			for(String[] nv : headers){
-				String hval = nv[0] + ": " + nv[1];//Cookie: value
-				String n_hval = av.replaceContents(pmt, pmt.getStepNo(),pini, hval, errorhash);
-				if (n_hval !=null && !hval.equals(n_hval) ){
-					ParmVars.plog.debuglog(1, " Original header[" + hval + "]");
-					ParmVars.plog.debuglog(1, " Modified header[" + n_hval + "]");
-					String htitle = nv[0] + ": ";
-					n_hval = n_hval.substring(htitle.length());
-					//request.setHeader(header, n_hval);
-					prequest.setHeader(i, nv[0], n_hval);
-					return prequest;
-				}
-				i++;
+			//int i = 0;
+                        
+                        HashMap<String, ParmGenHeader> headers = prequest.getheadersHash();
+                        
+			for(Map.Entry<String, ParmGenHeader> ent : headers.entrySet()){
+                            String hKeyUpperV = ent.getKey();
+                            ParmGenHeader pgheader = ent.getValue();
+                            ListIterator<ParmGenBeen> hit = pgheader.getValuesIter();
+                            ParmGenHeader org_pgheader = null;
+                            ListIterator<ParmGenBeen> oit = null;
+                            if(org_request!=null){
+                                org_pgheader = org_request.getParmGenHeader(hKeyUpperV);
+                                if(org_pgheader!=null){
+                                    oit = org_pgheader.getValuesIter();
+                                }
+                            }
+                            while(hit.hasNext()){
+                                ParmGenBeen been = hit.next();
+                                String[] nv = prequest.getHeaderNV(been.i);
+                                if(nv!=null){
+                                    String hval = nv[0] + ": " + nv[1];//Cookie: value
+                                    String orig_hval = null;
+                                    ParmGenBeen o_been = null;
+                                    String[] onv = null;
+                                    if(oit!=null&&oit.hasNext()){
+                                        o_been = oit.next();
+                                        onv = org_request.getHeaderNV(o_been.i);
+                                        orig_hval = onv[0] + ": " + onv[1];//Cookie: value
+                                    }
+                                    nvcont = av.replaceContents(pmt, pmt.getStepNo(),pini, hval, orig_hval, errorhash);
+                                    if(nvcont!=null){
+                                        String n_hval = nvcont[0];
+                                        String o_hval = nvcont[1];
+                                        if (n_hval !=null && !hval.equals(n_hval) ){
+                                                ParmVars.plog.debuglog(1, " Original header[" + hval + "]");
+                                                ParmVars.plog.debuglog(1, " Modified header[" + n_hval + "]");
+                                                String htitle = nv[0] + ": ";
+                                                n_hval = n_hval.substring(htitle.length());
+                                                prequest.setHeader(been.i, nv[0], n_hval);
+                                                if(org_request!=null&&o_been!=null&&onv!=null&&o_hval!=null&&pmt.getToolBaseline()!=null){
+                                                    o_hval = o_hval.substring(htitle.length());
+                                                    org_request.setHeader(o_been.i, onv[0], o_hval);
+                                                }
+                                                return prequest;
+                                        }
+                                    }
+                                }
+                            }
 			}
 
 			break;
@@ -1806,12 +1906,16 @@ class ParmGen {
                             ParmVars.plog.debuglog(1, "application/x-www-form-urlencoded");
                             String content = null;
                             try{
-                                    content = new String(_contarray.getBytes(), ParmVars.enc.getIANACharset());
+                                content = new String(_contarray.getBytes(), ParmVars.enc.getIANACharset());
                             }catch(UnsupportedEncodingException e){
-                                    content = null;
+                                content = null;
                             }
-                            String n_content = av.replaceContents(pmt, pmt.getStepNo(),pini, content, errorhash);
-                            if ( n_content != null && !content.equals(n_content) ){
+                            nvcont = av.replaceContents(pmt, pmt.getStepNo(),pini, content, org_content_iso8859, errorhash);
+                            if(nvcont!=null){
+                                String n_content = nvcont[0];
+                                String neworg_content_iso8859 = nvcont[1];
+                            
+                                if ( n_content != null && !content.equals(n_content) ){
                                     ParmVars.plog.debuglog(1, " Original body[" + content + "]");
                                     ParmVars.plog.debuglog(1, " Modified body[" + n_content + "]");
                                     try {
@@ -1820,7 +1924,22 @@ class ParmGen {
                                         Logger.getLogger(ParmGen.class.getName()).log(Level.SEVERE, null, ex);
                                         _contarray.initParmGenBinUtil(n_content.getBytes());
                                     }
+                                    if(org_request!=null&&org_content_iso8859!=null&&neworg_content_iso8859!=null&&pmt.getToolBaseline()!=null){
+                                        try {// bodyの入れ替え
+                                            org_request.setBody(neworg_content_iso8859.getBytes(Encode.ISO_8859_1.getIANACharset()));
+                                            byte[] bmessage = org_request.getByteMessage();
+                                            String host = org_request.getHost();
+                                            int port = org_request.getPort();
+                                            boolean ssl = org_request.isSSL();
+                                            org_request.construct(host, port, ssl, bmessage, ParmVars.enc);
+                                        } catch (UnsupportedEncodingException ex) {
+                                            Logger.getLogger(ParmGen.class.getName()).log(Level.SEVERE, null, ex);
+                                        }
+                                        
+                                        
+                                    }
                                     return prequest;
+                                }
                             }
 	        	}else{//multipart/form-data
                             ParmVars.plog.debuglog(1, "multipart/form-data");
@@ -1832,6 +1951,8 @@ class ParmGen {
                             byte[] headerseparator = {0x0d, 0x0a, 0x0d, 0x0a};//<CR><LF><CR><LF>
                             byte[] partheader = null;
                             String partenc = "";
+                            String neworg_content_iso8859 = null;
+                            boolean org_content_isupdated = false;
                             while ( (npos=_contarray.indexOf(boundaryarray.getBytes(), cpos))!=-1){
                                 if(cpos!=0){//cpos->npos == partdata
                                     partdata = _contarray.subBytes(cpos, npos);
@@ -1864,17 +1985,28 @@ class ParmGen {
                                     }catch(UnsupportedEncodingException e){
                                             partdatastr = null;
                                     }
-                                    String n_partdatastr = av.replaceContents(pmt, pmt.getStepNo(), pini, partdatastr, errorhash);
-                                    if(n_partdatastr!=null && partdatastr != null && !partdatastr.equals(n_partdatastr) ){
-                                        ParmVars.plog.debuglog(1, " Original body[" + partdatastr + "]");
-                                        ParmVars.plog.debuglog(1, " Modified body[" + n_partdatastr + "]");
-                                        try{
-                                            n_array.concat(n_partdatastr.getBytes(partenc));
-                                        }catch(UnsupportedEncodingException e){
-                                            ParmVars.plog.printException(e);
-                                            n_array.concat(n_partdatastr.getBytes());
+                                    nvcont = av.replaceContents(pmt, pmt.getStepNo(), pini, partdatastr, org_content_iso8859, errorhash);
+                                    if(nvcont!=null){
+                                        String n_partdatastr = nvcont[0];
+                                        neworg_content_iso8859 = nvcont[1];
+
+                                        if(n_partdatastr!=null && partdatastr != null && !partdatastr.equals(n_partdatastr) ){
+                                            ParmVars.plog.debuglog(1, " Original body[" + partdatastr + "]");
+                                            ParmVars.plog.debuglog(1, " Modified body[" + n_partdatastr + "]");
+                                            try{
+                                                n_array.concat(n_partdatastr.getBytes(partenc));
+                                            }catch(UnsupportedEncodingException e){
+                                                ParmVars.plog.printException(e);
+                                                n_array.concat(n_partdatastr.getBytes());
+                                            }
+                                            if(org_request!=null&&org_content_iso8859!=null&&neworg_content_iso8859!=null){
+                                                org_content_iso8859 = neworg_content_iso8859;
+                                                org_content_isupdated = true;
+                                            }
+                                            partupdt = true;
+                                        }else{
+                                            n_array.concat(partdata);
                                         }
-                                        partupdt = true;
                                     }else{
                                         n_array.concat(partdata);
                                     }
@@ -1894,6 +2026,20 @@ class ParmGen {
                             if ( partupdt ){
                                 //_contarray = n_array;
                                 _contarray.initParmGenBinUtil(n_array.getBytes());
+                                if(org_content_isupdated){
+                                    if(org_request!=null&&org_content_iso8859!=null&&pmt.getToolBaseline()!=null){
+                                        try {// bodyの入れ替え
+                                            org_request.setBody(org_content_iso8859.getBytes(Encode.ISO_8859_1.getIANACharset()));
+                                            byte[] bmessage = org_request.getByteMessage();
+                                            String host = org_request.getHost();
+                                            int port = org_request.getPort();
+                                            boolean ssl = org_request.isSSL();
+                                            org_request.construct(host, port, ssl, bmessage, ParmVars.enc);
+                                        } catch (UnsupportedEncodingException ex) {
+                                            Logger.getLogger(ParmGen.class.getName()).log(Level.SEVERE, null, ex);
+                                        }
+                                    }
+                                }
                                 return prequest;
                             }
 	        	}
@@ -2012,21 +2158,16 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
             initMain(null);
         }
 
-	byte[] Run(byte[] requestbytes){
-            String request_string = null;
-            try{
-                request_string = new String(requestbytes, ParmVars.enc.getIANACharset());
-            }catch(Exception e){
-                ParmVars.plog.printException(e);
-            }
+	byte[] Run(String _h, int port, boolean isSSL, byte[] requestbytes){
+            
             ParmGenBinUtil boundaryarray = null;
             ParmGenBinUtil contarray = null;
-
+           
 
             if( parmcsv == null || parmcsv.size()<=0){
                 //NOP
                 if(pmt.isRunning()){
-                    PRequest prequest = new PRequest(request_string);
+                    PRequest prequest = new PRequest(_h, port, isSSL, requestbytes, ParmVars.enc);
                     PRequest cookierequest = pmt.configureRequest(prequest);
                     if(cookierequest!=null) {
                         return cookierequest.getByteMessage();
@@ -2037,7 +2178,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                     ParmGenHashMap errorhash = new ParmGenHashMap();
                     
                     //Request request = connection.getRequest();
-                    PRequest prequest = new PRequest(request_string);
+                    PRequest prequest = new PRequest(_h, port, isSSL, requestbytes, ParmVars.enc);
 
                     // check if we have parameters
                     // Construct a new HttpUrl object, since they are immutable
@@ -2047,7 +2188,17 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 
                     String content_type =prequest.getHeader("Content-Type");
 
-
+                    PRequestResponse org_PRequestResponse = pmt.getCurrentOriginalRequest();//copy
+                    PRequest org_Request =null;
+                    if(pmt.isCurrentRequest()&&pmt.isOverWriteCurrentRequestTrackigParam()){
+                        PRequestResponse repeaterPRR = pmt.getToolBaseline();//reference
+                        if(repeaterPRR!=null){
+                            org_Request = repeaterPRR.request;
+                        }else{//intruder or scanner..
+                            org_Request = org_PRequestResponse.request;
+                        }
+                    }
+                    
                     boolean hasboundary = false;
                     PRequest tempreq = null;
                     PRequest modreq = null;
@@ -2074,19 +2225,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                                         }
                                         ParmVars.plog.debuglog(0, "***URL正規表現[" + pini.getUrl() + "]マッチパターン[" + url + "]");
                                         if( contarray == null ){
-                                            /*****
-                                                byte[] bytes = null;
-                                                try{
-                                                        bytes = prequest.getBody().getBytes(ParmVars.enc);
-                                                }catch(UnsupportedEncodingException e){
-                                                    ParmVars.plog.printException(e);
-                                                        bytes = null;
-                                                }
-                                                if ( bytes != null ){
-                                                        contarray = new ParmGenBinUtil(bytes);
-                                                }
-                                                bytes = null;
-                                                * **/
+                                            
                                             ParmGenBinUtil warray = new ParmGenBinUtil(requestbytes);
                                             try{
                                                 //ParmVars.plog.debuglog(1,"request length : " + Integer.toString(warray.length()) + "/" + Integer.toString(prequest.getParsedHeaderLength()));
@@ -2110,7 +2249,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                                         ParmVars.plog.debuglog(1, "loopin");
                                         AppValue av = pt.next();
                                         if (av.isEnabled()) {
-                                            if ((tempreq = ParseRequest(prequest, boundaryarray, contarray, pini, av, errorhash)) != null) {
+                                            if ((tempreq = ParseRequest(prequest, org_Request, boundaryarray, contarray, pini, av, errorhash)) != null) {
                                                 modreq = tempreq;
                                                 prequest = tempreq;
                                             }
@@ -2194,7 +2333,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
             return null;
 	}
 
-    int ResponseRun(String url,  byte[] response_bytes, String _enc){
+    int ResponseRun(String url,  byte[] response_bytes, Encode _pageenc){
 
         int updtcnt = 0;
 
@@ -2202,13 +2341,8 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                 // main loop
                 //Request request = connection.getRequest();
 
-                String response_string = null;
-                try{
-                    response_string = new String(response_bytes, _enc);
-                }catch(Exception e){
-                    return -1;
-                }
-                PResponse presponse = new PResponse(response_string);
+               
+                PResponse presponse = new PResponse(response_bytes, _pageenc);
                 // check if we have parameters
                 // Construct a new HttpUrl object, since they are immutable
                 // This is a bit of a cheat!

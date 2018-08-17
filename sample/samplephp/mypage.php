@@ -34,8 +34,12 @@ if(isset($_GET['token1'])){
 }
 
 $randomval = sha1(uniqid(rand(), true));
-
+$htoken = sha1(uniqid(rand(), true));
 $_SESSION['token1'] = $randomval;
+$_SESSION['htoken'] = $htoken;
+
+
+
 
 ?>
 <html>
@@ -43,6 +47,40 @@ $_SESSION['token1'] = $randomval;
 <tltle>
 MYPAGE
 </tltle>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+ <script>
+  $(document).ready(function() {
+    /**
+     * 送信ボタンクリック
+     */
+    $('#send').click(function() {
+      
+      var data = {'request' : 1};
+
+      
+      $.ajax({
+        type: "POST",
+        url: "popup.php",
+        headers: {
+            'X-SPECIAL': '<?php echo $htoken; ?>',
+        },
+
+        data: data,
+      }).done(function(data, dataType) {
+        var w = window.open();
+        $(w.document.body).html(data);
+      }).fail(function(XMLHttpRequest, textStatus, errorThrown) {
+        
+
+        
+        alert('Error : ' + errorThrown);
+      });
+
+      
+      return false;
+    });
+  });
+  </script>
 </head>
 <body>
 
@@ -50,12 +88,13 @@ MYPAGE
 
 <form action="inquiry.php" method="GET">
 <input type="hidden" name="token1" value="<?php echo $randomval; ?>">
-<input type="submit"  value="お問い合わせ">
+<input type="submit"  value="inquiry:お問い合わせ">
 </form>
 
 <P>
 <A HREF="mypage.php?token1=<?php echo $randomval; ?>">ロケーションでお問い合わせに遷移</A>
 <P>
+<input id="send" value="send" type="submit" /></p>
 <A HREF="logout.php">logout</A>
 </body>
 </html>

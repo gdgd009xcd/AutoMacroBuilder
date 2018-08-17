@@ -35,12 +35,12 @@ public class ParmGenTrackJarFactory {
     
     static void put(Integer key, ParmGenTrackingParam tkparam){
         trackjar.put(key, tkparam);
-        ParmVars.plog.debuglog(0, "TrackJar put key:" + key);
+        //ParmVars.plog.debuglog(0, "TrackJar put key:" + key);
     }
     
    
     static ParmGenTrackingParam get(Integer key){
-        ParmVars.plog.debuglog(0, "TrackJar get key:" + key);
+        //ParmVars.plog.debuglog(0, "TrackJar get key:" + key);
         return trackjar.get(key);
         
     }

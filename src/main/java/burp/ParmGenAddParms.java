@@ -39,6 +39,7 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
     public static final int VT_FIXED = 5;
     public static final int VT_PARAMVALUE = 6;
     public static final int VT_NUMCOUNTER = 7;
+    public static final int VT_VALUE = 8;
     private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
     private static  DefaultComboBoxModel comboModel = null;
     private int[] ListSelectionModel;
@@ -378,23 +379,29 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
     }//GEN-LAST:event_CancelActionPerformed
 
 
-
-    private int parseValueType(String v, int defaultvaltype){
+    /********** たまたま、数値のみの値であった場合など、問題があるので、コメントアウト。明示的に入力値の種類を指定した場合以外は、VT_VALUE.
+    private int parseValueType(String v, int defaultvaltype){//vに完全一致するパターンを探す。
         Pattern pattern = ParmGenUtil.Pattern_compile("([0-9]+)");
         Matcher matcher = pattern.matcher(v);
         if (matcher.find()){
             String rv = matcher.group();
-            //if( rv.equals(v)){//数値完全一致
-                return VT_NUMBERFIXED;
-            //}else{//数値一部一致
-            //    return VT_ALPHANUMFIXED;
-            //}
-        }else if(defaultvaltype==VT_NUMBERFIXED||defaultvaltype==VT_NUMBER){
-            //数値無し
-            defaultvaltype=VT_ALPHANUMFIXED;
+            if( rv.equals(v)){//数値完全一致
+                return VT_NUMCOUNTER;
+            }
+        }
+        
+        pattern = ParmGenUtil.Pattern_compile("([0-9a-zA-Z]+)");
+        matcher = pattern.matcher(v);
+        if(matcher.find()){
+            String rv = matcher.group();
+            if( rv.equals(v)){//数値完全一致
+                return VT_ALPHANUM;
+            }
+            
         }
         return defaultvaltype;
     }
+    * **********/
 
     private String getValueRegex(String v, boolean ispath, boolean iscookie, boolean isheader, int defaultvaltype, boolean iswholepath){
         wholeval = false;
@@ -407,22 +414,16 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
         int selidx = ValReplacePart.getSelectedIndex();
         if(selidx==VT_DEFAULT){
             switch(parentwin.getCurrentModel()){
-                case ParmGenNew.P_TRACKMODEL:
-                    selidx = VT_FIXED;//追跡のデフォルトは固定値
-                    break;
+                    
                 case ParmGenNew.P_NUMBERMODEL:
                     selidx = VT_NUMCOUNTER;
                     break;
                 default:
-                    selidx = parseValueType(v, defaultvaltype);
+                    selidx = VT_VALUE;//追跡のデフォルトは値
                     break;
                 
             }
-            //if(parentwin.getCurrentModel()==ParmGenNew.P_TRACKMODEL){
-            //    selidx = VT_FIXED;//追跡のデフォルトは固定値
-            //}else{
-            //    selidx = parseValueType(v, defaultvaltype);
-            //}
+            
         }
         switch(selidx){
             case VT_NUMCOUNTER:
@@ -479,6 +480,7 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
                 }
                 prepostpattern = "([=;]*)";
                 break;
+            case VT_VALUE:
             case VT_FIXED:
                 wholeval = true;
                 break;
@@ -542,6 +544,15 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
             return ParmGenUtil.getPathsRegex(v);
         }
 
+        if(selidx==VT_FIXED ){//固定値を返す
+            String escv = ParmGenUtil.escapeRegexChars(v);
+            if(isformdata){
+                return "(" + escv + ")";
+            }
+            return prefix + "(" + escv + ")";
+        }
+        
+        
         if ( isformdata){
             return "(.+)";
         }
@@ -615,7 +626,7 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
                     pname = null;
                     iscookie = true;
                 }
-                int defaultvaltype = VT_ALPHANUMFIXED;
+                int defaultvaltype = VT_VALUE;
                 if(parentwin.getCurrentModel()==ParmGenNew.P_NUMBERMODEL){
                     defaultvaltype = VT_NUMCOUNTER;
                 }

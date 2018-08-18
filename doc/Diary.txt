@@ -5,3 +5,6 @@
 　◎final macroresponseオフの場合、postマクロは実行しない
 　・フルオートマクロスキャナー
 　・Date format対応
+
+20180818
+　・カスタム機能のJSONリクエスト対応(ParmGenAddParms)

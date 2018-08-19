@@ -499,7 +499,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         });
 
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabel3.setText("<HTML>\n<DL>\n<LI>baseline: you can test(tamper) tracking tokens with scanner/intruder/repeater which has baseline request.<BR>\nNote:  In baseline mode, if you encounter problems which fails tracking tokens,<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;you should select \"■update baseline■\" menu in BurpTool's popup menu.<BR>\n<LI>replace: you can't test(tamper) tracking tokens which is completely replaced with tracked value.\n<DL>\n</HTML>");
+        jLabel3.setText("<HTML>\n<DL>\n<LI>baseline: you can test(tamper) tracking tokens with scanner/intruder which has baseline request.<BR>\nNote:  In baseline mode, if you encounter problems which fails tracking tokens,<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;you should select \"■update baseline■\" menu in BurpTool's popup menu or<BR>\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;you should resend request to scanner/intruder/repeater from Macro Request List's Popup menu. \n<LI>replace(default): Tracking tokens is completely replaced with extracted value from previous page's response.\n<DL>\n</HTML>");
         jLabel3.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);

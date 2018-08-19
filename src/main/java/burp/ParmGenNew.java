@@ -692,7 +692,7 @@ private void setAppParmsIni(){
 
         buttonGroup1.add(NumberSelBtn);
         NumberSelBtn.setSelected(true);
-        NumberSelBtn.setText("数値");
+        NumberSelBtn.setText(bundle.getString("ParmGenNew.NumberTitle.text")); // NOI18N
         NumberSelBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 NumberSelBtnActionPerformed(evt);
@@ -700,7 +700,7 @@ private void setAppParmsIni(){
         });
 
         buttonGroup1.add(DateSelBtn);
-        DateSelBtn.setText("日時");
+        DateSelBtn.setText(bundle.getString("ParmGenNew.DateTimeTitle.text")); // NOI18N
         DateSelBtn.setEnabled(false);
         DateSelBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

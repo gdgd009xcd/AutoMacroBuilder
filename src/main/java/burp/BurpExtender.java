@@ -36,16 +36,8 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
     IHttpRequestResponse[] selected_messageInfo = null;
     JMenuItem repeatermodeitem = null;
 
-
-    public void processHttpMessage(
-        	int toolflag,
-            boolean messageIsRequest,
-            IHttpRequestResponse messageInfo)
-        {
-
-                ParmGen pgen = new ParmGen(pmt);
-                String url = null;
-                String toolname = "";
+    private String getToolname(int toolflag){
+        String toolname = "";
                 switch(toolflag){
                     case IBurpExtenderCallbacks.TOOL_INTRUDER:
                         toolname ="INTRUDER";
@@ -77,10 +69,26 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                     case IBurpExtenderCallbacks.TOOL_TARGET:
                         toolname ="TARGET";
                          break;
+                    case IBurpExtenderCallbacks.TOOL_SCANNER:
+                        toolname ="SCANNER";
+                         break;
                     default:
                         toolname ="UNKNOWN TOOL.";
                         break;
                 }
+                return toolname;
+    }
+    
+    public void processHttpMessage(
+        	int toolflag,
+            boolean messageIsRequest,
+            IHttpRequestResponse messageInfo)
+        {
+
+                ParmGen pgen = new ParmGen(pmt);
+                String url = null;
+                String toolname = getToolname(toolflag);
+                
                 ParmVars.plog.debuglog(0, "toolname:" + toolname);
                 if (
                         (toolflag == IBurpExtenderCallbacks.TOOL_INTRUDER && pgen.IntruderInScope)||
@@ -532,6 +540,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
     {
 
         IHttpRequestResponse[] messageInfo = null;
+        IHttpRequestResponse[] repeaterbaseline = null;
         int toolflg = -1;
 
         @Override
@@ -540,26 +549,45 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
             ArrayList<JMenuItem> items = new ArrayList<JMenuItem>();
             
             toolflg = icmi.getToolFlag();
-
+            messageInfo = icmi.getSelectedMessages();
+            
             JMenuItem item = new JMenuItem("■Custom■");
             JMenuItem itemmacro = new JMenuItem("■SendTo MacroBuilder■");
             
-            if(pmt.isBaseLineMode()&&toolflg==IBurpExtenderCallbacks.TOOL_REPEATER){
-                repeatermodeitem = new JMenuItem("■Update Baseline■");
-                repeatermodeitem.setToolTipText("Update Baseline: You can tamper tracking tokens which is such like CSRF tokens with repeater.");
-                
-                repeatermodeitem.addActionListener(new java.awt.event.ActionListener() {
-                    public void actionPerformed(java.awt.event.ActionEvent evt) {
-                        
-                        
-                        UpdateToolBaseline(messageInfo);
-                        }
-                });
+            if(pmt.isBaseLineMode()){
+                boolean hasMenu = false;
+                switch(toolflg){
+                    case IBurpExtenderCallbacks.TOOL_REPEATER:
+                        repeaterbaseline = messageInfo;
+                        hasMenu = true;
+                        break;
+                    case IBurpExtenderCallbacks.TOOL_SCANNER:
+                    case IBurpExtenderCallbacks.TOOL_INTRUDER:
+                        hasMenu = true;
+                    default:
+                        repeaterbaseline = null;
+                        break;
+                }
+                if(hasMenu){
+                    repeatermodeitem = new JMenuItem("■Update Baseline■");
+                    repeatermodeitem.setToolTipText("Update Baseline: You can tamper tracking tokens which is such like CSRF tokens.");
+
+                    repeatermodeitem.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+
+                            String toolname = getToolname(toolflg);
+                            ParmVars.plog.debuglog(0, "updatebaselineAction:" + toolname + ":" + (repeaterbaseline==null?"NULL":"NONULL"));
+                            UpdateToolBaseline(repeaterbaseline);
+                            }
+                    });
+                }else{
+                    repeatermodeitem = null;
+                }
             
             }else{
                 repeatermodeitem = null;
             }
-            messageInfo = icmi.getSelectedMessages();
+            
             
 
             item.addActionListener(new java.awt.event.ActionListener() {
@@ -620,11 +648,14 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
         }
         
         public void UpdateToolBaseline( IHttpRequestResponse[] messageInfo){
-           
-            if(pmt!=null&&messageInfo!=null&& messageInfo.length>0){
-                IHttpRequestResponse minfo = messageInfo[0];
-                
-                pmt.setToolBaseLine(convertMessageInfoToPRR(minfo));
+            if(pmt!=null){
+                if(messageInfo!=null&& messageInfo.length>0){
+                    IHttpRequestResponse minfo = messageInfo[0];
+
+                    pmt.setToolBaseLine(convertMessageInfoToPRR(minfo));
+                }else{
+                    pmt.setToolBaseLine(null);
+                }
             }
                 
         }

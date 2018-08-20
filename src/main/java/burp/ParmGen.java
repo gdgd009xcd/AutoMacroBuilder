@@ -1403,7 +1403,7 @@ class AppParmsIni {
                     String suffix = filename.substring(lastpos+1);
                     name = prefix;
                 }
-                cntfile = dirname + "\\" + name + "_" +Integer.toString(row) + ".txt";
+                cntfile = dirname + ParmVars.fileSep + name + "_" +Integer.toString(row) + ".txt";
             }
         }
 

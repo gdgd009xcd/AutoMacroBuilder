@@ -5,10 +5,13 @@
  */
 package burp;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -208,6 +211,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         MBcleatokenfromcache = new javax.swing.JCheckBox();
         TrackMode = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
         jCheckBox2 = new javax.swing.JCheckBox();
         waitsec = new javax.swing.JTextField();
@@ -298,9 +302,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
 
         setPreferredSize(new java.awt.Dimension(873, 850));
 
-        jScrollPane2.setPreferredSize(new java.awt.Dimension(873, 900));
-
-        jPanel4.setPreferredSize(new java.awt.Dimension(871, 1300));
+        jPanel4.setPreferredSize(new java.awt.Dimension(871, 1400));
 
         jScrollPane1.setAutoscrolls(true);
 
@@ -499,8 +501,15 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         });
 
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabel3.setText("<HTML>\n<DL>\n<BR>\n<LI>baseline(experimental): you can test(tamper) tracking tokens with scanner/intruder which has baseline request.\n<LI>replace(default): Tracking tokens is completely replaced with extracted value from previous page's response.\n<BR><BR>* For Details , refer to toolTip text in the left combobox. \n<DL>\n</HTML>");
+        jLabel3.setText("<HTML>\n<DL>\n<BR>\n<LI>baseline(experimental): you can test(tamper) tracking tokens with scanner/intruder which has baseline request.\n<LI>replace(default): Tracking tokens is completely replaced with extracted value from previous page's response.\n<BR><BR>* For Details , refer ?button in the \"baseline/replace mode\" section. \n<DL>\n</HTML>");
         jLabel3.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
+
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/question.png"))); // NOI18N
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -511,7 +520,9 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(MBcleatokenfromcache, javax.swing.GroupLayout.DEFAULT_SIZE, 797, Short.MAX_VALUE)
                     .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addComponent(TrackMode, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(TrackMode, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
                 .addContainerGap())
@@ -529,6 +540,8 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addGap(27, 27, 27)
                         .addComponent(TrackMode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
@@ -685,17 +698,17 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(MBfromStepNo)
                     .addComponent(MBtoStepNo))
-                .addContainerGap(65, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel4Layout.createSequentialGroup()
                     .addGap(30, 30, 30)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(986, Short.MAX_VALUE)))
+                    .addContainerGap(1086, Short.MAX_VALUE)))
             .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel4Layout.createSequentialGroup()
                     .addGap(337, 337, 337)
                     .addComponent(paramlog, javax.swing.GroupLayout.PREFERRED_SIZE, 353, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(610, Short.MAX_VALUE)))
+                    .addContainerGap(710, Short.MAX_VALUE)))
         );
 
         jScrollPane2.setViewportView(jPanel4);
@@ -704,11 +717,11 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jScrollPane2)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 850, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 1055, Short.MAX_VALUE)
         );
 
         getAccessibleContext().setAccessibleName("");
@@ -1397,6 +1410,20 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         pmt.setMBreplaceTrackingParam(isReplaceMode());
     }//GEN-LAST:event_TrackModeActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        try {
+            // TODO add your handling code here:
+            java.awt.Desktop.getDesktop().browse(new URI(java.util.ResourceBundle.getBundle("burp/Bundle").getString("MacroBuilderUI.baselinemode.text")));
+        } catch (IOException ex) {
+            Logger.getLogger(MacroBuilderUI.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(MacroBuilderUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    
+    
+     
+    }//GEN-LAST:event_jButton1ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ClearMacro;
@@ -1425,6 +1452,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     private javax.swing.JMenuItem disableRequest;
     private javax.swing.JMenuItem edit;
     private javax.swing.JMenuItem enableRequest;
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton3;
     private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JLabel jLabel1;

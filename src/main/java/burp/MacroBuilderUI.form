@@ -154,24 +154,19 @@
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="jScrollPane2" pref="850" max="32767" attributes="0"/>
+          <Component id="jScrollPane2" pref="1055" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>
   <SubComponents>
     <Container class="javax.swing.JScrollPane" name="jScrollPane2">
-      <Properties>
-        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[873, 900]"/>
-        </Property>
-      </Properties>
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
       <SubComponents>
         <Container class="javax.swing.JPanel" name="jPanel4">
           <Properties>
             <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-              <Dimension value="[871, 1300]"/>
+              <Dimension value="[871, 1400]"/>
             </Property>
           </Properties>
 
@@ -283,20 +278,20 @@
                           <Component id="MBfromStepNo" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="MBtoStepNo" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="65" max="32767" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
                   </Group>
                   <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
                           <Component id="jScrollPane1" min="-2" pref="284" max="-2" attributes="0"/>
-                          <EmptySpace pref="986" max="32767" attributes="0"/>
+                          <EmptySpace pref="1086" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                   <Group type="103" rootIndex="2" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="-2" pref="337" max="-2" attributes="0"/>
                           <Component id="paramlog" min="-2" pref="353" max="-2" attributes="0"/>
-                          <EmptySpace pref="610" max="32767" attributes="0"/>
+                          <EmptySpace pref="710" max="32767" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -615,7 +610,10 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="MBcleatokenfromcache" pref="797" max="32767" attributes="0"/>
                               <Group type="102" attributes="0">
-                                  <Component id="TrackMode" min="-2" pref="101" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="1" attributes="0">
+                                      <Component id="TrackMode" min="-2" pref="101" max="-2" attributes="0"/>
+                                      <Component id="jButton1" min="-2" pref="21" max="-2" attributes="0"/>
+                                  </Group>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="jLabel3" pref="0" max="32767" attributes="0"/>
                               </Group>
@@ -638,6 +636,8 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
                                   <Component id="TrackMode" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <Component id="jButton1" min="-2" pref="23" max="-2" attributes="0"/>
                                   <EmptySpace max="32767" attributes="0"/>
                               </Group>
                           </Group>
@@ -676,9 +676,19 @@
                 <Component class="javax.swing.JLabel" name="jLabel3">
                   <Properties>
                     <Property name="horizontalAlignment" type="int" value="2"/>
-                    <Property name="text" type="java.lang.String" value="&lt;HTML&gt;&#xa;&lt;DL&gt;&#xa;&lt;BR&gt;&#xa;&lt;LI&gt;baseline(experimental): you can test(tamper) tracking tokens with scanner/intruder which has baseline request.&#xa;&lt;LI&gt;replace(default): Tracking tokens is completely replaced with extracted value from previous page&apos;s response.&#xa;&lt;BR&gt;&lt;BR&gt;* For Details , refer to toolTip text in the left combobox. &#xa;&lt;DL&gt;&#xa;&lt;/HTML&gt;"/>
+                    <Property name="text" type="java.lang.String" value="&lt;HTML&gt;&#xa;&lt;DL&gt;&#xa;&lt;BR&gt;&#xa;&lt;LI&gt;baseline(experimental): you can test(tamper) tracking tokens with scanner/intruder which has baseline request.&#xa;&lt;LI&gt;replace(default): Tracking tokens is completely replaced with extracted value from previous page&apos;s response.&#xa;&lt;BR&gt;&lt;BR&gt;* For Details , refer ?button in the &quot;baseline/replace mode&quot; section. &#xa;&lt;DL&gt;&#xa;&lt;/HTML&gt;"/>
                     <Property name="verticalAlignment" type="int" value="3"/>
                   </Properties>
+                </Component>
+                <Component class="javax.swing.JButton" name="jButton1">
+                  <Properties>
+                    <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                      <Image iconType="3" name="/question.png"/>
+                    </Property>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+                  </Events>
                 </Component>
               </SubComponents>
             </Container>

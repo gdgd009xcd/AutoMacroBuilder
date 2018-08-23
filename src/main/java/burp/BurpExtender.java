@@ -556,21 +556,28 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
             
             if(pmt.isBaseLineMode()){
                 boolean hasMenu = false;
+                String menutitle = "■Update Baseline■";
+                String tooltip = "Update Baseline: You can tamper tracking tokens which is such like CSRF tokens.";
                 switch(toolflg){
                     case IBurpExtenderCallbacks.TOOL_REPEATER:
+                        
                         repeaterbaseline = messageInfo;
                         hasMenu = true;
                         break;
                     case IBurpExtenderCallbacks.TOOL_SCANNER:
                     case IBurpExtenderCallbacks.TOOL_INTRUDER:
-                        hasMenu = true;
+                        menutitle = "■Clear Baseline■";
+                        tooltip = "Clear Baseline: You should select this menu when  you used repeater  in baseline mode.";
+                        if(pmt.getToolBaseline()!=null){
+                            hasMenu = true;
+                        }
                     default:
                         repeaterbaseline = null;
                         break;
                 }
                 if(hasMenu){
-                    repeatermodeitem = new JMenuItem("■Update Baseline■");
-                    repeatermodeitem.setToolTipText("Update Baseline: You can tamper tracking tokens which is such like CSRF tokens.");
+                    repeatermodeitem = new JMenuItem(menutitle);
+                    repeatermodeitem.setToolTipText(tooltip);
 
                     repeatermodeitem.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {

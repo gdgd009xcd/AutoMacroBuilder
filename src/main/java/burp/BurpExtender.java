@@ -90,6 +90,14 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                 String toolname = getToolname(toolflag);
                 
                 ParmVars.plog.debuglog(0, "toolname:" + toolname);
+                switch(toolflag){
+                    case IBurpExtenderCallbacks.TOOL_INTRUDER:
+                    case IBurpExtenderCallbacks.TOOL_SCANNER:
+                        pmt.setToolBaseLine(null);
+                        break;
+                    default:
+                        break;
+                }
                 if (
                         (toolflag == IBurpExtenderCallbacks.TOOL_INTRUDER && pgen.IntruderInScope)||
                         (toolflag == IBurpExtenderCallbacks.TOOL_REPEATER && pgen.RepeaterInScope)||

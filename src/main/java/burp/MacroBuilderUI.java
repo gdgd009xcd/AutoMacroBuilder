@@ -933,43 +933,58 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                     boolean RequesthasToken = false;
                     ArrayList<ParmGenTrackingToken> requesttokenlist = new ArrayList<ParmGenTrackingToken>();
                     
-                    for (ParmGenToken tkn : restoken.tracktokenlist) {
-                        String token = tkn.getTokenKey().GetName();
-                        String value = tkn.getTokenValue().getValue();
-                        if(!addedtokens.containsKey(tkn.getTokenKey())){
-                            ParmGenJSONDecoder reqjdecoder = new ParmGenJSONDecoder(pqrs.request.getBody());
-                        
-                            ArrayList<ParmGenToken> reqjtklist = reqjdecoder.parseJSON2Token();
+                    for(int phase = 0 ; phase<2; phase++){
+                        for (ParmGenToken tkn : restoken.tracktokenlist) {
+                            String token = tkn.getTokenKey().GetName();
+                            String value = tkn.getTokenValue().getValue();
+                            if(!addedtokens.containsKey(tkn.getTokenKey())){
+                                ParmGenJSONDecoder reqjdecoder = new ParmGenJSONDecoder(pqrs.request.getBody());
 
+                                ArrayList<ParmGenToken> reqjtklist = reqjdecoder.parseJSON2Token();
 
-                            ParmGenToken _QToken = null;
-                            ParmGenToken _RToken = null;
-                            ParmGenTrackingToken.RequestParamType rptype = ParmGenTrackingToken.RequestParamType.Nop;
-                            for(ParmGenToken reqtkn : reqjtklist){
-                                ParmVars.plog.debuglog(0, "response["+ token  + "] " + "request parsed [" + reqtkn.getTokenKey().GetName() + "] value[" + reqtkn.getTokenValue().getValue() + "]");
-                                if(reqtkn.getTokenKey().GetName().equals(token)&& reqtkn.getTokenValue().getValue().equals(value)){// same name && value
-                                    _RToken = tkn;
-                                    _QToken = reqtkn;
-                                    rptype = ParmGenTrackingToken.RequestParamType.Json;
-                                    break;
+                                ParmGenToken _QToken = null;
+                                ParmGenToken _RToken = null;
+                                ParmGenTrackingToken.RequestParamType rptype = ParmGenTrackingToken.RequestParamType.Nop;
+                                for(ParmGenToken reqtkn : reqjtklist){
+                                    if(reqtkn.getTokenKey().GetName().equals(token)&& reqtkn.getTokenValue().getValue().equals(value)){// same name && value
+                                        _RToken = tkn;
+                                        _QToken = reqtkn;
+                                        rptype = ParmGenTrackingToken.RequestParamType.Json;
+                                        break;
+                                    }
                                 }
-                            }
-                            ParmGenToken query_token = pqrs.request.getQueryToken(token);
-                            ParmGenToken body_token = pqrs.request.getBodyToken(token);
-                            ParmVars.plog.debuglog(0, "token[" + token + "] value[" + value + "]");
-                            if (pqrs.request.hasQueryParam(token, value) || pqrs.request.hasBodyParam(token, value)) {
-                                
-                            	
-                            	switch(tkn.getTokenKey().GetTokenType()){
-                            	case ACTION:
-                            	case HREF:
-                                    
-                                    ParmGenParseURL _psrcurl = new ParmGenParseURL(tkn.getTokenValue().getURL());
-                                    ParmGenParseURL _pdesturl = new ParmGenParseURL(pqrs.request.getURL());
-                                    String srcurl = _psrcurl.getPath();
-                                    String desturl = _pdesturl.getPath();
-                                    ParmVars.plog.debuglog(0, "srcurl|desturl:[" + srcurl + "]|[" + desturl + "]");
-                                    if(desturl.indexOf(srcurl)!=-1){
+                                ParmGenToken query_token = pqrs.request.getQueryToken(token);
+                                ParmGenToken body_token = pqrs.request.getBodyToken(token);
+                                ParmVars.plog.debuglog(0, "phase:" + phase +" token[" + token + "] value[" + value + "]");
+                                if (pqrs.request.hasQueryParam(token, value) || pqrs.request.hasBodyParam(token, value)
+                                        || (phase==1 && (pqrs.request.hasQueryParamName(token) || pqrs.request.hasBodyParamName(token)))) {
+
+
+                                    switch(tkn.getTokenKey().GetTokenType()){
+                                    case ACTION:
+                                    case HREF:
+
+                                        ParmGenParseURL _psrcurl = new ParmGenParseURL(tkn.getTokenValue().getURL());
+                                        ParmGenParseURL _pdesturl = new ParmGenParseURL(pqrs.request.getURL());
+                                        String srcurl = _psrcurl.getPath();
+                                        String desturl = _pdesturl.getPath();
+                                        ParmVars.plog.debuglog(0, "srcurl|desturl:[" + srcurl + "]|[" + desturl + "]");
+                                        if(desturl.indexOf(srcurl)!=-1){
+                                            _RToken = tkn;
+                                            if(query_token !=null){
+                                                rptype = ParmGenTrackingToken.RequestParamType.Query;
+                                                _QToken = query_token;
+                                            }else if(body_token!=null){
+                                                if(pqrs.request.isFormData()){
+                                                    rptype = ParmGenTrackingToken.RequestParamType.Form_data;
+                                                }else{
+                                                    rptype = ParmGenTrackingToken.RequestParamType.X_www_form_urlencoded;
+                                                }
+                                                _QToken = body_token;
+                                            }
+                                        }
+                                        break;
+                                    default:
                                         _RToken = tkn;
                                         if(query_token !=null){
                                             rptype = ParmGenTrackingToken.RequestParamType.Query;
@@ -982,29 +997,15 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                                             }
                                             _QToken = body_token;
                                         }
+                                        break;
                                     }
-                                    break;
-                            	default:
-                                    _RToken = tkn;
-                                    if(query_token !=null){
-                                        rptype = ParmGenTrackingToken.RequestParamType.Query;
-                                        _QToken = query_token;
-                                    }else if(body_token!=null){
-                                        if(pqrs.request.isFormData()){
-                                            rptype = ParmGenTrackingToken.RequestParamType.Form_data;
-                                        }else{
-                                            rptype = ParmGenTrackingToken.RequestParamType.X_www_form_urlencoded;
-                                        }
-                                        _QToken = body_token;
-                                    }
-                                    break;
-                            	}
-                            	
-                            }
-                            if(rptype!=ParmGenTrackingToken.RequestParamType.Nop){
-                                    RequesthasToken = true;
-                                    requesttokenlist.add(new ParmGenTrackingToken(_QToken, _RToken, rptype));
-                                    addedtokens.put(tkn.getTokenKey(), "");
+
+                                }
+                                if(rptype!=ParmGenTrackingToken.RequestParamType.Nop){
+                                        RequesthasToken = true;
+                                        requesttokenlist.add(new ParmGenTrackingToken(_QToken, _RToken, rptype));
+                                        addedtokens.put(tkn.getTokenKey(), "");
+                                }
                             }
                         }
                     }

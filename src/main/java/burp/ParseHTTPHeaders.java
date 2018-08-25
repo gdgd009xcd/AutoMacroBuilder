@@ -969,6 +969,15 @@ class ParseHTTPHeaders {
             return false;
         }
         
+        public boolean hasBodyParamName(String pname){
+            if(getBodyParams()!=null){
+        	for(String[] pair: bodyparams){//bodyparams
+                    if(isEqualParam(pname, pair[0]))return true;
+        	}
+            }
+            return false;
+        }
+        
         public ParmGenToken getBodyToken(String pname){
             if(getBodyParams()!=null){
         	for(String[] pair: bodyparams){//bodyparams
@@ -985,6 +994,15 @@ class ParseHTTPHeaders {
             if(queryparams!=null){
         	for(String[] pair: queryparams){//queryparams
                     if(isEqualParam(pname, pair[0]) && isEqualParam(value, pair[1]))return true;
+         	}
+            }
+            return false;
+        }
+        
+        public boolean hasQueryParamName(String pname){
+            if(queryparams!=null){
+        	for(String[] pair: queryparams){//queryparams
+                    if(isEqualParam(pname, pair[0]) )return true;
          	}
             }
             return false;

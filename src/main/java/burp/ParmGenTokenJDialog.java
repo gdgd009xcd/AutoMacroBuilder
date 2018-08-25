@@ -212,12 +212,23 @@ public class ParmGenTokenJDialog extends javax.swing.JDialog {
                         ParmGenTokenKey _tkey = new ParmGenTokenKey(ap.tokentype, ap.token, ap.resRegexPos);
                         if(map.containsKey(_tkey)){
                             ParmGenTokenValue _tval = map.get(_tkey);
-                            ap.setEnabled(_tval.getBoolean());
-                            apvit.set(ap);
+                            if(_tval.getBoolean()){
+                                ap.setEnabled(_tval.getBoolean());
+                                apvit.set(ap);
+                            }else{
+                                apvit.remove();
+                            }
                         }
                     }
+                    if(apvlist.size()<=0){
+                        apvlist = null;
+                    }
                 }
-                appit.set(aini);
+                if(apvlist!=null){
+                    appit.set(aini);
+                }else{
+                    appit.remove();
+                }
             }
             
             

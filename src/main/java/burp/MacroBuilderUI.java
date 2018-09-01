@@ -946,7 +946,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                                 ParmGenToken _RToken = null;
                                 ParmGenTrackingToken.RequestParamType rptype = ParmGenTrackingToken.RequestParamType.Nop;
                                 for(ParmGenToken reqtkn : reqjtklist){
-                                    if(reqtkn.getTokenKey().GetName().equals(token)&& reqtkn.getTokenValue().getValue().equals(value)){// same name && value
+                                    if((reqtkn.getTokenKey().GetName().equals(token)&& reqtkn.getTokenValue().getValue().equals(value))||(phase==1 && reqtkn.getTokenKey().GetName().equals(token))){// same name && value
                                         _RToken = tkn;
                                         _QToken = reqtkn;
                                         rptype = ParmGenTrackingToken.RequestParamType.Json;

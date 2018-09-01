@@ -123,6 +123,14 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
         }
         
         //JSON request
+        ParmGenJSONDecoder reqjdecoder = new ParmGenJSONDecoder(selected_request.getBody());
+        ArrayList<ParmGenToken> reqjtklist = reqjdecoder.parseJSON2Token();
+        for(ParmGenToken tk: reqjtklist){
+            rcnt++;
+            String name = tk.getTokenKey().GetName();
+            String value = tk.getTokenValue().getValue();
+            ReqParsedTableModel.addRow(new Object[]{"json", name, value});
+        }
         
         if (rcnt<=0){
             ReqParsedTableModel.addRow(new Object[]{"body", "null", "null"});
@@ -379,31 +387,9 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
     }//GEN-LAST:event_CancelActionPerformed
 
 
-    /********** たまたま、数値のみの値であった場合など、問題があるので、コメントアウト。明示的に入力値の種類を指定した場合以外は、VT_VALUE.
-    private int parseValueType(String v, int defaultvaltype){//vに完全一致するパターンを探す。
-        Pattern pattern = ParmGenUtil.Pattern_compile("([0-9]+)");
-        Matcher matcher = pattern.matcher(v);
-        if (matcher.find()){
-            String rv = matcher.group();
-            if( rv.equals(v)){//数値完全一致
-                return VT_NUMCOUNTER;
-            }
-        }
-        
-        pattern = ParmGenUtil.Pattern_compile("([0-9a-zA-Z]+)");
-        matcher = pattern.matcher(v);
-        if(matcher.find()){
-            String rv = matcher.group();
-            if( rv.equals(v)){//数値完全一致
-                return VT_ALPHANUM;
-            }
-            
-        }
-        return defaultvaltype;
-    }
-    * **********/
+    
 
-    private String getValueRegex(String v, boolean ispath, boolean iscookie, boolean isheader, int defaultvaltype, boolean iswholepath){
+    private String getValueRegex(String v, boolean ispath, boolean iscookie, boolean isheader, boolean isjson, boolean iswholepath){
         wholeval = false;
         boolean fixed = true;
         String regpattern = "";
@@ -552,6 +538,9 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
             return prefix + "(" + escv + ")";
         }
         
+        if(isjson){
+            return v;
+        }
         
         if ( isformdata){
             return "(.+)";
@@ -600,6 +589,7 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
                 boolean iscookie = false;
                 boolean isheader = false;
                 boolean iswholepath = false;
+                boolean isjson = false;
                 String cookiepref = "";
                 String pathpref = "";
                 String headerpref ="";
@@ -625,12 +615,12 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
                     cookiepref = "[Cc]ookie:.*?" + pname + "=";
                     pname = null;
                     iscookie = true;
+                }else if(reqplace.equals("json")){
+                    isjson = true;
                 }
-                int defaultvaltype = VT_VALUE;
-                if(parentwin.getCurrentModel()==ParmGenNew.P_NUMBERMODEL){
-                    defaultvaltype = VT_NUMCOUNTER;
-                }
-                parentwin.addParamToSelectedModel(reqplace, pname, k, headerpref + cookiepref + pathpref + getValueRegex(pvalue, ispath, iscookie, isheader,defaultvaltype, iswholepath), isformdata, islastparam);
+
+                
+                parentwin.addParamToSelectedModel(reqplace, pname, k, headerpref + cookiepref + pathpref + getValueRegex(pvalue, ispath, iscookie, isheader,isjson, iswholepath), isformdata, islastparam);
 
             }
         }

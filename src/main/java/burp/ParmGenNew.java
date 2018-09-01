@@ -5,6 +5,7 @@
 package burp;
 
 import java.io.File;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javax.swing.DefaultCellEditor;
@@ -272,6 +273,31 @@ private void setAppParmsIni(){
             //nval = "(?:[A-Z].* name=\"" + ParmGenUtil.escapeRegexChars(name) + "\".*(?:\\r|\\n|\\r\\n))(?:[A-Z].*(?:\\r|\\n|\\r\\n)){0,}(?:\\r|\\n|\\r\\n)(?:.*?)" + value + "(?:.*?)(?:\\r|\\n|\\r\\n)";
             nval = "(?:[A-Z].* name=\"" + ParmGenUtil.escapeRegexChars(name) + "\".*(?:\\r|\\n|\\r\\n))(?:[A-Z].*(?:\\r|\\n|\\r\\n)){0,}(?:\\r|\\n|\\r\\n)(?:.*?)" + value ;
 
+            _reqplace = "body";
+        }else if(reqplace.toLowerCase().equals("json")){
+            PRequestResponse selected_message = ParmGenCSV.selected_messages.get(0);
+            PRequest request = selected_message.request;
+            String regex = "\"" + name + "\"(?:[\\t \\r\\n]*):(?:[\\t\\r\\n ]*)\"(.+?)\"(?:[\\t \\r\\n]*)(?:,|})";
+            List<String> jsonmatchlist = ParmGenUtil.getRegexMatchGroups(regex, request.getBody());
+            boolean jsonmatched = false;
+            String jsonvalue = value;
+            for(String v: jsonmatchlist){
+                if(jsonvalue.equals(v)){
+                    jsonmatched = true;
+                    break;
+                }
+            }
+            if(!jsonmatched){// "key": value
+                regex ="\"" + name + "\"(?:[\\t \\r\\n]*):(?:[\\t\\r\\n ]*)([^,:{}\\\"]+?)(?:[\\t \\r\\n]*)(?:,|})";
+                jsonmatchlist = ParmGenUtil.getRegexMatchGroups(regex, request.getBody());
+                for(String v: jsonmatchlist){
+                    if(jsonvalue.equals(v)){
+                        jsonmatched = true;
+                        break;
+                    }
+                }
+            }
+            nval = regex;
             _reqplace = "body";
         }
         Object []row = null;

@@ -51,9 +51,9 @@ MYPAGE
  <script>
   $(document).ready(function() {
     /**
-     * 送信ボタンクリック
+     * poppボタンクリック
      */
-    $('#send').click(function() {
+    $('#popup').click(function() {
       
       var data = {'request' : 1};
 
@@ -79,6 +79,31 @@ MYPAGE
       
       return false;
     });
+
+    // JSON
+    $('#json').click(function() {
+      
+      var data = {'request' : 1, 'X-SPECIAL': '<?php echo $htoken; ?>'};
+
+      
+      $.ajax({
+        type: "POST",
+        url: "json.php",
+        data:JSON.stringify(data),
+        contentType: 'application/json',
+        dataType: "json"
+      }).done(function(data, dataType) {
+        alert(JSON.stringify(data));
+      }).fail(function(XMLHttpRequest, textStatus, errorThrown) {
+        
+
+        
+        alert('Error : ' + errorThrown);
+      });
+
+      
+      return false;
+    });
   });
   </script>
 </head>
@@ -94,7 +119,8 @@ MYPAGE
 <P>
 <A HREF="mypage.php?token1=<?php echo $randomval; ?>">ロケーションでお問い合わせに遷移</A>
 <P>
-<input id="send" value="send" type="submit" /></p>
+<input id="popup" value="popup" type="submit" /></p>
+<input id="json" value="json" type="submit" /></p>
 <A HREF="logout.php">logout</A>
 </body>
 </html>

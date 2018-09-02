@@ -19,7 +19,7 @@ pass:<input type="password" name="pass" value=""><BR>
 <?php
 
 if( !empty($DB) ){
-print "<input type=hidden name=\"DB\" value=\"1\"><BR>";
+print "<input type=hidden name=\"DB\" value=\"" . $DB .  "\"><BR>";
 }
 ?>
 <input type="submit" value="ログイン">

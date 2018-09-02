@@ -17,31 +17,34 @@ $DB = $_POST['DB'];
 
 session_start();
 
-if(!empty($DB) && $DB === "1" ){
-    $link = pg_connect("host=localhost dbname=testdb user=test password=password");
+if($_SERVER["REQUEST_METHOD"] === "POST"){
+    unset($_SESSION['user']);
+    if(!empty($DB) && $DB === "1" ){
+        $link = pg_connect("host=localhost dbname=testdb user=test password=password");
 
-    if (!$link) {
-        print(pg_last_error());
-        header('location: index.php');
-	exit();
-    }
+        if (!$link) {
+            print(pg_last_error());
+            header('location: index.php');
+            exit();
+        }
 
-    // PostgreSQLに対する処理
-    $username = $user;
-    $password = $pass;
-    $sql = "SELECT username,password  FROM account where username='" . $username . "' and  password='" . $password . "'" ;
-    $result = pg_query($link, $sql);
-    if (!$result) {
-      header('location: index.php');
-        exit(-1);
-    }
-    if(pg_num_rows($result) >= 1 ){
-        $_SESSION['user'] = $user;
-    }
-    pg_close($link);
+        // PostgreSQLに対する処理
+        $username = $user;
+        $password = $pass;
+        $sql = "SELECT username,password  FROM account where username='" . $username . "' and  password='" . $password . "'" ;
+        $result = pg_query($link, $sql);
+        if (!$result) {
+          header('location: index.php');
+            exit(-1);
+        }
+        if(pg_num_rows($result) >= 1 ){
+            $_SESSION['user'] = $user;
+        }
+        pg_close($link);
 
-}else if ( $user === "test" && $pass === "password"){
-	$_SESSION['user'] = $user;
+    }else if ( $user === "test" && $pass === "password"){
+            $_SESSION['user'] = $user;
+    }
 }
 
 if( isset($_SESSION['user'])){

@@ -1,5 +1,8 @@
 <?php
 
+$DB = $_GET['DB'];
+
+
 ?>
 
 <html>
@@ -13,6 +16,12 @@ login page
 <form action="mypage.php" method="POST">
 user:<input type="text" name="user" value=""><BR>
 pass:<input type="password" name="pass" value=""><BR>
+<?php
+
+if( !empty($DB) ){
+print "<input type=hidden name=\"DB\" value=\"1\"><BR>";
+}
+?>
 <input type="submit" value="ログイン">
 </form>
 </body>

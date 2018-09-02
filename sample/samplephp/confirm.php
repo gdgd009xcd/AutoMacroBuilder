@@ -54,9 +54,14 @@ inquiry input:お問い合わせ入力
 <form action="confirm.php" method="POST">
 <input type="hidden" name="token2" value="<?php echo $randomval; ?>">
 件名<input type="text" name="subject" value="<?php echo $subject; ?>"><BR>
-お問い合わせ内容<BR>
+お問い合わせ内容your inquiry<BR>
 <TEXTAREA name="contents" rows="4" cols="40"><?php echo $contents; ?></textarea><BR>
 mail<BR>
+<?php
+if ($mailaddr === $oldmail){
+    print "<P> 登録済みメールアドレスです。 mailaddr has already registered.\n"; 
+}
+?>
 <input type="text" name="mailaddr" value="<?php echo $mailaddr; ?>" size="10" ><BR>
 <input type="submit"  value="confirm:確認">
 </form>

@@ -277,24 +277,31 @@ private void setAppParmsIni(){
         }else if(reqplace.toLowerCase().equals("json")){
             PRequestResponse selected_message = ParmGenCSV.selected_messages.get(0);
             PRequest request = selected_message.request;
-            String regex = "\"" + name + "\"(?:[\\t \\r\\n]*):(?:[\\t\\r\\n ]*)\"(.+?)\"(?:[\\t \\r\\n]*)(?:,|})";
+            String regex = "\"" + name + "\"(?:[\\t \\r\\n]*):(?:[\\t\\[\\r\\n ]*)\"(.+?)\"(?:[\\t \\]\\r\\n]*)(?:,|})";
             List<String> jsonmatchlist = ParmGenUtil.getRegexMatchGroups(regex, request.getBody());
             boolean jsonmatched = false;
             String jsonvalue = value;
-            for(String v: jsonmatchlist){
+            /*for(String v: jsonmatchlist){
                 if(jsonvalue.equals(v)){
                     jsonmatched = true;
                     break;
                 }
+            }*/
+            if(jsonmatchlist!=null&&jsonmatchlist.size()>0){
+                jsonmatched = true;
             }
+            
             if(!jsonmatched){// "key": value
-                regex ="\"" + name + "\"(?:[\\t \\r\\n]*):(?:[\\t\\r\\n ]*)([^,:{}\\\"]+?)(?:[\\t \\r\\n]*)(?:,|})";
+                regex ="\"" + name + "\"(?:[\\t \\r\\n]*):(?:[\\t\\[\\r\\n ]*)([^,:{}\\\"]+?)(?:[\\t \\]\\r\\n]*)(?:,|})";
                 jsonmatchlist = ParmGenUtil.getRegexMatchGroups(regex, request.getBody());
-                for(String v: jsonmatchlist){
+                /*for(String v: jsonmatchlist){
                     if(jsonvalue.equals(v)){
                         jsonmatched = true;
                         break;
                     }
+                }*/
+                if(jsonmatchlist!=null&&jsonmatchlist.size()>0){
+                    jsonmatched = true;
                 }
             }
             nval = regex;

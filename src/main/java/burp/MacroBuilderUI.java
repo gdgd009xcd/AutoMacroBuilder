@@ -1079,24 +1079,30 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                                     regex = "(?:[A-Z].* name=\"" + ParmGenUtil.escapeRegexChars(paramname) + "\".*(?:\\r|\\n|\\r\\n))(?:[A-Z].*(?:\\r|\\n|\\r\\n)){0,}(?:\\r|\\n|\\r\\n)(?:.*?)(.+)";
                                     break;
                                 case Json:
-                                    regex = "\"" + paramname + "\"(?:[\\t \\r\\n]*):(?:[\\t\\r\\n ]*)\"(.+?)\"(?:[\\t \\r\\n]*)(?:,|})";
+                                    regex = "\"" + paramname + "\"(?:[\\t \\r\\n]*):(?:[\\t\\[\\r\\n ]*)\"(.+?)\"(?:[\\t \\]\\r\\n]*)(?:,|})";
                                     List<String> jsonmatchlist = ParmGenUtil.getRegexMatchGroups(regex, pqrs.request.getBody());
                                     boolean jsonmatched = false;
                                     String jsonvalue = _QToken.getTokenValue().getValue();
-                                    for(String v: jsonmatchlist){
+                                    /*for(String v: jsonmatchlist){
                                         if(jsonvalue.equals(v)){
                                             jsonmatched = true;
                                             break;
                                         }
+                                    }*/
+                                    if(jsonmatchlist!=null&&jsonmatchlist.size()>0){
+                                        jsonmatched = true;
                                     }
                                     if(!jsonmatched){// "key": value
-                                        regex ="\"" + paramname + "\"(?:[\\t \\r\\n]*):(?:[\\t\\r\\n ]*)([^,:{}\\\"]+?)(?:[\\t \\r\\n]*)(?:,|})";
+                                        regex ="\"" + paramname + "\"(?:[\\t \\r\\n]*):(?:[\\t\\[\\r\\n ]*)([^,:{}\\\"]+?)(?:[\\t \\]\\r\\n]*)(?:,|})";
                                         jsonmatchlist = ParmGenUtil.getRegexMatchGroups(regex, pqrs.request.getBody());
-                                        for(String v: jsonmatchlist){
+                                        /*for(String v: jsonmatchlist){
                                             if(jsonvalue.equals(v)){
                                                 jsonmatched = true;
                                                 break;
                                             }
+                                        }*/
+                                        if(jsonmatchlist!=null&&jsonmatchlist.size()>0){
+                                            jsonmatched = true;
                                         }
                                     }
                                     break;

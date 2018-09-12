@@ -1072,11 +1072,13 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                                 paramname = _QToken.getTokenKey().GetName();
                             }
                             
-
+                            apv.urlencode = true;//www-form-urlencoded default
+                            
                             String regex = "(?:[&=?]|^)" + paramname + "=([^&=\\r\\n ;#]+)";//埋め込み先の長さ設定が必要。
                             switch(rptype){
                                 case Form_data:
                                     regex = "(?:[A-Z].* name=\"" + ParmGenUtil.escapeRegexChars(paramname) + "\".*(?:\\r|\\n|\\r\\n))(?:[A-Z].*(?:\\r|\\n|\\r\\n)){0,}(?:\\r|\\n|\\r\\n)(?:.*?)(.+)";
+                                    apv.urlencode = false;
                                     break;
                                 case Json:
                                     regex = "\"" + paramname + "\"(?:[\\t \\r\\n]*):(?:[\\t\\[\\r\\n ]*)\"(.+?)\"(?:[\\t \\]\\r\\n]*)(?:,|})";
@@ -1105,6 +1107,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                                             jsonmatched = true;
                                         }
                                     }
+                                    apv.urlencode = false;
                                     break;
                                 case X_www_form_urlencoded:
                                     regex = "(?:[&=?]|^)" + paramname + "=([^&=]+)";
@@ -1138,14 +1141,11 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                             apv.setresPartType(apv.getValPart(resvalpart));
                             apv.resRegexPos = _RToken.getTokenKey().GetFcnt();
                             apv.token = token;
-                            apv.urlencode = true;
-                            if(MBfromStepNo.isSelected()){
-                                apv.fromStepNo = fromStepNo;
-                            }else{
-                                apv.fromStepNo = -1;
-                            }
                             
-                            apv.toStepNo = pos;
+
+                            apv.fromStepNo = -1;
+
+                            apv.toStepNo = 0;
                             apv.tokentype = _RToken.getTokenKey().GetTokenType();
                             apv.col = aparms.parmlist.size();
                             apv.setEnabled(_RToken.isEnabled());

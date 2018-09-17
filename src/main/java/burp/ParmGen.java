@@ -403,8 +403,8 @@ class AppValue {
 		URLENCODE,
 	}
 
-	public int fromStepNo = -1;//追跡元 <0 :　無条件で追跡　>=0: 指定StepNoのリクエスト追跡
-	public int toStepNo = 0;//更新先 <0 currentStepNo == responseStepNo - toStepNo ==0: 無条件　>0:指定したStepNoのリクエスト更新
+	public int fromStepNo = -1;//TRACK追跡元 <0 :　無条件で追跡　>=0: 指定StepNoのリクエスト追跡
+	public int toStepNo = -1;// TRACK:更新先 <0 currentStepNo == responseStepNo - toStepNo ==0: 無条件　>0:指定したStepNoのリクエスト更新
 
 	public static final int V_QUERY = 1;
 	public static final int V_BODY = 2;
@@ -800,7 +800,7 @@ class AppValue {
 		if (valueregex == null)
 			return null;
                 ParmGenTokenKey tk = null;
-		if(toStepNo>0){
+		if(toStepNo>0||(toStepNo>=0&&pini.getType()!=AppParmsIni.T_TRACK)){
 			if(currentStepNo!=toStepNo){
 				return null;//
 			}

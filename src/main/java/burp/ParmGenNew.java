@@ -34,8 +34,8 @@ public class ParmGenNew extends javax.swing.JFrame implements InterfaceRegex, in
     public final static int P_RESPONSETAB = 1;
     private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
 
-
-    int current_model;
+    private boolean current_model_selected = false;
+    private int current_model;
 
     int current_tablerowidx;
     int current_tablecolidx;
@@ -107,6 +107,7 @@ public class ParmGenNew extends javax.swing.JFrame implements InterfaceRegex, in
                     current_model = P_TAMPERMODEL;
                     break;
             }
+            current_model_selected = true;
             CSVrewind.setSelected(false);
             NumberRewind.setSelected(false);
         }else{
@@ -135,6 +136,8 @@ public class ParmGenNew extends javax.swing.JFrame implements InterfaceRegex, in
 
 private void setAppParmsIni(){
         Object[] row;
+        TrackFrom.setText(Integer.toString(rec.getTrackFromStep()));
+        SetTo.setText(Integer.toString(rec.getSetToStep()));
         switch(current_model){
             case P_NUMBERMODEL:
                 numberTargetURL.setText(rec.getUrl());
@@ -157,8 +160,6 @@ private void setAppParmsIni(){
                 break;
             case P_TRACKMODEL:
                 trackTargetURL.setText(rec.getUrl());
-                TrackFrom.setText(Integer.toString(rec.getTrackFromStep()));
-                SetTo.setText(Integer.toString(rec.getSetToStep()));
                 rec.rewindAppValues();
                 while((row=rec.getNextAppValuesRow())!=null){
                     ParamTableModels[P_TRACKMODEL].addRow(row);
@@ -230,6 +231,7 @@ private void setAppParmsIni(){
     }
 
     public void addParamToSelectedModel(String reqplace, String name, int ni, String value, boolean target_req_isformdata, boolean islastparam){
+        current_model_selected = true;
         addParam(current_model, reqplace, name, ni, value, target_req_isformdata, islastparam);
     }
     /*
@@ -1522,6 +1524,11 @@ private void setAppParmsIni(){
 
     private void csvParamAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_csvParamAddActionPerformed
         // TODO add your handling code here:
+        if(current_model_selected){
+            if(current_model!=P_CSVMODEL){
+                return;
+            }
+        }
         //セッションクリア
         ParmVars.session.clear();
         ParmGenCSVLoader csvloader = new ParmGenCSVLoader(this,csvFilePath.getText());
@@ -1542,6 +1549,11 @@ private void setAppParmsIni(){
 
     private void nParamAdd4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nParamAdd4ActionPerformed
         // TODO add your handling code here:
+        if(current_model_selected){
+            if(current_model!=P_TRACKMODEL){
+                return;
+            }
+        }
         //セッションクリア
         ParmVars.session.clear();
         //new ResponseTracker(this).setVisible(true);
@@ -1576,6 +1588,14 @@ private void setAppParmsIni(){
     private void SaveParmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveParmActionPerformed
         // TODO add your handling code here:
         // 保存処理実行。
+        int deftoStep = 0;
+        try{
+            deftoStep = Integer.parseInt(SetTo.getText());
+        }catch(NumberFormatException e){
+            deftoStep = 0;
+        }
+        rec.setTrackFromStep(deftoStep);
+        rec.setSetToStep(deftoStep);
         switch(current_model){
             case P_NUMBERMODEL:
                 rec.setType(AppParmsIni.T_NUMBER_NAME);
@@ -1701,6 +1721,11 @@ private void setAppParmsIni(){
 
     private void nParamAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nParamAddActionPerformed
         // TODO add your handling code here:
+        if(current_model_selected){
+            if(current_model!=P_NUMBERMODEL){
+                return;
+            }
+        }
         //セッションクリア
         ParmVars.session.clear();
         new ParmGenAddParms(this, false).setVisible(true);
@@ -1708,6 +1733,11 @@ private void setAppParmsIni(){
 
     private void NumberRegexTestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NumberRegexTestActionPerformed
         // TODO add your handling code here
+        if(current_model_selected){
+            if(current_model!=P_NUMBERMODEL){
+                return;
+            }
+        }
         int[] rowsSelected = nParamTable.getSelectedRows();
         if (rowsSelected.length > 0){
             current_tablecolidx = 2;
@@ -1719,6 +1749,11 @@ private void setAppParmsIni(){
 
     private void nParamDelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nParamDelActionPerformed
         // TODO add your handling code here:
+        if(current_model_selected){
+            if(current_model!=P_NUMBERMODEL){
+                return;
+            }
+        }
         int[] rowsSelected = nParamTable.getSelectedRows();
         if (rowsSelected.length > 0){
             current_tablerowidx = rowsSelected[0];
@@ -1729,7 +1764,7 @@ private void setAppParmsIni(){
     private void ModelTabsStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_ModelTabsStateChanged
         // TODO add your handling code here:
         int i = ModelTabs.getSelectedIndex();
-        if ( i!=-1){
+        if ( i!=-1&&current_model_selected==false){
             current_model = i;
             switch(current_model){
                 case P_TRACKMODEL:
@@ -1745,6 +1780,11 @@ private void setAppParmsIni(){
 
     private void nParamUPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nParamUPActionPerformed
         // TODO add your handling code here:
+        if(current_model_selected){
+            if(current_model!=P_NUMBERMODEL){
+                return;
+            }
+        }
         int[] rowsSelected = nParamTable.getSelectedRows();
         if (rowsSelected.length > 0){
             current_tablerowidx = rowsSelected[0];
@@ -1757,6 +1797,11 @@ private void setAppParmsIni(){
 
     private void nParamDOWNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nParamDOWNActionPerformed
         // TODO add your handling code here:
+        if(current_model_selected){
+            if(current_model!=P_NUMBERMODEL){
+                return;
+            }
+        }
         int[] rowsSelected = nParamTable.getSelectedRows();
         if (rowsSelected.length > 0){
             current_tablerowidx = rowsSelected[0];
@@ -1782,6 +1827,11 @@ private void setAppParmsIni(){
 
     private void nParamDel12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nParamDel12ActionPerformed
         // TODO add your handling code here:
+        if(current_model_selected){
+            if(current_model!=P_TRACKMODEL){
+                return;
+            }
+        }
         int[] rowsSelected = trackTable.getSelectedRows();
         if (rowsSelected.length > 0){
             current_tablerowidx = rowsSelected[0];
@@ -1791,6 +1841,11 @@ private void setAppParmsIni(){
 
     private void nParamDel13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nParamDel13ActionPerformed
         // TODO add your handling code here:
+        if(current_model_selected){
+            if(current_model!=P_TRACKMODEL){
+                return;
+            }
+        }
         int[] rowsSelected = trackTable.getSelectedRows();
         if (rowsSelected.length > 0){
             current_tablerowidx = rowsSelected[0];
@@ -1803,6 +1858,11 @@ private void setAppParmsIni(){
 
     private void nParamDel14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nParamDel14ActionPerformed
         // TODO add your handling code here:
+        if(current_model_selected){
+            if(current_model!=P_TRACKMODEL){
+                return;
+            }
+        }
         int[] rowsSelected = trackTable.getSelectedRows();
         if (rowsSelected.length > 0){
             current_tablerowidx = rowsSelected[0];
@@ -1816,6 +1876,11 @@ private void setAppParmsIni(){
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
         // TODO add your handling code here:
+        if(current_model_selected){
+            if(current_model!=P_TRACKMODEL){
+                return;
+            }
+        }
         int[] rowsSelected = trackTable.getSelectedRows();
         int[] colsSelected = trackTable.getSelectedColumns();
         if (rowsSelected.length > 0){
@@ -1831,6 +1896,11 @@ private void setAppParmsIni(){
 
     private void csvParamDelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_csvParamDelActionPerformed
         // TODO add your handling code here:
+        if(current_model_selected){
+            if(current_model!=P_CSVMODEL){
+                return;
+            }
+        }
         int[] rowsSelected = csvParamTable.getSelectedRows();
         if (rowsSelected.length > 0){
             current_tablerowidx = rowsSelected[0];
@@ -1841,6 +1911,11 @@ private void setAppParmsIni(){
     private void csvParamUPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_csvParamUPActionPerformed
         // TODO add your handling code here:
         // TODO add your handling code here:
+        if(current_model_selected){
+            if(current_model!=P_CSVMODEL){
+                return;
+            }
+        }
         int[] rowsSelected = csvParamTable.getSelectedRows();
         if (rowsSelected.length > 0){
             current_tablerowidx = rowsSelected[0];
@@ -1853,6 +1928,11 @@ private void setAppParmsIni(){
 
     private void csvParamDOWNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_csvParamDOWNActionPerformed
         // TODO add your handling code here:
+        if(current_model_selected){
+            if(current_model!=P_CSVMODEL){
+                return;
+            }
+        }
         int[] rowsSelected = csvParamTable.getSelectedRows();
         if (rowsSelected.length > 0){
             current_tablerowidx = rowsSelected[0];
@@ -1866,6 +1946,11 @@ private void setAppParmsIni(){
 
     private void csvParamRegexTestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_csvParamRegexTestActionPerformed
         // TODO add your handling code here:
+        if(current_model_selected){
+            if(current_model!=P_CSVMODEL){
+                return;
+            }
+        }
         int[] rowsSelected = csvParamTable.getSelectedRows();
         if (rowsSelected.length > 0){
             current_tablecolidx = 3;

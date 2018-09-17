@@ -101,7 +101,7 @@ class LocVal {
 	
 
 	
-
+    //this function affects AppParmsIni.T_TRACK only..
     String getLocVal(int k, ParmGenTokenKey tk, int currentStepNo, int toStepNo) {
         String rval = null;
         ParmGenTrackingParam tkparam = ParmGenTrackJarFactory.get(k);

@@ -1299,10 +1299,19 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
             if(!pFilter.accept(file)){//拡張子無しの場合は付与
                 name += ".json";
             }
+            boolean filenamechanged = false;
+            if(ParmVars.parmfile==null||!ParmVars.parmfile.equals(name)){
+                filenamechanged = true;
+            }
             ParmVars.parmfile = name;
              //csv.save();
              ParmGenCSV csv = new ParmGenCSV(null, pmt);
              csv.jsonsave();
+             if(filenamechanged){//if filename changed then reload json
+                ParmGen pgen = new ParmGen(pmt, null);
+                pgen.reset();//再読み込み
+             }
+             
             
         }
     }//GEN-LAST:event_SaveActionPerformed

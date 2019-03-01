@@ -149,6 +149,8 @@ public class ParmGenJSON {
                     ParmGen.ScannerInScope = Getboolean(ev, value, true);
                 }else if(name.toUpperCase().equals("CURRENTREQUEST")){
                     currentrequest = GetNumber(ev, value,0);
+                }else if(name.toUpperCase().equals("VERSION")){
+                    ParmVars.Version = GetString(ev, value, "");
                 }
                 break;
             case 1:

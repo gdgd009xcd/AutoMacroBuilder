@@ -30,6 +30,7 @@ public class ParmGenCSV {
     List<AppParmsIni> records;
     Iterator<AppParmsIni> it;
     ParmGenWriteFile pfile;
+    public static final String JSONVERSION = "1.0";
     public static ArrayList<PRequestResponse> selected_messages;
     public static ArrayList<PRequestResponse> proxy_messages;
 
@@ -140,6 +141,8 @@ public class ParmGenCSV {
         pfile.truncate();
         JsonObjectBuilder builder = Json.createObjectBuilder();
 
+        builder.add("VERSION", JSONVERSION);
+        
         builder.add("LANG", ParmVars.enc.getIANACharset());
 
         if(ParmGen.ProxyInScope){

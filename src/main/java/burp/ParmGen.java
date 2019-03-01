@@ -260,6 +260,7 @@ class ParmVars {
         static int displaylength = 10000;// JTextArea/JTextPane等swingの表示バイト数
         private static boolean issaved = false;
         static String fileSep = "/";//maybe unix filesystem.
+        static String Version = "";// JSON format version
 
 	//
 	// static変数初期化
@@ -1670,7 +1671,8 @@ class ParmGen {
         	ArrayList<AppParmsIni> rlist = null;
         	String pfile = ParmVars.parmfile;
         	ParmVars.plog.debuglog(1, "---------AppPermGen.json----------");
-
+                ParmVars.Version = "";
+                
         	try{
 
         		String rdata;

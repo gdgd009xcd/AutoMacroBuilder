@@ -17,6 +17,8 @@ su - postgres
 
 $ postgres
 initdb --encoding=UTF8 --no-locale
+or
+postgresql-setup initdb
 
 2) start DB
 

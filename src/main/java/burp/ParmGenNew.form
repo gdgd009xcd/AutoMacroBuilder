@@ -159,7 +159,7 @@
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace min="-2" pref="13" max="-2" attributes="0"/>
                               <Component id="jScrollPane3" min="-2" pref="141" max="-2" attributes="0"/>
-                              <EmptySpace pref="41" max="32767" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
@@ -960,8 +960,8 @@
                         <Column editable="true" title="&#x8ffd;&#x8de1;&#x4f4d;&#x7f6e;" type="java.lang.String"/>
                         <Column editable="true" title="&#x8ffd;&#x8de1;NAME&#x5024;" type="java.lang.String"/>
                         <Column editable="true" title="URLencode&#x3059;&#x308b;" type="java.lang.Boolean"/>
-                        <Column editable="true" title="&#x8ffd;&#x8de1;from" type="java.lang.Integer"/>
-                        <Column editable="true" title="&#x8ffd;&#x8de1;to" type="java.lang.Integer"/>
+                        <Column editable="true" title="" type="java.lang.String"/>
+                        <Column editable="true" title="" type="java.lang.String"/>
                         <Column editable="true" title="tokentype" type="java.lang.String"/>
                       </Table>
                     </Property>

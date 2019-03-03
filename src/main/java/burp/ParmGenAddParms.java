@@ -75,7 +75,7 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
         PRequestResponse selected_message = ParmGenCSV.selected_messages.get(0);
         int mpos = selected_message.getMacroPos();
         if(mpos<0){
-            mpos = 0;
+            mpos = ParmVars.TOSTEPANY;
         }
         ParmVars.session.put(ParmGenSession.K_TOPOS, Integer.toString(mpos));
         selected_request = selected_message.request;
@@ -563,13 +563,13 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
             frompos = Integer.parseInt(fromstr);
         }
         String tostr = ParmVars.session.get(ParmGenSession.K_TOPOS);
-        int topos = 0;
+        int topos = ParmVars.TOSTEPANY;
         if(tostr!=null){
             topos = Integer.parseInt(tostr);
         }
         parentwin.updateFromToPos(frompos, topos);
         
-        if(topos>0){//SetTo specified. then  URL target is any match
+        if(topos>=0){//SetTo specified. then  URL target is any match
             url = ".*";
         }
         if(url!=null)  parentwin.updateTargetURL(url);

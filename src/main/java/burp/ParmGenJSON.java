@@ -221,7 +221,13 @@ public class ParmGenJSON {
                             }else if(name.toUpperCase().equals("TRACKFROMSTEP")){
                                 aparms.setTrackFromStep(GetNumber(ev, value, 0));
                             }else if(name.toUpperCase().equals("SETTOSTEP")){
-                                aparms.setSetToStep(GetNumber(ev, value, 0));
+                                int stepno = GetNumber(ev, value, ParmVars.TOSTEPANY);
+                                if(ParmVars.Version.isEmpty()){
+                                    if(stepno <= 0){
+                                        stepno = ParmVars.TOSTEPANY;
+                                    }
+                                }
+                                aparms.setSetToStep(stepno);
                             }
                         }else if(current!=null&&current.toUpperCase().equals("PREQUESTRESPONSE")){
                             if(name.toUpperCase().equals("PREQUEST")){
@@ -300,7 +306,13 @@ public class ParmGenJSON {
                             }else if(name.toUpperCase().equals("FROMSTEPNO")){
                                 apv.fromStepNo = GetNumber(ev, value, -1);
                             }else if(name.toUpperCase().equals("TOSTEPNO")){
-                                apv.toStepNo = GetNumber(ev, value, 0);
+                                int stepno = GetNumber(ev, value, ParmVars.TOSTEPANY);
+                                if(ParmVars.Version.isEmpty()){
+                                    if(stepno<=0){
+                                        stepno = ParmVars.TOSTEPANY;
+                                    }
+                                }
+                                apv.toStepNo = stepno;
                             }else if(name.toUpperCase().equals("TOKENTYPE")){
                                 apv.setTokenTypeName(GetString(ev, value, ""));
                             }else if(name.toUpperCase().equals("RESENCODETYPE")){

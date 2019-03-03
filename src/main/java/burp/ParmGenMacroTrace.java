@@ -531,11 +531,9 @@ public class ParmGenMacroTrace {
    
    boolean CurrentRequestIsSetToTarget(AppParmsIni pini){
        int ToStepNo = pini.getSetToStep();
-       int ToStepBase = 1;
-       if(pini.getType()!=AppParmsIni.T_TRACK){
-           ToStepBase = 0;
-       }
-       if(ToStepNo<ToStepBase){
+       int ToStepBase = ParmVars.TOSTEPANY;
+       
+       if(ToStepNo==ToStepBase){
            return true;
        }else if(ToStepNo==stepno){
            return true;

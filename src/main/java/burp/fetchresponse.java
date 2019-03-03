@@ -113,20 +113,12 @@ class LocVal {
             String v = tkparam.getValue();
             int responseStepNo = tkparam.getResponseStepNo();
 
-            //toStepNo <0 :currentStepNo == responseStepNo - toStepNo
-            if (toStepNo < 0) {
-                if (currentStepNo == responseStepNo - toStepNo) {
-                    rval = v;
-                    //return v;
-                }
-            } else if (toStepNo > 0) {
+            if (toStepNo >= 0) {
                 if (currentStepNo == toStepNo) {
                     rval = v;
-                    //return v;
+                } else if (toStepNo == ParmVars.TOSTEPANY) {
+                    rval = v;
                 }
-            } else if (toStepNo == 0) {
-                rval = v;
-                //return v;
             }
             
             if(tk!=null&&distances!=null){

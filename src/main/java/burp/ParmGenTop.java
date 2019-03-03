@@ -41,10 +41,10 @@ public class ParmGenTop extends javax.swing.JFrame {
         while((pini=csv.getNextAppParmsIni())!=null){
             int FromStep = pini.getTrackFromStep();
             int ToStep = pini.getSetToStep();
-            FromTo = (FromStep>-1?Integer.toString(FromStep):"any") + "->" + (ToStep>0?Integer.toString(ToStep):"any");
+            FromTo = (FromStep>-1?Integer.toString(FromStep):"*") + "->" + (ToStep!=ParmVars.TOSTEPANY?Integer.toString(ToStep):"*");
             if(pini.getType()!=AppParmsIni.T_TRACK){
-                if(ToStep<0){
-                    FromTo = "any";
+                if(ToStep<0||ToStep==ParmVars.TOSTEPANY){
+                    FromTo = "*";
                 }else{
                     FromTo = Integer.toString(ToStep);
                 }

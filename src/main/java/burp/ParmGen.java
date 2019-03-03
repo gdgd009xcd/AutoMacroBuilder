@@ -261,6 +261,7 @@ class ParmVars {
         private static boolean issaved = false;
         static String fileSep = "/";//maybe unix filesystem.
         static String Version = "";// JSON format version
+        final static int TOSTEPANY = 2147483647;//StepTo number means any value
 
 	//
 	// static変数初期化
@@ -405,7 +406,7 @@ class AppValue {
 	}
 
 	public int fromStepNo = -1;//TRACK追跡元 <0 :　無条件で追跡　>=0: 指定StepNoのリクエスト追跡
-	public int toStepNo = -1;// TRACK:更新先 <0 currentStepNo == responseStepNo - toStepNo ==0: 無条件　>0:指定したStepNoのリクエスト更新
+	public int toStepNo = ParmVars.TOSTEPANY;// TRACK:更新先 <0 currentStepNo == responseStepNo - toStepNo ==0: 無条件　>0:指定したStepNoのリクエスト更新
 
 	public static final int V_QUERY = 1;
 	public static final int V_BODY = 2;
@@ -801,7 +802,7 @@ class AppValue {
 		if (valueregex == null)
 			return null;
                 ParmGenTokenKey tk = null;
-		if(toStepNo>0||(toStepNo>=0&&pini.getType()!=AppParmsIni.T_TRACK)){
+		if(toStepNo>=0&&toStepNo!=ParmVars.TOSTEPANY){
 			if(currentStepNo!=toStepNo){
 				return null;//
 			}
@@ -1150,8 +1151,8 @@ class AppParmsIni {
 	int rndval = 1;
 	public int row;
         Boolean pause =false;
-        private int TrackFromStep =-1;// StepNo== -1 any >0 TrackingFrom 
-        private int SetToStep = 0;// == 0 any > 0 SetTo 
+        private int TrackFromStep =-1;// StepNo== -1:any  >0:TrackingFrom 
+        private int SetToStep = ParmVars.TOSTEPANY;// == TOSTEPANY:any   0<= SetToStep < TOSTEPANY:SetTo 
 
         public static final int T_NUMBER = 0;//数値昇順
         public static final int T_RANDOM = 1;//乱数
@@ -1619,7 +1620,7 @@ class AppParmsIni {
                         app.getresRegex(),
                         app.getResValPart(),
                         Integer.toString(app.resRegexPos),
-                    app.token, app.urlencode, app.fromStepNo, app.toStepNo, app.tokentype.name()};
+                    app.token, app.urlencode, app.fromStepNo==-1?"*":Integer.toString(app.fromStepNo), app.toStepNo==ParmVars.TOSTEPANY?"*":Integer.toString(app.toStepNo), app.tokentype.name()};
                 case T_TAMPER:
                     return new Object[] {app.getValPart(), (app.isEnabled()?false:true), app.getVal(),
 app.getValPart(), (app.isEnabled()?false:true), app.getVal(),

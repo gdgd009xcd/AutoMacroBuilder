@@ -136,8 +136,10 @@ public class ParmGenNew extends javax.swing.JFrame implements InterfaceRegex, in
 
 private void setAppParmsIni(){
         Object[] row;
-        TrackFrom.setText(Integer.toString(rec.getTrackFromStep()));
-        SetTo.setText(Integer.toString(rec.getSetToStep()));
+        int tfrom = rec.getTrackFromStep();
+        int tto = rec.getSetToStep();
+        TrackFrom.setText(tfrom==-1?"*":Integer.toString(tfrom));
+        SetTo.setText(tto==ParmVars.TOSTEPANY?"*":Integer.toString(tto));
         switch(current_model){
             case P_NUMBERMODEL:
                 numberTargetURL.setText(rec.getUrl());
@@ -358,7 +360,7 @@ private void setAppParmsIni(){
                     ParmVars.session.get(ParmGenSession.K_RESPONSEPART),
                     ParmVars.session.get(ParmGenSession.K_RESPONSEPOSITION),
                     tkname,
-                    urlencode,-1,0,ParmVars.session.get(ParmGenSession.K_TOKENTYPE)
+                    urlencode,"*","*",ParmVars.session.get(ParmGenSession.K_TOKENTYPE)
                     };
                 }else{
                     String _token;
@@ -379,7 +381,7 @@ private void setAppParmsIni(){
                         ParmVars.session.get(ni, ParmGenSession.K_RESPONSEPART),
                         ParmVars.session.get(ni, ParmGenSession.K_RESPONSEPOSITION),
                         tkname,
-                        urlencode,-1,0,ParmVars.session.get(ni, ParmGenSession.K_TOKENTYPE)
+                        urlencode,"*","*",ParmVars.session.get(ni, ParmGenSession.K_TOKENTYPE)
                         };
                     }
                 }
@@ -856,7 +858,7 @@ private void setAppParmsIni(){
                     .addGroup(SeqNumberLayout.createSequentialGroup()
                         .addGap(13, 13, 13)
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(41, Short.MAX_VALUE))))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
         ModelTabs.addTab(bundle.getString("ParmGenNew.SeqNumber.TabConstrains.tabTitle.text"), SeqNumber); // NOI18N
@@ -1109,11 +1111,11 @@ private void setAppParmsIni(){
                 {null, null, null, null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "置換箇所", "置換しない", "置換正規表現", "追跡URL", "追跡正規表現", "追跡箇所", "追跡位置", "追跡NAME値", "URLencodeする", "追跡from", "追跡to", "tokentype"
+                "置換箇所", "置換しない", "置換正規表現", "追跡URL", "追跡正規表現", "追跡箇所", "追跡位置", "追跡NAME値", "URLencodeする", "", "", "tokentype"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.Boolean.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Boolean.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class
+                java.lang.Object.class, java.lang.Boolean.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Boolean.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -1588,13 +1590,16 @@ private void setAppParmsIni(){
     private void SaveParmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveParmActionPerformed
         // TODO add your handling code here:
         // 保存処理実行。
-        int deftoStep = 0;
+        int deftoStep = ParmVars.TOSTEPANY;
         try{
             deftoStep = Integer.parseInt(SetTo.getText());
         }catch(NumberFormatException e){
-            deftoStep = 0;
+            deftoStep = ParmVars.TOSTEPANY;
         }
-        rec.setTrackFromStep(deftoStep);
+        if(deftoStep<0){
+            deftoStep = ParmVars.TOSTEPANY;
+        }
+        rec.setTrackFromStep(-1);
         rec.setSetToStep(deftoStep);
         switch(current_model){
             case P_NUMBERMODEL:
@@ -1630,12 +1635,13 @@ private void setAppParmsIni(){
                 }catch(NumberFormatException e){
                     fromStep = -1;
                 }
-                int toStep = 0;
+                int toStep = ParmVars.TOSTEPANY;
                 try{
                     toStep = Integer.parseInt(SetTo.getText());
                 }catch(NumberFormatException e){
-                    toStep = 0;
+                    toStep = ParmVars.TOSTEPANY;
                 }
+                if(toStep<0) toStep = ParmVars.TOSTEPANY;
                 rec.setTrackFromStep(fromStep);
                 rec.setSetToStep(toStep);
                 break;
@@ -1674,20 +1680,33 @@ private void setAppParmsIni(){
                     String _resRegexPos = (String)model.getValueAt(i, 6);
                     String _token = (String)model.getValueAt(i, 7);
                     boolean _trackreq = Boolean.parseBoolean(model.getValueAt(i, 8).toString());
-                    int fromStepNo = 0;
+                    int fromStepNo = -1;
+                    /***
                     try{
                         fromStepNo = (int)model.getValueAt(i, 9);
                     }catch(Exception e){
                         //
                         fromStepNo = -1;
+                    }****/
+                    try{
+                        fromStepNo = Integer.parseInt((String)model.getValueAt(i, 9));
+                    }catch(NumberFormatException e){
+                        fromStepNo = -1;
                     }
-                    int toStepNo = 0;
+                    int toStepNo = ParmVars.TOSTEPANY;
+                    /***
                     try{
                         toStepNo = (int)model.getValueAt(i, 10);
                     }catch(Exception e){
                         //
                         toStepNo = 0;
+                    }***/
+                    try{
+                        toStepNo = Integer.parseInt((String)model.getValueAt(i, 10));
+                    }catch(NumberFormatException e){
+                        toStepNo = ParmVars.TOSTEPANY;
                     }
+                    if(toStepNo<0) toStepNo = ParmVars.TOSTEPANY;
                     int tktype;
 
                     String tktypename = (String)model.getValueAt(i, 11);

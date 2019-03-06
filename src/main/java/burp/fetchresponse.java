@@ -121,6 +121,10 @@ class LocVal {
                 }
             }
             
+            if(rval==null){
+                ParmVars.plog.debuglog(0, "????????????getLocVal rval==null toStepNo:" + toStepNo + "currentStepNo=" + currentStepNo );
+            }
+            
             if(tk!=null&&distances!=null){
                 if(rval!=null){
                     int newdistance = currentStepNo - responseStepNo;
@@ -140,6 +144,9 @@ class LocVal {
                 }
             }
         }
+        if(rval==null){
+                ParmVars.plog.debuglog(0, "?!???!??????getLocVal rval==null toStepNo:" + toStepNo + "currentStepNo=" + currentStepNo );
+            }
         return rval;
     }
 

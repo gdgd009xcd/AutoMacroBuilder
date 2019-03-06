@@ -394,8 +394,16 @@ private void setAppParmsIni(){
         }
     }
     public void updateFromToPos(int frompos, int topos){
-        TrackFrom.setText(Integer.toString(frompos));
-        SetTo.setText(Integer.toString(topos));
+        String trfromstr = Integer.toString(frompos);
+        if(frompos<0){
+            trfromstr = "*";
+        }
+        TrackFrom.setText(trfromstr);
+        String settostr = Integer.toString(topos);
+        if(topos<0||topos==ParmVars.TOSTEPANY){
+           settostr = "*";
+        }
+        SetTo.setText(settostr);
     }
     
     /*
@@ -1156,7 +1164,7 @@ private void setAppParmsIni(){
 
         SetToLabel.setText(bundle.getString("ParmGenNew.SetToLabel.text")); // NOI18N
 
-        SetTo.setText("0");
+        SetTo.setText("*");
 
         TrackFrom.setText("-1");
 

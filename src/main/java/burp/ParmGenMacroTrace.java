@@ -538,6 +538,7 @@ public class ParmGenMacroTrace {
        }else if(ToStepNo==stepno){
            return true;
        }
+       //ParmVars.plog.debuglog(0, "!!!!!!!!!!!!!!!!! failed CurrentRequestIsSetToTarget: stepno=" + stepno + " ToStepNo=" + ToStepNo + " ToStepBase=" + ToStepBase) ;
        return false;
    }
    

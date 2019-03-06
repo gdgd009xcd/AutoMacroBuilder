@@ -802,13 +802,21 @@ class AppValue {
 		if (valueregex == null)
 			return null;
                 ParmGenTokenKey tk = null;
-		if(toStepNo>=0&&toStepNo!=ParmVars.TOSTEPANY){
+		if(toStepNo>=0){
+                    if(toStepNo!=ParmVars.TOSTEPANY){
 			if(currentStepNo!=toStepNo){
 				return null;//
-			}
-                        //tokentype 固定。tokentypeは追跡元のタイプなので、追跡先toStepNoの埋め込み先タイプとは無関係で無視する。
-                        tk = new ParmGenTokenKey(AppValue.TokenTypeNames.DEFAULT, token, toStepNo);
-		}
+			}else{
+                            ParmVars.plog.debuglog(0, "replaceContents currentStepNo==toStepNo " + currentStepNo + "==" + toStepNo);
+                        }
+                    }else{
+                        ParmVars.plog.debuglog(0, "replaceContents toStepNo==TOSTEPANY " + toStepNo + " ==" + ParmVars.TOSTEPANY);
+                    }
+                    //tokentype 固定。tokentypeは追跡元のタイプなので、追跡先toStepNoの埋め込み先タイプとは無関係で無視する。
+                    tk = new ParmGenTokenKey(AppValue.TokenTypeNames.DEFAULT, token, toStepNo);
+		}else{
+                    ParmVars.plog.debuglog(0, "replaceContents toStepNo<0 " + toStepNo + "<0 TOSTEPANY=" + ParmVars.TOSTEPANY);
+                }
 
                 String[] nv = new String[2];
                 
@@ -1776,8 +1784,11 @@ class ParmGen {
 	//		}
 	//		//printlog(header+" : " + request.getHeader(header), true);
 	//	}
-                if(av.toStepNo>0&&av.toStepNo!=pmt.getStepNo())return null;
                 
+                //if(av.toStepNo>0&&av.toStepNo!=pmt.getStepNo())return null;
+                if(av.toStepNo!=ParmVars.TOSTEPANY){
+                    if(av.toStepNo!=pmt.getStepNo())return null;
+                }
 		//ArrayList<String []> headers = prequest.getHeaders();
                 
                 

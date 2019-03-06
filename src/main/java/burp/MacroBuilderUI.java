@@ -1034,7 +1034,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                         if(MBtoStepNo.isSelected()){
                             aparms.setSetToStep(pos);
                         }else{
-                            aparms.setSetToStep(0);
+                            aparms.setSetToStep(ParmVars.TOSTEPANY);
                         }
                         
                         for (ParmGenTrackingToken PGTtkn : requesttokenlist) {
@@ -1145,7 +1145,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
 
                             apv.fromStepNo = -1;
 
-                            apv.toStepNo = 0;
+                            apv.toStepNo = ParmVars.TOSTEPANY;
                             apv.tokentype = _RToken.getTokenKey().GetTokenType();
                             apv.col = aparms.parmlist.size();
                             apv.setEnabled(_RToken.isEnabled());

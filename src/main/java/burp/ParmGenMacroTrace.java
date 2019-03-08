@@ -51,7 +51,7 @@ public class ParmGenMacroTrace {
     
 
     
-    int waittimer = 1;//実行間隔(msec)
+    int waittimer = 0;//実行間隔(msec)
 
     ListIterator<PRequestResponse> oit = null;//オリジナル
     ListIterator<PRequestResponse> cit = null;//実行
@@ -70,6 +70,37 @@ public class ParmGenMacroTrace {
     public static final int PMT_POSTMACRO_END = 5;//後処理マクロ終了。
     public static final int PMT_POSTMACRO_NULL = 6; //後処理マクロレスポンスnull
 
+    String state_debugprint(){
+        String msg = "PMT_UNKNOWN";
+        switch(state){
+            case PMT_PREMACRO_BEGIN:
+                msg = "PMT_PREMACRO_BEGIN";
+                break;
+            case PMT_PREMACRO_END:
+                msg = "PMT_PREMACRO_END";
+                break;
+            case PMT_CURRENT_BEGIN:
+                msg = "PMT_CURRENT_BEGIN";
+                break;
+            case PMT_CURRENT_END:
+                msg = "PMT_CURRENT_END";
+                break;
+            case PMT_POSTMACRO_BEGIN:
+                msg = "PMT_POSTMACRO_BEGIN";
+                break;
+            case PMT_POSTMACRO_END:
+                msg = "PMT_POSTMACRO_END";
+                break;
+            case PMT_POSTMACRO_NULL:
+                msg = "PMT_POSTMACRO_NULL";
+                break;
+            default:
+                break;
+        }
+        
+        return msg;
+    }
+    
     ParmGenMacroTrace(IBurpExtenderCallbacks _callbacks){
         callbacks = _callbacks;
     }
@@ -153,6 +184,7 @@ public class ParmGenMacroTrace {
         String host = iserv.getHost();
         int port = iserv.getPort();
         boolean isSSL = (iserv.getProtocol().toLowerCase().equals("https")?true:false);
+        ParmVars.plog.debuglog(0, "Current StepNo:" + stepno + " "+ host );
         byte[] retval = pgen.Run(host, port, isSSL, currentRequest.getRequest());
         if ( retval != null){
                 currentRequest.setRequest(retval);
@@ -346,7 +378,7 @@ public class ParmGenMacroTrace {
                     boolean isSSL = ppr.request.isSSL();
                     Encode _pageenc = ppr.request.getPageEnc();
                     BurpIHttpService bserv = new BurpIHttpService(host, port, isSSL);
-                    ParmVars.plog.debuglog(0, "Request PreMacro:" + stepno + " "+ host + " " + ppr.request.method + " "+ ppr.request.url);
+                    ParmVars.plog.debuglog(0, "PreMacro StepNo:" + stepno + " "+ host + " " + ppr.request.method + " "+ ppr.request.url);
                     //byte[] byteres = callbacks.makeHttpRequest(host,port, isSSL, byterequest);
                     ParmVars.plog.clearComments();
                     ParmVars.plog.setError(false);
@@ -455,7 +487,7 @@ public class ParmGenMacroTrace {
                             boolean isSSL = ppr.request.isSSL();
                             Encode _pageenc = ppr.request.getPageEnc();
                             BurpIHttpService bserv = new BurpIHttpService(host, port, isSSL);
-                            ParmVars.plog.debuglog(0, "Request PostMacro:" + stepno + " "+ host + " " + ppr.request.method + " "+ ppr.request.url);
+                            ParmVars.plog.debuglog(0, "PostMacro StepNo:" + stepno + " "+ host + " " + ppr.request.method + " "+ ppr.request.url);
                             //byte[] byteres = callbacks.makeHttpRequest(host,port, isSSL, byterequest);
                             ParmVars.plog.clearComments();
                             ParmVars.plog.setError(false);

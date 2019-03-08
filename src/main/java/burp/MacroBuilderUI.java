@@ -69,6 +69,9 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         
         pmt.setMBreplaceTrackingParam(isReplaceMode());
         
+        // waittimer setting.
+        jCheckBox2ActionPerformed(null);
+        
 
     }
 
@@ -795,7 +798,11 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
 
     private void jCheckBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox2ActionPerformed
         // TODO add your handling code here:
-        pmt.setWaitTimer(waitsec.getText());
+        if(jCheckBox2.isSelected()){
+            pmt.setWaitTimer(waitsec.getText());
+        }else{
+            pmt.setWaitTimer("0");
+        }
     }//GEN-LAST:event_jCheckBox2ActionPerformed
 
     private void FinalResponseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FinalResponseActionPerformed

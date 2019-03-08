@@ -809,11 +809,12 @@ class AppValue {
 			}else{
                             ParmVars.plog.debuglog(0, "replaceContents currentStepNo==toStepNo " + currentStepNo + "==" + toStepNo);
                         }
+                        //tokentype 固定。tokentypeは追跡元のタイプなので、追跡先toStepNoの埋め込み先タイプとは無関係で無視する。
+                        //tk = new ParmGenTokenKey(AppValue.TokenTypeNames.DEFAULT, token, toStepNo);
+                        tk = new ParmGenTokenKey(AppValue.TokenTypeNames.DEFAULT, token, currentStepNo);// token: tracking param name, currentStepNo: target request StepNo
                     }else{
                         ParmVars.plog.debuglog(0, "replaceContents toStepNo==TOSTEPANY " + toStepNo + " ==" + ParmVars.TOSTEPANY);
                     }
-                    //tokentype 固定。tokentypeは追跡元のタイプなので、追跡先toStepNoの埋め込み先タイプとは無関係で無視する。
-                    tk = new ParmGenTokenKey(AppValue.TokenTypeNames.DEFAULT, token, toStepNo);
 		}else{
                     ParmVars.plog.debuglog(0, "replaceContents toStepNo<0 " + toStepNo + "<0 TOSTEPANY=" + ParmVars.TOSTEPANY);
                 }

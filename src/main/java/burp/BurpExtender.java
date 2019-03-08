@@ -112,7 +112,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                         try{
                             ParmVars.plog.debuglog(0, "=====RequestRun start======");
                             if(pmt!=null){
-                                ParmVars.plog.debuglog(0,"state:" + Integer.toString(pmt.getState()));
+                                ParmVars.plog.debuglog(0,"state:" + pmt.state_debugprint());
 
                             }
                             

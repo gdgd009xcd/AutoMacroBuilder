@@ -322,9 +322,14 @@ private void setAppParmsIni(){
         String tkname = "";
         String responseURLregex = ParmVars.session.get(ParmGenSession.K_RESPONSEURLREGEX);
         String frompos = TrackFrom.getText();
-        int fromnum = 0;
+        int fromnum = -1;
         if(frompos!=null&&!frompos.isEmpty()){
-            fromnum = Integer.parseInt(frompos);
+            try{
+                fromnum = Integer.parseInt(frompos);
+            }catch(NumberFormatException e){
+                fromnum = -1;
+            }
+            
             if(fromnum>-1){//TrackFrom is specified. then Tracking From target URL is any match 
                 responseURLregex = ".*";
             }

@@ -5,6 +5,7 @@
 package burp;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +31,7 @@ public class ParmGenCSV {
     List<AppParmsIni> records;
     Iterator<AppParmsIni> it;
     ParmGenWriteFile pfile;
-    public static final String JSONVERSION = "1.0";
+    public static final String JSONVERSION = "1.0";//OUTPUT JSON VERSION
     public static ArrayList<PRequestResponse> selected_messages;
     public static ArrayList<PRequestResponse> proxy_messages;
 
@@ -166,6 +167,20 @@ public class ParmGenCSV {
             builder.add("ScannerInScope", false);
         }
 
+        //excludeMimeTypelist
+        //
+        // { "ExcludeMimeTypes" : ["image/.*", "application/json"],
+        //
+        
+        JsonArrayBuilder ExcludeMimeTypes_List = Json.createArrayBuilder();
+        
+        ParmVars.ExcludeMimeTypes.forEach((mtype) -> {
+            ExcludeMimeTypes_List.add(mtype);
+        });
+        
+        
+        builder.add("ExcludeMimeTypes", ExcludeMimeTypes_List);
+        
         JsonArrayBuilder AppParmsIni_List =Json.createArrayBuilder();
 
 

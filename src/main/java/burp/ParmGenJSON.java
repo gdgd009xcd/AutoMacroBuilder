@@ -137,20 +137,32 @@ public class ParmGenJSON {
         String current = astack.getCurrent();
         switch(alevel){
             case 0:
-                if(name.toUpperCase().equals("LANG")){
-                    ParmVars.enc = Encode.getEnum(GetString(ev, value, "UTF-8"));
-                }else if(name.toUpperCase().equals("PROXYINSCOPE")){
-                    ParmGen.ProxyInScope = Getboolean(ev, value, false);
-                }else if(name.toUpperCase().equals("INTRUDERINSCOPE")){
-                    ParmGen.IntruderInScope = Getboolean(ev,value, true);
-                }else if(name.toUpperCase().equals("REPEATERINSCOPE")){
-                    ParmGen.RepeaterInScope = Getboolean(ev, value, true);
-                }else if(name.toUpperCase().equals("SCANNERINSCOPE")){
-                    ParmGen.ScannerInScope = Getboolean(ev, value, true);
-                }else if(name.toUpperCase().equals("CURRENTREQUEST")){
-                    currentrequest = GetNumber(ev, value,0);
-                }else if(name.toUpperCase().equals("VERSION")){
-                    ParmVars.Version = GetString(ev, value, "");
+                switch(ev){
+                    case END_ARRAY:
+                        if(name.toUpperCase().equals("EXCLUDEMIMETYPES")){
+                            ParmVars.setExcludeMimeTypes();
+                        }
+                        break;
+                    default:
+                        if(name.toUpperCase().equals("LANG")){
+                            ParmVars.enc = Encode.getEnum(GetString(ev, value, "UTF-8"));
+                        }else if(name.toUpperCase().equals("PROXYINSCOPE")){
+                            ParmGen.ProxyInScope = Getboolean(ev, value, false);
+                        }else if(name.toUpperCase().equals("INTRUDERINSCOPE")){
+                            ParmGen.IntruderInScope = Getboolean(ev,value, true);
+                        }else if(name.toUpperCase().equals("REPEATERINSCOPE")){
+                            ParmGen.RepeaterInScope = Getboolean(ev, value, true);
+                        }else if(name.toUpperCase().equals("SCANNERINSCOPE")){
+                            ParmGen.ScannerInScope = Getboolean(ev, value, true);
+                        }else if(name.toUpperCase().equals("CURRENTREQUEST")){
+                            currentrequest = GetNumber(ev, value,0);
+                        }else if(name.toUpperCase().equals("VERSION")){
+                            ParmVars.Version = GetString(ev, value, "");
+                            if(!ParmVars.Version.isEmpty()){
+                                ParmVars.clearExcludeMimeType();
+                            }
+                        }
+                        break;
                 }
                 break;
             case 1:
@@ -202,6 +214,8 @@ public class ParmGenJSON {
                         }
 
                         break;
+                    case END_ARRAY:
+                        break;
                     default:
                         if(aparms!=null){
                             if(name.toUpperCase().equals("URL")){
@@ -247,6 +261,10 @@ public class ParmGenJSON {
                             }else if(name.toUpperCase().equals("ERROR")){
                                 Error = Getboolean(ev,value, false);
                             }
+                        }else if(current!=null&&current.toUpperCase().equals("EXCLUDEMIMETYPES")){
+                            if(!ParmVars.Version.isEmpty()){
+                                ParmVars.addExcludeMimeType(GetString(ev, value, ""));
+                            }
                         }
                         break;
                 }
@@ -268,6 +286,8 @@ public class ParmGenJSON {
                             }
                         }
                         apv = null;
+                        break;
+                    case END_ARRAY:
                         break;
                     default:
                         if(apv!=null){

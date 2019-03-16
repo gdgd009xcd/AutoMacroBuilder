@@ -122,7 +122,7 @@ class LocVal {
             }
             
             if(rval==null){
-                ParmVars.plog.debuglog(0, "????????????getLocVal rval==null toStepNo:" + toStepNo + "currentStepNo=" + currentStepNo );
+                //ParmVars.plog.debuglog(0, "????????????getLocVal rval==null toStepNo:" + toStepNo + "currentStepNo=" + currentStepNo );
             }
             
             if(tk!=null&&distances!=null){
@@ -145,8 +145,8 @@ class LocVal {
             }
         }
         if(rval==null){
-                ParmVars.plog.debuglog(0, "?!???!??????getLocVal rval==null toStepNo:" + toStepNo + "currentStepNo=" + currentStepNo );
-            }
+                //ParmVars.plog.debuglog(0, "?!???!??????getLocVal rval==null toStepNo:" + toStepNo + "currentStepNo=" + currentStepNo );
+        }
         return rval;
     }
 

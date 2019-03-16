@@ -24,6 +24,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -175,26 +176,26 @@ class PLog {
 	}
 
 	public void printException(Exception e){
-		 StringWriter sw = null;
-         PrintWriter  pw = null;
+            StringWriter sw = null;
+            PrintWriter  pw = null;
 
-         sw = new StringWriter();
-         pw = new PrintWriter(sw);
-         e.printStackTrace(pw);
-         String trace = sw.toString();
-         printlog(e.toString(), true);
-         printlog(trace, true);
+            sw = new StringWriter();
+            pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            String trace = sw.toString();
+            printlog(e.toString(), true);
+            printlog(trace, true);
 
-         try {
-             if ( sw != null ) {
-                 sw.flush();
-                 sw.close();
-             }
-             if ( pw != null ) {
-                 pw.flush();
-                 pw.close();
-             }
-         } catch (IOException ignore){}
+            try {
+                if ( sw != null ) {
+                    sw.flush();
+                    sw.close();
+                }
+                if ( pw != null ) {
+                    pw.flush();
+                    pw.close();
+                }
+            } catch (IOException ignore){}
 	}
 
        public void printError(String v){
@@ -260,13 +261,17 @@ class ParmVars {
         static int displaylength = 10000;// JTextArea/JTextPane等swingの表示バイト数
         private static boolean issaved = false;
         static String fileSep = "/";//maybe unix filesystem.
-        static String Version = "";// JSON format version
+        static String Version = "";// loaded JSON format version
         final static int TOSTEPANY = 2147483647;//StepTo number means any value
+        static List<String> ExcludeMimeTypes = null;
+        private static List<Pattern> ExcludeMimeTypesPatterns = null;
 
 	//
 	// static変数初期化
 	//
 	static {
+            setExcludeMimeTypes(Arrays.asList("image/.*","application/pdf"));//default Content-Types that exclude ParseResponse function
+            
             fileSep = System.getProperty("file.separator");
             formdataenc = "ISO-8859-1";
             File desktop = new File(System.getProperty("user.home"), "Desktop");
@@ -280,18 +285,7 @@ class ParmVars {
                     projectdir = desktop.getAbsolutePath();
             }
             desktop = null;
-            /****
-            File newdir = new File(projectdir + fileSep + "ParmGenParms");
-
-            if (! newdir.exists()){
-                    if(newdir.mkdirs()){
-                            projectdir =newdir.getAbsolutePath();
-                    }
-            }else{
-                    projectdir =newdir.getAbsolutePath();
-            }
-            newdir = null;
-            *********/
+            
             parmfile = projectdir + fileSep + "MacroBuilder.json";
             plog = new PLog(projectdir);
             enc = Encode.UTF_8;// default encoding.
@@ -306,6 +300,56 @@ class ParmVars {
         public static void Saved(){
             issaved = true;
         }
+        
+        private static void setRegexPatternExcludeMimeType(List<String> excludeMimeTypes){
+            Pattern compiledregex = null;
+            Matcher m = null;
+            ExcludeMimeTypesPatterns = new ArrayList<>();
+            int flags = 0;
+
+            flags |= Pattern.MULTILINE;
+
+            flags |= Pattern.CASE_INSENSITIVE;
+            
+            for(String regex: excludeMimeTypes){
+                try{
+                    ExcludeMimeTypesPatterns.add(ParmGenUtil.Pattern_compile(regex, flags));
+                }catch(Exception e){
+
+                }
+            }
+        }
+        
+        public static void setExcludeMimeTypes(List<String> extypes){
+            if(extypes!=null&&extypes.size()>0){
+                ExcludeMimeTypes = extypes;
+                setRegexPatternExcludeMimeType(ExcludeMimeTypes);
+            }
+        }
+        
+        public static void clearExcludeMimeType(){
+            ExcludeMimeTypes = new ArrayList<>();
+            ExcludeMimeTypesPatterns = null;
+        }
+        
+        public static void addExcludeMimeType(String exttype){
+            ExcludeMimeTypes.add(exttype);
+        }
+        
+        public static void setExcludeMimeTypes(){
+            setExcludeMimeTypes(ExcludeMimeTypes);
+        }
+        
+        public static boolean isMimeTypeExcluded(String MimeType){
+            for(Pattern pt:ExcludeMimeTypesPatterns){
+                Matcher m = pt.matcher(MimeType);
+                if(m.find()){
+                    return true;
+                }
+            }
+            return false;
+        }
+        
 	//
 	//
 	// HTTP Request parser
@@ -807,16 +851,16 @@ class AppValue {
 			if(currentStepNo!=toStepNo){
 				return null;//
 			}else{
-                            ParmVars.plog.debuglog(0, "replaceContents currentStepNo==toStepNo " + currentStepNo + "==" + toStepNo);
+                            //ParmVars.plog.debuglog(0, "replaceContents currentStepNo==toStepNo " + currentStepNo + "==" + toStepNo);
                         }
                         //tokentype 固定。tokentypeは追跡元のタイプなので、追跡先toStepNoの埋め込み先タイプとは無関係で無視する。
                         //tk = new ParmGenTokenKey(AppValue.TokenTypeNames.DEFAULT, token, toStepNo);
                         tk = new ParmGenTokenKey(AppValue.TokenTypeNames.DEFAULT, token, currentStepNo);// token: tracking param name, currentStepNo: target request StepNo
                     }else{
-                        ParmVars.plog.debuglog(0, "replaceContents toStepNo==TOSTEPANY " + toStepNo + " ==" + ParmVars.TOSTEPANY);
+                        //ParmVars.plog.debuglog(0, "replaceContents toStepNo==TOSTEPANY " + toStepNo + " ==" + ParmVars.TOSTEPANY);
                     }
 		}else{
-                    ParmVars.plog.debuglog(0, "replaceContents toStepNo<0 " + toStepNo + "<0 TOSTEPANY=" + ParmVars.TOSTEPANY);
+                    //ParmVars.plog.debuglog(0, "replaceContents toStepNo<0 " + toStepNo + "<0 TOSTEPANY=" + ParmVars.TOSTEPANY);
                 }
 
                 String[] nv = new String[2];
@@ -1580,7 +1624,7 @@ class AppParmsIni {
 
         public String updateCurrentValue(int i){
             int r = -1;
-            String rval = null;;
+            String rval = null;
             switch(typeval){
                 case T_NUMBER:
                     r = updateCounter(i);
@@ -1729,6 +1773,7 @@ class ParmGen {
         			case END_ARRAY:
         				arraylevel--;
                                         String ep = astack.pop();
+                                        noerrflg = gjson.Parse(astack,arraylevel, event, ep, null);
                                         //ParmVars.plog.debuglog(0, "END_ARRAY NAME:" +ep + " level:" + arraylevel);
         				break;
         			case KEY_NAME:
@@ -2353,48 +2398,52 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
         int updtcnt = 0;
 
 	
-                // main loop
-                //Request request = connection.getRequest();
+        
 
-               
-                PResponse presponse = new PResponse(response_bytes, _pageenc);
-                // check if we have parameters
-                // Construct a new HttpUrl object, since they are immutable
-                // This is a bit of a cheat!
-                //String url = request.getURL().toString();
+        PResponse presponse = new PResponse(response_bytes, _pageenc);
+        
+        String res_content_type = presponse.getContent_Type();
+        String res_content_subtype = presponse.getContent_Subtype();
+        
+        String res_contentMimeType = res_content_type + "/" + res_content_subtype;
+        //if content_type/subtype matches excludeMimeType regex then skip below codes..
+        if(!ParmVars.isMimeTypeExcluded(res_contentMimeType)){
+            //### skip start
+            if ( url != null ){
 
-                if ( url != null ){
+                AppParmsIni pini = null;
+                ListIterator<AppParmsIni> it = parmcsv.listIterator();
+                while(it.hasNext()) {
+                    pini = it.next();
 
-                    AppParmsIni pini = null;
-                    ListIterator<AppParmsIni> it = parmcsv.listIterator();
-                    while(it.hasNext()) {
-                        pini = it.next();
+                    if(pmt.CurrentRequestIsTrackFromTarget(pini)&& pini.getType()==AppParmsIni.T_TRACK){
+                        boolean apvIsUpdated = false;
+                        List<AppValue> parmlist = pini.parmlist;
+                        ListIterator<AppValue> pt = parmlist.listIterator();
 
-                        if(pmt.CurrentRequestIsTrackFromTarget(pini)&& pini.getType()==AppParmsIni.T_TRACK){
-                            boolean apvIsUpdated = false;
-                            List<AppValue> parmlist = pini.parmlist;
-                            ListIterator<AppValue> pt = parmlist.listIterator();
-
-                            while(pt.hasNext()){
-                                AppValue av = pt.next();
-                                if(av.isEnabled()){
-                                    if (ParseResponse(url, presponse,  pini, av)){
-                                        pt.set(av);
-                                        updtcnt++;
-                                        apvIsUpdated = true;
-                                    }
+                        while(pt.hasNext()){
+                            AppValue av = pt.next();
+                            if(av.isEnabled()){
+                                if (ParseResponse(url, presponse,  pini, av)){
+                                    pt.set(av);
+                                    updtcnt++;
+                                    apvIsUpdated = true;
                                 }
                             }
-                            if(apvIsUpdated){
-                                it.set(pini);
-                            }
+                        }
+                        if(apvIsUpdated){
+                            it.set(pini);
                         }
                     }
                 }
-
-
-		return updtcnt;
-	}
+            }
+            //### skip end.
+        }else{
+            ParmVars.plog.debuglog(0, "ResponseRun skipped url[" + url + "] MimeType[" + res_contentMimeType + "]");
+        }
+        
+        return updtcnt;
+    }
 
 
 

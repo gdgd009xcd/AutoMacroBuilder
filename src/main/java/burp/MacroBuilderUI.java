@@ -46,6 +46,8 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     boolean EditTargetIsSSL = false;
     int EditTargetPort = 0;
     Encode EditPageEnc = Encode.ISO_8859_1;
+    static final int REQUEST_DISPMAXSIZ = 1000000;//1MB
+    static final int RESPONSE_DISPMAXSIZ = 1000000;//1MB
 
     /**
      * Creates new form MacroBuilderUI
@@ -773,13 +775,27 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                 //MacroRequest.setText(reqmess);
                 ParmGenTextDoc reqdoc = new ParmGenTextDoc(MacroRequest);
                 
-                String reqmess = pqr.request.getMessage();
+                String reqmess = "";
+                if(pqr.request.getBodyContentLength() < REQUEST_DISPMAXSIZ){
+                    reqmess = pqr.request.getMessage();
+                }else{//Content-Length < REQUEST_DISPMAXSIZ then no display body contents..
+                    reqmess = pqr.request.getHeaderOnly();
+                    reqmess = reqmess + "\r\n" + ".........omitted displaying body content......";
+                }
                 
                 reqdoc.setText(reqmess);
 
+                String res_contentMimeType = pqr.response.getContentMimeType();// Content-Type's Mimetype: ex. "text/html"
 
-
-                String resmess = pqr.response.getMessage();
+                // Content-Type/subtype matched excludeMimeType or Content-Length < RESPONSE_DISPMAXSIZ then no display body contents..
+                String resmess = "";
+                
+                if((!ParmVars.isMimeTypeExcluded(res_contentMimeType)) && (pqr.response.getBodyContentLength() <  RESPONSE_DISPMAXSIZ)){
+                    resmess = pqr.response.getMessage();
+                }else{
+                    resmess = pqr.response.getHeaderOnly();
+                    resmess = resmess + "\r\n" + ".........omitted displaying body content......";
+                }
                 //MacroResponse.setText(resmess);
                 ParmGenTextDoc resdoc = new ParmGenTextDoc(MacroResponse);
                 resdoc.setText(resmess);
@@ -905,7 +921,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
             String tcharset = toppage.response.getCharset();
             //ParmVars.enc = Encode.getEnum(tcharset);
 
-            String tknames[] = {//予約語
+            String tknames[] = {//予約語 reserved token names
                 "PHPSESSID",
                 "JSESSIONID",
                 "SESID",
@@ -1169,55 +1185,69 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                 //respqrs = pqrs;
                 //レスポンストークン解析
                 String body = pqrs.response.getBody();
-                //レスポンスから追跡パラメータ抽出
-                ParmGenParser pgparser = new ParmGenParser(body);
-                ArrayList<ParmGenToken> bodytklist = pgparser.getNameValues();
-                ParmGenArrayList tklist = new ParmGenArrayList();
-                ParmGenResToken trackurltoken = new ParmGenResToken();
-                //trackurltoken.request = pqrs.request;
-                trackurltoken.tracktokenlist = new ArrayList<ParmGenToken>();
-                InterfaceCollection<ParmGenToken> ic = pqrs.response.getLocationTokens(tklist);
-                //JSON parse
-                ParmGenJSONDecoder jdecoder = new ParmGenJSONDecoder(body);
-                ArrayList<ParmGenToken> jtklist = jdecoder.parseJSON2Token();
+                
+                String res_contentMimeType = pqrs.response.getContentMimeType();// Content-Type's Mimetype: ex. "text/html"
+                
+                // Content-Type/subtype matched excludeMimeType then skip below codes..
+                if(!ParmVars.isMimeTypeExcluded(res_contentMimeType)){
+                    //### skip start
+                    //レスポンスから追跡パラメータ抽出
+                    ParmGenParser pgparser = new ParmGenParser(body);
+                    ArrayList<ParmGenToken> bodytklist = pgparser.getNameValues();
+                    ParmGenArrayList tklist = new ParmGenArrayList();// tklist: tracking token list
+                    ParmGenResToken trackurltoken = new ParmGenResToken();
+                    //trackurltoken.request = pqrs.request;
+                    trackurltoken.tracktokenlist = new ArrayList<ParmGenToken>();
+                    InterfaceCollection<ParmGenToken> ic = pqrs.response.getLocationTokens(tklist);
+                    //JSON parse
+                    ParmGenJSONDecoder jdecoder = new ParmGenJSONDecoder(body);
+                    ArrayList<ParmGenToken> jtklist = jdecoder.parseJSON2Token();
 
-                tklist.addAll(bodytklist);
-                tklist.addAll(jtklist);
+                    //add extracted tokens to tklist
+                    tklist.addAll(bodytklist);
+                    tklist.addAll(jtklist);
 
-                for (ParmGenToken token : tklist) {
-                    //PHPSESSID, token, SesID, jsessionid
-                    String tokenname = token.getTokenKey().GetName();
-                    boolean namematched = false;
-                    for (String tkn : tknames) {//予約語に一致
-                        if (tokenname.equalsIgnoreCase(tkn)) {//完全一致
-                            namematched = true;
-                            break;
-                        }
-                    }
-                    if (!namematched) {//nameはtknamesに一致しない
-                        for (String tkn : tknames) {
-                            if (tokenname.toUpperCase().indexOf(tkn.toUpperCase()) != -1) {//予約語に部分一致
+                    for (ParmGenToken token : tklist) {
+                        //PHPSESSID, token, SesID, jsessionid
+                        String tokenname = token.getTokenKey().GetName();
+                        boolean namematched = false;
+                        for (String tkn : tknames) {//予約語に一致 
+                            if (tokenname.equalsIgnoreCase(tkn)) {//完全一致 tokenname  that matched reserved token name
                                 namematched = true;
                                 break;
                             }
                         }
-                    }
-                    // value値がToken値だとみられる
-                    if (!namematched) {//nameはtknamesに一致しない
-                        String tokenvalue = token.getTokenValue().getValue();
-
-                        if (ParmGenUtil.isTokenValue(tokenvalue)) {
-                            namematched = true;
+                        if (!namematched) {//nameはtknamesに一致しない
+                            for (String tkn : tknames) {
+                                if (tokenname.toUpperCase().indexOf(tkn.toUpperCase()) != -1) {//予約語に部分一致 tokenname that partially matched reserved token name
+                                    namematched = true;
+                                    break;
+                                }
+                            }
                         }
-                    }
-                    token.setEnabled(namematched);
-                    trackurltoken.tracktokenlist.add(token);
-                    trackurltoken.fromStepNo = pos;
+                        // value値がToken値だとみられる
+                        if (!namematched) {//nameはtknamesに一致しない
+                            String tokenvalue = token.getTokenValue().getValue();
 
+                            if (ParmGenUtil.isTokenValue(tokenvalue)) {// token value that looks like tracking token
+                                namematched = true;
+                            }
+                        }
+                        token.setEnabled(namematched);//namematched==true: token that looks like tracking token
+                        trackurltoken.tracktokenlist.add(token);
+                        trackurltoken.fromStepNo = pos;
+
+                    }
+
+                    if(!trackurltoken.tracktokenlist.isEmpty()){
+                        urltokens.add(trackurltoken);
+                    }
+                    //### skip end
+                }else{
+                    ParmVars.plog.debuglog(0, "automacro:Response analysis skipped stepno:" + pos + " MIMEtype:" + res_contentMimeType);
                 }
-                if(!trackurltoken.tracktokenlist.isEmpty()){
-                    urltokens.add(trackurltoken);
-                }
+                
+                
                 pos++;
             }
             ParmVars.plog.debuglog(0, "newparms.size=" + newparms.size());
@@ -1293,6 +1323,8 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
 
     private void SaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveActionPerformed
         // TODO add your handling code here:
+        
+        
         File cfile = new File(ParmVars.parmfile);
         String dirname = cfile.getParent();
         JFileChooser jfc = new JFileChooser(dirname);
@@ -1321,6 +1353,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
              
             
         }
+        
     }//GEN-LAST:event_SaveActionPerformed
 
     private void MacroRequestMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MacroRequestMousePressed

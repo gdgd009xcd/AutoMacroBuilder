@@ -51,7 +51,7 @@ class ParseHTTPHeaders {
 	String boundary;
 	int parsedheaderlength;
 	boolean isHeaderModified;//==true parsedheaderlengthは再計算。
-	int content_length;
+	private int content_length;
 	boolean formdata;
 
 	String body;//encode = pageenc. maybe body's binary data != bytebody, because pageencoding affect it.
@@ -92,7 +92,7 @@ class ParseHTTPHeaders {
             hashbodyparams = null;
             boundary = null;
             formdata = false;
-            content_length = 0;
+            content_length = -1;
             bytebody = null;
             path_pref_url = "";
             parsedheaderlength = 0;
@@ -1101,6 +1101,29 @@ class ParseHTTPHeaders {
         
         public Encode getPageEnc(){
             return pageenc;
+        }
+        
+        // return Content-Type value : text/html
+        public String getContentMimeType(){
+            String res_content_type = getContent_Type();
+            String res_content_subtype = getContent_Subtype();
+                
+            String res_contentMimeType = res_content_type + "/" + res_content_subtype;
+            
+            return res_contentMimeType;
+        }
+        
+        public int getBodyContentLength(){
+            if(content_length==-1){
+                byte[] bdata = null;
+                bdata = getBodyBytes();
+                if(bdata!=null){
+                    return bdata.length;
+                }else{
+                    //ParmVars.plog.debuglog(0, "getBodyContentLength bdata is null");
+                }
+            }
+            return content_length;
         }
 }
 

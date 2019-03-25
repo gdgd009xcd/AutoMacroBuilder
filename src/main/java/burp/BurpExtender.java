@@ -152,17 +152,12 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                                 switch(pmt.getState()){
                                     case ParmGenMacroTrace.PMT_CURRENT_BEGIN://カレントリクエストが終了。
                                         pmt.endAfterCurrentRequest(prs);
-                                        break;
-                                    default:
-                                        break;
-                                }
-                                switch(pmt.getState()){
-                                    case ParmGenMacroTrace.PMT_CURRENT_END:
                                         pmt.startPostMacro();
                                         break;
                                     default:
                                         break;
                                 }
+                                
                                 int percent = -1;
                                 switch(pmt.getState()){
                                     case ParmGenMacroTrace.PMT_POSTMACRO_END:

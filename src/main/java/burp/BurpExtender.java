@@ -56,22 +56,22 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                         break;
                     case IBurpExtenderCallbacks.TOOL_PROXY:
                         toolname ="PROXY";
-                         break;
+                        break;
                     case IBurpExtenderCallbacks.TOOL_SEQUENCER:
                         toolname ="SEQUENCER";
                         break;
                     case IBurpExtenderCallbacks.TOOL_SPIDER:
                         toolname ="SPIDER";
-                         break;
+                        break;
                     case IBurpExtenderCallbacks.TOOL_SUITE:
                         toolname ="SUITE";
-                         break;
+                        break;
                     case IBurpExtenderCallbacks.TOOL_TARGET:
                         toolname ="TARGET";
-                         break;
+                        break;
                     case IBurpExtenderCallbacks.TOOL_SCANNER:
                         toolname ="SCANNER";
-                         break;
+                        break;
                     default:
                         toolname ="UNKNOWN TOOL.";
                         break;

@@ -224,7 +224,7 @@ public class ParmGenMacroTrace {
                     path = "/";//root path
                 }
                 ParmVars.plog.debuglog(0, "Set-Cookie: " +  name + "=" + value + "; domain=" +  domain +  "; path=" + path);
-                BurpICookie bicookie = new BurpICookie(domain, path, name, value, null);// delete cookie.
+                BurpICookie bicookie = new BurpICookie(domain, path, name, value, null);// update cookie
                 callbacks.updateCookieJar(bicookie);
 
             }

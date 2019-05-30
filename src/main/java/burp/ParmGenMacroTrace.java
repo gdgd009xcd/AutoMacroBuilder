@@ -73,7 +73,9 @@ public class ParmGenMacroTrace {
     public static final int PMT_POSTMACRO_END = 5;//後処理マクロ終了。
     public static final int PMT_POSTMACRO_NULL = 6; //後処理マクロレスポンスnull
 
-    FetchResponseVal fetchResVal = null;
+    private FetchResponseVal fetchResVal = null;
+    
+    private ParmGenTWait TWaiter = null;
     
     String state_debugprint(){
         String msg = "PMT_UNKNOWN";
@@ -299,17 +301,7 @@ public class ParmGenMacroTrace {
         return rlist.size();
     }
     
-    synchronized void TWait(){
-        if(waittimer>0){
-            ParmVars.plog.debuglog(0, "....sleep Start:" + waittimer + "(msec)");
-            try{
-                wait(waittimer);
-            }catch(Exception e){
-                ParmVars.plog.debuglog(0, "....sleep Exception..");
-            }
-            ParmVars.plog.debuglog(0, "....sleep End.");
-        }
-    }
+    
 
 
     void updateOriginalRequest(int idx, PRequest _request){
@@ -334,6 +326,12 @@ public class ParmGenMacroTrace {
     
     //１）前処理マクロ開始
     void  startBeforePreMacro(){
+        if(waittimer>0){
+            TWaiter = new ParmGenTWait(waittimer);
+        }else{
+            TWaiter = null;
+        }
+        
         if(fetchResVal==null){
             initFetchResponseVal();
         }
@@ -374,7 +372,9 @@ public class ParmGenMacroTrace {
             oit = originalrlist.listIterator();
             cit = rlist.listIterator();
             int n = 0;
-            TWait();
+            if(TWaiter!=null){
+                TWaiter.TWait();
+            }
             while(cit.hasNext() && oit.hasNext()){
                 PRequestResponse ppr = cit.next();
                 PRequestResponse opr = oit.next();
@@ -423,7 +423,9 @@ public class ParmGenMacroTrace {
                     pqrs.setError(ParmVars.plog.isError());
                     cit.set(pqrs);//更新
                 }
-                TWait();
+                if(TWaiter!=null){
+                    TWaiter.TWait();
+                }
             }
         }
         }catch(Exception e){
@@ -491,7 +493,9 @@ public class ParmGenMacroTrace {
                     int n = stepno;
                     while(cit.hasNext() && oit.hasNext()){
                         stepno = n;
-                        TWait();
+                        if(TWaiter!=null){
+                            TWaiter.TWait();
+                        }
                         n++;
 
                         PRequestResponse ppr = cit.next();

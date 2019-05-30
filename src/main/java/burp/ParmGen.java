@@ -909,7 +909,7 @@ class AppValue {
                         
                        
 			if (spt != -1 && ept != -1) {
-				strcnt = pini.getStrCnt(this,tk,currentStepNo, toStepNo, valparttype,  csvpos);
+				strcnt = pini.getStrCnt(pmt, this,tk,currentStepNo, toStepNo, valparttype,  csvpos);
 				ParmVars.plog.printLF();
 				boolean isnull = false;
                                 ParmGenTokenValue errorhash_value = null;
@@ -1207,6 +1207,7 @@ class AppParmsIni {
         private int TrackFromStep =-1;// StepNo== -1:any  >0:TrackingFrom 
         private int SetToStep = ParmVars.TOSTEPANY;// == TOSTEPANY:any   0<= SetToStep < TOSTEPANY:SetTo 
 
+        
         public static final int T_NUMBER = 0;//数値昇順
         public static final int T_RANDOM = 1;//乱数
         public static final int T_CSV = 2;//CSV入力
@@ -1489,7 +1490,7 @@ class AppParmsIni {
 		return nval;
 	}
 
-	String getGenValue(AppValue apv, ParmGenTokenKey tk, int currentStepNo, int toStepNo, int _valparttype,  int csvpos){
+	String getGenValue(ParmGenMacroTrace pmt, AppValue apv, ParmGenTokenKey tk, int currentStepNo, int toStepNo, int _valparttype,  int csvpos){
 		int n;
 		switch(typeval){
 		case T_NUMBER://number
@@ -1505,8 +1506,7 @@ class AppParmsIni {
 			return  getFillZeroInt(n);
 		case T_TRACK://loc
 			//if ( global.Location != void ){
-
-			return FetchResponse.loc.getLocVal(apv.getTrackKey(), tk, currentStepNo, toStepNo);
+			return pmt.getFetchResponseVal().getLocVal(apv.getTrackKey(), tk, currentStepNo, toStepNo);
 			//}
 		default://csv
 			if ( frl != null){
@@ -1523,9 +1523,9 @@ class AppParmsIni {
 		return null;
 	}
 
-	String getStrCnt(AppValue apv, ParmGenTokenKey tk, int currentStepNo, int toStepNo,int _valparttype,  int csvpos){
+	String getStrCnt(ParmGenMacroTrace pmt, AppValue apv, ParmGenTokenKey tk, int currentStepNo, int toStepNo,int _valparttype,  int csvpos){
 		//if ( cstrcnt == null|| typeval == 3){
-		cstrcnt = getGenValue(apv, tk, currentStepNo,toStepNo,_valparttype, csvpos);
+		cstrcnt = getGenValue(pmt, apv, tk, currentStepNo,toStepNo,_valparttype, csvpos);
 		//}
 		return cstrcnt;
 	}
@@ -1706,7 +1706,7 @@ class ParmGen {
         public static boolean RepeaterInScope = true;
         public static boolean ScannerInScope = true;
         ParmGenMacroTrace pmt;
-
+        
 
         void disposeTop(){
             if(twin!=null){
@@ -2120,7 +2120,8 @@ boolean FetchRequest(PRequest prequest,   AppParmsIni pini, AppValue av){
         col = av.col;
         switch(av.getResTypeInt()){
             case AppValue.V_REQTRACKBODY:
-                return FetchResponse.loc.reqbodymatch(av,pmt.getStepNo(), av.fromStepNo,url, prequest, row, col, true, av.resRegexPos, av.token);
+                
+                return pmt.getFetchResponseVal().reqbodymatch(av,pmt.getStepNo(), av.fromStepNo,url, prequest, row, col, true, av.resRegexPos, av.token);
             default:
                 break;
         }
@@ -2151,7 +2152,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                             //ParmVars.plog.debuglog(0, "ParseResponse: V_HEADER " + rowcolstr);
                             //String[] headers=request.getHeaderNames();
                             //for(String header : headers){
-                            rflag = FetchResponse.loc.headermatch(pmt.getStepNo(), av.fromStepNo,url, presponse, row, col, true,av.token, av);
+                            rflag = pmt.getFetchResponseVal().headermatch(pmt.getStepNo(), av.fromStepNo,url, presponse, row, col, true,av.token, av);
                             break;
                     case AppValue.V_REQTRACKBODY://request追跡なのでNOP.
                         break;
@@ -2161,7 +2162,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                             try {
                                 //body
                                 //ParmVars.plog.debuglog(0, "ParseResponse: V_BODY " + rowcolstr);
-                                rflag = FetchResponse.loc.bodymatch(pmt.getStepNo(),av.fromStepNo,url, presponse, row, col, true, autotrack, av,av.resRegexPos, av.token, av.urlencode);
+                                rflag = pmt.getFetchResponseVal().bodymatch(pmt.getStepNo(),av.fromStepNo,url, presponse, row, col, true, autotrack, av,av.resRegexPos, av.token, av.urlencode);
                             } catch (UnsupportedEncodingException ex) {
                                 Logger.getLogger(ParmGen.class.getName()).log(Level.SEVERE, null, ex);
                             }
@@ -2192,27 +2193,24 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 		// parmcsvはstatic
 		if ( parmcsv == null || _newparmcsv != null){
 			if(_newparmcsv==null){
-
 				parmcsv = loadJSON();
 			}else{
 				parmcsv = _newparmcsv;
 			}
-			//ArrayList<AppParmsIni> parmjson = loadJSON();
-
-			if(parmcsv==null)return;
+                        pmt.nullFetchResponseVal();
+                        
+                        if(parmcsv==null)return;
                         //colmax計算
                         
-			
-			FetchResponse.loc = new LocVal();                        
+			                   
 			
 		}
 	}
 
 	private void nullset(){
 		 parmcsv = null;
-         FetchResponse.loc = null;
-
 	}
+        
         public void reset(){
             nullset();
             initMain(null);

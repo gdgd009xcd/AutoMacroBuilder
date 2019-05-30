@@ -608,7 +608,7 @@
                       <Group type="102" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="MBcleatokenfromcache" pref="797" max="32767" attributes="0"/>
+                              <Component id="MBsettokenfromcache" pref="797" max="32767" attributes="0"/>
                               <Group type="102" attributes="0">
                                   <Group type="103" groupAlignment="1" attributes="0">
                                       <Component id="TrackMode" min="-2" pref="101" max="-2" attributes="0"/>
@@ -626,7 +626,7 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="MBcleatokenfromcache" min="-2" max="-2" attributes="0"/>
+                          <Component id="MBsettokenfromcache" min="-2" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" attributes="0">
                                   <EmptySpace max="32767" attributes="0"/>
@@ -646,14 +646,14 @@
                 </DimensionLayout>
               </Layout>
               <SubComponents>
-                <Component class="javax.swing.JCheckBox" name="MBcleatokenfromcache">
+                <Component class="javax.swing.JCheckBox" name="MBsettokenfromcache">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                       <ResourceString bundle="burp/Bundle.properties" key="&#x958b;&#x59cb;&#x6642;TOKEN&#x3092;&#x30ad;&#x30e3;&#x30c3;&#x30b7;&#x30e5;&#x304b;&#x3089;&#x5f15;&#x304d;&#x7d99;&#x3050;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
                     </Property>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="MBcleatokenfromcacheActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="MBsettokenfromcacheActionPerformed"/>
                   </Events>
                 </Component>
                 <Component class="javax.swing.JComboBox" name="TrackMode">

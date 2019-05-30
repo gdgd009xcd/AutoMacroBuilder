@@ -33,7 +33,7 @@ import java.util.HashMap;
 // FetchResponse初期化
 //
 
-class LocVal {
+class FetchResponseVal {
     //
     int noclear = 0;
 
@@ -51,7 +51,7 @@ class LocVal {
     // Key: String token  int toStepNo Val: distance = responseStepNo - currentStepNo
     HashMap<ParmGenTokenKey, Integer> distances;
     //
-    LocVal (){
+    FetchResponseVal (){
             _logger = ParmVars.plog;
 
             //pattern = "<AuthUpload>(?:.|\r|\n|\t)*?<password>([a-zA-Z0-9]+)</password>";
@@ -444,24 +444,7 @@ class LocVal {
 
 }
 
-//
-//class variable
-//
-// FetchResponse初期化
-//
 
-class FetchResponse {
-	// グローバルパラメータ
-	static LocVal loc = null;
-	//
-	// static変数初期化
-	//
-	static {
-
-
-		
-	}
-}
 
 
 

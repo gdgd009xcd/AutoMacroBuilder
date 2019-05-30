@@ -8,6 +8,8 @@ package burp;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.net.CookieManager;
+import java.net.CookieStore;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -30,6 +32,7 @@ public class ParmGenMacroTrace {
 
     MacroBuilderUI ui = null;
     IBurpExtenderCallbacks callbacks;
+    CookieStore cookiestore = null;
     Charset charset = StandardCharsets.ISO_8859_1;
     ArrayList <PRequestResponse> rlist = null;//マクロ実行後の全リクエストレスポンス
     ArrayList <PRequestResponse> originalrlist = null; //オリジナルリクエストレスポンス
@@ -43,7 +46,7 @@ public class ParmGenMacroTrace {
     boolean MBCookieFromJar = false;//==true 開始時Cookie.jarから引き継ぐ
     boolean MBFinalResponse = false;//==true 結果は最後に実行されたマクロのレスポンス
     boolean MBResetToOriginal =false;//==true オリジナルリクエストを実行。
-    boolean MBcleartokencache = false;//開始時tokenキャッシュクリア
+    boolean MBsettokencache = false;//開始時tokenキャッシュ
     boolean MBreplaceCookie = false;//==true Cookie引き継ぎ置き換え == false Cookie overwrite
     boolean MBmonitorofprocessing = false;
     boolean MBreplaceTrackingParam = false;
@@ -70,6 +73,8 @@ public class ParmGenMacroTrace {
     public static final int PMT_POSTMACRO_END = 5;//後処理マクロ終了。
     public static final int PMT_POSTMACRO_NULL = 6; //後処理マクロレスポンスnull
 
+    FetchResponseVal fetchResVal = null;
+    
     String state_debugprint(){
         String msg = "PMT_UNKNOWN";
         switch(state){
@@ -103,9 +108,16 @@ public class ParmGenMacroTrace {
     
     ParmGenMacroTrace(IBurpExtenderCallbacks _callbacks){
         callbacks = _callbacks;
+        createCookieStore();
     }
 
-
+    private void createCookieStore(){
+        if(cookiestore==null){
+            CookieManager cm = new CookieManager();
+            cookiestore = cm.getCookieStore();
+        }
+        cookiestore.removeAll();
+    }
     //
     // setter
     //
@@ -119,6 +131,7 @@ public class ParmGenMacroTrace {
     	cit = null;
     	pit = null;
     	postmacro_RequestResponse = null;
+       createCookieStore();
     }
 
     void setUI(MacroBuilderUI _ui){
@@ -138,8 +151,8 @@ public class ParmGenMacroTrace {
         MBResetToOriginal = b;
     }
 
-    void setMBcleartokencache(boolean b){
-        MBcleartokencache = b;
+    void setMBsettokencache(boolean b){
+        MBsettokencache = b;
     }
     void setMBreplaceCookie(boolean b){
         MBreplaceCookie = b;
@@ -190,8 +203,9 @@ public class ParmGenMacroTrace {
                 currentRequest.setRequest(retval);
 
         }
-        
     }
+    
+    
      //３）カレントリクエスト終了(レスポンス受信後)後に実行
     void endAfterCurrentRequest(PRequestResponse pqrs){
         if(rlist!=null && selected_request < rlist.size() && selected_request >=0 ){
@@ -320,13 +334,23 @@ public class ParmGenMacroTrace {
     
     //１）前処理マクロ開始
     void  startBeforePreMacro(){
-        if(!MBcleartokencache){
-            if(FetchResponse.loc!=null){
-                    FetchResponse.loc.clearCachedLocVal();
-            }
+        if(fetchResVal==null){
+            initFetchResponseVal();
         }
-        if(FetchResponse.loc!=null){
-            FetchResponse.loc.clearDistances();
+        
+        if(!MBsettokencache){
+            if(fetchResVal!=null){
+                    fetchResVal.clearCachedLocVal();
+            }
+        }else{
+            //1)synchronized preMacroLock	
+            //単一のスレッドが running = trueにセット
+            //2）2番目に実行したスレッドはpreMacroLock内でrunning = true時、wait();	
+            //	他のスレッドは、2番目スレッドが終了するまで、synchronizedのため、待機。
+            //3）共有storeからスレッド毎のローカルのFetchResponseVal, Cookieストアを生成。	
+        }
+        if(fetchResVal!=null){
+            fetchResVal.clearDistances();
         }
         state = PMT_PREMACRO_BEGIN;
         ParmVars.plog.debuglog(0, "BEGIN PreMacro");
@@ -781,4 +805,20 @@ public class ParmGenMacroTrace {
             }
         }
     }
+    
+    public void initFetchResponseVal(){
+        if(fetchResVal==null){
+            fetchResVal = new FetchResponseVal();
+        }
+    }
+    
+    public FetchResponseVal getFetchResponseVal(){
+        return fetchResVal;
+    }
+    
+    public void nullFetchResponseVal(){
+        fetchResVal = null;
+    }
+    
+
 }

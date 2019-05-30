@@ -74,7 +74,7 @@ public class ParmGenCSV {
         if(rowcnt>0){
                 rowcnt = records.get(records.size()-1).getRow() + 1;
         }
-        records.add(new AppParmsIni(URL, initval, valtype, incval, apps, rowcnt));
+        records.add(new AppParmsIni( URL, initval, valtype, incval, apps, rowcnt));
     }
 
     public void add(AppParmsIni pini){

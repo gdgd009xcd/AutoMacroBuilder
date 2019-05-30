@@ -213,7 +213,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         jPanel5 = new javax.swing.JPanel();
         MBCookieFromJar = new javax.swing.JCheckBox();
         jPanel6 = new javax.swing.JPanel();
-        MBcleatokenfromcache = new javax.swing.JCheckBox();
+        MBsettokenfromcache = new javax.swing.JCheckBox();
         TrackMode = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
@@ -490,10 +490,10 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
 
         jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder("Tracking Params"));
 
-        MBcleatokenfromcache.setText(bundle.getString("MacroBuilderUI.開始時TOKENをキャッシュから引き継ぐ.text")); // NOI18N
-        MBcleatokenfromcache.addActionListener(new java.awt.event.ActionListener() {
+        MBsettokenfromcache.setText(bundle.getString("MacroBuilderUI.開始時TOKENをキャッシュから引き継ぐ.text")); // NOI18N
+        MBsettokenfromcache.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                MBcleatokenfromcacheActionPerformed(evt);
+                MBsettokenfromcacheActionPerformed(evt);
             }
         });
 
@@ -523,7 +523,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(MBcleatokenfromcache, javax.swing.GroupLayout.DEFAULT_SIZE, 797, Short.MAX_VALUE)
+                    .addComponent(MBsettokenfromcache, javax.swing.GroupLayout.DEFAULT_SIZE, 797, Short.MAX_VALUE)
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(TrackMode, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -536,7 +536,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(MBcleatokenfromcache)
+                .addComponent(MBsettokenfromcache)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -599,7 +599,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
-                .addComponent(FinalResponse, javax.swing.GroupLayout.DEFAULT_SIZE, 24, Short.MAX_VALUE)
+                .addComponent(FinalResponse, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -1283,10 +1283,10 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         
     }//GEN-LAST:event_LoadActionPerformed
 
-    private void MBcleatokenfromcacheActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MBcleatokenfromcacheActionPerformed
+    private void MBsettokenfromcacheActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MBsettokenfromcacheActionPerformed
         // TODO add your handling code here:
-        pmt.setMBcleartokencache(MBcleatokenfromcache.isSelected());
-    }//GEN-LAST:event_MBcleatokenfromcacheActionPerformed
+        pmt.setMBsettokencache(MBsettokenfromcache.isSelected());
+    }//GEN-LAST:event_MBsettokenfromcacheActionPerformed
 
     private void RepeaterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RepeaterActionPerformed
         // TODO add your handling code here:
@@ -1488,9 +1488,9 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     private javax.swing.JButton Load;
     private javax.swing.JCheckBox MBCookieFromJar;
     private javax.swing.JCheckBox MBResetToOriginal;
-    private javax.swing.JCheckBox MBcleatokenfromcache;
     private javax.swing.JCheckBox MBfromStepNo;
     private javax.swing.JCheckBox MBmonitorofprocessing;
+    private javax.swing.JCheckBox MBsettokenfromcache;
     private javax.swing.JCheckBox MBtoStepNo;
     private javax.swing.JTextArea MacroComments;
     private javax.swing.JEditorPane MacroRequest;

@@ -34,6 +34,15 @@ public class ParmGenHeader {
         
     }
     
+    ParmGenHeader(ParmGenHeader sh){
+        name = sh.name;
+        values = new ArrayList<>();
+        for(ParmGenBeen been: sh.values){
+            values.add(new ParmGenBeen(been));
+        }
+        key_uppername = sh.key_uppername;
+    }
+    
     public String getName(){
         return name;
     }

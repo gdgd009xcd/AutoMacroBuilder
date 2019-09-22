@@ -904,7 +904,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         };
         ParmFileFilter pFilter = new ParmFileFilter();
         jfc.setFileFilter(pFilter);
-        ArrayList<PRequestResponse> orglist = pmt.originalrlist;
+        ArrayList<PRequestResponse> orglist = pmt.getOriginalrlist();
         if (jfc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION && orglist!=null) {
 
             //code to handle choosed file here.

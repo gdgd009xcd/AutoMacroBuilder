@@ -10,6 +10,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.CookieManager;
 import java.net.CookieStore;
+import java.net.HttpCookie;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -32,12 +33,11 @@ public class ParmGenMacroTrace {
 
     MacroBuilderUI ui = null;
     IBurpExtenderCallbacks callbacks;
-    CookieStore cookiestore = null;
     Charset charset = StandardCharsets.ISO_8859_1;
-    ArrayList <PRequestResponse> rlist = null;//マクロ実行後の全リクエストレスポンス
-    ArrayList <PRequestResponse> originalrlist = null; //オリジナルリクエストレスポンス
-    //ArrayList <ParmGenParser> csrflist = null;//引き継ぎhidden値リスト
-    ArrayList<String> set_cookienames = null;//レスポンスのSet-Cookie値の名前リスト
+    private ArrayList <PRequestResponse> rlist = null;//マクロ実行後の全リクエストレスポンス
+    private ArrayList <PRequestResponse> originalrlist = null; //オリジナルリクエストレスポンス
+
+    // *** REMOVE*** private ArrayList<String> set_cookienames = null;//レスポンスのSet-Cookie値の名前リスト
     int selected_request = 0;//現在選択しているカレントのリクエスト
     int stepno = -1;//実行中のリクエスト番号
     PRequestResponse toolbaseline = null;// Repeater's baseline request.
@@ -73,9 +73,11 @@ public class ParmGenMacroTrace {
     public static final int PMT_POSTMACRO_END = 5;//後処理マクロ終了。
     public static final int PMT_POSTMACRO_NULL = 6; //後処理マクロレスポンスnull
 
-    private FetchResponseVal fetchResVal = null;
+    private FetchResponseVal fetchResVal = null;//token cache
     
     private ParmGenTWait TWaiter = null;
+    
+    private ParmGenCookieManager cookieMan = null;//cookie manager
     
     String state_debugprint(){
         String msg = "PMT_UNKNOWN";
@@ -110,30 +112,23 @@ public class ParmGenMacroTrace {
     
     ParmGenMacroTrace(IBurpExtenderCallbacks _callbacks){
         callbacks = _callbacks;
-        createCookieStore();
     }
 
-    private void createCookieStore(){
-        if(cookiestore==null){
-            CookieManager cm = new CookieManager();
-            cookiestore = cm.getCookieStore();
-        }
-        cookiestore.removeAll();
-    }
+    
     //
     // setter
     //
     void clear(){
     	rlist = null;
     	originalrlist = null;
-    	set_cookienames = null;
+    	// REMOVE set_cookienames = null;
     	selected_request = 0;
     	stepno = -1;
     	oit = null;
     	cit = null;
     	pit = null;
     	postmacro_RequestResponse = null;
-       createCookieStore();
+        nullfetchResValAndCookieMan();
     }
 
     void setUI(MacroBuilderUI _ui){
@@ -215,34 +210,17 @@ public class ParmGenMacroTrace {
             pqrs.setError(ParmVars.plog.isError());
             rlist.set(selected_request, pqrs);
             //カレントリクエストのset-cookie値をcookie.jarに保管
-            HashMap<String,ArrayList<String[]>> setcookieparams = pqrs.response.set_cookieparams;
-            for(Map.Entry<String, ArrayList<String[]>> e : setcookieparams.entrySet()) {
-                String k = e.getKey();
-                ArrayList<String[]> values = e.getValue();
-                String domain = null;
-                String path = null;
-                String name = null;
-                String value = null;
-                for(String[] s: values){
-                    if(s[0].equals(k)){
-                        name = s[0];
-                        value = s[1];
-                    }else if(s[0].toLowerCase().equals("path")){
-                        path = s[1];
-                    }else if(s[0].toLowerCase().equals("domain")){
-                        domain = s[1];
-                    }
-                }
-                if(domain==null){
-                   domain = pqrs.request.getHost();
-                }
-                if(path==null){
-                    path = "/";//root path
-                }
-                ParmVars.plog.debuglog(0, "Set-Cookie: " +  name + "=" + value + "; domain=" +  domain +  "; path=" + path);
-                BurpICookie bicookie = new BurpICookie(domain, path, name, value, null);// update cookie
-                callbacks.updateCookieJar(bicookie);
+            
+            List<String> setcookieheaders = pqrs.response.getSetCookieHeaders();
+            for(String headerval: setcookieheaders) {
+                String cheader = "Set-Cookie: " +  headerval;
+                String domain = pqrs.request.getHost();
+                String path = "/";//default root path
 
+                
+                //BurpICookie bicookie = new BurpICookie(domain, path, name, value, null);// update cookie
+                //callbacks.updateCookieJar(bicookie);
+                cookieMan.parse(domain, path, cheader);
             }
         }
         ui.updateCurrentReqRes();
@@ -332,102 +310,111 @@ public class ParmGenMacroTrace {
             TWaiter = null;
         }
         
-        if(fetchResVal==null){
-            initFetchResponseVal();
-        }
+
+        initFetchResponseVal();
+        initCookieManager();
+
         
         if(!MBsettokencache){
             if(fetchResVal!=null){
                     fetchResVal.clearCachedLocVal();
             }
-        }else{
-            //1)synchronized preMacroLock	
-            //単一のスレッドが running = trueにセット
-            //2）2番目に実行したスレッドはpreMacroLock内でrunning = true時、wait();	
-            //	他のスレッドは、2番目スレッドが終了するまで、synchronizedのため、待機。
-            //3）共有storeからスレッド毎のローカルのFetchResponseVal, Cookieストアを生成。	
+        }
+        if(!MBCookieFromJar){
+            if(cookieMan!=null){
+                cookieMan.removeAll();
+            }
         }
         if(fetchResVal!=null){
             fetchResVal.clearDistances();
         }
         state = PMT_PREMACRO_BEGIN;
         ParmVars.plog.debuglog(0, "BEGIN PreMacro");
+        
+
+
+            //1)synchronized preMacroLock	
+            //単一のスレッドが running = trueにセット only one thread set running =true then preMacroLock method end.
+            //2）2番目に実行したスレッドはpreMacroLock内でrunning = true時、wait(); second excuting thread wait,because running == true.	
+            //	他のスレッドは、2番目スレッドが終了するまで、synchronizedのため、待機。 the other threads wait until second executing thread complete preMacroLock.
+            //3）共有storeからスレッド毎のローカルのFetchResponseVal, Cookieストアを生成。	local FetchResponseVal, Cookie store create from shared store.
+
+        
         //前処理マクロの0～selected_request-1まで実行。
         //開始時Cookieを参照しない。...cookie.jarから全削除
-        List<ICookie> iclist = callbacks.getCookieJarContents();//Burp's cookie.jar
-        if(!MBCookieFromJar){
-            for(ICookie cookie:iclist){
-                BurpICookie bicookie = new BurpICookie(cookie, true);// delete cookie.
-                callbacks.updateCookieJar(bicookie);
-            }
-            iclist = callbacks.getCookieJarContents();
-        }
+        //List<ICookie> iclist = callbacks.getCookieJarContents();//Burp's cookie.jar
+        //if(!MBCookieFromJar){
+        //    for(ICookie cookie:iclist){
+        //        BurpICookie bicookie = new BurpICookie(cookie, true);// delete cookie.
+        //        callbacks.updateCookieJar(bicookie);
+        //   }
+        //    iclist = callbacks.getCookieJarContents();
+        //}
         oit = null;
         cit = null;
 
         stepno = 0;
 
         try{
-        if(rlist!=null&&selected_request>=0&& rlist.size() > selected_request){
-            oit = originalrlist.listIterator();
-            cit = rlist.listIterator();
-            int n = 0;
-            if(TWaiter!=null){
-                TWaiter.TWait();
-            }
-            while(cit.hasNext() && oit.hasNext()){
-                PRequestResponse ppr = cit.next();
-                PRequestResponse opr = oit.next();
-                stepno = n;
-                if(n++>=selected_request){
-                    break;
-                }
-
-                if(ppr.isDisabled()){
-                    continue;
-                }
-
-                if(MBResetToOriginal){
-                    ppr = opr;//オリジナルにリセット
-                }
-
-
-              
-
-                byte[] byterequest = ppr.request.getByteMessage();
-                if(byterequest!=null){
-                    String noresponse = "";
-                    String host = ppr.request.getHost();
-                    int port = ppr.request.getPort();
-                    boolean isSSL = ppr.request.isSSL();
-                    Encode _pageenc = ppr.request.getPageEnc();
-                    BurpIHttpService bserv = new BurpIHttpService(host, port, isSSL);
-                    ParmVars.plog.debuglog(0, "PreMacro StepNo:" + stepno + " "+ host + " " + ppr.request.method + " "+ ppr.request.url);
-                    //byte[] byteres = callbacks.makeHttpRequest(host,port, isSSL, byterequest);
-                    ParmVars.plog.clearComments();
-                    ParmVars.plog.setError(false);
-                    IHttpRequestResponse IHReqRes = callbacks.makeHttpRequest(bserv, byterequest);
-                    byte[] bytereq = IHReqRes.getRequest();
-                    byte[] byteres = IHReqRes.getResponse();
-                    if(bytereq==null){//Impossible..
-                        bytereq = new String("").getBytes(Encode.ISO_8859_1.getIANACharset());
-                    }
-                    if(byteres==null){
-                        byteres = new String("").getBytes(Encode.ISO_8859_1.getIANACharset());
-                        noresponse = "\nNo Response(NULL)";
-                    }
-                    
-                
-                    PRequestResponse pqrs = new PRequestResponse(host, port, isSSL, bytereq, byteres, _pageenc);
-                    pqrs.setComments(ParmVars.plog.getComments() + noresponse);
-                    pqrs.setError(ParmVars.plog.isError());
-                    cit.set(pqrs);//更新
-                }
+            if(rlist!=null&&selected_request>=0&& rlist.size() > selected_request){
+                oit = originalrlist.listIterator();
+                cit = rlist.listIterator();
+                int n = 0;
                 if(TWaiter!=null){
                     TWaiter.TWait();
                 }
+                while(cit.hasNext() && oit.hasNext()){
+                    PRequestResponse ppr = cit.next();
+                    PRequestResponse opr = oit.next();
+                    stepno = n;
+                    if(n++>=selected_request){
+                        break;
+                    }
+
+                    if(ppr.isDisabled()){
+                        continue;
+                    }
+
+                    if(MBResetToOriginal){
+                        ppr = opr;//オリジナルにリセット
+                    }
+
+                    //Set Cookie Value from CookieStore.
+                    ppr.request.setCookiesFromCookieMan(cookieMan);
+                    byte[] byterequest = ppr.request.getByteMessage();
+                    if(byterequest!=null){
+                        String noresponse = "";
+                        String host = ppr.request.getHost();
+                        int port = ppr.request.getPort();
+                        boolean isSSL = ppr.request.isSSL();
+                        Encode _pageenc = ppr.request.getPageEnc();
+                        BurpIHttpService bserv = new BurpIHttpService(host, port, isSSL);
+                        ParmVars.plog.debuglog(0, "PreMacro StepNo:" + stepno + " "+ host + " " + ppr.request.method + " "+ ppr.request.url);
+                        //byte[] byteres = callbacks.makeHttpRequest(host,port, isSSL, byterequest);
+                        ParmVars.plog.clearComments();
+                        ParmVars.plog.setError(false);
+                        IHttpRequestResponse IHReqRes = callbacks.makeHttpRequest(bserv, byterequest);
+                        byte[] bytereq = IHReqRes.getRequest();
+                        byte[] byteres = IHReqRes.getResponse();
+                        if(bytereq==null){//Impossible..
+                            bytereq = new String("").getBytes(Encode.ISO_8859_1.getIANACharset());
+                        }
+                        if(byteres==null){
+                            byteres = new String("").getBytes(Encode.ISO_8859_1.getIANACharset());
+                            noresponse = "\nNo Response(NULL)";
+                        }
+
+
+                        PRequestResponse pqrs = new PRequestResponse(host, port, isSSL, bytereq, byteres, _pageenc);
+                        pqrs.setComments(ParmVars.plog.getComments() + noresponse);
+                        pqrs.setError(ParmVars.plog.isError());
+                        cit.set(pqrs);//更新
+                    }
+                    if(TWaiter!=null){
+                        TWaiter.TWait();
+                    }
+                }
             }
-        }
         }catch(Exception e){
             ParmVars.plog.printException(e);
         }
@@ -442,9 +429,14 @@ public class ParmGenMacroTrace {
        
         if(isRunning()){//MacroBuilder list > 0 && state is Running.
             //ここでリクエストのCookieをCookie.jarで更新する。
-            List<ICookie> iclist = callbacks.getCookieJarContents();//Burp's cookie.jar
+            //List<ICookie> iclist = callbacks.getCookieJarContents();//Burp's cookie.jar
+            String domain_req = preq.getHost();
+            String path_req = preq.getPath();
+            boolean isSSL_req = preq.isSSL();
+            List<HttpCookie> cklist = cookieMan.get(domain_req, path_req, isSSL_req);
             HashMap<CookieKey, ArrayList<CookiePathValue>> cookiemap = new HashMap<CookieKey, ArrayList<CookiePathValue>>();
-            for(ICookie cookie:iclist){
+            //for(ICookie cookie:iclist){
+            for(HttpCookie cookie: cklist){
                 String domain = cookie.getDomain();
                 if(domain==null)domain = "";
                 String name = cookie.getName();
@@ -489,7 +481,7 @@ public class ParmGenMacroTrace {
             ParmVars.plog.debuglog(0, "BEGIN PostMacro");
             try{
                 if(cit!=null&&oit!=null){
-                    List<ICookie> iclist = callbacks.getCookieJarContents();//Burp's cookie.jar
+                    //List<ICookie> iclist = callbacks.getCookieJarContents();//Burp's cookie.jar
                     int n = stepno;
                     while(cit.hasNext() && oit.hasNext()){
                         stepno = n;
@@ -616,6 +608,7 @@ public class ParmGenMacroTrace {
    
    
    void ParseResponse(){
+       /*** REMOVE
 	   if(rlist!=null){
 	       cit = rlist.listIterator();
 	       //csrflist = new ArrayList<ParmGenParser> ();
@@ -647,7 +640,7 @@ public class ParmGenMacroTrace {
 	           ParmVars.plog.debuglog(0, "ParseResponse: Set-Cookie: " + name);
 	       }
 	   }
-
+***********/
 
    }
 
@@ -672,9 +665,7 @@ public class ParmGenMacroTrace {
         return rlist;
     }
 
-    /**ParmGenParser getParmGenParser(int _p){
-        return csrflist.get(_p);
-    }**/
+    
 
     boolean isMBFinalResponse(){
         return MBFinalResponse;
@@ -820,9 +811,18 @@ public class ParmGenMacroTrace {
         return fetchResVal;
     }
     
-    public void nullFetchResponseVal(){
+    public void nullfetchResValAndCookieMan(){
         fetchResVal = null;
+        cookieMan = null;
     }
     
-
+    public void initCookieManager(){
+        if(cookieMan==null){
+            cookieMan = new ParmGenCookieManager();
+        }
+    }
+    
+    public ArrayList<PRequestResponse> getOriginalrlist(){
+        return originalrlist;
+    }
 }

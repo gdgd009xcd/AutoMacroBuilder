@@ -304,4 +304,50 @@ public class ParmGenUtil {
         public static Pattern Pattern_compile(String regex, int opt){
             return Pattern.compile(regex, opt|Pattern.MULTILINE);
         }
+        
+        /**
+         * deep copy byte[]
+         * @param srcbin
+         * @return byte[] byte array or null
+         */
+        public static byte[] copyBytes(byte[] srcbin){
+            if(srcbin!=null&&srcbin.length>0){
+                byte[] nbin = new byte[srcbin.length];
+                System.arraycopy(srcbin, 0, nbin, 0, srcbin.length);
+                return nbin;
+            }
+            return null;
+        }
+        /**
+         * deep copy String[] 
+         * @param sarray
+         * @return String[] or null
+         */
+        public static String[] copyStringArray(String[] sarray){
+            if(sarray!=null&&sarray.length>0){
+                String[] narray = new String[sarray.length];
+                System.arraycopy(sarray,0,narray,0,sarray.length);
+                return narray;
+            }
+            return null;
+        }
+        
+        /**
+         * deepcopy ArrayList<String[]>
+         * @param slist
+         * @return ArrayList<String[]> or null
+         */
+        public static ArrayList<String[]> copyStringArrayList(ArrayList<String[]> slist){
+            if(slist!=null&&slist.size()>0){
+                ArrayList<String[]> nlist = new ArrayList<>();
+                for(String[] sarray: slist){
+                    String[] narray = copyStringArray(sarray);
+                    if(narray!=null){
+                        nlist.add(narray);
+                    }
+                }
+                return nlist;
+            }
+            return null;
+        }
 }

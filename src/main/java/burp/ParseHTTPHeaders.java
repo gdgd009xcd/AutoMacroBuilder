@@ -1,12 +1,15 @@
 package burp;
 
 import java.io.UnsupportedEncodingException;
+import java.net.HttpCookie;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,7 +27,7 @@ class ParseHTTPHeaders {
 	String formdatafooter;
 	Pattern formdataheaderregex;
 	Pattern formdatafooterregex;
-	String[] nv;
+	private String[] nv = null;//temporary work parameter. no need copy in constructor. 
 	boolean crlf;
 	String method;
 	String url;
@@ -44,7 +47,8 @@ class ParseHTTPHeaders {
 	private ArrayList<String[]> bodyparams;
 	ArrayList<String []> headers;
         HashMap<String, ParmGenHeader> hkeyUpper_Headers = null;// key is UpperCase
-	public HashMap<String,ArrayList<String[]>> set_cookieparams;//String Key, ArrayList name=value pair
+        private ArrayList<String> setcookieheaders;//Set-Cookie headers
+	//REMOVE private HashMap<String,ArrayList<String[]>> set_cookieparams;//String Key, ArrayList name=value pair
 	String content_type; // Content-Type: image/gif
 	String content_subtype;
 	String charset;
@@ -74,14 +78,15 @@ class ParseHTTPHeaders {
             //formdataregex = ParmGenUtil.Pattern_compile("-{4,}[a-zA-Z0-9]+(?:\r\n)(?:[A-Z].* name=\"(.*?)\".*(?:\r\n))(?:[A-Z].*(?:\r\n)){0,}(?:\r\n)((?:.|\r|\n)*?)(?:\r\n)-{4,}[a-zA-Z0-9]+");
             formdataheader = "(?:[A-Z].* name=\"(.*?)\".*(?:\r\n))(?:[A-Z].*(?:\r\n)){0,}(?:\r\n)";
             formdatafooter = "(?:\r\n)";
-
+            nv = null;
             isSSL = false;
             crlf = false;
             isrequest = false;
             message = null;
             pathparams = new ArrayList<String>();
             cookieparams = new ArrayList<String[]>();
-            set_cookieparams = new HashMap<String,ArrayList<String[]>>();
+            //REMOVE set_cookieparams = new HashMap<String,ArrayList<String[]>>();
+            setcookieheaders = new ArrayList<>();
             charset = "";
             content_type = "";
             content_subtype = "";
@@ -99,9 +104,7 @@ class ParseHTTPHeaders {
             isHeaderModified = true;
 	}
 
-	//public ParseHTTPHeaders(){
-	//	init();
-	//}
+
 
 	ParseHTTPHeaders(byte[] _binmessage, Encode _penc){
             construct("", 0, false, _binmessage, _penc);
@@ -110,6 +113,77 @@ class ParseHTTPHeaders {
         ParseHTTPHeaders(String _h, int _p, boolean _isssl, byte[] _binmessage, Encode _penc){
 		construct(_h, _p, _isssl, _binmessage, _penc);
 	}
+        
+        
+        ParseHTTPHeaders(ParseHTTPHeaders pheaders){
+            deepcopy(pheaders);
+        }
+        
+        private void deepcopy(ParseHTTPHeaders pheaders){
+            valueregex = pheaders.valueregex;
+
+            formdataheader = pheaders.formdataheader;
+            formdatafooter = pheaders.formdatafooter;
+            formdataheaderregex = pheaders.formdataheaderregex;
+            formdatafooterregex = pheaders.formdatafooterregex;
+            nv = null;//tempoary work parameter. no need copy.
+            crlf = pheaders.crlf;
+            method = pheaders.method;
+            url = pheaders.url;
+            isSSL = pheaders.isSSL;
+            path = pheaders.path;
+            path_pref_url = pheaders.path_pref_url;
+            protocol = pheaders.protocol;
+            status = pheaders.status;
+            reason = pheaders.reason;
+            host = pheaders.host;
+            port = pheaders.port;
+            pathparams = new ArrayList<>(pheaders.pathparams);
+            cookieparams = ParmGenUtil.copyStringArrayList(pheaders.cookieparams);
+            hashqueryparams = (HashMap<String,String>)pheaders.hashqueryparams.clone();
+            hashbodyparams = (HashMap<String,String>)pheaders.hashbodyparams.clone();
+            queryparams = ParmGenUtil.copyStringArrayList(pheaders.queryparams);
+            bodyparams = ParmGenUtil.copyStringArrayList(pheaders.bodyparams);
+            headers = ParmGenUtil.copyStringArrayList(pheaders.headers);
+            hkeyUpper_Headers = copyhkeyUpper_Headers(pheaders.hkeyUpper_Headers);
+            setcookieheaders = new ArrayList<>(pheaders.setcookieheaders);
+            //REMOVE set_cookieparams = copyset_cookieparams(pheaders.set_cookieparams);
+            content_type = pheaders.content_type;
+            content_subtype = pheaders.content_subtype;
+            charset = pheaders.charset;
+            boundary = pheaders.boundary;
+            parsedheaderlength = pheaders.parsedheaderlength;
+            isHeaderModified = pheaders.isHeaderModified;
+            content_length = pheaders.content_length;
+            formdata = pheaders.formdata;
+            body = pheaders.body;
+            bytebody = ParmGenUtil.copyBytes(pheaders.bytebody);
+            binbody = new ParmGenBinUtil(pheaders.binbody.getBytes());
+            iso8859bodyString = pheaders.iso8859bodyString;
+            pageenc = pheaders.pageenc;
+            message = pheaders.message;
+            isrequest = pheaders.isrequest;
+            
+        }
+        
+        /**
+         * deep copy HashMap<String, ParmGenHeader>
+         * @return copied HashMap<String, ParmGenHeader>
+         */
+        private HashMap<String, ParmGenHeader> copyhkeyUpper_Headers(HashMap<String, ParmGenHeader> src){
+            if(src!=null){
+                HashMap<String, ParmGenHeader> copiedhkeyUpper_Headers = new HashMap<>();
+                for(Map.Entry<String, ParmGenHeader> e : src.entrySet()) {
+                    String k = e.getKey();
+                    ParmGenHeader pgh = e.getValue();
+                    copiedhkeyUpper_Headers.put(k, new ParmGenHeader(pgh));
+                }
+                return copiedhkeyUpper_Headers;
+            }
+            return null;
+        }
+        
+        
         
         private String httpMessageString(byte[] _binmessage, Encode _penc){
             pageenc = _penc;
@@ -258,7 +332,8 @@ class ParseHTTPHeaders {
                                                         protocol = nv[0];
                                                         status = nv[1];
                                                         reason = nv[2];
-                                                        set_cookieparams.clear();
+                                                        //REMOVE set_cookieparams.clear();
+                                                        setcookieheaders.clear();
                                                 }else{//request;
                                                         isrequest = true;
                                                         method = nv[0];
@@ -381,6 +456,8 @@ class ParseHTTPHeaders {
                                                         }
                                                 }
                                         }else if(nv[0].toLowerCase().startsWith("set-cookie")){//レスポンスのSet-Cookie値
+                                            setcookieheaders.add(nv[1]);
+                                            /**** REMOVE
                                                 String[] cookies = nv[1].split("[\r\n;]");
                                                 String setckey = null;
                                                 String setcval = null;
@@ -411,8 +488,9 @@ class ParseHTTPHeaders {
                                                         }
                                                 }
                                                 if(setckey!=null){
-                                                        set_cookieparams.put(setckey, setclist);
+                                                        //set_cookieparams.put(setckey, setclist);
                                                 }
+                                                * ***/
                                         }
 
 
@@ -631,6 +709,8 @@ class ParseHTTPHeaders {
                 
                 
                 if(cpvlist!=null){
+                    //pathプロパティの短いものから長いものの順で、Cookie値を設定。 
+                    // Set cookie values  after arrange path property in ascending order(from short path "/" to long path "/aaa/bbb").
                     Collections.sort(cpvlist, new PathComparator().reversed());
                     ListIterator<CookiePathValue> itv = cpvlist.listIterator();
                     Boolean cpvlist_changed = false;
@@ -683,6 +763,37 @@ class ParseHTTPHeaders {
             
         }
         
+        public boolean setCookiesFromCookieMan(ParmGenCookieManager cookieman){
+            List<HttpCookie> hcookies = cookieman.get(host, path, isSSL);
+            return setCookies(hcookies);
+        }
+        
+        private boolean setCookies(List<HttpCookie> hcookies){
+            HashMap<CookieKey, ArrayList<CookiePathValue>> cookiemap = new HashMap<CookieKey, ArrayList<CookiePathValue>>();
+            for(HttpCookie cookie: hcookies){
+                String domain = cookie.getDomain();
+                if(domain==null)domain = "";
+                String name = cookie.getName();
+                if(name==null)name = "";
+                String path = cookie.getPath();
+                if(path == null)path = "";
+                String value = cookie.getValue();
+                if(value==null) value = "";
+                CookieKey cikey = new CookieKey(domain, name);
+                CookiePathValue cpvalue = new CookiePathValue(path, value);
+                ArrayList<CookiePathValue> cpvlist = cookiemap.get(cikey);
+                if(cpvlist==null){
+                    cpvlist = new ArrayList<CookiePathValue>();
+                }
+
+                cpvlist.add(cpvalue);
+
+                cookiemap.put(cikey, cpvlist);
+            }
+
+            return setCookies(cookiemap, true);
+        }
+
         boolean removeCookies(ArrayList<String> names){
             Iterator<String[]> it = cookieparams.iterator();
             String cookiedata = "";
@@ -1124,6 +1235,10 @@ class ParseHTTPHeaders {
                 }
             }
             return content_length;
+        }
+        
+        public List<String> getSetCookieHeaders(){
+            return setcookieheaders;
         }
 }
 

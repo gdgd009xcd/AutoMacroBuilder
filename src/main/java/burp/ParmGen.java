@@ -2197,7 +2197,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 			}else{
 				parmcsv = _newparmcsv;
 			}
-                        pmt.nullFetchResponseVal();
+                        pmt.nullfetchResValAndCookieMan();
                         
                         if(parmcsv==null)return;
                         //colmax計算

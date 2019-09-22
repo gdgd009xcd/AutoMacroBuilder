@@ -17,4 +17,10 @@ public class ParmGenBeen {
     ParmGenBeen(){
         
     }
+    
+    ParmGenBeen(ParmGenBeen sbeen){
+        v = sbeen.v;
+        i = sbeen.i;
+        b = sbeen.b;
+    }
 }

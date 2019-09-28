@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class ParmGenTrackJarFactory {
     
-    static HashMap<Integer, ParmGenTrackingParam> trackjar = null;
+    static HashMap<Integer, ParmGenTrackingParam> trackjar = null;// Integer: unique key(ascend order.) ParmGenTrackingParam: tracking value
     static Integer keymax = -1;
     
 
@@ -25,6 +25,8 @@ public class ParmGenTrackJarFactory {
         trackjar = new HashMap<Integer,ParmGenTrackingParam>();
     }
     
+    
+    // create new unique key. tracking value is null. 
     static int create(){
         ParmGenTrackingParam tkparam = new ParmGenTrackingParam();
         trackjar.put(keymax, tkparam);
@@ -32,13 +34,13 @@ public class ParmGenTrackJarFactory {
     }
     
     
-    
+    // save tracking value with unique key.
     static void put(Integer key, ParmGenTrackingParam tkparam){
         trackjar.put(key, tkparam);
         //ParmVars.plog.debuglog(0, "TrackJar put key:" + key);
     }
     
-   
+    // get tracking value with unique key.
     static ParmGenTrackingParam get(Integer key){
         //ParmVars.plog.debuglog(0, "TrackJar get key:" + key);
         return trackjar.get(key);

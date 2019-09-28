@@ -209,6 +209,8 @@ public class ParmGenMacroTrace {
             pqrs.setComments(ParmVars.plog.getComments());
             pqrs.setError(ParmVars.plog.isError());
             rlist.set(selected_request, pqrs);
+            
+            /*** REMOVE
             //カレントリクエストのset-cookie値をcookie.jarに保管
             
             List<String> setcookieheaders = pqrs.response.getSetCookieHeaders();
@@ -222,6 +224,7 @@ public class ParmGenMacroTrace {
                 //callbacks.updateCookieJar(bicookie);
                 cookieMan.parse(domain, path, cheader);
             }
+            * *****/
         }
         ui.updateCurrentReqRes();
         state = PMT_CURRENT_END;
@@ -824,5 +827,21 @@ public class ParmGenMacroTrace {
     
     public ArrayList<PRequestResponse> getOriginalrlist(){
         return originalrlist;
+    }
+    
+    void parseSetCookie(PRequestResponse pqrs){
+        //カレントリクエストのset-cookie値をcookie.jarに保管
+            
+            List<String> setcookieheaders = pqrs.response.getSetCookieHeaders();
+            for(String headerval: setcookieheaders) {
+                String cheader = "Set-Cookie: " +  headerval;
+                String domain = pqrs.request.getHost();
+                String path = "/";//default root path
+
+                
+                //BurpICookie bicookie = new BurpICookie(domain, path, name, value, null);// update cookie
+                //callbacks.updateCookieJar(bicookie);
+                cookieMan.parse(domain, path, cheader);
+            }
     }
 }

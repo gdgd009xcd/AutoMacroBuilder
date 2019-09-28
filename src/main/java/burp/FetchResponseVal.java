@@ -49,7 +49,7 @@ class FetchResponseVal {
     Encode _enc = null;
 
     // Key: String token  int toStepNo Val: distance = responseStepNo - currentStepNo
-    HashMap<ParmGenTokenKey, Integer> distances;
+    private HashMap<ParmGenTokenKey, Integer> distances;
     //
     FetchResponseVal (){
             _logger = ParmVars.plog;
@@ -102,6 +102,14 @@ class FetchResponseVal {
 
 	
     //this function affects AppParmsIni.T_TRACK only..
+    /**
+     * get response's tracking token from TrackJarFactory
+     * @param k (unique key) int
+     * @param tk ParmGenTokenKey
+     * @param currentStepNo int
+     * @param toStepNo int
+     * @return token value String
+     */
     String getLocVal(int k, ParmGenTokenKey tk, int currentStepNo, int toStepNo) {
         String rval = null;
         ParmGenTrackingParam tkparam = ParmGenTrackJarFactory.get(k);
@@ -127,7 +135,7 @@ class FetchResponseVal {
             
             if(tk!=null&&distances!=null){
                 if(rval!=null){
-                    int newdistance = currentStepNo - responseStepNo;
+                    int newdistance = currentStepNo - responseStepNo;// from to distance
                     Integer intobj =  distances.get(tk);
                     
                     if(intobj!=null){
@@ -158,10 +166,14 @@ class FetchResponseVal {
         }
         return -1;
     }
-
+    
+    /**
+     * set response's tracking token to TrackJarFactory
+    
+    */
     private int setLocVal(int k,int currentStepNo, int fromStepNo,  String val, boolean overwrite){
         ParmGenTrackingParam tkparam = ParmGenTrackJarFactory.get(k);
-        if(tkparam==null){
+        if(tkparam==null){// if unique key is No exist, then create tracking param with new unique key
             k = ParmGenTrackJarFactory.create();
             tkparam = ParmGenTrackJarFactory.get(k);
         }
@@ -179,7 +191,10 @@ class FetchResponseVal {
             tkparam.setValue(val);
         }
         
-        if(fromStepNo<0||currentStepNo==fromStepNo){
+        if(fromStepNo<0||currentStepNo==fromStepNo){// if fromStepNo <0 : token value from any 
+                                                    // or 
+                                                    // currentStepNo == fromStepNo : token value from fromStepNo
+                                                    // then set ResponseStepNo 
             //setStepNo(currentStepNo, r, c);
             tkparam.setResponseStepNo(currentStepNo);
         }

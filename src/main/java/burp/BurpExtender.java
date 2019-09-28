@@ -149,6 +149,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                             int updtcnt = pgen.ResponseRun(url, messageInfo.getResponse(), ParmVars.enc);
                             ParmVars.plog.debuglog(0, "=====ResponseRun end======");
                             if(pmt!=null){
+                                pmt.parseSetCookie(prs);//save Set-Cookie values into CookieStore.
                                 switch(pmt.getState()){
                                     case ParmGenMacroTrace.PMT_CURRENT_BEGIN://カレントリクエストが終了。
                                         pmt.endAfterCurrentRequest(prs);

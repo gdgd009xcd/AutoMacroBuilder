@@ -695,7 +695,7 @@ class ParseHTTPHeaders {
             if(cookiemap==null||cookiemap.size()==0){
                 return false;
             }
-            ListIterator<String[]> it = cookieparams.listIterator();
+            ListIterator<String[]> it = cookieparams.listIterator();//Request's cookie headers
             String domain = host;
             String cookiedata = "";
             boolean cookiemodified = false;
@@ -706,6 +706,7 @@ class ParseHTTPHeaders {
                 String[] nv = it.next();
                 CookieKey ckey = new CookieKey(domain, nv[0]);
                 ArrayList<CookiePathValue> cpvlist = cookiemap.get(ckey);
+                ParmVars.plog.debuglog(0, "setCookies: domain:" + domain + " name=" + nv[0] + " cpvlist.size=" + (cpvlist==null?"null": cpvlist.size()));
                 
                 
                 if(cpvlist!=null){

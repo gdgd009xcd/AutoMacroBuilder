@@ -441,7 +441,9 @@ public class ParmGenMacroTrace {
             //for(ICookie cookie:iclist){
             for(HttpCookie cookie: cklist){
                 String domain = cookie.getDomain();
-                if(domain==null)domain = "";
+                if(domain==null||domain.isEmpty()){
+                    domain = domain_req;
+                }
                 String name = cookie.getName();
                 if(name==null)name = "";
                 String path = cookie.getPath();
@@ -449,6 +451,7 @@ public class ParmGenMacroTrace {
                 String value = cookie.getValue();
                 if(value==null) value = "";
                 CookieKey cikey = new CookieKey(domain, name);
+                ParmVars.plog.debuglog(0, "Cookiekey domain:" + domain + " name=" + name);
                 CookiePathValue cpvalue = new CookiePathValue(path, value);
                 ArrayList<CookiePathValue> cpvlist = cookiemap.get(cikey);
                 if(cpvlist==null){

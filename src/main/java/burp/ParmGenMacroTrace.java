@@ -433,7 +433,7 @@ public class ParmGenMacroTrace {
         if(isRunning()){//MacroBuilder list > 0 && state is Running.
             //ここでリクエストのCookieをCookie.jarで更新する。
             //List<ICookie> iclist = callbacks.getCookieJarContents();//Burp's cookie.jar
-            String domain_req = preq.getHost();
+            String domain_req = preq.getHost().toLowerCase();
             String path_req = preq.getPath();
             boolean isSSL_req = preq.isSSL();
             List<HttpCookie> cklist = cookieMan.get(domain_req, path_req, isSSL_req);
@@ -443,6 +443,12 @@ public class ParmGenMacroTrace {
                 String domain = cookie.getDomain();
                 if(domain==null||domain.isEmpty()){
                     domain = domain_req;
+                }
+                domain = domain.toLowerCase();
+                if(!domain.equals(domain_req)){// domain:.test.com != domain_req:www.test.com
+                    if(domain_req.endsWith(domain)){//domain_req is belong to domain's subdomain.
+                        domain = domain_req;
+                    }
                 }
                 String name = cookie.getName();
                 if(name==null)name = "";

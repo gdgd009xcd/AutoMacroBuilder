@@ -105,7 +105,7 @@ public class ParmGenCookieManager {
             //System.out.println("get: domain[" + domain + "] path[" + path + "] SSL:" + (isSSL?"TRUE":"FALSE"));
             List<HttpCookie> rawresults = cookiestore.get(uri);
             // cookiestore.get implimentation ignores path attribute. 
-            // so, It was necessary to search the path attribute.
+            // so, It is necessary to search the path attribute.
             ArrayList<HttpCookie> results = new ArrayList<>();
             for(HttpCookie hc: rawresults){
                 String hc_path = hc.getPath();

@@ -174,10 +174,11 @@ public class ParmGenUtil {
 		ALPHALOWER,
 		ALPHAUPPER,
 		OTHER,
+                SPACE,
 		DEFAULT
 	};
 	
-	static boolean isTokenValue(String tkn){
+	public static boolean isTokenValue(String tkn){
 		if(tkn==null||tkn.length()<=16)return false;
 		
 		CharMODE current = CharMODE.DEFAULT;
@@ -276,10 +277,17 @@ public class ParmGenUtil {
 				}
 				current = CharMODE.ALPHAUPPER;
 				break;
+                        case ' ':
+                        case '\t':
+                        case '\r':
+                        case '\n':
+                            current = CharMODE.SPACE;
+                            break;
 			default:
-				current = CharMODE.OTHER;
-				break;
+                            current = CharMODE.OTHER;
+                            break;
 			}
+                        if(current==CharMODE.SPACE)return false;
 		}
 		//System.out.println("number/lower/upper=" + ncnt + "/" +lowercnt + "/" + uppercnt);
 		if(ncnt>=4||(lowercnt>=4&&uppercnt>=4))return true;

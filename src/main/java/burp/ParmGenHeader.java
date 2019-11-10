@@ -15,9 +15,11 @@ import java.util.ListIterator;
  * @author daike
  */
 public class ParmGenHeader {
-    private String name;
-    private ArrayList<ParmGenBeen> values = null;
-    private String key_uppername;
+    private String name;//header name
+    private ArrayList<ParmGenBeen> values = null;//multiple same header name  which has different values header list.
+                                                 //ex  Cookie: token=1234 <- been.i = 3
+                                                 //    Cookie: goo=tokyo <- been.i = 4
+    private String key_uppername;// uppercase header name
  
     
     ParmGenHeader(int _i, String _n, String _v){

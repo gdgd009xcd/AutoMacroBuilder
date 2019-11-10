@@ -69,7 +69,33 @@ class ParseHTTPHeaders {
         
 	String message;// when update method(Ex. setXXX) is called, then this value must set to null;
 	private boolean isrequest;// == true - request, false - response
-
+        
+        HeaderPattern[] headerpatterns = {
+            // Authorization: Bearer token68
+            //         token68: alpha,digit, "-._~+/", "=" (RFC 6750 2.1 base64token )
+            new HeaderPattern("Authorization",
+                    // String.format("xxxx (Bearer) %s xxxx", tokenvalue) 
+            "[aA][uU][tT][hH][oO][rR][iI][zZ][aA][tT][iI][oO][nN]:[\\r\\n\\t ]*([bB][eE][aA][rR][eE][rR])[\\r\\n\\t ]*%s(?:[\\r\\n\\t ])*",
+                    // String.format("xxxx %s (value) xxxx", tokenvalue)
+            "[aA][uU][tT][hH][oO][rR][iI][zZ][aA][tT][iI][oO][nN]:[\\r\\n\\t ]*%s[\\r\\n\\t ]*([a-zA-Z0-9\\-\\._~\\+/]+\\=*)(?:[\\r\\n\\t ])*"),
+            // Cookie: token  =  value
+                // token: any char except ctrls and delimiters「"(" | ")" | "<" | ">" | "@" | "," | ";" | ":" | "\" | <">| "/" | "[" | "]" | "?" | "="| "{" | "}" | SP | HT」
+                // ==[^\cA-\cZ()<>@,;:\\"/[]?={} ]
+                // value: cookie-octet or "cookie-octet" 
+                //        cookie-octet: any char except 「CTL, SP, DQUOTE, ",", ";", "\"」 == [\x21\x23-\x2B\x2D-\x3A\x3C-\x5B\x5D-\x7E]
+                // RFC 6265 4.1.1 Set-Cookie header syntax , 4.2.1 Cookie header syntax
+            new HeaderPattern("Cookie",
+            // String.format("xxxx (name)=%s xxxx", tokenvalue)        
+            "[cC][oO][oO][kK][iI][eE]:[\\r\\n\\t ]*(?:.*;[ ]+)*([^\\cA-\\cZ()<>@,;:\\\\\"/\\[\\]?={} ]+)[\\r\\n\\t ]*=[\\r\\n\\t ]*\"?%s\"?(?:[\\r\\n\\t ]|;)*",
+            // String.format("xxxx %s=(value) xxxx", tokenname)
+            "[cC][oO][oO][kK][iI][eE]:[\\r\\n\\t ]*(?:.*;[ ]+)*%s[\\r\\n\\t ]*=[\\r\\n\\t ]*\"?([\\x21\\x23-\\x2B\\x2D-\\x3A\\x3C-\\x5B\\x5D-\\x7E]+)\"?(?:[\\r\\n\\t ]|;)*"
+            ),
+        
+        
+        };
+        
+        
+        
 	private void init(){
             pageenc = Encode.ISO_8859_1;
             binbody = null;
@@ -120,6 +146,7 @@ class ParseHTTPHeaders {
         }
         
         private void deepcopy(ParseHTTPHeaders pheaders){
+            init();
             valueregex = pheaders.valueregex;
 
             formdataheader = pheaders.formdataheader;
@@ -491,6 +518,10 @@ class ParseHTTPHeaders {
                                                         //set_cookieparams.put(setckey, setclist);
                                                 }
                                                 * ***/
+                                        }else if(nv[0].toLowerCase().startsWith("authorization")){//Authorization header
+                                            if(nv[1].toLowerCase().startsWith("bearer") && nv[1].length()>8){//Authorization: Bearer token68
+                                                //NOP..
+                                            }
                                         }
 
 
@@ -1240,6 +1271,39 @@ class ParseHTTPHeaders {
         
         public List<String> getSetCookieHeaders(){
             return setcookieheaders;
+        }
+        
+        //
+        public ArrayList<HeaderPattern> hasHeaderMatchedValue(String tkval){
+            //
+            ArrayList<HeaderPattern> alist = new ArrayList<>();
+            
+            for(HeaderPattern hpattern: headerpatterns){
+                ParmGenHeader pgh = getParmGenHeader(hpattern.getUpperHeaderName());//get same name header
+                if(pgh!=null){
+                    //Authorization: Bearer token68
+                    // extract token68, then compare it with tkval
+                    ListIterator<ParmGenBeen> it = pgh.getValuesIter();
+                    while(it.hasNext()){
+                        ParmGenBeen bn = it.next();
+                        String headerline = pgh.getName() + ": " + bn.v;
+                        Pattern tkname_pattern = hpattern.getTokenName_RegexPattern(tkval);
+                        Matcher tkname_matcher = tkname_pattern.matcher(headerline);
+                        if(tkname_matcher.find()){
+                            String tokenname = tkname_matcher.group(1);
+                            Pattern tkvalue_pattern = hpattern.getTokenValue_RegexPattern(tokenname);
+                            Matcher tkvalue_matcher = tkvalue_pattern.matcher(headerline);
+                            if(tkvalue_matcher.find()){
+                                String matched_tkvalue = tkvalue_matcher.group(1);
+                                if(matched_tkvalue!=null&&matched_tkvalue.equals(tkval)){
+                                    alist.add(hpattern);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return alist;
         }
 }
 

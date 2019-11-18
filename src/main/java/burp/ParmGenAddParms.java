@@ -127,7 +127,7 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
         ArrayList<ParmGenToken> reqjtklist = reqjdecoder.parseJSON2Token();
         for(ParmGenToken tk: reqjtklist){
             rcnt++;
-            String name = tk.getTokenKey().GetName();
+            String name = tk.getTokenKey().getName();
             String value = tk.getTokenValue().getValue();
             ReqParsedTableModel.addRow(new Object[]{"json", name, value});
         }

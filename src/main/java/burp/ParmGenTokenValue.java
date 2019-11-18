@@ -10,7 +10,7 @@ package burp;
  * @author daike
  */
 public class ParmGenTokenValue {
-    private String url;
+    private String url;//url is LOCATION header's URL "VALUE". It is Not a key value.  LOCATION: http://brah.com/xxx...
     private String value;
     private Boolean b;
     

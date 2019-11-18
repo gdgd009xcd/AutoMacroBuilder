@@ -15,7 +15,7 @@ public class ParmGenJSONDecoder {
         crtparse(jsondata);
     }
     
-    JsonParser crtparse(String jsondata) {
+    private JsonParser crtparse(String jsondata) {
         try{
             parser = Json.createParser(new StringReader(jsondata));
         }catch(Exception e){

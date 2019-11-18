@@ -77,7 +77,8 @@ class ParseHTTPHeaders {
                     // String.format("xxxx (Bearer) %s xxxx", tokenvalue) 
             "[aA][uU][tT][hH][oO][rR][iI][zZ][aA][tT][iI][oO][nN]:[\\r\\n\\t ]*([bB][eE][aA][rR][eE][rR])[\\r\\n\\t ]*%s(?:[\\r\\n\\t ])*",
                     // String.format("xxxx %s (value) xxxx", tokenvalue)
-            "[aA][uU][tT][hH][oO][rR][iI][zZ][aA][tT][iI][oO][nN]:[\\r\\n\\t ]*%s[\\r\\n\\t ]*([a-zA-Z0-9\\-\\._~\\+/]+\\=*)(?:[\\r\\n\\t ])*"),
+            "[aA][uU][tT][hH][oO][rR][iI][zZ][aA][tT][iI][oO][nN]:[\\r\\n\\t ]*%s[\\r\\n\\t ]*([a-zA-Z0-9\\-\\._~\\+/]+\\=*)(?:[\\r\\n\\t ])*",
+            ParmGenRequestTokenKey.RequestParamType.Header, ParmGenRequestTokenKey.RequestParamSubType.Bearer),
             // Cookie: token  =  value
                 // token: any char except ctrls and delimiters「"(" | ")" | "<" | ">" | "@" | "," | ";" | ":" | "\" | <">| "/" | "[" | "]" | "?" | "="| "{" | "}" | SP | HT」
                 // ==[^\cA-\cZ()<>@,;:\\"/[]?={} ]
@@ -88,8 +89,8 @@ class ParseHTTPHeaders {
             // String.format("xxxx (name)=%s xxxx", tokenvalue)        
             "[cC][oO][oO][kK][iI][eE]:[\\r\\n\\t ]*(?:.*;[ ]+)*([^\\cA-\\cZ()<>@,;:\\\\\"/\\[\\]?={} ]+)[\\r\\n\\t ]*=[\\r\\n\\t ]*\"?%s\"?(?:[\\r\\n\\t ]|;)*",
             // String.format("xxxx %s=(value) xxxx", tokenname)
-            "[cC][oO][oO][kK][iI][eE]:[\\r\\n\\t ]*(?:.*;[ ]+)*%s[\\r\\n\\t ]*=[\\r\\n\\t ]*\"?([\\x21\\x23-\\x2B\\x2D-\\x3A\\x3C-\\x5B\\x5D-\\x7E]+)\"?(?:[\\r\\n\\t ]|;)*"
-            ),
+            "[cC][oO][oO][kK][iI][eE]:[\\r\\n\\t ]*(?:.*;[ ]+)*%s[\\r\\n\\t ]*=[\\r\\n\\t ]*\"?([\\x21\\x23-\\x2B\\x2D-\\x3A\\x3C-\\x5B\\x5D-\\x7E]+)\"?(?:[\\r\\n\\t ]|;)*",
+            ParmGenRequestTokenKey.RequestParamType.Header, ParmGenRequestTokenKey.RequestParamSubType.Cookie),
         
         
         };
@@ -1121,11 +1122,17 @@ class ParseHTTPHeaders {
             return false;
         }
         
-        public ParmGenToken getBodyToken(String pname){
+        protected ParmGenRequestToken getRequestBodyToken(String pname){
             if(getBodyParams()!=null){
         	for(String[] pair: bodyparams){//bodyparams
         		if(isEqualParam(pname, pair[0])){
-                            return new ParmGenToken(AppValue.TokenTypeNames.DEFAULT, "", pair[0], pair[1], true,0);
+                            ParmGenRequestTokenKey.RequestParamType rptype = ParmGenRequestTokenKey.RequestParamType.X_www_form_urlencoded;
+                            if(isFormData()){
+                                rptype = ParmGenRequestTokenKey.RequestParamType.Form_data;
+                            }
+                            //ParmGenRequestToken(ParmGenRequestTokenKey.RequestParamType _rptype, ParmGenRequestTokenKey.RequestParamSubType _subtype,String _name, String _value, int _fcnt)
+                            return new ParmGenRequestToken(rptype,
+                            ParmGenRequestTokenKey.RequestParamSubType.Default, pair[0], pair[1], 0);
                         }
         	}
             }
@@ -1151,11 +1158,13 @@ class ParseHTTPHeaders {
             return false;
         }
         
-        public ParmGenToken getQueryToken(String pname){
+        protected ParmGenRequestToken getRequestQueryToken(String pname){
             if(queryparams!=null){
         	for(String[] pair: queryparams){//queryparams
         		if(isEqualParam(pname, pair[0])){
-                            return new ParmGenToken(AppValue.TokenTypeNames.DEFAULT, "", pair[0], pair[1], true,0);
+                            //ParmGenRequestToken(ParmGenRequestTokenKey.RequestParamType _rptype, ParmGenRequestTokenKey.RequestParamSubType _subtype,String _name, String _value, int _fcnt)
+                            return new ParmGenRequestToken(ParmGenRequestTokenKey.RequestParamType.Query,
+                            ParmGenRequestTokenKey.RequestParamSubType.Default, pair[0], pair[1], 0);
                         }
         	}
             }
@@ -1277,26 +1286,38 @@ class ParseHTTPHeaders {
         public ArrayList<HeaderPattern> hasHeaderMatchedValue(String tkval){
             //
             ArrayList<HeaderPattern> alist = new ArrayList<>();
+            HashMap<Integer, Integer> sameTokens = new HashMap<>();
             
             for(HeaderPattern hpattern: headerpatterns){
                 ParmGenHeader pgh = getParmGenHeader(hpattern.getUpperHeaderName());//get same name header
                 if(pgh!=null){
+                    
                     //Authorization: Bearer token68
                     // extract token68, then compare it with tkval
                     ListIterator<ParmGenBeen> it = pgh.getValuesIter();
                     while(it.hasNext()){
+                        HeaderPattern hpattern_copy = new HeaderPattern(hpattern);
                         ParmGenBeen bn = it.next();
                         String headerline = pgh.getName() + ": " + bn.v;
-                        Pattern tkname_pattern = hpattern.getTokenName_RegexPattern(tkval);
+                        Pattern tkname_pattern = hpattern_copy.getTokenName_RegexPattern(tkval);
                         Matcher tkname_matcher = tkname_pattern.matcher(headerline);
                         if(tkname_matcher.find()){
                             String tokenname = tkname_matcher.group(1);
-                            Pattern tkvalue_pattern = hpattern.getTokenValue_RegexPattern(tokenname);
+                            hpattern_copy.setTkName(tokenname);
+                            Pattern tkvalue_pattern = hpattern_copy.getTokenValue_RegexPattern(tokenname);
                             Matcher tkvalue_matcher = tkvalue_pattern.matcher(headerline);
                             if(tkvalue_matcher.find()){
                                 String matched_tkvalue = tkvalue_matcher.group(1);
                                 if(matched_tkvalue!=null&&matched_tkvalue.equals(tkval)){
-                                    alist.add(hpattern);
+                                    Integer fcnt_obj = sameTokens.get(hpattern_copy.getSameTokenHash());
+                                    int fcnt=0;
+                                    if(fcnt_obj!=null){
+                                        fcnt = fcnt_obj;
+                                        fcnt++;
+                                    }
+                                    sameTokens.put(hpattern_copy.getSameTokenHash(), fcnt);
+                                    hpattern_copy.setFcnt(fcnt);
+                                    alist.add(hpattern_copy);
                                 }
                             }
                         }

@@ -28,7 +28,7 @@ public class ParmGenTokenKey {
     	fcnt = tk.fcnt;
     }
     
-    public String GetName(){
+    public String getName(){
         return name;
     }
     
@@ -36,11 +36,11 @@ public class ParmGenTokenKey {
         return tokentype;
     }
     
-    public int GetFcnt(){
+    public int getFcnt(){
         return fcnt;
     }
     
-    public void SetTokenType(AppValue.TokenTypeNames _tktype){
+    public void setTokenType(AppValue.TokenTypeNames _tktype){
     	tokentype = _tktype;
     }
     
@@ -49,7 +49,8 @@ public class ParmGenTokenKey {
     public boolean equals(Object obj) {
         if (obj instanceof ParmGenTokenKey) {
             ParmGenTokenKey key = (ParmGenTokenKey) obj;
-            return this.tokentype == key.tokentype && this.name.toLowerCase().equals(key.name.toLowerCase()) && this.fcnt == key.fcnt;
+            //name is case-sensitive.
+            return this.tokentype == key.tokentype && this.name.equals(key.name) && this.fcnt == key.fcnt;
         } else {
             return false;
         }
@@ -57,6 +58,7 @@ public class ParmGenTokenKey {
 
     @Override
     public int hashCode() {
-        return Objects.hash(tokentype, name.toLowerCase(),fcnt);
+        //name is case-sensitive.
+        return Objects.hash(tokentype, name,fcnt);
     }
 }

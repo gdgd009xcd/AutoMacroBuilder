@@ -226,7 +226,7 @@ public class ParmGenParser {
 
                         ParmGenTokenKey dkey = new ParmGenTokenKey(tkey);//copy
 
-                    	dkey.SetTokenType(AppValue.TokenTypeNames.DEFAULT);
+                    	dkey.setTokenType(AppValue.TokenTypeNames.DEFAULT);
 
                     	defmap.put(dkey, tkn.getTokenValue());
                     }

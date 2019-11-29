@@ -462,9 +462,9 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
 
         jLabel2.setText(bundle.getString("MacroBuilderUI.マクロリクエスト一覧.text")); // NOI18N
 
-        jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Cookies"));
+        jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getBundle("burp/Bundle").getString("MacroBuilderUI.TakeOverCache.text"))); // NOI18N
 
-        MBCookieFromJar.setText(bundle.getString("MacroBuilderUI.開始時COOKIE.JARから引き継ぐ.text")); // NOI18N
+        MBCookieFromJar.setText(bundle.getString("MacroBuilderUI.TakeOverCacheCheckBox.text")); // NOI18N
         MBCookieFromJar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 MBCookieFromJarActionPerformed(evt);
@@ -491,6 +491,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder("Tracking Params"));
 
         MBsettokenfromcache.setText(bundle.getString("MacroBuilderUI.開始時TOKENをキャッシュから引き継ぐ.text")); // NOI18N
+        MBsettokenfromcache.setEnabled(false);
         MBsettokenfromcache.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 MBsettokenfromcacheActionPerformed(evt);

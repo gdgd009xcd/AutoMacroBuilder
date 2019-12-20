@@ -127,6 +127,7 @@ public class ParmGenMacroTrace {
     void clear(){
         tidlist = null;
         locked = false;
+        macroEnded(true);
     	rlist = null;
     	originalrlist = null;
     	// REMOVE set_cookienames = null;

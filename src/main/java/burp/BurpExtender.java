@@ -168,12 +168,12 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                                             messageInfo.setResponse(pmt.getPostMacroResponse());
                                         }
                                         mbr.updateCurrentReqRes();
-                                        pmt.nullState();
+                                        pmt.macroEnded();
                                         percent = pmt.getScanQuePercentage();
                                         break;
                                     case ParmGenMacroTrace.PMT_POSTMACRO_NULL:
                                         ParmVars.plog.debuglog(0, "====postmacro response NULL========");
-                                        pmt.nullState();
+                                        pmt.macroEnded();
                                         percent = pmt.getScanQuePercentage();
                                     default:
                                         

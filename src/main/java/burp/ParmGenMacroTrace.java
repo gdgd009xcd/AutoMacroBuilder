@@ -13,6 +13,7 @@ import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +25,8 @@ import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
 import java.util.Base64;
+import java.util.Queue;
+import java.util.Stack;
 
 /**
  *
@@ -79,6 +82,9 @@ public class ParmGenMacroTrace {
     
     private ParmGenCookieManager cookieMan = null;//cookie manager
     
+    private boolean locked = false;
+    private Queue<Long> tidlist = null;
+    
     String state_debugprint(){
         String msg = "PMT_UNKNOWN";
         switch(state){
@@ -119,6 +125,8 @@ public class ParmGenMacroTrace {
     // setter
     //
     void clear(){
+        tidlist = null;
+        locked = false;
     	rlist = null;
     	originalrlist = null;
     	// REMOVE set_cookienames = null;
@@ -307,6 +315,8 @@ public class ParmGenMacroTrace {
     
     //１）前処理マクロ開始
     void  startBeforePreMacro(){
+        macroStarted();
+        
         if(waittimer>0){
             TWaiter = new ParmGenTWait(waittimer);
         }else{
@@ -656,7 +666,53 @@ public class ParmGenMacroTrace {
 
    }
 
-   void nullState(){
+   void macroStarted(){
+       ParmVars.plog.debuglog(0, "<--Macro Started.-->");
+       macroLock();
+   }
+   
+   void macroEnded(){
+       nullState();
+       macroUnLock();
+       ParmVars.plog.debuglog(0, "<--Macro Complete Ended.-->");
+   }
+   
+   public synchronized void macroLock() {
+       long tid = Thread.currentThread().getId();
+       if(tidlist==null){
+           tidlist = new ArrayDeque<>();
+       }
+       tidlist.add(tid);
+        ParmVars.plog.debuglog(0, "macroLock Start. tid=" + tid);
+        while (locked == true) {
+            try {
+                ParmVars.plog.debuglog(0, "macroLock wait In.  tid=" + tid);
+                wait();  //availableがtrueの間、wait
+                ParmVars.plog.debuglog(0, "macroLock wait Out. tid=" + tid);
+            } catch (InterruptedException e) {
+            }
+        }
+        //workAreaに値をセットする処理
+        locked = true;
+        
+        ParmVars.plog.debuglog(0, "macroLock  Done. tid=" + tid);
+        
+    }
+   
+   public synchronized void macroUnLock(){
+       //lockedにfalseを代入した後wait状態のスレッドを解除
+       locked = false;
+       notifyAll();
+       Long tid = new Long(-1);
+       try{
+            tid = tidlist.remove();
+       }catch(Exception e){
+           
+       }
+       ParmVars.plog.debuglog(0, "macroUnLock Done. tid=" + tid);
+   }
+   
+   private void nullState(){
        state = PMT_POSTMACRO_NULL;
        stepno = -1;
    }

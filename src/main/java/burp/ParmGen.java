@@ -2407,7 +2407,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
         //if content_type/subtype matches excludeMimeType regex then skip below codes..
         if(!ParmVars.isMimeTypeExcluded(res_contentMimeType)){
             //### skip start
-            if ( url != null ){
+            if ( url != null && parmcsv!=null){
 
                 AppParmsIni pini = null;
                 ListIterator<AppParmsIni> it = parmcsv.listIterator();

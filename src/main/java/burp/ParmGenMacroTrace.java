@@ -671,9 +671,12 @@ public class ParmGenMacroTrace {
        macroLock();
    }
    
-   void macroEnded(){
+   void macroEnded(boolean clrtidlist){
        nullState();
        macroUnLock();
+       if(clrtidlist){
+           tidlist = null;
+       }
        ParmVars.plog.debuglog(0, "<--Macro Complete Ended.-->");
    }
    
@@ -705,7 +708,9 @@ public class ParmGenMacroTrace {
        notifyAll();
        Long tid = new Long(-1);
        try{
-            tid = tidlist.remove();
+           if(tidlist!=null){
+                tid = tidlist.remove();
+           }
        }catch(Exception e){
            
        }

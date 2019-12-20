@@ -130,6 +130,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                             }
 
                         }catch(Exception e){
+                            pmt.macroEnded(true);//something wrong happened. 
                             ParmVars.plog.debuglog(0, "RequestRun Exception");
                             ParmVars.plog.printException(e);
                         }
@@ -168,12 +169,12 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                                             messageInfo.setResponse(pmt.getPostMacroResponse());
                                         }
                                         mbr.updateCurrentReqRes();
-                                        pmt.macroEnded();
+                                        pmt.macroEnded(false);
                                         percent = pmt.getScanQuePercentage();
                                         break;
                                     case ParmGenMacroTrace.PMT_POSTMACRO_NULL:
                                         ParmVars.plog.debuglog(0, "====postmacro response NULL========");
-                                        pmt.macroEnded();
+                                        pmt.macroEnded(false);
                                         percent = pmt.getScanQuePercentage();
                                     default:
                                         
@@ -184,6 +185,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                                 }
                             }
                         } catch (Exception ex) {
+                            pmt.macroEnded(true);//something wrong happened. 
                             Logger.getLogger(BurpExtender.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }

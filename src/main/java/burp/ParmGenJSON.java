@@ -23,13 +23,18 @@ import java.util.Base64;
  * @author daike
  */
 public class ParmGenJSON {
+    //--loaded values
     ArrayList<AppParmsIni> rlist;
     ArrayList<PRequestResponse> ReqResList;
+    int currentrequest;
+    //---------------
+    
+    
     AppParmsIni aparms;
     AppValue apv;
     String exerr = null;
     int row = 0;
-    int currentrequest;
+    
     //PRequestResponse params
     String PRequest64;
     String PResponse64;
@@ -170,7 +175,7 @@ public class ParmGenJSON {
                     case START_OBJECT:
                         if(current!=null&&current.toUpperCase().equals("APPPARMSINI_LIST")){
                             //ParmVars.plog.debuglog(0, "START_OBJECT level1 name:" + current);
-                            aparms = new AppParmsIni();
+                            aparms = new AppParmsIni();//add new record
                             aparms.parmlist = new ArrayList<AppValue>();
                         }else if(current!=null&&current.toUpperCase().equals("PREQUESTRESPONSE")){
                             initReqRes();
@@ -191,8 +196,8 @@ public class ParmGenJSON {
                                         aparms.frl = new FileReadLine(decodedname, true);
                                     }
 
-                                    aparms.setRowAndCntFile(row);row++;
-                                    aparms.crtGenFormat(true);
+                                    aparms.setRow(row);row++;
+                                    //aparms.crtGenFormat(true);
                                     rlist.add(aparms);
                                 }
                                 aparms = null;
@@ -242,6 +247,8 @@ public class ParmGenJSON {
                                     }
                                 }
                                 aparms.setSetToStep(stepno);
+                            }else if(name.toUpperCase().equals("RELATIVECNTFILENAME")){
+                                aparms.setRelativeCntFileName(GetString(ev, value, ""));
                             }
                         }else if(current!=null&&current.toUpperCase().equals("PREQUESTRESPONSE")){
                             if(name.toUpperCase().equals("PREQUEST")){

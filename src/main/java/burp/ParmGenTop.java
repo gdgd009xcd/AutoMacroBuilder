@@ -173,6 +173,11 @@ public class ParmGenTop extends javax.swing.JFrame {
 
     }
     
+    /**
+     * if the parameters have not been saved, then save them.
+     * 
+     * @param dialogparent 
+     */
     public void VisibleWhenJSONSaved(Component dialogparent){
         if(!ParmVars.isSaved()){
             File cfile = new File(ParmVars.parmfile);
@@ -497,7 +502,7 @@ public class ParmGenTop extends javax.swing.JFrame {
             //reset ParmGen
             ParmGen pgen = new ParmGen(pmt, null);
 
-            pgen.reset();
+            //pgen.reset();
             pgen.disposeTop();
         }
 

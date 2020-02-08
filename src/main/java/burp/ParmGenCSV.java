@@ -31,7 +31,7 @@ public class ParmGenCSV {
     List<AppParmsIni> records;
     Iterator<AppParmsIni> it;
     ParmGenWriteFile pfile;
-    public static final String JSONVERSION = "1.0";//OUTPUT JSON VERSION
+    public static final String JSONVERSION = "1.1";//OUTPUT JSON VERSION
     public static ArrayList<PRequestResponse> selected_messages;
     public static ArrayList<PRequestResponse> proxy_messages;
 
@@ -69,27 +69,29 @@ public class ParmGenCSV {
         return records;
     }
     
-    public void add(String URL, String initval, String valtype, String incval, ArrayList<AppValue> apps){
+    /*public void add(String URL, String initval, String valtype, String incval, ArrayList<AppValue> apps){
         int rowcnt = records.size();
         if(rowcnt>0){
                 rowcnt = records.get(records.size()-1).getRow() + 1;
         }
         records.add(new AppParmsIni( URL, initval, valtype, incval, apps, rowcnt));
-    }
+    }*/
 
     public void add(AppParmsIni pini){
         int rowcnt = records.size();
         if(rowcnt>0){
                 rowcnt = records.get(records.size()-1).getRow() + 1;
         }
-        pini.setRowAndCntFile(rowcnt);
+        pini.setRow(rowcnt);//add new record.
         records.add(pini);
     }
 
+    /*
     public void mod(int i, String URL, String initval, String valtype, String incval, ArrayList<AppValue> apps){
         int rowcnt = records.get(i).getRow();
         records.set(i, new AppParmsIni(URL, initval, valtype, incval, apps, rowcnt));
     }
+*/
 
     public void mod(int i, AppParmsIni pini){
         records.set(i, pini);
@@ -199,6 +201,7 @@ public class ParmGenCSV {
             AppParmsIni_prec.add("pause", prec.pause);
             AppParmsIni_prec.add("TrackFromStep", prec.getTrackFromStep());
             AppParmsIni_prec.add("SetToStep", prec.getSetToStep());
+            AppParmsIni_prec.add("relativecntfilename", prec.getRelativeCntFileName());
 
             JsonArrayBuilder AppValue_List =Json.createArrayBuilder();
 

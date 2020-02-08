@@ -1065,7 +1065,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
 
                     if (requesttokenlist.size()>0) {//tracking parameters are generated from requesttokenlist.
                         //パラメータ生成
-                        AppParmsIni aparms = new AppParmsIni();
+                        AppParmsIni aparms = new AppParmsIni();//add new record
                         //request URL
                         //String TargetURLRegex = ".*" + pqrs.request.getPath() + ".*";
                         String TargetURLRegex = ".*";//SetTo any 
@@ -1199,9 +1199,9 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                             apv.setEnabled(_RToken.isEnabled());
                             aparms.parmlist.add(apv);
                         }
-                        aparms.setRowAndCntFile(row);
+                        aparms.setRow(row);
                         row++;
-                        aparms.crtGenFormat(true);
+                        //aparms.crtGenFormat(true);
                         newparms.add(aparms);
                     }
 
@@ -1370,10 +1370,10 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
              //csv.save();
              ParmGenCSV csv = new ParmGenCSV(null, pmt);
              csv.jsonsave();
-             if(filenamechanged){//if filename changed then reload json
+             /*if(filenamechanged){//if filename changed then reload json
                 ParmGen pgen = new ParmGen(pmt, null);
                 pgen.reset();//再読み込み
-             }
+             }*/
              
             
         }

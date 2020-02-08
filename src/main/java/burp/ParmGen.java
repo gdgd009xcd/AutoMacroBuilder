@@ -1,11 +1,8 @@
 package burp;
 //
-// AppScan用入力パラメータジェネレータ
+// 入力パラメータジェネレータ
 //
-//　仕様：設定ファイル(AppParmGen.csv)に指定したＵＲＬの指定したパラメータに指定した形式で
-//　　　　実行毎に異なる値（乱数または昇順の数値）を設定する。
-//
-//
+//　
 //
 //
 
@@ -44,6 +41,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.UUID;
 
 
 
@@ -440,7 +438,7 @@ class AppValue {
 
 	public String tamattack;
 	public int tamadvance;
-	public int payloadposition;//I_APPEND, I_INSERT, I_REPLACE
+
 	public boolean urlencode;// URLencodeする・しない
 	public ResEncodeTypes resencodetype = ResEncodeTypes.RAW;//追跡元のエンコードタイプ json/raw/urlencode
 	public enum ResEncodeTypes {
@@ -462,7 +460,10 @@ class AppValue {
 	public static final int V_REQTRACKPATH = 8;//password (request path) tracking
 	public static final int C_NOCOUNT = 16;
 	public static final int C_VTYPE = 15;
-	public static String[] ctypestr = null;
+	public static String[] ctypestr =  {
+                    //V_QUERY ==1
+                  "", "query", "body", "header", "path", "responsebody", "requestbody", "requestquery", "requestpath",null,null,null,null,null,null,null //0-15
+        };
 
 	public static final int I_APPEND = 0;
 	public static final int I_INSERT = 1;
@@ -484,13 +485,6 @@ class AppValue {
             trackkey = -1;
             resFetchedValue = null;
             enabled = true;
-            if(ctypestr==null){
-                ctypestr = new String[] {
-                    //V_QUERY ==1
-                  "", "query", "body", "header", "path", "responsebody", "requestbody", "requestquery", "requestpath",null,null,null,null,null,null,null //0-15
-                };
-                payloadposition = I_APPEND;
-            }
             tokentype = TokenTypeNames.INPUT;
         }
 
@@ -556,19 +550,7 @@ class AppValue {
             tokentype = parseTokenTypeName(_tokentypename);
         }
 
-        AppValue(String _Type, boolean _disabled,  String _value,String _name,
-                String _tamattack, int _tamadvance, int _payloadposition,  boolean _urlenc){
-            initctype();
-            setValPart(_Type);
-            setEnabled(!_disabled);//NOT
-            token = _name;
-            //value = _value;
-            setVal(_value);
-            tamattack = _tamattack;
-            tamadvance = _tamadvance;
-            payloadposition = _payloadposition;
-            urlencode = _urlenc;
-        }
+        
 
         public void setTrackKey(int k){
             trackkey = k;
@@ -764,7 +746,7 @@ class AppValue {
             return getValPart(resPartType);
         }
 
-        int parseValPartType(String _valtype){
+        public static int parseValPartType(String _valtype){
             int _valparttype = 0;
             String []ivals = _valtype.split(":");
             String valtypewithflags = ivals[0];
@@ -1199,7 +1181,7 @@ class AppParmsIni {
 	FileReadLine frl = null;
         String csvname = null;
 	String exerr = "";
-	String cntfile = "";
+	private String relativecntfile = "";//filename only. no contain directory.
 	String cstrcnt = null;
 	int rndval = 1;
 	public int row;
@@ -1410,23 +1392,15 @@ class AppParmsIni {
             return urlregex;
         }
 
-        AppParmsIni(String _URL, String _initval, String _type, String _len, ArrayList<AppValue> _apps, int _row){
-            setUrl(_URL);
-            inival = Integer.parseInt(_initval);
-            type = _type;
-            len = Integer.parseInt(_len);
-            setRowAndCntFile(_row);
-            parmlist = _apps;
-            crtGenFormat(false);
-            rewindAppValues();
-
-
-        }
+        // --------------constructors begin----------------
+        
 
         AppParmsIni(){
+            setCntFileNameNew();
             rewindAppValues();
         }
-
+        // --------------constructors end----------------
+        
         public String getTypeVal(){
             switch(typeval){
                 case T_NUMBER:
@@ -1445,36 +1419,92 @@ class AppParmsIni {
             return "";
         }
 
-        void setCntFileName(){
-            if(cntfile==null||cntfile.length()==0){
-            	File cfile = new File(ParmVars.parmfile);
-                String dirname = cfile.getParent();
-                String filename = cfile.getName();
-                
-                int lastpos = filename.lastIndexOf(".");
-                int slen = filename.length();
-                String name = filename;
-                if(lastpos>0&& slen > lastpos){
-                    String prefix = filename.substring(0, lastpos);
-                    String suffix = filename.substring(lastpos+1);
-                    name = prefix;
-                }
-                cntfile = dirname + ParmVars.fileSep + name + "_" +Integer.toString(row) + ".txt";
+        private String getOldCntFileName(){//20200206 deprecated. 2021/1 will be deleted.
+            String fname = null;
+            File cfile = new File(ParmVars.parmfile);
+            String dirname = cfile.getParent();
+            String filename = cfile.getName();
+
+            int lastpos = filename.lastIndexOf(".");
+            int slen = filename.length();
+            String name = filename;
+            if(lastpos>0&& slen > lastpos){
+                String prefix = filename.substring(0, lastpos);
+                String suffix = filename.substring(lastpos+1);
+                name = prefix;
+            }
+            fname = dirname + ParmVars.fileSep + name + "_" +Integer.toString(row) + ".txt";
+            return fname;
+        }
+
+        private String getCurrentSaveDir(){
+            File cfile = new File(ParmVars.parmfile);
+            String dirname = cfile.getParent();
+            return dirname;
+        }
+        
+        private String crtRandomFileName(){
+            String fname = null;
+            
+            UUID uuid = UUID.randomUUID();
+            String uustr = uuid.toString();
+            fname =  uustr + ".txt";
+            return fname;
+        }
+        
+        private String getCntFullPathName(){
+            String fname = null;
+            File cfile = new File(ParmVars.parmfile);
+            String dirname = getCurrentSaveDir();
+            String filename = cfile.getName();
+
+            int lastpos = filename.lastIndexOf(".");
+            int slen = filename.length();
+            String name = filename;
+            if(lastpos>0&& slen > lastpos){
+                String prefix = filename.substring(0, lastpos);
+                String suffix = filename.substring(lastpos+1);
+                name = prefix;
+            }
+            
+            fname = dirname + ParmVars.fileSep + name + "_" + relativecntfile;
+            return fname;
+        }
+        
+        private void setCntFileNameNew(){
+            if(relativecntfile==null||relativecntfile.length()==0){
+            	relativecntfile = crtRandomFileName();
             }
         }
+        
+        public void setRelativeCntFileName(String f){
+            relativecntfile = f;
+        }
+        
+        public String getRelativeCntFileName(){
+            return relativecntfile;
+        }
+        
 
-        void setRowAndCntFile(int _r){
+        /*
+        void setRowAndCntFile(int _r){//deprecated. 2021/1 will be deleted.
             row = _r;
             setCntFileName();
+        }*/
+        
+        void setRow(int r){
+            row = r;
         }
 
-	void crtGenFormat(Boolean lastEntryNoCount){
+        // when entry AppParmIni/AppValue modified, accidentally last AppValue entry NOCOUNT flag maybe be set. 
+        // so it must be clear NOCOUNT.
+	void clearLastAppValueNOCOUNT(){
 
 		if ( parmlist != null){
 			int plast = parmlist.size() - 1;
 			if ( plast >= 0 ){
 				AppValue av = (AppValue)parmlist.get(plast);
-                                if(!lastEntryNoCount)av.clearNoCount();
+                                av.clearNoCount();
 				parmlist.set(plast, av);
 			}
 		}
@@ -1536,7 +1566,7 @@ class AppParmsIni {
                 try {
 
 
-			FileReader fr = new FileReader(cntfile);
+			FileReader fr = new FileReader(getCntFullPathName());
 			BufferedReader br = new BufferedReader(fr);
 			String rdata;
 			String alldata = "";
@@ -1551,7 +1581,7 @@ class AppParmsIni {
 
 
 		} catch(Exception e) {
-			ParmVars.plog.printlog("read file:" + cntfile + " " + e.toString(), true);
+			ParmVars.plog.printlog("read file:" + getCntFullPathName() + " " + e.toString(), true);
                         cnt = inival;
 		}
 
@@ -1569,12 +1599,12 @@ class AppParmsIni {
 
 		if ( (_valparttype & AppValue.C_NOCOUNT ) !=  AppValue.C_NOCOUNT){
                     try {
-                            FileWriter filewriter = new FileWriter(cntfile, false);
+                            FileWriter filewriter = new FileWriter(getCntFullPathName(), false);
                             String s1=String.valueOf(ncnt);
                             filewriter.write(s1);
                             filewriter.close();
                     }catch (Exception e){
-                            ParmVars.plog.printlog("write file:" + cntfile + " " + e.toString(), true);
+                            ParmVars.plog.printlog("write file:" + getCntFullPathName() + " " + e.toString(), true);
                             throw new RuntimeException(e.toString());
                     }
                 }
@@ -1584,8 +1614,8 @@ class AppParmsIni {
         int updateCounter(int i){
             if (i >=0){
                 try {
-                    ParmVars.plog.debuglog(1, "cntfile:" + cntfile);
-                            FileWriter filewriter = new FileWriter(cntfile, false);
+                    ParmVars.plog.debuglog(1, "cntfile:" + getCntFullPathName());
+                            FileWriter filewriter = new FileWriter(getCntFullPathName(), false);
                             String s1=String.valueOf(i);
                             filewriter.write(s1);
                             filewriter.close();
@@ -1674,14 +1704,6 @@ class AppParmsIni {
                         app.getResValPart(),
                         Integer.toString(app.resRegexPos),
                     app.token, app.urlencode, app.fromStepNo==-1?"*":Integer.toString(app.fromStepNo), app.toStepNo==ParmVars.TOSTEPANY?"*":Integer.toString(app.toStepNo), app.tokentype.name()};
-                case T_TAMPER:
-                    return new Object[] {app.getValPart(), (app.isEnabled()?false:true), app.getVal(),
-app.getValPart(), (app.isEnabled()?false:true), app.getVal(),
-                        app.token,
-                        app.tamattack,
-                        app.tamadvance,
-                        app.getPayloadPositionName(app.payloadposition),
-                    app.urlencode};
                 default:
                     break;
                 }
@@ -1695,7 +1717,6 @@ app.getValPart(), (app.isEnabled()?false:true), app.getVal(),
 class ParmGen {
 
 	public static List<AppParmsIni> parmcsv = null;
-        public static ArrayList<AppParmsIni> parmjson = null;
 
         private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
 
@@ -1718,7 +1739,7 @@ class ParmGen {
         //
         //
         //
-        ArrayList<AppParmsIni> loadJSON(){
+        private ArrayList<AppParmsIni> loadJSON(){
         	//
         	int arraylevel = 0;
         	ParmVars.plog.debuglog(0, "loadJSON called.");
@@ -2187,7 +2208,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 	}
 
 
-	void initMain(List<AppParmsIni> _newparmcsv){
+	private void initMain(List<AppParmsIni> _newparmcsv){
 		//main start.
 		// csv load
 		// parmcsvはstatic
@@ -2201,17 +2222,16 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                         
                         if(parmcsv==null)return;
                         //colmax計算
-                        
-			                   
-			
+
 		}
 	}
 
 	private void nullset(){
-		 parmcsv = null;
+            parmcsv = null;
 	}
         
-        public void reset(){
+        public void reset(){// 20200206 this is executed when json load 
+            // at MacruBuilderUI 1304 , ParmGenTop 614
             nullset();
             initMain(null);
         }

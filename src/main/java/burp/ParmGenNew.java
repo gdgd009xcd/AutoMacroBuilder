@@ -88,7 +88,7 @@ public class ParmGenNew extends javax.swing.JFrame implements InterfaceRegex, in
 
         if(_rec!=null){
             rec = _rec;
-            rec.setCntFileName();
+            //rec.setCntFileName();
             addrec = null;
             switch(rec.getType()){
                 case AppParmsIni.T_NUMBER:
@@ -111,8 +111,8 @@ public class ParmGenNew extends javax.swing.JFrame implements InterfaceRegex, in
             CSVrewind.setSelected(false);
             NumberRewind.setSelected(false);
         }else{
-            rec = new AppParmsIni();
-            rec.setRowAndCntFile(parentwin.getRowSize());
+            rec = new AppParmsIni();//add new record
+            rec.setRow(parentwin.getRowSize());
             addrec = rec;
             CSVrewind.setSelected(true);
             NumberRewind.setSelected(true);
@@ -1738,12 +1738,14 @@ private void setAppParmsIni(){
 
            if(app!=null)rec.addAppValue(app);
         }
-        Boolean lastEntryNocount = true;
+        
         if(addrec==null){
             //更新
-            lastEntryNocount = false;
+            rec.clearLastAppValueNOCOUNT();
         }
-        rec.crtGenFormat(lastEntryNocount);
+        
+        //rec.crtGenFormat(lastEntryNocount);
+        
         parentwin.updateRowDisp(addrec);
         
         dispose();

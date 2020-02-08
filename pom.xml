@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>burp</groupId>
     <artifactId>AutoMacroBuilder</artifactId>
-    <version>1.20</version>
+    <version>1.21</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -44,6 +44,12 @@
       <scope>provided</scope>
     </dependency>
   
+<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+<dependency>
+    <groupId>com.google.code.gson</groupId>
+    <artifactId>gson</artifactId>
+    <version>2.8.6</version>
+</dependency>
 
 
 
@@ -53,6 +59,7 @@
     <plugins>
         <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.1</version>
         <executions>
             <execution>
                 <phase>install</phase>
@@ -61,7 +68,7 @@
                 </goals>
                 <configuration>
                     <outputDirectory>${project.build.directory}/</outputDirectory>
-                    <excludeArtifactIds>javax.json-api,javax.json,burp-extender-api</excludeArtifactIds>
+                    <excludeArtifactIds>javax.json-api,javax.json,burp-extender-api,jsoup,gson</excludeArtifactIds>
 
                 </configuration>
             </execution>
@@ -69,6 +76,7 @@
     </plugin>
     <plugin>
     <artifactId>maven-resources-plugin</artifactId>
+    <version>2.5</version>
     <executions>
       <execution>
         <id>copy-resources</id>
@@ -105,7 +113,7 @@
     <configuration>
         <finalName>test</finalName>
         <descriptors>
-            <descriptor>customassem.xml</descriptor>  <!-- assembly 記述子を指定 -->
+            <descriptor>customassem.xml</descriptor>  <!-- specify custom assembly descriptor -->
           </descriptors>
         <archive>
             <manifest>
@@ -116,7 +124,7 @@
     
     <executions>
         <execution>
-            <!-- idタグは任意の文字列であれば何でもよい -->
+            <!-- id tag is any unique string. -->
             <id>make-assembly</id>
             <phase>package</phase>
             <goals>
@@ -127,4 +135,15 @@
 </plugin>
     </plugins>
 </build>
+<repositories>
+    <repository>
+        <id>central</id>
+        <name>Central Repository</name>
+        <url>https://repo.maven.apache.org/maven2</url>
+        <layout>default</layout>
+        <snapshots>
+            <enabled>false</enabled>
+        </snapshots>
+    </repository>
+</repositories>
 </project>

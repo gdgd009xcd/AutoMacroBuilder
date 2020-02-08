@@ -10,6 +10,9 @@
       <useProjectArtifact>true</useProjectArtifact>
       <unpack>true</unpack>
       <scope>runtime</scope>
+      <excludes>
+          <exclude>*:gson</exclude>
+      </excludes>
     </dependencySet>
     
     </dependencySets>

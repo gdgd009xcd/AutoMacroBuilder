@@ -4,6 +4,12 @@
  */
 package burp;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -358,4 +364,28 @@ public class ParmGenUtil {
             }
             return null;
         }
+        
+        /**
+         * from ZapProxy's constant.java..
+         * @param targetFile
+         * @param sourceFilePath
+         * @param fallbackResource
+         * @throws IOException 
+         */
+        public static void copyFileToHome(
+            Path targetFile, String sourceFilePath, String fallbackResource) throws IOException {
+        Path defaultConfig = Paths.get(System.getProperty("user.home"),".ZAP" ,sourceFilePath);// ~user/.ZAP/sourceFilePath
+        Files.createDirectories(targetFile.getParent());
+        if (Files.exists(defaultConfig)) {
+            Files.copy(defaultConfig, targetFile, StandardCopyOption.REPLACE_EXISTING);
+        } else {
+            try (InputStream is = ParmGenUtil.class.getResourceAsStream(fallbackResource)) {
+                if (is == null) {
+                    throw new IOException("Bundled resource not found: " + fallbackResource);
+                }
+                
+                Files.copy(is, targetFile, StandardCopyOption.REPLACE_EXISTING);
+            }
+        }
+    }
 }

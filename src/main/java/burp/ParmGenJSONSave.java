@@ -26,17 +26,17 @@ import java.util.List;
  *
  * @author daike
  */
-public class ParmGenCSV {
+public class ParmGenJSONSave {
     ParmGenMacroTrace pmt = null;
-    List<AppParmsIni> records;
+    private List<AppParmsIni> records;
     Iterator<AppParmsIni> it;
     ParmGenWriteFile pfile;
     public static final String JSONVERSION = "1.1";//OUTPUT JSON VERSION
     public static ArrayList<PRequestResponse> selected_messages;
     public static ArrayList<PRequestResponse> proxy_messages;
 
-    ParmGenCSV(ParmGenMacroTrace _pmt, ArrayList<PRequestResponse> _selected_messages){
-       reloadParmGen(_pmt, null);
+    ParmGenJSONSave(ParmGenMacroTrace _pmt, ArrayList<PRequestResponse> _selected_messages){
+       saveParmGenSetUp(_pmt, null);
        selected_messages = new ArrayList<PRequestResponse>();
        proxy_messages = _selected_messages;
        selected_messages.add(proxy_messages.get(0));
@@ -44,13 +44,13 @@ public class ParmGenCSV {
 
     }
     
-    ParmGenCSV( List<AppParmsIni> _newparmcsv,ParmGenMacroTrace _pmt){
-        reloadParmGen(_pmt, _newparmcsv);
+    ParmGenJSONSave( List<AppParmsIni> _newparmcsv,ParmGenMacroTrace _pmt){
+        saveParmGenSetUp(_pmt, _newparmcsv);
         pfile = null;
     }
 
-    public void reloadParmGen(ParmGenMacroTrace _pmt, List<AppParmsIni>_newparmcsv){
-        pmt = _pmt;
+    private void saveParmGenSetUp(ParmGenMacroTrace _pmt, List<AppParmsIni>_newparmcsv){
+       pmt = _pmt;
        ParmGen pgen = new ParmGen(_pmt, _newparmcsv);
        records = pgen.parmcsv;
        if (records==null){
@@ -78,11 +78,13 @@ public class ParmGenCSV {
     }*/
 
     public void add(AppParmsIni pini){
+        /*
         int rowcnt = records.size();
         if(rowcnt>0){
                 rowcnt = records.get(records.size()-1).getRow() + 1;
         }
         pini.setRow(rowcnt);//add new record.
+        */
         records.add(pini);
     }
 

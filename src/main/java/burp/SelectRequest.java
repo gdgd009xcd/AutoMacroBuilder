@@ -38,7 +38,7 @@ public class SelectRequest extends javax.swing.JDialog {
         pgenwin = _pgenwin;
         panelno = _panelno;
         nextwin = _nextwin;
-        setRequest(ParmGenCSV.proxy_messages);
+        setRequest(ParmGenJSONSave.proxy_messages);
         initComponents();
         setTitle(title);
         TableColumn col ;
@@ -235,8 +235,8 @@ public class SelectRequest extends javax.swing.JDialog {
     private void MessageSelectedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MessageSelectedActionPerformed
         // TODO add your handling code here:
         // 選択メッセージを更新する。
-        ParmGenCSV.selected_messages.clear();
-        ParmGenCSV.selected_messages.add(ParmGenCSV.proxy_messages.get(selected_message_idx));
+        ParmGenJSONSave.selected_messages.clear();
+        ParmGenJSONSave.selected_messages.add(ParmGenJSONSave.proxy_messages.get(selected_message_idx));
         pgenwin.updateMessageAreaInSelectedModel(panelno);
         dispose();
         if(nextwin!=null){

@@ -8,13 +8,12 @@ package burp;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import javax.json.stream.JsonParser;
 
 //import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 import java.util.Base64;
+import java.util.List;
+import org.apache.log4j.Logger;
 
 
 
@@ -23,43 +22,76 @@ import java.util.Base64;
  * @author daike
  */
 public class ParmGenJSON {
+    private static org.apache.log4j.Logger logger = Logger.getLogger(ParmGenJSON.class);
     //--loaded values
-    ArrayList<AppParmsIni> rlist;
-    ArrayList<PRequestResponse> ReqResList;
-    int currentrequest;
+    private String Version;
+    private Encode enc;
+    private List<String> ExcludeMimeTypes = null;
+    private ArrayList<AppParmsIni> rlist;
+    private ArrayList<PRequestResponse> ReqResList;
+    private int currentrequest;
+    private boolean ProxyInScope;
+    private boolean IntruderInScope;
+    private boolean RepeaterInScope;
+    private boolean ScannerInScope;
     //---------------
     
     
-    AppParmsIni aparms;
-    AppValue apv;
-    String exerr = null;
-    int row = 0;
+    private AppParmsIni aparms;
+    private AppValue apv;
+    private List<String> JSONSyntaxErrors;
+    private List<Exception> ExceptionErrors;
+    private int row = 0;
     
     //PRequestResponse params
-    String PRequest64;
-    String PResponse64;
-    String Host;
-    int Port;
-    boolean SSL;
-    String Comments;
-    boolean Disabled;
-    boolean Error;
+    private String PRequest64;
+    private String PResponse64;
+    private String Host;
+    private int Port;
+    private boolean SSL;
+    private String Comments;
+    private boolean Disabled;
+    private boolean Error;
 
 
 
 
 
     ParmGenJSON(){
-
+        ProxyInScope = false;
+        IntruderInScope = false;
+        RepeaterInScope = false;
+        ScannerInScope = false;
+        Version = "";
+        enc = Encode.UTF_8;
+        ExcludeMimeTypes = new ArrayList<>();
     	rlist = new ArrayList<AppParmsIni>();
         aparms = null;
         apv = null;
         ReqResList = new ArrayList<PRequestResponse>();
         currentrequest = 0;
         row = 0;
-        exerr = null;
+        JSONSyntaxErrors = new ArrayList<>();
+        ExceptionErrors = new ArrayList<>();
         initReqRes();
 
+    }
+    
+    public String getVersion(){
+        return Version;
+    }
+    
+    public Encode getEncode(){
+        return enc;
+    }
+    
+    
+    
+    private boolean hasErrors(){
+        if(JSONSyntaxErrors.size()>0||ExceptionErrors.size()>0){
+            return true;
+        }
+        return false;
     }
 
     private void initReqRes(){
@@ -144,28 +176,23 @@ public class ParmGenJSON {
             case 0:
                 switch(ev){
                     case END_ARRAY:
-                        if(name.toUpperCase().equals("EXCLUDEMIMETYPES")){
-                            ParmVars.setExcludeMimeTypes();
-                        }
+                        
                         break;
                     default:
                         if(name.toUpperCase().equals("LANG")){
-                            ParmVars.enc = Encode.getEnum(GetString(ev, value, "UTF-8"));
+                            enc = Encode.getEnum(GetString(ev, value, "UTF-8"));
                         }else if(name.toUpperCase().equals("PROXYINSCOPE")){
-                            ParmGen.ProxyInScope = Getboolean(ev, value, false);
+                            ProxyInScope = Getboolean(ev, value, false);
                         }else if(name.toUpperCase().equals("INTRUDERINSCOPE")){
-                            ParmGen.IntruderInScope = Getboolean(ev,value, true);
+                            IntruderInScope = Getboolean(ev,value, true);
                         }else if(name.toUpperCase().equals("REPEATERINSCOPE")){
-                            ParmGen.RepeaterInScope = Getboolean(ev, value, true);
+                            RepeaterInScope = Getboolean(ev, value, true);
                         }else if(name.toUpperCase().equals("SCANNERINSCOPE")){
-                            ParmGen.ScannerInScope = Getboolean(ev, value, true);
+                            ScannerInScope = Getboolean(ev, value, true);
                         }else if(name.toUpperCase().equals("CURRENTREQUEST")){
                             currentrequest = GetNumber(ev, value,0);
                         }else if(name.toUpperCase().equals("VERSION")){
-                            ParmVars.Version = GetString(ev, value, "");
-                            if(!ParmVars.Version.isEmpty()){
-                                ParmVars.clearExcludeMimeType();
-                            }
+                            Version = GetString(ev, value, "");
                         }
                         break;
                 }
@@ -182,21 +209,21 @@ public class ParmGenJSON {
                         }
                         break;
                     case END_OBJECT:
-                        if(exerr==null){
+                        if(!hasErrors()){
                             if(current!=null&&current.toUpperCase().equals("APPPARMSINI_LIST")){
                                 if(aparms!=null&&rlist!=null){
                                     if(aparms.getType()==AppParmsIni.T_CSV){
                                         String decodedname = "";
                                         try{
                                                 decodedname = URLDecoder.decode(aparms.csvname, "UTF-8");
+                                                aparms.frl = new FileReadLine(decodedname, true);
                                         }catch(Exception e){
-                                                ParmVars.plog.printException(e);
-                                                exerr = e.getMessage();
+                                            logger.error("decode failed:[" + aparms.csvname + "]", e);
+                                            ExceptionErrors.add(e);
                                         }
-                                        aparms.frl = new FileReadLine(decodedname, true);
                                     }
 
-                                    aparms.setRow(row);row++;
+                                    //aparms.setRow(row);row++;
                                     //aparms.crtGenFormat(true);
                                     rlist.add(aparms);
                                 }
@@ -206,7 +233,7 @@ public class ParmGenJSON {
                                     byte[] binreq = Base64.getDecoder().decode(PRequest64);//same as decode(src.getBytes(StandardCharsets.ISO_8859_1))
                                     byte[] binres = Base64.getDecoder().decode(PResponse64);
                                     
-                                    PRequestResponse pqr = new PRequestResponse(Host, Port, SSL, binreq, binres, ParmVars.enc);
+                                    PRequestResponse pqr = new PRequestResponse(Host, Port, SSL, binreq, binres, enc);
                                     if(Disabled){
                                         pqr.Disable();
                                     }
@@ -241,7 +268,7 @@ public class ParmGenJSON {
                                 aparms.setTrackFromStep(GetNumber(ev, value, 0));
                             }else if(name.toUpperCase().equals("SETTOSTEP")){
                                 int stepno = GetNumber(ev, value, ParmVars.TOSTEPANY);
-                                if(ParmVars.Version.isEmpty()){
+                                if(Version.isEmpty()){
                                     if(stepno <= 0){
                                         stepno = ParmVars.TOSTEPANY;
                                     }
@@ -269,8 +296,8 @@ public class ParmGenJSON {
                                 Error = Getboolean(ev,value, false);
                             }
                         }else if(current!=null&&current.toUpperCase().equals("EXCLUDEMIMETYPES")){
-                            if(!ParmVars.Version.isEmpty()){
-                                ParmVars.addExcludeMimeType(GetString(ev, value, ""));
+                            if(!Version.isEmpty()){
+                                addExcludeMimeType(GetString(ev, value, ""));
                             }
                         }
                         break;
@@ -286,10 +313,9 @@ public class ParmGenJSON {
                         }
                         break;
                     case END_OBJECT:
-                        if(exerr==null){
+                        if(!hasErrors()){
                             if(apv!=null&&aparms!=null){
-                                apv.col = aparms.parmlist.size();
-                                aparms.parmlist.add(apv);
+                                aparms.addAppValue(apv);
                             }
                         }
                         apv = null;
@@ -299,7 +325,9 @@ public class ParmGenJSON {
                     default:
                         if(apv!=null){
                             if(name.toUpperCase().equals("VALPART")){
-                                apv.setValPart(GetString(ev, value, ""));
+                                if(!apv.setValPart(GetString(ev, value, ""))){
+                                    JSONSyntaxErrors.add("VALPART has no value:[" + value + "]");
+                                }
                             }else if(name.toUpperCase().equals("ISMODIFY")){
                                 if(Getboolean(ev, value, true)==false){
                                     apv.setEnabled(false);
@@ -317,7 +345,9 @@ public class ParmGenJSON {
                             }else if(name.toUpperCase().equals("CSVPOS")){
                                 apv.csvpos = GetNumber(ev, value, 0);
                             }else if(name.toUpperCase().equals("VALUE")){
-                                exerr = apv.setURLencodedVal(GetString(ev, value, ""));
+                                if(!apv.setURLencodedVal(GetString(ev, value, ""))){
+                                    JSONSyntaxErrors.add("Invalid VALUE :[" + value + "]");
+                                }
                             }else if(name.toUpperCase().equals("RESURL")){
                                 apv.setresURL(GetString(ev, value, ""));
                             }else if(name.toUpperCase().equals("RESREGEX")){
@@ -334,7 +364,7 @@ public class ParmGenJSON {
                                 apv.fromStepNo = GetNumber(ev, value, -1);
                             }else if(name.toUpperCase().equals("TOSTEPNO")){
                                 int stepno = GetNumber(ev, value, ParmVars.TOSTEPANY);
-                                if(ParmVars.Version.isEmpty()){
+                                if(Version.isEmpty()){
                                     if(stepno<=0){
                                         stepno = ParmVars.TOSTEPANY;
                                     }
@@ -353,12 +383,18 @@ public class ParmGenJSON {
                 break;
         }
 
-        if(exerr==null){
-            return true;
-        }else{
-            ParmVars.plog.printError("ParmGenJSON::Parse " + exerr);
-        }
-        return false;
+        
+        return !hasErrors();
 
     }
+
+        public void addExcludeMimeType(String exttype){
+            ExcludeMimeTypes.add(exttype);
+        }
+        
+        public List<String> getExcludeMimeTypes(){
+            return ExcludeMimeTypes;
+        }
+        
+        
 }

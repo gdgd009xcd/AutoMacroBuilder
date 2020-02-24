@@ -236,7 +236,7 @@ class FetchResponseVal {
 			boolean overwrite, String name, AppValue av) {
 		AppValue.TokenTypeNames _tokentype = av.tokentype;
 		String comments = "";
-		if (urlmatch(av,url, r, c)) {
+		if (urlmatch(av,url)) {
 			if (_tokentype == AppValue.TokenTypeNames.LOCATION) {
 				ParmGenToken tkn = presponse.fetchNameValue(name, _tokentype, 0);
 				if (tkn != null) {
@@ -305,7 +305,7 @@ class FetchResponseVal {
 			boolean overwrite, boolean autotrack, AppValue av, int fcnt, String name, boolean _uencode)
 			throws UnsupportedEncodingException {
 		AppValue.TokenTypeNames _tokentype = av.tokentype;
-		if (urlmatch(av,url, r, c)) {
+		if (urlmatch(av,url)) {
 
 			Matcher matcher = null;
 
@@ -410,7 +410,7 @@ class FetchResponseVal {
 	boolean reqbodymatch(AppValue av, int currentStepNo, int fromStepNo, String url, PRequest prequest, int r, int c,
 			boolean overwrite, int fcnt, String name) {
 		String comments = "";
-		if (urlmatch(av,url, r, c)) {
+		if (urlmatch(av,url)) {
 			ArrayList<String[]> namelist = prequest.getBodyParams();
 			Iterator<String[]> it = namelist.iterator();
 			while (it.hasNext()) {
@@ -437,7 +437,7 @@ class FetchResponseVal {
 	//
 	// URL match
 	//
-	boolean urlmatch(AppValue av, String url, int r, int c){
+	boolean urlmatch(AppValue av, String url){
 
                 try {
                         if ( av.getPattern_resURL() != null){

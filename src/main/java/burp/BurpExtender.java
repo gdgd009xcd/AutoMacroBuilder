@@ -633,9 +633,9 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                 //選択したリクエストレスポンス
                 //プロキシヒストリのリクエストレスポンス
                 //IHttpRequestResponse[] allmessages = mCallbacks.getProxyHistory();
-                ParmGen pgen = new ParmGen(pmt, null);//csv読み込み。LANG（ParmVars.enc）を設定。
+                ParmGen pgen = new ParmGen(pmt);
                 if(pgen.twin==null){
-                    pgen.twin = new ParmGenTop(pmt, new ParmGenCSV(pmt,
+                    pgen.twin = new ParmGenTop(pmt, new ParmGenJSONSave(pmt,
                         convertMessageInfoToArray(messageInfo, toolflg))
                         );
                 }

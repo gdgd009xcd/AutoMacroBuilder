@@ -338,10 +338,14 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         jScrollPane1.setViewportView(RequestList);
 
         paramlog.setPreferredSize(new java.awt.Dimension(847, 300));
+        paramlog.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                paramlogStateChanged(evt);
+            }
+        });
 
         jScrollPane6.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-        MacroRequest.setEditorKit(new TextPaneLineWrapper());
         MacroRequest.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 MacroRequestMousePressed(evt);
@@ -753,7 +757,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
             }
             ParmGen pgen = new ParmGen(pmt);
             if(pgen.twin==null){
-                    pgen.twin = new ParmGenTop(pmt, new ParmGenCSV(pmt,
+                    pgen.twin = new ParmGenTop(pmt, new ParmGenJSONSave(pmt,
                         messages)
                         );
             }
@@ -765,7 +769,14 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
 
     private void RequestListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_RequestListValueChanged
         // TODO add your handling code here:
-
+        
+        // below magical coding needs ,,,
+        if (evt.getValueIsAdjusting()) {
+            // The user is still manipulating the selection.
+            return;
+        }
+        
+        ParmVars.plog.debuglog(0, "RequestListValueChanged Start...");
         int pos = RequestList.getSelectedIndex();
         if (pos != -1) {
 
@@ -809,7 +820,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
 
             }
         }
-
+        ParmVars.plog.debuglog(0, "RequestListValueChanged done");
     }//GEN-LAST:event_RequestListValueChanged
 
     private void MBCookieFromJarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MBCookieFromJarActionPerformed
@@ -951,7 +962,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
 
             List<AppParmsIni> newparms = new ArrayList<AppParmsIni>();//生成するパラメータ
             PRequestResponse respqrs = null;
-            int row = 0;
+            //int row = 0;
             int pos = 0;
 
             for (PRequestResponse pqrs : orglist) {
@@ -1195,12 +1206,11 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
 
                             apv.toStepNo = ParmVars.TOSTEPANY;
                             apv.tokentype = _RToken.getTokenKey().GetTokenType();
-                            apv.col = aparms.parmlist.size();
                             apv.setEnabled(_RToken.isEnabled());
-                            aparms.parmlist.add(apv);
+                            aparms.addAppValue(apv);
                         }
-                        aparms.setRow(row);
-                        row++;
+                        //aparms.setRow(row);
+                        //row++;
                         //aparms.crtGenFormat(true);
                         newparms.add(aparms);
                     }
@@ -1299,9 +1309,10 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
             //code to handle choosed file here.
             File file = jfc.getSelectedFile();
             String name = file.getAbsolutePath().replaceAll("\\\\", "\\\\\\\\");
-            ParmVars.parmfile = name;
-            ParmGen pgen = new ParmGen(pmt, null);
-            pgen.reset();//再読み込み
+
+            ParmGen pgen = new ParmGen(pmt);//20200208 なにもしないコンストラクター＞スタティックに置き換える。
+            pgen.checkAndLoadFile(name);//20200208 再読み込み -> 明示的なファイルのロード、チェック、チェックOKのみパラメータ更新する。
+            
             
         }
         
@@ -1368,7 +1379,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
             }
             ParmVars.parmfile = name;
              //csv.save();
-             ParmGenCSV csv = new ParmGenCSV(null, pmt);
+             ParmGenJSONSave csv = new ParmGenJSONSave(null, pmt);
              csv.jsonsave();
              /*if(filenamechanged){//if filename changed then reload json
                 ParmGen pgen = new ParmGen(pmt, null);
@@ -1382,16 +1393,21 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
 
     private void MacroRequestMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MacroRequestMousePressed
         // TODO add your handling code here:
+        ParmVars.plog.debuglog(0, "MacroRequestMousePressed...start");
         if (evt.isPopupTrigger()) {
             RequestEdit.show(evt.getComponent(), evt.getX(), evt.getY());
         }
+        ParmVars.plog.debuglog(0, "MacroRequestMousePressed...end");
+        
     }//GEN-LAST:event_MacroRequestMousePressed
 
     private void MacroResponseMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MacroResponseMousePressed
         // TODO add your handling code here:
+        ParmVars.plog.debuglog(0, "MacroResponseMousePressed...start");
         if (evt.isPopupTrigger()) {
             ResponseShow.show(evt.getComponent(), evt.getX(), evt.getY());
         }
+        ParmVars.plog.debuglog(0, "MacroResponseMousePressed...end");
     }//GEN-LAST:event_MacroResponseMousePressed
 
     private void editActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editActionPerformed
@@ -1427,29 +1443,28 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
 
     private void MacroRequestMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MacroRequestMouseClicked
         // TODO add your handling code here:
-        if (evt.isPopupTrigger()) {
+        if (evt.isPopupTrigger()) {// popup menu trigger occured. 
             RequestEdit.show(evt.getComponent(), evt.getX(), evt.getY());
         }
     }//GEN-LAST:event_MacroRequestMouseClicked
 
     private void MacroRequestMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MacroRequestMouseReleased
         // TODO add your handling code here:
-        if (evt.isPopupTrigger()) {
+        if (evt.isPopupTrigger()) {// popup menu trigger occured. 
             RequestEdit.show(evt.getComponent(), evt.getX(), evt.getY());
         }
     }//GEN-LAST:event_MacroRequestMouseReleased
 
     private void MacroResponseMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MacroResponseMouseClicked
         // TODO add your handling code here:
-        if (evt.isPopupTrigger()) {
+        if (evt.isPopupTrigger()) {// popup menu trigger occured. 
             ResponseShow.show(evt.getComponent(), evt.getX(), evt.getY());
         }
-        
     }//GEN-LAST:event_MacroResponseMouseClicked
 
     private void MacroResponseMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MacroResponseMouseReleased
         // TODO add your handling code here:
-        if (evt.isPopupTrigger()) {
+        if (evt.isPopupTrigger()) {// popup menu trigger occured. 
             ResponseShow.show(evt.getComponent(), evt.getX(), evt.getY());
         }
     }//GEN-LAST:event_MacroResponseMouseReleased
@@ -1503,6 +1518,14 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     
      
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void paramlogStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_paramlogStateChanged
+        // TODO add your handling code here:
+        // jTabbedPane tab select problem fixed. by this eventhandler is defined... what a strange behavior. 
+        int selIndex = paramlog.getSelectedIndex();
+	//String t = paramlog.getTitleAt(selIndex);
+	//System.out.println("Selected tab: " + t);
+    }//GEN-LAST:event_paramlogStateChanged
 
     @Override
     public void ParmGenRegexSaveAction(String message) {

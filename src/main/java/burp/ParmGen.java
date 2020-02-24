@@ -18,6 +18,7 @@ import java.io.RandomAccessFile;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -42,6 +43,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.UUID;
+import org.apache.log4j.PropertyConfigurator;
 
 
 
@@ -263,15 +265,33 @@ class ParmVars {
         final static int TOSTEPANY = 2147483647;//StepTo number means any value
         static List<String> ExcludeMimeTypes = null;
         private static List<Pattern> ExcludeMimeTypesPatterns = null;
-
+        private static org.apache.log4j.Logger logger4j;
 	//
 	// static変数初期化
 	//
 	static {
+            File log4jdir = new File(System.getProperty("user.home"), ".BurpSuite");//.ZAP or .BurpSuite
+            String fileName = "log4j.properties";
+            File logFile = new File(log4jdir, fileName);
+            if (!logFile.exists()) {
+                try {
+                    ParmGenUtil.copyFileToHome(
+                            logFile.toPath(), "xml/" + fileName, "/burp/" + fileName);
+                } catch (IOException ex) {
+                    
+                }
+            }
+            
+            System.out.println("log4j:" + logFile.getPath());
+            PropertyConfigurator.configure(logFile.getPath());
+            
+            logger4j = org.apache.log4j.Logger.getLogger(ParmVars.class);
+            
             setExcludeMimeTypes(Arrays.asList("image/.*","application/pdf"));//default Content-Types that exclude ParseResponse function
             
             fileSep = System.getProperty("file.separator");
             formdataenc = "ISO-8859-1";
+            
             File desktop = new File(System.getProperty("user.home"), "Desktop");
             if (! desktop.exists()){
                     projectdir = System.getenv("HOMEDRIVE") + fileSep + System.getenv("HOMEPATH") + fileSep + "\u30c7\u30b9\u30af\u30c8\u30c3\u30d7";
@@ -334,9 +354,6 @@ class ParmVars {
             ExcludeMimeTypes.add(exttype);
         }
         
-        public static void setExcludeMimeTypes(){
-            setExcludeMimeTypes(ExcludeMimeTypes);
-        }
         
         public static boolean isMimeTypeExcluded(String MimeType){
             for(Pattern pt:ExcludeMimeTypesPatterns){
@@ -400,16 +417,17 @@ class CSVParser {
 //
 
 class AppValue {
-//tamperTable:
+    private static org.apache.log4j.Logger logger4j = org.apache.log4j.Logger.getLogger(AppValue.class);
+
 //valparttype,         value, token, tamattack,tamadvance,tamposition,urlencode
 //置換位置,置換しない,  value, Name,  Attack,   Advance,   Position,   URLencode
 	public String valpart;//置換位置
-	private int valparttype;// 0-path, 1-query, 2-body  3-header   16(10000) bit == no count 32(100000) == no modify
+	private int valparttype;//  1-query, 2-body  3-header  4-path.... 16(10000) bit == no count 32(100000) == no modify
 	private String value = null;//value リクエストパラメータの正規表現文字列
 	private Pattern valueregex;//リクエストパラメータの正規表現
 
 	public int csvpos;
-	public int col;
+	//private int col;
         private int trackkey = -1;
 	private String resURL = "";
         private Pattern Pattern_resURL = null;
@@ -552,6 +570,14 @@ class AppValue {
 
         
 
+        /*public void setCol(int c){
+            col = c;
+        }*/
+        
+        /*public int getCol(){
+            return col;
+        }*/
+        
         public void setTrackKey(int k){
             trackkey = k;
         }
@@ -760,20 +786,25 @@ class AppValue {
             return _valparttype;
         }
 
-	void setValPart(String _valtype){
-                valparttype = parseValPartType(_valtype);
-		//
-                if (_valtype.indexOf("+")!=-1){//increment
-			clearNoCount();
-		}else{
-                    setNoCount();
-                }
-		valpart = _valtype;
-		String []ivals = _valtype.split(":");
-		csvpos = -1;
-		if(ivals.length > 1 ){
-			csvpos = Integer.parseInt(ivals[1].trim());
-		}
+	boolean setValPart(String _valtype){
+            boolean noerror = false;
+            valparttype = parseValPartType(_valtype);
+            //
+            if (_valtype.indexOf("+")!=-1){//increment
+                    clearNoCount();
+            }else{
+                setNoCount();
+            }
+            valpart = _valtype;
+            String []ivals = _valtype.split(":");
+            csvpos = -1;
+            if(ivals.length > 1 ){
+                    csvpos = Integer.parseInt(ivals[1].trim());
+            }
+            if(getTypeInt()>0){
+                noerror = true;
+            }
+            return noerror;
 	}
 
 
@@ -790,23 +821,20 @@ class AppValue {
             return ((valparttype & C_NOCOUNT) == C_NOCOUNT?true:false);
         }
 
-	String  setURLencodedVal(String _value){
-            String exerr = null;
+	boolean  setURLencodedVal(String _value){
+            boolean noerror = false;
             valueregex = null;
             try{
-                    value = URLDecoder.decode(_value, ParmVars.enc.getIANACharset());
-                    valueregex = ParmGenUtil.Pattern_compile(value);
+                value = URLDecoder.decode(_value, ParmVars.enc.getIANACharset());
+                valueregex = ParmGenUtil.Pattern_compile(value);
+                noerror = true;
             }catch(Exception e){
-                    exerr = e.toString();
-                    valueregex = null;
+                logger4j.error("decode failed value:[" + _value + "]", e);
+                valueregex = null;
             }
-            if ( valpart.length()<=0){
-                    exerr = "valpart is empty";
-            }
-            if(exerr!=null){
-                ParmVars.plog.debuglog(0, "ERROR: setURLencodedVal [" + value+  "] ERR:"  + exerr);
-            }
-            return null;
+            
+            
+            return noerror;
 	}
         
         void setVal(String _value){
@@ -1184,7 +1212,7 @@ class AppParmsIni {
 	private String relativecntfile = "";//filename only. no contain directory.
 	String cstrcnt = null;
 	int rndval = 1;
-	public int row;
+	//public int row;
         Boolean pause =false;
         private int TrackFromStep =-1;// StepNo== -1:any  >0:TrackingFrom 
         private int SetToStep = ParmVars.TOSTEPANY;// == TOSTEPANY:any   0<= SetToStep < TOSTEPANY:SetTo 
@@ -1207,6 +1235,7 @@ class AppParmsIni {
         public static final int T_TRACK_OLD_AVCNT = 6;
         public static final int T_TAMPER_AVCNT = 8;
 
+        
         public enum NumberCounterTypes {
             NumberCount,
             DateCount,
@@ -1256,9 +1285,9 @@ class AppParmsIni {
                 }
         }
 
-	int getRow(){
+	/*int getRow(){
 		return row;
-	}
+	}*/
 
         public void clearAppValues(){
             if(parmlist!=null){
@@ -1270,8 +1299,10 @@ class AppParmsIni {
         }
         
         public void addAppValue(AppValue app){
-            app.col = parmlist.size();
-            parmlist.add(app);
+            if(parmlist!=null){
+                //app.setCol(parmlist.size());
+                parmlist.add(app);
+            }
         }
 
         public String getIniValDsp(){
@@ -1419,23 +1450,7 @@ class AppParmsIni {
             return "";
         }
 
-        private String getOldCntFileName(){//20200206 deprecated. 2021/1 will be deleted.
-            String fname = null;
-            File cfile = new File(ParmVars.parmfile);
-            String dirname = cfile.getParent();
-            String filename = cfile.getName();
-
-            int lastpos = filename.lastIndexOf(".");
-            int slen = filename.length();
-            String name = filename;
-            if(lastpos>0&& slen > lastpos){
-                String prefix = filename.substring(0, lastpos);
-                String suffix = filename.substring(lastpos+1);
-                name = prefix;
-            }
-            fname = dirname + ParmVars.fileSep + name + "_" +Integer.toString(row) + ".txt";
-            return fname;
-        }
+        
 
         private String getCurrentSaveDir(){
             File cfile = new File(ParmVars.parmfile);
@@ -1492,9 +1507,9 @@ class AppParmsIni {
             setCntFileName();
         }*/
         
-        void setRow(int r){
+        /*void setRow(int r){
             row = r;
-        }
+        }*/
 
         // when entry AppParmIni/AppValue modified, accidentally last AppValue entry NOCOUNT flag maybe be set. 
         // so it must be clear NOCOUNT.
@@ -1720,6 +1735,7 @@ class ParmGen {
 
         private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
 
+        private org.apache.log4j.Logger logger4j = org.apache.log4j.Logger.getLogger(ParmGen.class);
 
         public static ParmGenTop twin = null;
         public static boolean ProxyInScope = false;
@@ -1737,105 +1753,116 @@ class ParmGen {
         }
 
         //
+        //20200211 CheckAndLoad must implement...
         //
-        //
-        private ArrayList<AppParmsIni> loadJSON(){
-        	//
-        	int arraylevel = 0;
-        	ParmVars.plog.debuglog(0, "loadJSON called.");
-        	ArrayList<AppParmsIni> rlist = null;
-        	String pfile = ParmVars.parmfile;
-        	ParmVars.plog.debuglog(1, "---------AppPermGen.json----------");
-                ParmVars.Version = "";
+        private ArrayList<AppParmsIni> loadJSON(String filename){
+            //
+            List<Exception> exlist = new ArrayList<>();//Exception list
+            int arraylevel = 0;
+            logger4j.info("loadJSON called.");
+
+            ArrayList<AppParmsIni> rlist = null;
+            String pfile = filename;
+
+
+            try{
+
+                String rdata;
+                String jsondata=new String("");
+                FileReader fr = new FileReader(pfile);
+                try{
+
+                        BufferedReader br = new BufferedReader(fr);
+                        while((rdata = br.readLine()) != null) {
+                                jsondata += rdata;
+                        }//end of while((rdata = br.readLine()) != null)
+                        fr.close();
+                        fr = null;
+                }catch(Exception e){
+                    logger4j.error("File Open/RW error", e);
+                    exlist.add(e);
+                }finally{
+                    if(fr!=null){
+                        try{
+                            fr.close();
+                            fr = null;
+                        }catch (Exception e){
+                            fr = null;
+                            logger4j.error("File Close error", e);
+                            exlist.add(e);
+                        }
+                    }
+                }
                 
-        	try{
+                if(exlist.size()>0)return null;
+                
+                ParmGenStack<String> astack = new ParmGenStack<String>();
+                JsonParser parser = Json.createParser(new StringReader(jsondata));
+                String keyname = null;
+                boolean noerrflg = false;
+                ParmGenJSON gjson = new ParmGenJSON();
+                while (parser.hasNext()) {
+                        JsonParser.Event event = parser.next();
+                        boolean bval = false;
+                        Object obj = null;
+                        if(keyname==null){
+                                keyname ="";
+                        }
+                        switch(event) {
+                        case START_ARRAY:
+                                arraylevel++;
+                                astack.push(keyname);
+                                break;
+                        case END_ARRAY:
+                                arraylevel--;
+                                String ep = astack.pop();
+                                noerrflg = gjson.Parse(astack,arraylevel, event, ep, null);
+                                break;
+                        case KEY_NAME:
+                                keyname = parser.getString();
+                                break;
+                        case START_OBJECT:
+                        case END_OBJECT:
+                                noerrflg = gjson.Parse(astack,arraylevel, event, keyname, null);
+                                break;
+                        case VALUE_TRUE:
+                                bval = true;
+                        case VALUE_FALSE:
+                                noerrflg = gjson.Parse(astack,arraylevel, event, keyname, bval);
+                                break;
+                        case VALUE_STRING:
+                        case VALUE_NUMBER:
+                                obj = parser.getString();
+                        case VALUE_NULL:
+                                noerrflg = gjson.Parse(astack,arraylevel, event, keyname, obj);
+                                break;
+                        }
+                }
+                if(noerrflg){
+                        rlist = gjson.Getrlist();
+                        pmt.ui.clear();
+                        pmt.ui.addNewRequests(gjson.GetMacroRequests());
+                        int creq = gjson.getCurrentRequest();
+                        pmt.setCurrentRequest(creq);
+                        ParmVars.parmfile = filename;
+                        ParmVars.Version = gjson.getVersion();
+                        ParmVars.enc = gjson.getEncode();
+                        ParmVars.setExcludeMimeTypes(gjson.getExcludeMimeTypes());
+                    
+                        pmt.ui.Redraw();
+                        ParmVars.Saved();
+                }else{//JSON parse failed by something wrong syntax/value..
+                    rlist = null;
+                }
+            }catch(Exception e){//JSON file load failed.
+                logger4j.error("Parse error", e);
+                exlist.add(e);
+                rlist = null;
 
-        		String rdata;
-        		String jsondata=new String("");
-        		FileReader fr = new FileReader(pfile);
-        		try{
+            }
 
-        			BufferedReader br = new BufferedReader(fr);
-        			while((rdata = br.readLine()) != null) {
-        				jsondata += rdata;
-        			}//end of while((rdata = br.readLine()) != null)
-        			fr.close();
-        			fr = null;
-        		}catch(Exception e){
-        			throw new RuntimeException(e.toString());
-        		}finally{
-        			if(fr!=null){
-        				try{
-        					fr.close();
-        				}catch (Exception e){
-        					throw new RuntimeException(e.toString());
-        				}
-        				fr = null;
-        			}
-        		}
-                        ParmGenStack<String> astack = new ParmGenStack<String>();
-        		JsonParser parser = Json.createParser(new StringReader(jsondata));
-        		String keyname = null;
-        		boolean noerrflg = false;
-        		ParmGenJSON gjson = new ParmGenJSON();
-        		while (parser.hasNext()) {
-        			JsonParser.Event event = parser.next();
-        			boolean bval = false;
-        			Object obj = null;
-        			if(keyname==null){
-        				keyname ="";
-        			}
-        			switch(event) {
-        			case START_ARRAY:
-        				arraylevel++;
-                                        astack.push(keyname);
-                                        //ParmVars.plog.debuglog(0, "START_ARRAY NAME:" +keyname + " level:" + arraylevel);
-        				break;
-        			case END_ARRAY:
-        				arraylevel--;
-                                        String ep = astack.pop();
-                                        noerrflg = gjson.Parse(astack,arraylevel, event, ep, null);
-                                        //ParmVars.plog.debuglog(0, "END_ARRAY NAME:" +ep + " level:" + arraylevel);
-        				break;
-        			case KEY_NAME:
-        				keyname = parser.getString();
-        				break;
-        			case START_OBJECT:
-        			case END_OBJECT:
-        				noerrflg = gjson.Parse(astack,arraylevel, event, keyname, null);
-        				break;
-        			case VALUE_TRUE:
-        				bval = true;
-        			case VALUE_FALSE:
-        				noerrflg = gjson.Parse(astack,arraylevel, event, keyname, bval);
-        				break;
-        			case VALUE_STRING:
-        			case VALUE_NUMBER:
-        				obj = parser.getString();
-        			case VALUE_NULL:
-        				noerrflg = gjson.Parse(astack,arraylevel, event, keyname, obj);
-        				break;
-        			}
-        		}
-        		if(noerrflg){
-        			rlist = gjson.Getrlist();
-                                pmt.ui.clear();
-                                pmt.ui.addNewRequests(gjson.GetMacroRequests());
-                                int creq = gjson.getCurrentRequest();
-                                pmt.setCurrentRequest(creq);
-                                pmt.ui.Redraw();
-                                ParmVars.Saved();
-        		}else{
-        			ParmVars.plog.printError("JSON load failed.");
-        		}
-        	}catch(Exception e){//設定ファイル無し。
-        		ParmVars.plog.printException(e);
-        		rlist = null;
-
-        	}
-
-        	ParmVars.plog.debuglog(1, "---------AppPermGen JSON load END ----------");
-        	return rlist;
+            logger4j.info("---------AppPermGen JSON load END ----------");
+            return rlist;
         }
 
 
@@ -2133,12 +2160,12 @@ class ParmGen {
 		return null;
 	}
 
-boolean FetchRequest(PRequest prequest,   AppParmsIni pini, AppValue av){
+boolean FetchRequest(PRequest prequest,   AppParmsIni pini, AppValue av, int r, int c){
     if(av.fromStepNo<0||av.fromStepNo==pmt.getStepNo()){
         String url = prequest.getURL();
         int row,col;
-        row = pini.row;
-        col = av.col;
+        row = r;
+        col = c;
         switch(av.getResTypeInt()){
             case AppValue.V_REQTRACKBODY:
                 
@@ -2150,11 +2177,11 @@ boolean FetchRequest(PRequest prequest,   AppParmsIni pini, AppValue av){
     return false;
 }
 
-boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppValue av)  {
+boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppValue av, int r, int c)  {
 
                 int row,col;
-                row = pini.row;
-                col = av.col;
+                row = r;
+                col = c;
                 boolean rflag = false;
                 boolean autotrack = false;
                 String rowcolstr = Integer.toString(row) + "," + Integer.toString(col);
@@ -2213,15 +2240,10 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 		// csv load
 		// parmcsvはstatic
 		if ( parmcsv == null || _newparmcsv != null){
-			if(_newparmcsv==null){
-				parmcsv = loadJSON();
-			}else{
-				parmcsv = _newparmcsv;
-			}
-                        pmt.nullfetchResValAndCookieMan();
-                        
-                        if(parmcsv==null)return;
-                        //colmax計算
+			
+                    parmcsv = _newparmcsv;
+
+                    pmt.nullfetchResValAndCookieMan();
 
 		}
 	}
@@ -2230,10 +2252,15 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
             parmcsv = null;
 	}
         
-        public void reset(){// 20200206 this is executed when json load 
+        public void checkAndLoadFile(String fname){// 20200206 this is executed when json load 
             // at MacruBuilderUI 1304 , ParmGenTop 614
-            nullset();
-            initMain(null);
+            // I must implement JSON file check and then ok load function...
+            List<AppParmsIni> newparmcsv = loadJSON(fname);
+            if(newparmcsv!=null){
+                nullset();
+
+                initMain(newparmcsv);
+            }
         }
 
 	byte[] Run(String _h, int port, boolean isSSL, byte[] requestbytes){
@@ -2381,6 +2408,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 
                     AppParmsIni pini = null;
                     ListIterator<AppParmsIni> it = parmcsv.listIterator();
+                    int row = 0;
                     while(it.hasNext()){
                         pini = it.next();
                         if(pmt.CurrentRequestIsTrackFromTarget(pini) && pini.getType()==AppParmsIni.T_TRACK){
@@ -2388,20 +2416,23 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                             ListIterator<AppValue> pt = parmlist.listIterator();
                             boolean fetched;
                             boolean apvIsUpdated = false;
+                            int col = 0;
                             while(pt.hasNext()){
                                     AppValue av = pt.next();
                                     if(av.isEnabled()&&av.getResTypeInt()>=AppValue.V_REQTRACKBODY){
-                                        fetched = FetchRequest(prequest,  pini, av);
+                                        fetched = FetchRequest(prequest,  pini, av, row, col);
                                         if(fetched){
                                             pt.set(av);
                                             apvIsUpdated = true;
                                         }
                                     }
+                                    col++;
                             }
                             if(apvIsUpdated){
                                 it.set(pini);
                             }
                         }
+                        row++;
                     }
 
 
@@ -2431,6 +2462,7 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
 
                 AppParmsIni pini = null;
                 ListIterator<AppParmsIni> it = parmcsv.listIterator();
+                int row = 0;
                 while(it.hasNext()) {
                     pini = it.next();
 
@@ -2438,21 +2470,23 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
                         boolean apvIsUpdated = false;
                         List<AppValue> parmlist = pini.parmlist;
                         ListIterator<AppValue> pt = parmlist.listIterator();
-
+                        int col = 0;
                         while(pt.hasNext()){
                             AppValue av = pt.next();
                             if(av.isEnabled()){
-                                if (ParseResponse(url, presponse,  pini, av)){
+                                if (ParseResponse(url, presponse,  pini, av, row, col)){
                                     pt.set(av);
                                     updtcnt++;
                                     apvIsUpdated = true;
                                 }
                             }
+                            col++;
                         }
                         if(apvIsUpdated){
                             it.set(pini);
                         }
                     }
+                    row++;
                 }
             }
             //### skip end.

@@ -112,7 +112,7 @@ public class ParmGenNew extends javax.swing.JFrame implements InterfaceRegex, in
             NumberRewind.setSelected(false);
         }else{
             rec = new AppParmsIni();//add new record
-            rec.setRow(parentwin.getRowSize());
+            //rec.setRow(parentwin.getRowSize());
             addrec = rec;
             CSVrewind.setSelected(true);
             NumberRewind.setSelected(true);
@@ -240,7 +240,7 @@ private void setAppParmsIni(){
      *  指定されたメッセージで、カレントのボタンのmessageAreaを更新
      */
     public void updateMessageAreaInSelectedModel(int panelno){
-        PRequestResponse rs = ParmGenCSV.selected_messages.get(0);
+        PRequestResponse rs = ParmGenJSONSave.selected_messages.get(0);
         if(panelno==-1){
             panelno = current_reqrespanel;
         }
@@ -279,7 +279,7 @@ private void setAppParmsIni(){
 
             _reqplace = "body";
         }else if(reqplace.toLowerCase().equals("json")){
-            PRequestResponse selected_message = ParmGenCSV.selected_messages.get(0);
+            PRequestResponse selected_message = ParmGenJSONSave.selected_messages.get(0);
             PRequest request = selected_message.request;
             String regex = "\"" + name + "\"(?:[\\t \\r\\n]*):(?:[\\t\\[\\r\\n ]*)\"(.+?)\"(?:[\\t \\]\\r\\n]*)(?:,|})";
             List<String> jsonmatchlist = ParmGenUtil.getRegexMatchGroups(regex, request.getBody());
@@ -511,7 +511,7 @@ private void setAppParmsIni(){
         return ResponseArea.getText();
     }
 
-    ParmGenCSV getCSV(){
+    ParmGenJSONSave getCSV(){
         return parentwin.csv;
     }
     

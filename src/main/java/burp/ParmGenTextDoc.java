@@ -26,7 +26,8 @@ import javax.swing.text.JTextComponent;
  */
 public class ParmGenTextDoc{
     private  JTextComponent tcompo;
-
+    private static org.apache.log4j.Logger logger4j = org.apache.log4j.Logger.getLogger(ParmGenTextDoc.class);
+    
     ParmGenTextDoc(JTextComponent tc){
         tcompo = tc;
     }
@@ -99,19 +100,23 @@ public class ParmGenTextDoc{
 
             tcompo.setDocument(blank);
             try {
+                logger4j.debug("before  remove text");
                 doc.remove(0, doc.getLength());
+                logger4j.debug("done remove text");
             } catch (BadLocationException ex) {
                 Logger.getLogger(ParmGenTextDoc.class.getName()).log(Level.SEVERE, null, ex);
             }
 
             try {
-                //ParmVars.plog.debuglog(0, "before blank insert");
+                logger4j.debug("before  insert text size=" + text.length());
                 doc.insertString(0, text, null);
-                //ParmVars.plog.debuglog(0, "blank insert done");
+                logger4j.debug("insert  done");
             } catch (BadLocationException ex) {
                 Logger.getLogger(ParmGenTextDoc.class.getName()).log(Level.SEVERE, null, ex);
             }
+            logger4j.debug("before setDocument");
             tcompo.setDocument(doc);
+            logger4j.debug("after setDocument");
 
 
         }

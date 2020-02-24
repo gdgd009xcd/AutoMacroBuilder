@@ -244,12 +244,12 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
 
     @Override
     public void update() {
-         if ( ParmGenCSV.selected_messages.size()>0){
+         if ( ParmGenJSONSave.selected_messages.size()>0){
             DefaultTableModel model = (DefaultTableModel)TokenTable.getModel();
             while(model.getRowCount()>0){//table row全削除
                 model.removeRow(0);
             }
-            PRequestResponse rs = ParmGenCSV.selected_messages.get(0);
+            PRequestResponse rs = ParmGenJSONSave.selected_messages.get(0);
             int mpos = rs.getMacroPos();
             if(mpos<-1){
                 mpos = -1;

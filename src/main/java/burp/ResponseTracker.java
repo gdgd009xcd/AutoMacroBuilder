@@ -510,8 +510,8 @@ public class ResponseTracker extends javax.swing.JFrame implements InterfaceRege
     }// </editor-fold>//GEN-END:initComponents
 
     public void update(){
-        if ( ParmGenCSV.selected_messages.size()>0){
-            PRequestResponse rs = ParmGenCSV.selected_messages.get(0);
+        if ( ParmGenJSONSave.selected_messages.size()>0){
+            PRequestResponse rs = ParmGenJSONSave.selected_messages.get(0);
             ResponseURL.setText(rs.request.getURL());
             ResponseArea.setText(rs.response.getMessage());
             ResponseArea.setCaretPosition(0);   

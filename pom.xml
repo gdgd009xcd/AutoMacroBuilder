@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>burp</groupId>
     <artifactId>AutoMacroBuilder</artifactId>
-    <version>1.22</version>
+    <version>1.23</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -75,7 +75,7 @@
                 </goals>
                 <configuration>
                     <outputDirectory>${project.build.directory}/</outputDirectory>
-                    <excludeArtifactIds>javax.json-api,javax.json,burp-extender-api,jsoup,gson</excludeArtifactIds>
+                    <excludeArtifactIds>javax.json-api,javax.json,burp-extender-api,jsoup,gson,log4j</excludeArtifactIds>
 
                 </configuration>
             </execution>

@@ -18,11 +18,11 @@ import org.apache.log4j.Logger;
 
 
 /**
- * 20200225 no longer used..
+ *
  * @author daike
  */
-public class ParmGenJSON {
-    private static org.apache.log4j.Logger logger = Logger.getLogger(ParmGenJSON.class);
+public class ParmGenGSON implements GsonParserListener{
+    private static org.apache.log4j.Logger logger4j = Logger.getLogger(ParmGenGSON.class);
     //--loaded values
     private String Version;
     private Encode enc;
@@ -42,6 +42,7 @@ public class ParmGenJSON {
     private List<String> JSONSyntaxErrors;
     private List<Exception> ExceptionErrors;
     private int row = 0;
+    ParmGenStack<String> astack = null;
     
     //PRequestResponse params
     private String PRequest64;
@@ -57,7 +58,8 @@ public class ParmGenJSON {
 
 
 
-    ParmGenJSON(){
+    ParmGenGSON(){
+        astack = new ParmGenStack<String>();
         ProxyInScope = false;
         IntruderInScope = false;
         RepeaterInScope = false;
@@ -116,67 +118,46 @@ public class ParmGenJSON {
         return currentrequest;
     }
 
-    private String GetString(JsonParser.Event ev, Object value, String defval){
-        String v = "";
-        switch(ev){
-            case VALUE_STRING:
-                try{
-                    v =  (String)value;
-                }catch(Exception e){
-                    v ="";
-                }
-                break;
-            default:
-                v = defval;
-                break;
-
+    private String GetString(GsonParser.EventType ev, Object value, String defval){
+        String v = defval;
+        if(value instanceof String){
+            v = (String)value;
         }
         return v;
     }
 
-    private int GetNumber(JsonParser.Event ev, Object value, int defval){
-        int i = 0;
-        switch(ev){
-            case VALUE_NUMBER:
-                try{
-                    String vstring = (String)value;
-                    i =  (int)Integer.parseInt(vstring);
-                }catch(Exception e){
-                    i = 0;
-                }
-                break;
-            default:
-                i = defval;
-                break;
-
+    private int GetNumber(GsonParser.EventType ev, Object value, int defval){
+        int i = defval;
+        if(value instanceof Number){
+            Number n = (Number)value;
+            i = n.intValue();
         }
+        
         return i;
     }
 
-    private boolean Getboolean(JsonParser.Event ev, Object value, boolean defval){
-        boolean b = false;
-        switch(ev){
-            case VALUE_FALSE:
-                b = false;
-                break;
-            case VALUE_TRUE:
-                b = true;
-                break;
-            default:
-                b = defval;
-                break;
+    private boolean Getboolean(GsonParser.EventType ev, Object value, boolean defval){
+        boolean b = defval;
+        if(value instanceof Boolean){
+            Boolean bobj = (Boolean)value;
+            b = bobj;
         }
-
         return b;
     }
 
-    boolean Parse(ParmGenStack<String> astack, int alevel, JsonParser.Event ev, String name, Object value ){
+
+    boolean GParse(ParmGenStack<String> astack, GsonParser.EventType ev, String name, Object value ){
         String current = astack.getCurrent();
-        switch(alevel){
+        switch(astack.size()){
             case 0:
                 switch(ev){
+                    case START_OBJECT:
+                        break;
+                    case END_OBJECT:
+                        break;
+                    case START_ARRAY:
+                        break;
                     case END_ARRAY:
-                        
                         break;
                     default:
                         if(name.toUpperCase().equals("LANG")){
@@ -218,7 +199,7 @@ public class ParmGenJSON {
                                                 decodedname = URLDecoder.decode(aparms.csvname, "UTF-8");
                                                 aparms.frl = new FileReadLine(decodedname, true);
                                         }catch(Exception e){
-                                            logger.error("decode failed:[" + aparms.csvname + "]", e);
+                                            logger4j.error("decode failed:[" + aparms.csvname + "]", e);
                                             ExceptionErrors.add(e);
                                         }
                                     }
@@ -246,6 +227,7 @@ public class ParmGenJSON {
                         }
 
                         break;
+                    case START_ARRAY:
                     case END_ARRAY:
                         break;
                     default:
@@ -297,7 +279,10 @@ public class ParmGenJSON {
                             }
                         }else if(current!=null&&current.toUpperCase().equals("EXCLUDEMIMETYPES")){
                             if(!Version.isEmpty()){
-                                addExcludeMimeType(GetString(ev, value, ""));
+                                String exmime = GetString(ev, value, "");
+                                if(exmime!=null&&exmime.length()>0){
+                                    addExcludeMimeType(exmime);
+                                }
                             }
                         }
                         break;
@@ -320,6 +305,7 @@ public class ParmGenJSON {
                         }
                         apv = null;
                         break;
+                    case START_ARRAY:
                     case END_ARRAY:
                         break;
                     default:
@@ -387,13 +373,77 @@ public class ParmGenJSON {
         return !hasErrors();
 
     }
-
+    
     public void addExcludeMimeType(String exttype){
         ExcludeMimeTypes.add(exttype);
     }
 
     public List<String> getExcludeMimeTypes(){
         return ExcludeMimeTypes;
+    }
+
+    private String getindent(int idt, String keyname){
+        String idtstr = "";
+        for(int i = 0; i<idt; i++){
+            idtstr += "  ";
+        }
+        return idtstr + (keyname==null?"":(keyname + ":"));
+    }
+    
+    /**
+     * JSON parser listener for GSON
+     * @param git
+     * @param etype
+     * @param keyname
+     * @param value
+     * @param level 
+     */
+    @Override
+    public boolean receiver(GsonIterator git, GsonParser.EventType etype, String keyname, Object value, int level) {
+        boolean noerror = true;
+        switch(etype){
+        case START_OBJECT:
+            logger4j.debug(getindent(level-1, keyname) + "{" + level);
+            break;
+        case END_OBJECT:
+            logger4j.debug(getindent(level-1, keyname) + level + "}");
+            break;
+        case START_ARRAY:
+            astack.push(keyname);//array title name
+            logger4j.debug(getindent(level-1, keyname) + "["+ level);
+            break;
+        case END_ARRAY:
+            String ep = astack.pop();
+            logger4j.debug(getindent(level-1, keyname)  + level + "]");//keyname == ep
+            break;
+        case BOOLEAN:
+            if(value instanceof Boolean){
+                Boolean bobj = (Boolean)value;
+                boolean b = bobj.booleanValue();
+                logger4j.debug(getindent(level, keyname) + (b?"TRUE":"FALSE"));
+            }
+            break;
+        case NUMBER:
+            if(value instanceof Number){
+                Number n = (Number)value;
+                logger4j.debug(getindent(level, keyname) +n);
+            }
+            break;
+        case STRING:
+            if(value instanceof String){
+                String s = (String)value;
+                String enckeyname = git.getKeyName();
+                logger4j.debug(getindent(level, keyname) + (enckeyname!=null?enckeyname + "->":"") +"\"" + s + "\"");
+            }
+            break;
+        case NULL:
+            logger4j.debug(getindent(level, keyname) +"NULL");
+            break;
+        default:
+            break;
+        }
+        
+        return GParse(astack,  etype, keyname,  value );
     }
         
         

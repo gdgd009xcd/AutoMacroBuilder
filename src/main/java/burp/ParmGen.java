@@ -8,6 +8,7 @@ package burp;
 
 
 
+import com.google.gson.JsonElement;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -33,9 +34,9 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.json.Json;
-import javax.json.stream.JsonParser;
-
+//import javax.json.Json;
+//import javax.json.stream.JsonParser;
+import com.google.gson.JsonParser;
 
 import java.util.List;
 import java.util.ListIterator;
@@ -1752,9 +1753,12 @@ class ParmGen {
             twin = null;
         }
 
-        //
-        //20200211 CheckAndLoad must implement...
-        //
+        /**
+         * from 20200225 no longer used... 
+         * load JSON file
+         * @param filename
+         * @return 
+         */
         private ArrayList<AppParmsIni> loadJSON(String filename){
             //
             List<Exception> exlist = new ArrayList<>();//Exception list
@@ -1797,12 +1801,12 @@ class ParmGen {
                 if(exlist.size()>0)return null;
                 
                 ParmGenStack<String> astack = new ParmGenStack<String>();
-                JsonParser parser = Json.createParser(new StringReader(jsondata));
+                javax.json.stream.JsonParser parser = javax.json.Json.createParser(new StringReader(jsondata));
                 String keyname = null;
                 boolean noerrflg = false;
                 ParmGenJSON gjson = new ParmGenJSON();
                 while (parser.hasNext()) {
-                        JsonParser.Event event = parser.next();
+                        javax.json.stream.JsonParser.Event event = parser.next();
                         boolean bval = false;
                         Object obj = null;
                         if(keyname==null){
@@ -1865,7 +1869,82 @@ class ParmGen {
             return rlist;
         }
 
+        /**
+         * load JSON file
+         * @param filename
+         * @return 
+         */
+        private ArrayList<AppParmsIni> loadGSON(String filename){
+            //
+            List<Exception> exlist = new ArrayList<>();//Exception list
+            logger4j.info("loadGSON called.");
 
+            ArrayList<AppParmsIni> rlist = null;
+            String pfile = filename;
+
+
+            try{
+
+                String rdata;
+                String jsondata=new String("");
+                FileReader fr = new FileReader(pfile);
+                try{
+
+                        BufferedReader br = new BufferedReader(fr);
+                        while((rdata = br.readLine()) != null) {
+                                jsondata += rdata;
+                        }//end of while((rdata = br.readLine()) != null)
+                        fr.close();
+                        fr = null;
+                }catch(Exception e){
+                    logger4j.error("File Open/RW error", e);
+                    exlist.add(e);
+                }finally{
+                    if(fr!=null){
+                        try{
+                            fr.close();
+                            fr = null;
+                        }catch (Exception e){
+                            fr = null;
+                            logger4j.error("File Close error", e);
+                            exlist.add(e);
+                        }
+                    }
+                }
+                
+                if(exlist.size()>0)return null;
+
+                GsonParser parser = new GsonParser();
+                
+                ParmGenGSON gjson = new ParmGenGSON();
+                JsonElement element = com.google.gson.JsonParser.parseString(jsondata);
+
+                if(parser.elementLoopParser(element, gjson)){
+                        rlist = gjson.Getrlist();
+                        pmt.ui.clear();
+                        pmt.ui.addNewRequests(gjson.GetMacroRequests());
+                        int creq = gjson.getCurrentRequest();
+                        pmt.setCurrentRequest(creq);
+                        ParmVars.parmfile = filename;
+                        ParmVars.Version = gjson.getVersion();
+                        ParmVars.enc = gjson.getEncode();
+                        ParmVars.setExcludeMimeTypes(gjson.getExcludeMimeTypes());
+                    
+                        pmt.ui.Redraw();
+                        ParmVars.Saved();
+                }else{//JSON parse failed by something wrong syntax/value..
+                    rlist = null;
+                }
+            }catch(Exception e){//JSON file load failed.
+                logger4j.error("Parse error", e);
+                exlist.add(e);
+                rlist = null;
+
+            }
+
+            logger4j.info("---------AppPermGen JSON load END ----------");
+            return rlist;
+        }
 
 	PRequest ParseRequest(PRequest prequest,  PRequest org_request, ParmGenBinUtil boundaryarray, ParmGenBinUtil _contarray, AppParmsIni pini, AppValue av, ParmGenHashMap errorhash)  {
 
@@ -2252,15 +2331,19 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
             parmcsv = null;
 	}
         
-        public void checkAndLoadFile(String fname){// 20200206 this is executed when json load 
+        public boolean checkAndLoadFile(String fname){// 20200206 this is executed when json load 
             // at MacruBuilderUI 1304 , ParmGenTop 614
             // I must implement JSON file check and then ok load function...
-            List<AppParmsIni> newparmcsv = loadJSON(fname);
+            boolean noerror = false;
+            List<AppParmsIni> newparmcsv = loadGSON(fname);
             if(newparmcsv!=null){
                 nullset();
 
                 initMain(newparmcsv);
+                noerror = true;
             }
+            
+            return noerror;
         }
 
 	byte[] Run(String _h, int port, boolean isSSL, byte[] requestbytes){

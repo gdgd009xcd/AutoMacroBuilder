@@ -36,6 +36,8 @@ import javax.swing.text.Document;
  */
 public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfaceParmGenRegexSaveCancelAction {
 
+    private static org.apache.log4j.Logger logger4j = org.apache.log4j.Logger.getLogger(MacroBuilderUI.class);
+    
     private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
 
     ArrayList<PRequestResponse> rlist = null;
@@ -48,6 +50,11 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     Encode EditPageEnc = Encode.ISO_8859_1;
     static final int REQUEST_DISPMAXSIZ = 1000000;//1MB
     static final int RESPONSE_DISPMAXSIZ = 1000000;//1MB
+    
+    private int selected_request_idx = -1;
+    private boolean isLoadedMacroRequestContents = false;
+    private boolean isLoadedMacroResponseContents = false;
+    private boolean isLoadedMacroCommentContents = false;
 
     /**
      * Creates new form MacroBuilderUI
@@ -97,6 +104,10 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     }
 
     void clear() {
+        selected_request_idx = -1;
+        isLoadedMacroRequestContents = false;
+        isLoadedMacroResponseContents = false;
+        isLoadedMacroCommentContents = false;
         //JListをクリアするには、modelのremove & jListへModelセットが必須。
         RequestListModel.removeAllElements();
         RequestList.setModel(RequestListModel);
@@ -163,6 +174,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     public void Redraw() {
         //ListModel cmodel = RequestList.getModel();
         //RequestList.setModel(cmodel);
+        logger4j.debug("RequestList.repaint called.");
         RequestList.repaint();
     }
     
@@ -767,6 +779,73 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         }
     }//GEN-LAST:event_customActionPerformed
 
+    private void MacroRequestLoadContents(){
+                
+        if(selected_request_idx!=-1&&!isLoadedMacroRequestContents){
+            PRequestResponse pqr = rlist.get(selected_request_idx);
+
+            ParmGenTextDoc reqdoc = new ParmGenTextDoc(MacroRequest);
+
+            String reqmess = "";
+            if(pqr.request.getBodyContentLength() < REQUEST_DISPMAXSIZ){
+                reqmess = pqr.request.getMessage();
+            }else{//Content-Length < REQUEST_DISPMAXSIZ then no display body contents..
+                reqmess = pqr.request.getHeaderOnly();
+                reqmess = reqmess + "\r\n" + ".........omitted displaying body content......";
+            }
+
+            reqdoc.setText(reqmess);
+            isLoadedMacroRequestContents = true;
+        }
+    }
+    
+    private void MacroResponseLoadContents(){
+                
+        if(selected_request_idx!=-1&&!isLoadedMacroResponseContents){
+            PRequestResponse pqr = rlist.get(selected_request_idx);
+            String res_contentMimeType = pqr.response.getContentMimeType();// Content-Type's Mimetype: ex. "text/html"
+
+            // Content-Type/subtype matched excludeMimeType or Content-Length < RESPONSE_DISPMAXSIZ then no display body contents..
+            String resmess = "";
+
+            if((!ParmVars.isMimeTypeExcluded(res_contentMimeType)) && (pqr.response.getBodyContentLength() <  RESPONSE_DISPMAXSIZ)){
+                resmess = pqr.response.getMessage();
+            }else{
+                resmess = pqr.response.getHeaderOnly();
+                resmess = resmess + "\r\n" + ".........omitted displaying body content......";
+            }
+            ParmGenTextDoc resdoc = new ParmGenTextDoc(MacroResponse);
+            resdoc.setText(resmess);
+            isLoadedMacroResponseContents = true;
+        }
+    }
+    
+    private void MacroCommentLoadContents(){
+
+        if(selected_request_idx!=-1&&!isLoadedMacroCommentContents){
+            PRequestResponse pqr = rlist.get(selected_request_idx);
+            MacroComments.setText(pqr.getComments());
+            isLoadedMacroCommentContents = true;
+        }
+    }
+    
+    private void paramlogTabbedPaneSelectedContentsLoad(){
+        int selIndex = paramlog.getSelectedIndex();//tabbedpanes selectedidx 0start..
+        switch(selIndex){
+            case 0:
+                MacroRequestLoadContents();
+                break;
+            case 1:
+                MacroResponseLoadContents();
+                break;
+            case 2:
+                MacroCommentLoadContents();
+            default:
+                MacroRequestLoadContents();
+                break;
+        }
+    }
+    
     private void RequestListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_RequestListValueChanged
         // TODO add your handling code here:
         
@@ -776,51 +855,25 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
             return;
         }
         
-        ParmVars.plog.debuglog(0, "RequestListValueChanged Start...");
+        logger4j.debug("RequestListValueChanged Start...");
         int pos = RequestList.getSelectedIndex();
         if (pos != -1) {
 
             if (rlist != null && rlist.size() > pos) {
                 //
+                if(selected_request_idx!=pos){
+                    selected_request_idx = pos;
+                    isLoadedMacroCommentContents = false;
+                    isLoadedMacroRequestContents = false;
+                    isLoadedMacroResponseContents = false;
 
-                //DefaultListModel lmodel = new DefaultListModel();
-
-                PRequestResponse pqr = rlist.get(pos);
-
-                //String reqmess = ParmGenUtil.LFinsert(pqr.request.getMessage());
-                //MacroRequest.setText(reqmess);
-                ParmGenTextDoc reqdoc = new ParmGenTextDoc(MacroRequest);
-                
-                String reqmess = "";
-                if(pqr.request.getBodyContentLength() < REQUEST_DISPMAXSIZ){
-                    reqmess = pqr.request.getMessage();
-                }else{//Content-Length < REQUEST_DISPMAXSIZ then no display body contents..
-                    reqmess = pqr.request.getHeaderOnly();
-                    reqmess = reqmess + "\r\n" + ".........omitted displaying body content......";
+                    paramlogTabbedPaneSelectedContentsLoad();
                 }
                 
-                reqdoc.setText(reqmess);
-
-                String res_contentMimeType = pqr.response.getContentMimeType();// Content-Type's Mimetype: ex. "text/html"
-
-                // Content-Type/subtype matched excludeMimeType or Content-Length < RESPONSE_DISPMAXSIZ then no display body contents..
-                String resmess = "";
-                
-                if((!ParmVars.isMimeTypeExcluded(res_contentMimeType)) && (pqr.response.getBodyContentLength() <  RESPONSE_DISPMAXSIZ)){
-                    resmess = pqr.response.getMessage();
-                }else{
-                    resmess = pqr.response.getHeaderOnly();
-                    resmess = resmess + "\r\n" + ".........omitted displaying body content......";
-                }
-                //MacroResponse.setText(resmess);
-                ParmGenTextDoc resdoc = new ParmGenTextDoc(MacroResponse);
-                resdoc.setText(resmess);
-
-                MacroComments.setText(pqr.getComments());
 
             }
         }
-        ParmVars.plog.debuglog(0, "RequestListValueChanged done");
+        logger4j.debug("RequestListValueChanged done");
     }//GEN-LAST:event_RequestListValueChanged
 
     private void MBCookieFromJarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MBCookieFromJarActionPerformed
@@ -1311,7 +1364,9 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
             String name = file.getAbsolutePath().replaceAll("\\\\", "\\\\\\\\");
 
             ParmGen pgen = new ParmGen(pmt);//20200208 なにもしないコンストラクター＞スタティックに置き換える。
-            pgen.checkAndLoadFile(name);//20200208 再読み込み -> 明示的なファイルのロード、チェック、チェックOKのみパラメータ更新する。
+            if(pgen.checkAndLoadFile(name)){//20200208 再読み込み -> 明示的なファイルのロード、チェック、チェックOKのみパラメータ更新する。
+                //load succeeded..
+            }
             
             
         }
@@ -1393,21 +1448,23 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
 
     private void MacroRequestMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MacroRequestMousePressed
         // TODO add your handling code here:
-        ParmVars.plog.debuglog(0, "MacroRequestMousePressed...start");
+        logger4j.debug("MacroRequestMousePressed...start");
         if (evt.isPopupTrigger()) {
+            logger4j.debug("MacroRequestMousePressed PopupTriggered.");
             RequestEdit.show(evt.getComponent(), evt.getX(), evt.getY());
         }
-        ParmVars.plog.debuglog(0, "MacroRequestMousePressed...end");
+        logger4j.debug("MacroRequestMousePressed...end");
         
     }//GEN-LAST:event_MacroRequestMousePressed
 
     private void MacroResponseMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MacroResponseMousePressed
         // TODO add your handling code here:
-        ParmVars.plog.debuglog(0, "MacroResponseMousePressed...start");
+        logger4j.debug( "MacroResponseMousePressed...start");
         if (evt.isPopupTrigger()) {
+            logger4j.debug("MacroResponseMousePressed PopupTriggered.");
             ResponseShow.show(evt.getComponent(), evt.getX(), evt.getY());
         }
-        ParmVars.plog.debuglog(0, "MacroResponseMousePressed...end");
+        logger4j.debug("MacroResponseMousePressed...end");
     }//GEN-LAST:event_MacroResponseMousePressed
 
     private void editActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editActionPerformed
@@ -1443,7 +1500,8 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
 
     private void MacroRequestMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MacroRequestMouseClicked
         // TODO add your handling code here:
-        if (evt.isPopupTrigger()) {// popup menu trigger occured. 
+        if (evt.isPopupTrigger()) {// popup menu trigger occured.
+            logger4j.debug("MacroRequestMouseClicked PopupTriggered.");
             RequestEdit.show(evt.getComponent(), evt.getX(), evt.getY());
         }
     }//GEN-LAST:event_MacroRequestMouseClicked
@@ -1451,6 +1509,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     private void MacroRequestMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MacroRequestMouseReleased
         // TODO add your handling code here:
         if (evt.isPopupTrigger()) {// popup menu trigger occured. 
+            logger4j.debug("MacroRequestMouseReleased PopupTriggered.");
             RequestEdit.show(evt.getComponent(), evt.getX(), evt.getY());
         }
     }//GEN-LAST:event_MacroRequestMouseReleased
@@ -1458,6 +1517,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     private void MacroResponseMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MacroResponseMouseClicked
         // TODO add your handling code here:
         if (evt.isPopupTrigger()) {// popup menu trigger occured. 
+            logger4j.debug("MacroResponseMouseClicked PoupupTriggered.");
             ResponseShow.show(evt.getComponent(), evt.getX(), evt.getY());
         }
     }//GEN-LAST:event_MacroResponseMouseClicked
@@ -1465,6 +1525,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     private void MacroResponseMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MacroResponseMouseReleased
         // TODO add your handling code here:
         if (evt.isPopupTrigger()) {// popup menu trigger occured. 
+            logger4j.debug("MacroResponseMouseReleased PopupTriggered.");
             ResponseShow.show(evt.getComponent(), evt.getX(), evt.getY());
         }
     }//GEN-LAST:event_MacroResponseMouseReleased
@@ -1522,9 +1583,10 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     private void paramlogStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_paramlogStateChanged
         // TODO add your handling code here:
         // jTabbedPane tab select problem fixed. by this eventhandler is defined... what a strange behavior. 
-        int selIndex = paramlog.getSelectedIndex();
+        //int selIndex = paramlog.getSelectedIndex();
 	//String t = paramlog.getTitleAt(selIndex);
-	//System.out.println("Selected tab: " + t);
+	//logger4j.info("paramlogStateChanged: title[" + t + "]");
+        paramlogTabbedPaneSelectedContentsLoad();
     }//GEN-LAST:event_paramlogStateChanged
 
     @Override

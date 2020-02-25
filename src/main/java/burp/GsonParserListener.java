@@ -6,9 +6,9 @@
 package burp;
 
 /**
- *
+ * 
  * @author daike
  */
 public interface GsonParserListener {
-    public void receiver(GsonIterator git, GsonParser.EventType etype, String keyname, Object value, int level);
+    public boolean receiver(GsonIterator git, GsonParser.EventType etype, String keyname, Object value, int level);
 }

@@ -9,12 +9,14 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author daike
  */
 public class GsonParser {
+    private static org.apache.log4j.Logger logger4j = Logger.getLogger(GsonParser.class);
     
     enum EventType {
         NONE,
@@ -28,9 +30,15 @@ public class GsonParser {
         NULL,
     }
     
+    /**
+     * 
+     * @param element
+     * @param listener
+     * @return 
+     */
     
-    
-    public static void elementLoopParser(JsonElement element, GsonParserListener listener){
+    public boolean elementLoopParser(JsonElement element, GsonParserListener listener){
+        boolean noerror = true;
         int level = 0;
         ParmGenStack<GsonIterator> itstack = new ParmGenStack<>();
         String kname = null;
@@ -47,31 +55,31 @@ public class GsonParser {
                         git = new GsonIterator(kname, jarray.iterator());
                         itstack.push(git);
                         level++;
-                        listener.receiver(git, GsonParser.EventType.START_ARRAY, kname, null, level);
+                        noerror= listener.receiver(git, GsonParser.EventType.START_ARRAY, kname, null, level);
                         
                     }else if(element.isJsonObject()){
                         JsonObject jobj = element.getAsJsonObject();
                         git = new GsonIterator(kname,jobj.entrySet());
                         itstack.push(git);
                         level++;
-                        listener.receiver(git, GsonParser.EventType.START_OBJECT, kname, null, level);
+                        noerror=listener.receiver(git, GsonParser.EventType.START_OBJECT, kname, null, level);
                         
                     }else if(element.isJsonNull()){
                         
-                        listener.receiver(git, GsonParser.EventType.NULL, kname, null, level);
+                        noerror = listener.receiver(git, GsonParser.EventType.NULL, kname, null, level);
                     }else if(element.isJsonPrimitive()){
                         JsonPrimitive jprim = element.getAsJsonPrimitive();
                         if(jprim.isBoolean()){
                           Boolean b = jprim.getAsBoolean();
-                          listener.receiver(git, GsonParser.EventType.BOOLEAN, kname, b,level);
+                          noerror = listener.receiver(git, GsonParser.EventType.BOOLEAN, kname, b,level);
                           
                         }else if (jprim.isNumber()){
                             Number numval = jprim.getAsNumber();
-                            listener.receiver(git, GsonParser.EventType.NUMBER, kname, numval, level);
+                            noerror = listener.receiver(git, GsonParser.EventType.NUMBER, kname, numval, level);
                             
                         }else if (jprim.isString()){
                             String s = jprim.getAsString();
-                            listener.receiver(git, GsonParser.EventType.STRING, kname, s, level);
+                            noerror = listener.receiver(git, GsonParser.EventType.STRING, kname, s, level);
                             
                         }
                     }
@@ -86,7 +94,7 @@ public class GsonParser {
                         }else{
                             etype = GsonParser.EventType.END_OBJECT;
                         }
-                        listener.receiver(git, etype, git.getKeyName(), null, level);
+                        noerror = listener.receiver(git, etype, git.getKeyName(), null, level);
                         itstack.pop();
                         git = itstack.getCurrent();
                         if(git!=null){
@@ -109,9 +117,14 @@ public class GsonParser {
                     }
                 }
             }catch(Exception e){
-                
+                logger4j.error("Exception at elementLoopParser", e);
+                noerror = false;
             }
+            
+            if(!noerror)break;
+            
         }while(itstack.size()>0);
         
+        return noerror;
     }
 }

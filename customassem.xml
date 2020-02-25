@@ -11,7 +11,7 @@
       <unpack>true</unpack>
       <scope>runtime</scope>
       <excludes>
-          <exclude>*:gson</exclude>
+          <!-- exclude>*:gson</exclude -->
       </excludes>
     </dependencySet>
     

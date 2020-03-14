@@ -168,7 +168,7 @@ public class ParmGenTop extends javax.swing.JFrame {
         }
         //overwirte
         //ParmGenCSV csv = new ParmGenCSV(null, pmt);
-        csv.jsonsave();
+        csv.GSONsave();
         
         //token cache, cookie clear
         pmt.nullfetchResValAndCookieMan();
@@ -200,7 +200,7 @@ public class ParmGenTop extends javax.swing.JFrame {
                 ParmVars.parmfile = name;
                  //csv.save();
                  //ParmGenCSV csv = new ParmGenCSV(null, pmt);
-                 csv.jsonsave();
+                 csv.GSONsave();
 
             }
         }
@@ -502,7 +502,7 @@ public class ParmGenTop extends javax.swing.JFrame {
             }
             ParmVars.parmfile = name;
             //csv.save();
-            csv.jsonsave();
+            csv.GSONsave();
             
             ParmGen pgen = new ParmGen(pmt);
 
@@ -556,7 +556,7 @@ public class ParmGenTop extends javax.swing.JFrame {
                 current_row--;
             }
             //ParmGenCSV csv = new ParmGenCSV(null, pmt);
-            csv.jsonsave();
+            csv.GSONsave();
 
         }
     }//GEN-LAST:event_DelActionPerformed

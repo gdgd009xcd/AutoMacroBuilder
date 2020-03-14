@@ -6,6 +6,7 @@
 
 package burp;
 
+import burp.GSONSaveObject.PRequestResponses;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.CookieManager;
@@ -871,6 +872,57 @@ public class ParmGenMacroTrace {
                     
                 }
                 builder.add("PRequestResponse", Request_List);
+            }
+        }
+    }
+    
+    void GSONSave(GSONSaveObject gsonsaveobj){
+        if(gsonsaveobj!=null){
+            if(originalrlist!=null){
+                gsonsaveobj.CurrentRequest = getCurrentRequestPos();
+                
+
+                for(PRequestResponse pqr: originalrlist){
+                    PRequestResponses preqresobj = new PRequestResponses();
+                    byte[] qbin = pqr.request.getByteMessage();
+                    byte[] rbin = pqr.response.getByteMessage();
+                    //byte[] encodedBytes = Base64.encodeBase64(qbin);
+                    String qbase64 =Base64.getEncoder().encodeToString(qbin);// same as new String(encode(src), StandardCharsets.ISO_8859_1)
+                    /*
+                    try {
+                        qbase64 = new String(encodedBytes,"ISO-8859-1");
+                    } catch (UnsupportedEncodingException ex) {
+                        Logger.getLogger(ParmGenMacroTrace.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    */
+                    //encodedBytes = Base64.encodeBase64(rbin);
+                    String rbase64 = Base64.getEncoder().encodeToString(rbin);
+                    /*
+                    try {
+                        rbase64 = new String(encodedBytes, "ISO-8859-1");
+                    } catch (UnsupportedEncodingException ex) {
+                        Logger.getLogger(ParmGenMacroTrace.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    */
+                    preqresobj.PRequest = qbase64;
+                    preqresobj.PResponse = rbase64;
+                    
+                    String host = pqr.request.getHost();
+                    int port = pqr.request.getPort();
+                    boolean ssl = pqr.request.isSSL();
+                    String comments = pqr.getComments();
+                    boolean isdisabled = pqr.isDisabled();
+                    boolean iserror = pqr.isError();
+                    preqresobj.Host = host;
+                    preqresobj.Port = port;
+                    preqresobj.SSL = ssl;
+                    preqresobj.Comments = comments==null?"":comments;
+                    preqresobj.Disabled = isdisabled;
+                    preqresobj.Error = iserror;
+                    
+                    gsonsaveobj.PRequestResponse.add(preqresobj);
+                }
+                
             }
         }
     }

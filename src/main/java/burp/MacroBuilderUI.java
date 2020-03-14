@@ -1435,7 +1435,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
             ParmVars.parmfile = name;
              //csv.save();
              ParmGenJSONSave csv = new ParmGenJSONSave(null, pmt);
-             csv.jsonsave();
+             csv.GSONsave();
              /*if(filenamechanged){//if filename changed then reload json
                 ParmGen pgen = new ParmGen(pmt, null);
                 pgen.reset();//再読み込み

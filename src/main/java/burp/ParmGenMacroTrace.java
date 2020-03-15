@@ -22,9 +22,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObjectBuilder;
+
 import java.util.Base64;
 import java.util.Queue;
 import java.util.Stack;
@@ -827,6 +825,7 @@ public class ParmGenMacroTrace {
 
     }
     
+    /* 20200315 deleted. because javax.json license is gnu for enforcing apache license.
     void JSONSave(JsonObjectBuilder builder){
         if(builder!=null){
             if(originalrlist!=null){
@@ -838,22 +837,10 @@ public class ParmGenMacroTrace {
                     byte[] rbin = pqr.response.getByteMessage();
                     //byte[] encodedBytes = Base64.encodeBase64(qbin);
                     String qbase64 =Base64.getEncoder().encodeToString(qbin);// same as new String(encode(src), StandardCharsets.ISO_8859_1)
-                    /*
-                    try {
-                        qbase64 = new String(encodedBytes,"ISO-8859-1");
-                    } catch (UnsupportedEncodingException ex) {
-                        Logger.getLogger(ParmGenMacroTrace.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    */
+                    
                     //encodedBytes = Base64.encodeBase64(rbin);
                     String rbase64 = Base64.getEncoder().encodeToString(rbin);
-                    /*
-                    try {
-                        rbase64 = new String(encodedBytes, "ISO-8859-1");
-                    } catch (UnsupportedEncodingException ex) {
-                        Logger.getLogger(ParmGenMacroTrace.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    */
+                    
                     Request_rec.add("PRequest", qbase64);
                     Request_rec.add("PResponse", rbase64);
                     String host = pqr.request.getHost();
@@ -874,7 +861,7 @@ public class ParmGenMacroTrace {
                 builder.add("PRequestResponse", Request_List);
             }
         }
-    }
+    }*/
     
     void GSONSave(GSONSaveObject gsonsaveobj){
         if(gsonsaveobj!=null){

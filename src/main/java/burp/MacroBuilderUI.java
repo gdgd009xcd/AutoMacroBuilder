@@ -1033,7 +1033,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                         for (ParmGenToken tkn : restoken.tracktokenlist) {
                             String token = tkn.getTokenKey().getName();
                             String value = tkn.getTokenValue().getValue();
-                            ParmGenJSONDecoder reqjdecoder = new ParmGenJSONDecoder(pqrs.request.getBody());
+                            ParmGenGSONDecoder reqjdecoder = new ParmGenGSONDecoder(pqrs.request.getBody());
 
                             ArrayList<ParmGenToken> reqjtklist = reqjdecoder.parseJSON2Token();
 
@@ -1289,7 +1289,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                     trackurltoken.tracktokenlist = new ArrayList<ParmGenToken>();
                     InterfaceCollection<ParmGenToken> ic = pqrs.response.getLocationTokens(tklist);
                     //JSON parse
-                    ParmGenJSONDecoder jdecoder = new ParmGenJSONDecoder(body);
+                    ParmGenGSONDecoder jdecoder = new ParmGenGSONDecoder(body);
                     ArrayList<ParmGenToken> jtklist = jdecoder.parseJSON2Token();
 
                     //add extracted tokens to tklist

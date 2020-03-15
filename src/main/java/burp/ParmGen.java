@@ -34,8 +34,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-//import javax.json.Json;
-//import javax.json.stream.JsonParser;
+
 import com.google.gson.JsonParser;
 
 import java.util.List;
@@ -1753,121 +1752,7 @@ class ParmGen {
             twin = null;
         }
 
-        /**
-         * from 20200225 no longer used... 
-         * load JSON file
-         * @param filename
-         * @return 
-         */
-        private ArrayList<AppParmsIni> loadJSON(String filename){
-            //
-            List<Exception> exlist = new ArrayList<>();//Exception list
-            int arraylevel = 0;
-            logger4j.info("loadJSON called.");
-
-            ArrayList<AppParmsIni> rlist = null;
-            String pfile = filename;
-
-
-            try{
-
-                String rdata;
-                String jsondata=new String("");
-                FileReader fr = new FileReader(pfile);
-                try{
-
-                        BufferedReader br = new BufferedReader(fr);
-                        while((rdata = br.readLine()) != null) {
-                                jsondata += rdata;
-                        }//end of while((rdata = br.readLine()) != null)
-                        fr.close();
-                        fr = null;
-                }catch(Exception e){
-                    logger4j.error("File Open/RW error", e);
-                    exlist.add(e);
-                }finally{
-                    if(fr!=null){
-                        try{
-                            fr.close();
-                            fr = null;
-                        }catch (Exception e){
-                            fr = null;
-                            logger4j.error("File Close error", e);
-                            exlist.add(e);
-                        }
-                    }
-                }
-                
-                if(exlist.size()>0)return null;
-                
-                ParmGenStack<String> astack = new ParmGenStack<String>();
-                javax.json.stream.JsonParser parser = javax.json.Json.createParser(new StringReader(jsondata));
-                String keyname = null;
-                boolean noerrflg = false;
-                ParmGenJSON gjson = new ParmGenJSON();
-                while (parser.hasNext()) {
-                        javax.json.stream.JsonParser.Event event = parser.next();
-                        boolean bval = false;
-                        Object obj = null;
-                        if(keyname==null){
-                                keyname ="";
-                        }
-                        switch(event) {
-                        case START_ARRAY:
-                                arraylevel++;
-                                astack.push(keyname);
-                                break;
-                        case END_ARRAY:
-                                arraylevel--;
-                                String ep = astack.pop();
-                                noerrflg = gjson.Parse(astack,arraylevel, event, ep, null);
-                                break;
-                        case KEY_NAME:
-                                keyname = parser.getString();
-                                break;
-                        case START_OBJECT:
-                        case END_OBJECT:
-                                noerrflg = gjson.Parse(astack,arraylevel, event, keyname, null);
-                                break;
-                        case VALUE_TRUE:
-                                bval = true;
-                        case VALUE_FALSE:
-                                noerrflg = gjson.Parse(astack,arraylevel, event, keyname, bval);
-                                break;
-                        case VALUE_STRING:
-                        case VALUE_NUMBER:
-                                obj = parser.getString();
-                        case VALUE_NULL:
-                                noerrflg = gjson.Parse(astack,arraylevel, event, keyname, obj);
-                                break;
-                        }
-                }
-                if(noerrflg){
-                        rlist = gjson.Getrlist();
-                        pmt.ui.clear();
-                        pmt.ui.addNewRequests(gjson.GetMacroRequests());
-                        int creq = gjson.getCurrentRequest();
-                        pmt.setCurrentRequest(creq);
-                        ParmVars.parmfile = filename;
-                        ParmVars.Version = gjson.getVersion();
-                        ParmVars.enc = gjson.getEncode();
-                        ParmVars.setExcludeMimeTypes(gjson.getExcludeMimeTypes());
-                    
-                        pmt.ui.Redraw();
-                        ParmVars.Saved();
-                }else{//JSON parse failed by something wrong syntax/value..
-                    rlist = null;
-                }
-            }catch(Exception e){//JSON file load failed.
-                logger4j.error("Parse error", e);
-                exlist.add(e);
-                rlist = null;
-
-            }
-
-            logger4j.info("---------AppPermGen JSON load END ----------");
-            return rlist;
-        }
+        
 
         /**
          * load JSON file

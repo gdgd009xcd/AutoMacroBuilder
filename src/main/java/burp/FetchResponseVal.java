@@ -331,7 +331,7 @@ class FetchResponseVal {
 					if (matchval != null) {
 						switch (av.resencodetype) {
 						case JSON:
-							ParmGenJSONDecoder jdec = new ParmGenJSONDecoder(null);
+							ParmGenGSONDecoder jdec = new ParmGenGSONDecoder(null);
 							matchval = jdec.decodeStringValue(matchval);
 							break;
 						default:

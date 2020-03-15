@@ -5,6 +5,8 @@
  */
 package burp;
 
+import java.util.Objects;
+
 /**
  *
  * @author youtube
@@ -45,5 +47,16 @@ Boolean isEnabled() {
 void setEnabled(Boolean _enabled){
     enabled = _enabled;
 }
+
+@Override
+    public boolean equals(Object obj) {
+        if (obj instanceof ParmGenToken) {
+            ParmGenToken tkn = (ParmGenToken) obj;
+            //name is case-sensitive.
+            return this.ptk.equals(tkn.ptk) && this.ptv.equals(tkn.ptv) && Objects.equals(this.enabled, tkn.enabled);
+        } else {
+            return false;
+        }
+    }
     
 }

@@ -5,7 +5,7 @@ import java.util.Map.Entry;
 class PResponse extends ParseHTTPHeaders {
 	private ParmGenHashMap map;
         private ParmGenParser htmlparser;
-        private ParmGenJSONDecoder jsonparser;
+        private ParmGenGSONDecoder jsonparser;
 	//PResponse(){
 	//	super();
 	//}
@@ -51,7 +51,7 @@ class PResponse extends ParseHTTPHeaders {
                 //String subtype = getContent_Subtype();
                 switch(_tokentype){
                 case JSON:
-                	jsonparser = new ParmGenJSONDecoder(body);
+                	jsonparser = new ParmGenGSONDecoder(body);
                 	break;
                 default:
                 	htmlparser = new ParmGenParser(body);
@@ -69,7 +69,7 @@ class PResponse extends ParseHTTPHeaders {
             	switch(_tokentype){
                 case JSON:
                 	if(jsonparser==null){
-                		jsonparser = new ParmGenJSONDecoder(body);
+                		jsonparser = new ParmGenGSONDecoder(body);
                 	}
                 	break;
                 default:

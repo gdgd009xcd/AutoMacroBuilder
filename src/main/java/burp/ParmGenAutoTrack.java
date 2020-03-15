@@ -282,7 +282,7 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
             ParmGenParser pgser = new ParmGenParser(body);
             HashMap<String,Integer> namepos = new HashMap<String,Integer>();
             ArrayList<ParmGenToken> lst = pgser.getNameValues();
-            ParmGenJSONDecoder jdec = new ParmGenJSONDecoder(body);
+            ParmGenGSONDecoder jdec = new ParmGenGSONDecoder(body);
             ArrayList<ParmGenToken> jlst = jdec.parseJSON2Token();
             lst.addAll(jlst);
 

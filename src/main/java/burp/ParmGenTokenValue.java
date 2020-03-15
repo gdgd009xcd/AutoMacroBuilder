@@ -5,6 +5,8 @@
  */
 package burp;
 
+import java.util.Objects;
+
 /**
  *
  * @author daike
@@ -36,6 +38,17 @@ public class ParmGenTokenValue {
     
     public Boolean getBoolean(){
         return b;
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof ParmGenTokenValue) {
+            ParmGenTokenValue v = (ParmGenTokenValue) obj;
+            //name is case-sensitive.
+            return this.url.equals(v.url) && this.value.equals(v.value) && Objects.equals(this.b, v.b);
+        } else {
+            return false;
+        }
     }
     
 }

@@ -6,6 +6,8 @@
 
 package burp;
 
+import burp.IHttpRequestResponse;
+import burp.ISessionHandlingAction;
 import java.net.URL;
 
 /**

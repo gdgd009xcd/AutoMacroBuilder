@@ -6,6 +6,8 @@
 
 package burp;
 
+import burp.IHttpService;
+
 /**
  *
  * @author daike
@@ -22,7 +24,7 @@ public class BurpIHttpService implements IHttpService {
         proto = _proto;
     }
     
-    BurpIHttpService(String _host, int _port, boolean ssl){
+    public BurpIHttpService(String _host, int _port, boolean ssl){
         host = _host;
         port = _port;
         proto = (ssl==true?"https":"http");

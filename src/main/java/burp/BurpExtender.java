@@ -4,6 +4,29 @@
 
 package burp;
 
+import burp.BurpMacroStartAction;
+import ambuilder.Encode;
+import burp.IBurpExtender;
+import burp.IBurpExtenderCallbacks;
+import burp.IContextMenuFactory;
+import burp.IContextMenuInvocation;
+import burp.IHttpListener;
+import burp.IHttpRequestResponse;
+import burp.IHttpService;
+import burp.IInterceptedProxyMessage;
+import burp.IProxyListener;
+import ambuilder.InterfaceLangOKNG;
+import ambuilder.LangSelectDialog;
+import ambuilder.MacroBuilder;
+import ambuilder.PRequest;
+import ambuilder.PRequestResponse;
+import ambuilder.PResponse;
+import ambuilder.ParmGen;
+import ambuilder.ParmGenJSONSave;
+import ambuilder.ParmGenMacroTrace;
+import ambuilder.ParmGenTop;
+import ambuilder.ParmGenUtil;
+import ambuilder.ParmVars;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -84,12 +107,11 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
             boolean messageIsRequest,
             IHttpRequestResponse messageInfo)
         {
-
-                ParmGen pgen = new ParmGen(pmt);
+               ParmGen pgen = new ParmGen(pmt);
                 String url = null;
                 String toolname = getToolname(toolflag);
                 
-                ParmVars.plog.debuglog(0, "toolname:" + toolname);
+                ParmVars.plog.debuglog(0, "toolname:" + toolname + " " + (messageIsRequest?"Request":"Response"));
                 switch(toolflag){
                     case IBurpExtenderCallbacks.TOOL_INTRUDER:
                     case IBurpExtenderCallbacks.TOOL_SCANNER:
@@ -146,7 +168,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                             //PRequestResponse prs = new PRequestResponse(new String(messageInfo.getRequest(), ParmVars.enc.getIANACharset()), new String(messageInfo.getResponse(), ParmVars.enc.getIANACharset()));
                             PRequestResponse prs = new PRequestResponse(host, port, isSSL, messageInfo.getRequest(), messageInfo.getResponse(), ParmVars.enc);
                             url = prs.request.getURL();
-                            ParmVars.plog.debuglog(0, "=====ResponseRun start====== status:" + prs.response.status);
+                            ParmVars.plog.debuglog(0, "=====ResponseRun start====== status:" + prs.response.getStatus());
                             int updtcnt = pgen.ResponseRun(url, messageInfo.getResponse(), ParmVars.enc);
                             ParmVars.plog.debuglog(0, "=====ResponseRun end======");
                             if(pmt!=null){
@@ -192,6 +214,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
 
                 }
     		return;
+                
         }
  
 

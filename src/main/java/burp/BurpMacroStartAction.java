@@ -6,6 +6,8 @@
 
 package burp;
 
+import ambuilder.ParmGenMacroTrace;
+
 /**
  * マクロ実行前に登録するアクション
  * @author daike
@@ -13,7 +15,7 @@ package burp;
 public class BurpMacroStartAction implements ISessionHandlingAction {
     ParmGenMacroTrace tr;
     
-    BurpMacroStartAction(ParmGenMacroTrace _tr){
+    public BurpMacroStartAction(ParmGenMacroTrace _tr){
         tr = _tr;
     }
     

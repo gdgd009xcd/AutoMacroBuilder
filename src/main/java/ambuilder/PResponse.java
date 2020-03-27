@@ -1,0 +1,113 @@
+package ambuilder;
+
+import ambuilder.AppValue;
+import ambuilder.ParmGenGSONDecoder;
+import ambuilder.ParmGenHashMap;
+import ambuilder.ParmGenParser;
+import ambuilder.ParmGenToken;
+import ambuilder.ParmGenTokenKey;
+import ambuilder.ParmGenTokenValue;
+import ambuilder.ParseHTTPHeaders;
+import java.util.Map.Entry;
+
+public class PResponse extends ParseHTTPHeaders {
+	private ParmGenHashMap map;
+        private ParmGenParser htmlparser;
+        private ParmGenGSONDecoder jsonparser;
+	//PResponse(){
+	//	super();
+	//}
+
+	public PResponse(byte[] bin, Encode _pageenc){
+		super(bin, _pageenc);
+                map = null;
+                htmlparser = null;
+                jsonparser = null;
+	}
+
+
+	//Location headerのパラメータ取得
+	public  <T> InterfaceCollection<T> getLocationTokens(InterfaceCollection<T> tklist){
+		String locheader = getHeader("Location");
+
+		if(locheader!=null){
+                    String []nvpairs = locheader.split("[?&]");
+                    String url = nvpairs[0];
+                    for(String tnv:nvpairs){
+                        String[] nvp = tnv.split("=");
+                        String name = nvp[0];
+                        String value = new String("");
+                        if(nvp.length>1){
+                            value = nvp[1];
+
+                            if(name!=null&&name.length()>0&&value!=null){
+                                tklist.addToken(AppValue.TokenTypeNames.LOCATION,url, name, value, false,0);
+                            }
+                        }
+                    }
+                    if(tklist!=null&&tklist.size()>0){
+                        return tklist;
+                    }
+		}
+		return null;
+	}
+
+        public ParmGenToken fetchNameValue(String name, AppValue.TokenTypeNames _tokentype, int fcnt){
+            if(map==null){
+                map = new ParmGenHashMap();
+                InterfaceCollection<Entry<ParmGenTokenKey, ParmGenTokenValue>> ic = getLocationTokens(map);
+                //String subtype = getContent_Subtype();
+                switch(_tokentype){
+                case JSON:
+                	jsonparser = new ParmGenGSONDecoder(body);
+                	break;
+                default:
+                	htmlparser = new ParmGenParser(body);
+                	break;
+                }
+                /**
+                if(subtype!=null&&subtype.toLowerCase().equals("json")){
+                	jsonparser = new ParmGenJSONDecoder(body);
+                }else{
+                	htmlparser = new ParmGenParser(body);
+                }**/
+
+
+            }else{
+            	switch(_tokentype){
+                case JSON:
+                	if(jsonparser==null){
+                		jsonparser = new ParmGenGSONDecoder(body);
+                	}
+                	break;
+                default:
+	                if(htmlparser==null){
+	                	htmlparser = new ParmGenParser(body);
+	            	}
+                	break;
+                }
+            }
+            ParmGenTokenKey tkey = new ParmGenTokenKey(_tokentype, name, fcnt);
+            ParmGenTokenValue tval = map.get(tkey);
+            if(tval!=null){
+                return new ParmGenToken(tkey, tval);
+            }
+            switch(_tokentype){
+            case JSON:
+            	if(jsonparser!=null){
+                    return jsonparser.fetchNameValue(name, fcnt, _tokentype);
+                }
+
+            default:
+            	if(htmlparser!=null){
+                    return htmlparser.fetchNameValue(name, fcnt, _tokentype);
+                }
+            	break;
+            }
+
+
+            return null;
+        }
+
+
+}

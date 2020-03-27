@@ -6,6 +6,9 @@
 
 package burp;
 
+import burp.IExtensionHelpers;
+import burp.IHttpRequestResponse;
+import burp.IRequestInfo;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -19,7 +22,7 @@ public class BurpHelpers {
     IExtensionHelpers helpers;
     IRequestInfo info = null;
     
-    BurpHelpers(IExtensionHelpers _helpers){
+    public BurpHelpers(IExtensionHelpers _helpers){
         helpers = _helpers;
     }
 

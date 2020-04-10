@@ -6,7 +6,7 @@
 
 package burp;
 
-import ambuilder.ParmGenMacroTrace;
+import automacrobuilder.ParmGenMacroTrace;
 
 /**
  * マクロ実行前に登録するアクション

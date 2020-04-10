@@ -6,7 +6,8 @@
 
 package burp;
 
-import automacrobuilder.ParmGenMacroTrace;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTrace;
+
 
 /**
  * マクロ実行前に登録するアクション

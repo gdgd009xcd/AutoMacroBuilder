@@ -5,7 +5,6 @@
 package burp;
 
 import burp.BurpMacroStartAction;
-import automacrobuilder.Encode;
 import burp.IBurpExtender;
 import burp.IBurpExtenderCallbacks;
 import burp.IContextMenuFactory;
@@ -15,18 +14,6 @@ import burp.IHttpRequestResponse;
 import burp.IHttpService;
 import burp.IInterceptedProxyMessage;
 import burp.IProxyListener;
-import automacrobuilder.InterfaceLangOKNG;
-import automacrobuilder.LangSelectDialog;
-import automacrobuilder.MacroBuilder;
-import automacrobuilder.PRequest;
-import automacrobuilder.PRequestResponse;
-import automacrobuilder.PResponse;
-import automacrobuilder.ParmGen;
-import automacrobuilder.ParmGenJSONSave;
-import automacrobuilder.ParmGenMacroTrace;
-import automacrobuilder.ParmGenTop;
-import automacrobuilder.ParmGenUtil;
-import automacrobuilder.ParmVars;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -47,6 +34,19 @@ import javax.swing.JCheckBoxMenuItem;
 
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import org.zaproxy.zap.extension.automacrobuilder.MacroBuilder;
+import org.zaproxy.zap.extension.automacrobuilder.PRequestResponse;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGen;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTrace;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenUtil;
+import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
+import org.zaproxy.zap.extension.automacrobuilder.Encode;
+import org.zaproxy.zap.extension.automacrobuilder.InterfaceLangOKNG;
+import org.zaproxy.zap.extension.automacrobuilder.LangSelectDialog;
+import org.zaproxy.zap.extension.automacrobuilder.PRequest;
+import org.zaproxy.zap.extension.automacrobuilder.PResponse;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenJSONSave;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenTop;
 
 
 

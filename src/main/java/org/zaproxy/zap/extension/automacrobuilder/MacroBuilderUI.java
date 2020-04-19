@@ -132,7 +132,6 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
             }
             if (pmt != null) {
                 pmt.setRecords(_rlist);
-                pmt.ParseResponse();
             }
             Iterator<PRequestResponse> it = rlist.iterator();
             int ii = 0;

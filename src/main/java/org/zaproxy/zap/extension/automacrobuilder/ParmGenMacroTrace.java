@@ -222,22 +222,6 @@ public class ParmGenMacroTrace {
             pqrs.setComments(ParmVars.plog.getComments());
             pqrs.setError(ParmVars.plog.isError());
             rlist.set(selected_request, pqrs);
-            
-            /*** REMOVE
-            //カレントリクエストのset-cookie値をcookie.jarに保管
-            
-            List<String> setcookieheaders = pqrs.response.getSetCookieHeaders();
-            for(String headerval: setcookieheaders) {
-                String cheader = "Set-Cookie: " +  headerval;
-                String domain = pqrs.request.getHost();
-                String path = "/";//default root path
-
-                
-                //BurpICookie bicookie = new BurpICookie(domain, path, name, value, null);// update cookie
-                //callbacks.updateCookieJar(bicookie);
-                cookieMan.parse(domain, path, cheader);
-            }
-            * *****/
         }
         ui.updateCurrentReqRes();
         state = PMT_CURRENT_END;
@@ -357,17 +341,6 @@ public class ParmGenMacroTrace {
             //	他のスレッドは、2番目スレッドが終了するまで、synchronizedのため、待機。 the other threads wait until second executing thread complete preMacroLock.
             //3）共有storeからスレッド毎のローカルのFetchResponseVal, Cookieストアを生成。	local FetchResponseVal, Cookie store create from shared store.
 
-        
-        //前処理マクロの0～selected_request-1まで実行。
-        //開始時Cookieを参照しない。...cookie.jarから全削除
-        //List<ICookie> iclist = callbacks.getCookieJarContents();//Burp's cookie.jar
-        //if(!MBCookieFromJar){
-        //    for(ICookie cookie:iclist){
-        //        BurpICookie bicookie = new BurpICookie(cookie, true);// delete cookie.
-        //        callbacks.updateCookieJar(bicookie);
-        //   }
-        //    iclist = callbacks.getCookieJarContents();
-        //}
         oit = null;
         cit = null;
 
@@ -447,13 +420,11 @@ public class ParmGenMacroTrace {
        
         if(isRunning()){//MacroBuilder list > 0 && state is Running.
             //ここでリクエストのCookieをCookie.jarで更新する。
-            //List<ICookie> iclist = callbacks.getCookieJarContents();//Burp's cookie.jar
             String domain_req = preq.getHost().toLowerCase();
             String path_req = preq.getPath();
             boolean isSSL_req = preq.isSSL();
             List<HttpCookie> cklist = cookieMan.get(domain_req, path_req, isSSL_req);
             HashMap<CookieKey, ArrayList<CookiePathValue>> cookiemap = new HashMap<CookieKey, ArrayList<CookiePathValue>>();
-            //for(ICookie cookie:iclist){
             for(HttpCookie cookie: cklist){
                 String domain = cookie.getDomain();
                 if(domain==null||domain.isEmpty()){
@@ -508,7 +479,6 @@ public class ParmGenMacroTrace {
             ParmVars.plog.debuglog(0, "BEGIN PostMacro");
             try{
                 if(cit!=null&&oit!=null){
-                    //List<ICookie> iclist = callbacks.getCookieJarContents();//Burp's cookie.jar
                     int n = stepno;
                     while(cit.hasNext() && oit.hasNext()){
                         stepno = n;
@@ -565,6 +535,7 @@ public class ParmGenMacroTrace {
         }else{
             state = PMT_POSTMACRO_NULL;
         }
+        
         ParmVars.plog.debuglog(0, "END PostMacro");
     }
 
@@ -631,44 +602,6 @@ public class ParmGenMacroTrace {
         }
         ParmVars.plog.debuglog(0, "setRecords:" + rlist.size() + "/" + originalrlist.size());
         
-   }
-   
-   
-   void ParseResponse(){
-       /*** REMOVE
-	   if(rlist!=null){
-	       cit = rlist.listIterator();
-	       //csrflist = new ArrayList<ParmGenParser> ();
-	       set_cookienames = new ArrayList<String>();
-	       HashMap<String,String> uniquecookies = new HashMap<String, String>();
-	       while(cit.hasNext()){
-	           PRequestResponse prr = cit.next();
-
-	           //ParmGenParser pgparser = new ParmGenParser(prr.response.getBody(), "[type=\"hidden\"],[type=\"HIDDEN\"]");
-
-	           //csrflist.add(pgparser);
-	           HashMap<String,ArrayList<String[]>> setcookieparams = prr.response.set_cookieparams;
-	            for(Map.Entry<String, ArrayList<String[]>> e : setcookieparams.entrySet()) {
-	                String k = e.getKey();
-	                ArrayList<String[]> values = e.getValue();
-	                String name = null;
-	                for(String[] s: values){
-	                    if(s[0].equals(k)){
-	                        name = s[0];
-	                        uniquecookies.put(name, s[1]);//name, value
-	                    }
-	                }
-
-	            }
-	       }
-	       for(Map.Entry<String,String> e: uniquecookies.entrySet()){
-	           String name = e.getKey();
-	           set_cookienames.add(name);
-	           ParmVars.plog.debuglog(0, "ParseResponse: Set-Cookie: " + name);
-	       }
-	   }
-***********/
-
    }
 
    void macroStarted(){
@@ -830,44 +763,6 @@ public class ParmGenMacroTrace {
 
     }
     
-    /* 20200315 deleted. because javax.json license is gnu for enforcing apache license.
-    void JSONSave(JsonObjectBuilder builder){
-        if(builder!=null){
-            if(originalrlist!=null){
-                builder.add("CurrentRequest" , getCurrentRequestPos());
-                JsonArrayBuilder Request_List =Json.createArrayBuilder();
-                JsonObjectBuilder Request_rec = Json.createObjectBuilder();
-                for(PRequestResponse pqr: originalrlist){
-                    byte[] qbin = pqr.request.getByteMessage();
-                    byte[] rbin = pqr.response.getByteMessage();
-                    //byte[] encodedBytes = Base64.encodeBase64(qbin);
-                    String qbase64 =Base64.getEncoder().encodeToString(qbin);// same as new String(encode(src), StandardCharsets.ISO_8859_1)
-                    
-                    //encodedBytes = Base64.encodeBase64(rbin);
-                    String rbase64 = Base64.getEncoder().encodeToString(rbin);
-                    
-                    Request_rec.add("PRequest", qbase64);
-                    Request_rec.add("PResponse", rbase64);
-                    String host = pqr.request.getHost();
-                    int port = pqr.request.getPort();
-                    boolean ssl = pqr.request.isSSL();
-                    String comments = pqr.getComments();
-                    boolean isdisabled = pqr.isDisabled();
-                    boolean iserror = pqr.isError();
-                    Request_rec.add("Host", host);
-                    Request_rec.add("Port", port);
-                    Request_rec.add("SSL", ssl);
-                    Request_rec.add("Comments", comments==null?"":comments);
-                    Request_rec.add("Disabled", isdisabled);
-                    Request_rec.add("Error", iserror);
-                    Request_List.add(Request_rec);
-                    
-                }
-                builder.add("PRequestResponse", Request_List);
-            }
-        }
-    }*/
-    
     void GSONSave(GSONSaveObject gsonsaveobj){
         if(gsonsaveobj!=null){
             if(originalrlist!=null){
@@ -952,10 +847,6 @@ public class ParmGenMacroTrace {
                 String cheader = "Set-Cookie: " +  headerval;
                 String domain = pqrs.request.getHost();
                 String path = "/";//default root path
-
-                
-                //BurpICookie bicookie = new BurpICookie(domain, path, name, value, null);// update cookie
-                //callbacks.updateCookieJar(bicookie);
                 cookieMan.parse(domain, path, cheader);
             }
     }

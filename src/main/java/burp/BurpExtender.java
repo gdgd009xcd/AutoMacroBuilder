@@ -185,12 +185,10 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                                 int percent = -1;
                                 switch(pmt.getState()){
                                     case ParmGenMacroTrace.PMT_POSTMACRO_END:
-                                        //カレントリクエストをpostマクロレスポンスの内容で更新
-
+                                        //update current burptool(repeater/scanner/intruder..)'s response by last postmacro response.
                                         if(pmt.isMBFinalResponse()){
                                             messageInfo.setResponse(pmt.getPostMacroResponse());
                                         }
-                                        mbr.updateCurrentReqRes();
                                         pmt.macroEnded(false);
                                         percent = pmt.getScanQuePercentage();
                                         break;
@@ -199,7 +197,6 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                                         pmt.macroEnded(false);
                                         percent = pmt.getScanQuePercentage();
                                     default:
-                                        
                                         break;
                                 }
                                 if(percent != -1){

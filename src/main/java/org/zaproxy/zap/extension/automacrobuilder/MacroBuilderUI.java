@@ -121,7 +121,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         }
     }
 
-    void addNewRequests(ArrayList<PRequestResponse> _rlist) {
+    public void addNewRequests(ArrayList<PRequestResponse> _rlist) {
         DefaultListModel lmodel = new DefaultListModel();
         AppParmsIni pini;
         if (_rlist != null) {
@@ -147,7 +147,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
 
     }
 
-    void updateCurrentReqRes() {
+    public void updateCurrentReqRes() {
         int cpos = pmt.getCurrentRequestPos();
         if (rlist != null) {
             PRequestResponse pqr = rlist.get(cpos);

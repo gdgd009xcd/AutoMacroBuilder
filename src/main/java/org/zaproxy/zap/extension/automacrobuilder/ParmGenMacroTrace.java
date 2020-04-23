@@ -122,6 +122,7 @@ public class ParmGenMacroTrace extends ClientDependent{
     // setter
     //
     void clear(){
+        ParmGen.clearAll();
         tidlist = null;
         locked = false;
         macroEnded(true);
@@ -135,6 +136,7 @@ public class ParmGenMacroTrace extends ClientDependent{
     	pit = null;
     	postmacro_RequestResponse = null;
         nullfetchResValAndCookieMan();
+        
     }
 
     void setUI(MacroBuilderUI _ui){

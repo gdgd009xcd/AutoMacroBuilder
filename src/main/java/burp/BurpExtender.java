@@ -34,7 +34,6 @@ import javax.swing.JCheckBoxMenuItem;
 
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import org.zaproxy.zap.extension.automacrobuilder.MacroBuilder;
 import org.zaproxy.zap.extension.automacrobuilder.PRequestResponse;
 import org.zaproxy.zap.extension.automacrobuilder.ParmGen;
 import org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTrace;

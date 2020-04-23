@@ -1898,6 +1898,12 @@ boolean ParseResponse(String url,  PResponse presponse, AppParmsIni pini, AppVal
             parmcsv = null;
 	}
         
+        public static void clearAll(){
+            logger4j.debug("clearAll.");
+            parmcsv = null;
+            twin = null;
+        }
+        
         public boolean checkAndLoadFile(String fname){// 20200206 this is executed when json load 
             // at MacruBuilderUI 1304 , ParmGenTop 614
             // I must implement JSON file check and then ok load function...

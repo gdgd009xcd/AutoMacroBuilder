@@ -25,6 +25,7 @@ import org.zaproxy.zap.extension.automacrobuilder.GSONSaveObject.AppValue_List;
  * @author daike
  */
 public class ParmGenJSONSave {
+    private static org.apache.logging.log4j.Logger logger4j = org.apache.logging.log4j.LogManager.getLogger();
     ParmGenMacroTrace pmt = null;
     private List<AppParmsIni> records;
     Iterator<AppParmsIni> it;
@@ -51,6 +52,7 @@ public class ParmGenJSONSave {
        pmt = _pmt;
        ParmGen pgen = new ParmGen(_pmt, _newparmcsv);
        records = pgen.parmcsv;
+       logger4j.debug("records is " + (records==null?"null": "No null"));
        if (records==null){
            records = new ArrayList<AppParmsIni>();
        }

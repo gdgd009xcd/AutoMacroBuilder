@@ -98,6 +98,7 @@ class ParseHTTPHeaders {
         
         
 	private void init(){
+            body = null;
             pageenc = Encode.ISO_8859_1;
             binbody = null;
             iso8859bodyString = null;
@@ -218,11 +219,11 @@ class ParseHTTPHeaders {
             String httpmessage = null;
             try {
                 httpmessage = new String(_binmessage, pageenc.getIANACharset());
-            } catch (UnsupportedEncodingException ex) {
+            } catch (Exception ex) {
                 pageenc = Encode.ISO_8859_1;//falling default enc
                 try {
                     httpmessage = new String(_binmessage, pageenc.getIANACharset());
-                } catch (UnsupportedEncodingException ex1) {
+                } catch (Exception ex1) {
                     Logger.getLogger(ParseHTTPHeaders.class.getName()).log(Level.SEVERE, null, ex1);
                     httpmessage = null;
                 }
@@ -277,7 +278,7 @@ class ParseHTTPHeaders {
                 try{
                     int blen =  body.getBytes(pageenc.getIANACharset()).length;
                     return blen;
-                }catch(UnsupportedEncodingException e){
+                }catch(Exception e){
                     ParmVars.plog.printException(e);
                 }
             }
@@ -290,7 +291,7 @@ class ParseHTTPHeaders {
                 try{
                     int blen =  h.getBytes(pageenc.getIANACharset()).length;
                     return blen;
-                }catch(UnsupportedEncodingException e){
+                }catch(Exception e){
                     ParmVars.plog.printException(e);
                 }
             }
@@ -675,7 +676,7 @@ class ParseHTTPHeaders {
                 bytebody = _bval;
                 try {
                     body = new String(bytebody, pageenc.getIANACharset());
-                } catch (UnsupportedEncodingException ex) {
+                } catch (Exception ex) {
                     ParmVars.plog.printException(ex);
                 }
                 binbody = null;
@@ -947,7 +948,7 @@ class ParseHTTPHeaders {
                         if(bytebody!=null){
                             rawmessage.concat(bytebody);
                         }
-                    } catch (UnsupportedEncodingException ex) {
+                    } catch (Exception ex) {
                         ParmVars.plog.printException(ex);
                     }
 
@@ -957,7 +958,7 @@ class ParseHTTPHeaders {
                     try{
                         byte[] binmess =  strmess.getBytes(pageenc.getIANACharset());
                         return binmess;
-                    }catch(UnsupportedEncodingException e){
+                    }catch(Exception e){
                         ParmVars.plog.printException(e);
                     }
                 }
@@ -1084,7 +1085,7 @@ class ParseHTTPHeaders {
             if(resname.equals(reqname))return true;
             else{
                 try {
-                    String decoded = URLDecoder.decode(reqname, pageenc.getIANACharset());
+                    String decoded = URLDecoder.decode(reqname, pageenc.getIANACharsetName());
                     if(resname.equals(decoded)) return true;
                 } catch (Exception ex) {
                     Logger.getLogger(ParseHTTPHeaders.class.getName()).log(Level.SEVERE, null, ex);
@@ -1095,7 +1096,7 @@ class ParseHTTPHeaders {
         
         public String decodedParamName(String _name, Encode enc){
             try {
-                String decoded = URLDecoder.decode(_name, enc.getIANACharset());
+                String decoded = URLDecoder.decode(_name, enc.getIANACharsetName());
                 return decoded;
             } catch (Exception ex) {
                 Logger.getLogger(ParseHTTPHeaders.class.getName()).log(Level.SEVERE, null, ex);
@@ -1243,7 +1244,7 @@ class ParseHTTPHeaders {
 
                     try {
                         iso8859bodyString = new String(bdata, Encode.ISO_8859_1.getIANACharset());
-                    } catch (UnsupportedEncodingException ex) {
+                    } catch (Exception ex) {
                         Logger.getLogger(ParseHTTPHeaders.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }

@@ -52,7 +52,7 @@ import org.zaproxy.zap.extension.automacrobuilder.ParmGenTop;
 
 public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
 {
-    public IBurpExtenderCallbacks mCallbacks;
+    public static IBurpExtenderCallbacks mCallbacks;
     BurpHelpers helpers;
     MacroBuilder mbr = null;
     ParmGenMacroTrace pmt = null;
@@ -720,7 +720,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
         PrintWriter stdout = new PrintWriter(callbacks.getStdout(), true);
         PrintWriter stderr = new PrintWriter(callbacks.getStderr(), true);
         //ParmVars.plog.SetBurpPrintStreams(stdout, stderr);
-        pmt = new ParmGenMacroTrace(callbacks);
+        pmt = new ParmGenMacroTrace();
         //セッション管理
         callbacks.registerSessionHandlingAction(new BurpMacroStartAction(pmt));
         //callbacks.registerSessionHandlingAction(new BurpMacroLogAction());

@@ -331,8 +331,8 @@ class AppValue {
                 String _raw = "";
                 if(_encoded==null)_encoded = "";
 		try{
-			_raw = URLDecoder.decode(_encoded, ParmVars.enc.getIANACharset());
-		}catch(Exception e){
+			_raw = URLDecoder.decode(_encoded, ParmVars.enc.getIANACharsetName());
+		}catch(UnsupportedEncodingException e){
 			exerr = e.toString();
                         _raw = "";
 		}
@@ -507,10 +507,10 @@ class AppValue {
             boolean noerror = false;
             valueregex = null;
             try{
-                value = URLDecoder.decode(_value, ParmVars.enc.getIANACharset());
+                value = URLDecoder.decode(_value, ParmVars.enc.getIANACharsetName());
                 valueregex = ParmGenUtil.Pattern_compile(value);
                 noerror = true;
-            }catch(Exception e){
+            }catch(UnsupportedEncodingException e){
                 logger4j.error("decode failed value:[" + _value + "]", e);
                 valueregex = null;
             }
@@ -1660,7 +1660,7 @@ public class ParmGen {
                             ParmVars.plog.debuglog(1, "application/x-www-form-urlencoded");
                             String content = null;
                             try{
-                                content = new String(_contarray.getBytes(), ParmVars.enc.getIANACharset());
+                                content = new String(_contarray.getBytes(), ParmVars.enc.getIANACharsetName());
                             }catch(UnsupportedEncodingException e){
                                 content = null;
                             }
@@ -1673,14 +1673,14 @@ public class ParmGen {
                                     ParmVars.plog.debuglog(1, " Original body[" + content + "]");
                                     ParmVars.plog.debuglog(1, " Modified body[" + n_content + "]");
                                     try {
-                                        _contarray.initParmGenBinUtil(n_content.getBytes(ParmVars.enc.getIANACharset()));
+                                        _contarray.initParmGenBinUtil(n_content.getBytes(ParmVars.enc.getIANACharsetName()));
                                     } catch (UnsupportedEncodingException ex) {
                                         Logger.getLogger(ParmGen.class.getName()).log(Level.SEVERE, null, ex);
                                         _contarray.initParmGenBinUtil(n_content.getBytes());
                                     }
                                     if(org_request!=null&&org_content_iso8859!=null&&neworg_content_iso8859!=null&&pmt.getToolBaseline()!=null){
                                         try {// bodyの入れ替え
-                                            org_request.setBody(neworg_content_iso8859.getBytes(Encode.ISO_8859_1.getIANACharset()));
+                                            org_request.setBody(neworg_content_iso8859.getBytes(Encode.ISO_8859_1.getIANACharsetName()));
                                             byte[] bmessage = org_request.getByteMessage();
                                             String host = org_request.getHost();
                                             int port = org_request.getPort();
@@ -1720,7 +1720,7 @@ public class ParmGen {
                                         partcontenttype = "";
                                     }
                                     int ctypestart = 0;
-                                    partenc = ParmVars.enc.getIANACharset();
+                                    partenc = ParmVars.enc.getIANACharsetName();
                                     if((ctypestart=partcontenttype.indexOf("Content-Type:"))!=-1){
                                         String cstr = partcontenttype.substring(ctypestart + "Content-Type:".length());
                                         String[] cstrvalues = cstr.split("[\r\n;]+");
@@ -1783,7 +1783,7 @@ public class ParmGen {
                                 if(org_content_isupdated){
                                     if(org_request!=null&&org_content_iso8859!=null&&pmt.getToolBaseline()!=null){
                                         try {// bodyの入れ替え
-                                            org_request.setBody(org_content_iso8859.getBytes(Encode.ISO_8859_1.getIANACharset()));
+                                            org_request.setBody(org_content_iso8859.getBytes(Encode.ISO_8859_1.getIANACharsetName()));
                                             byte[] bmessage = org_request.getByteMessage();
                                             String host = org_request.getHost();
                                             int port = org_request.getPort();

@@ -44,13 +44,6 @@ public class PLog {
 
 	PLog(String projectdir){
 
-		// è¨­å®ãã¡ã¤ã«
-		//    ãã¡ã¤ã«ãã©ã¼ããã
-		//    "ãã¹ï¼æ­£è¦è¡¨ç¾ï¼", æ¡æ°(number)|ä½ç½®(csv), å¤ã®ç¨®é¡randï¼ä¹±æ°ï¼/numberï¼æé æ°å¤ï¼/csvï¼ãã¡ã¤ã«ï¼/track(ã¬ã¹ãã³ã¹), åæå¤(æé æ°å¤)[:æå¤§å¤]/csvãã¡ã¤ã«ãã¹ï¼ï¼£ï¼³ï¼¶ï¼,"path/query/body/loc[-]","å¤[æ­£è¦è¡¨ç¾(\w+)ã§æå®ãã]"....
-		//
-		//    ä¾ï¼".*/project/index.php.*", 4, number, 1,"body", "myname(\w+)","query", "myvalue(\w+)", "path", "id/\/(\w+)\/"
-		//
-
 		logname = projectdir + ParmVars.getFileSep() +"AppScanPermGen.log";
 		LogfileOn = false;// default disable file output
 		File logfile = new File(logname);
@@ -180,7 +173,7 @@ public class PLog {
 		}
 	}
 
-        void clearComments(){
+        public void clearComments(){
             comments = "";//no null
         }
 
@@ -192,15 +185,15 @@ public class PLog {
             comments = _v;
         }
 
-        String getComments(){
+        public String getComments(){
             return comments;
         }
 
-        void setError(boolean _b){
+        public void setError(boolean _b){
             iserror = _b;
         }
 
-        boolean isError(){
+        public boolean isError(){
             return iserror;
         }
 }

@@ -90,7 +90,7 @@ public class ParmGenJSONSave {
         String encoded = _d;
         try{
             if(code==null){
-                code = ParmVars.enc.getIANACharset();
+                code = ParmVars.enc.getIANACharsetName();
             }
             if(_dd!=null){
                 encoded = URLEncoder.encode(_dd, code);
@@ -128,7 +128,7 @@ public class ParmGenJSONSave {
         GSONSaveObject gsobject = new GSONSaveObject();
         
         gsobject.VERSION = JSONVERSION;
-        gsobject.LANG = ParmVars.enc.getIANACharset();
+        gsobject.LANG = ParmVars.enc.getIANACharsetName();
         gsobject.ProxyInScope = ParmGen.ProxyInScope;
         gsobject.IntruderInScope = ParmGen.IntruderInScope;
         gsobject.RepeaterInScope = ParmGen.RepeaterInScope;

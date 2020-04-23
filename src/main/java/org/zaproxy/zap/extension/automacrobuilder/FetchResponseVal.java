@@ -340,7 +340,7 @@ class FetchResponseVal {
 						if (_uencode == true) {
 							String venc = matchval;
 							try {
-								venc = URLEncoder.encode(matchval, ParmVars.enc.getIANACharset());
+								venc = URLEncoder.encode(matchval, ParmVars.enc.getIANACharsetName());
 							} catch (UnsupportedEncodingException e) {
 								// NOP
 							}
@@ -380,7 +380,7 @@ class FetchResponseVal {
                                                 if (_uencode == true) {
                                                         String venc = v;
                                                         try {
-                                                                venc = URLEncoder.encode(v, ParmVars.enc.getIANACharset());
+                                                                venc = URLEncoder.encode(v, ParmVars.enc.getIANACharsetName());
                                                         } catch (UnsupportedEncodingException e) {
                                                                 // NOP
                                                         }

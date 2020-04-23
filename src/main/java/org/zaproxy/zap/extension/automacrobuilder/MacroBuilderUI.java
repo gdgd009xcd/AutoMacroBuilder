@@ -1230,7 +1230,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                             
                             String encodedregex = regex;
                             try {
-                                encodedregex = URLEncoder.encode(regex, ParmVars.enc.getIANACharset());
+                                encodedregex = URLEncoder.encode(regex, ParmVars.enc.getIANACharsetName());
                             } catch (UnsupportedEncodingException ex) {
                                 Logger.getLogger(MacroBuilderUI.class.getName()).log(Level.SEVERE, null, ex);
                                
@@ -1596,7 +1596,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
             try {
                 PRequestResponse pqr = pmt.getOriginalRequest(OriginalEditTarget);
                 PRequest origrequest = pqr.request;
-                request = new PRequest(origrequest.getHost(), origrequest.getPort(), origrequest.isSSL(), message.getBytes(EditPageEnc.getIANACharset()),EditPageEnc);
+                request = new PRequest(origrequest.getHost(), origrequest.getPort(), origrequest.isSSL(), message.getBytes(EditPageEnc.getIANACharsetName()),EditPageEnc);
                 request.setSSL(EditTargetIsSSL);
                 request.setPort(EditTargetPort);
                 pmt.updateOriginalRequest(OriginalEditTarget, request);

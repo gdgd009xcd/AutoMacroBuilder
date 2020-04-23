@@ -2,7 +2,16 @@ package org.zaproxy.zap.extension.automacrobuilder;
 
 //https://docs.oracle.com/javase/jp/1.5.0/guide/intl/encoding.doc.html
 
+import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.UnsupportedCharsetException;
+
+
 public enum Encode  {
+    
+    
+    
+    // EnumName("IANA Charset name( ==Charset.name() )")
 	ISO_8859_1("ISO-8859-1"),
 	ISO_8859_2("ISO-8859-2"),
 	ISO_8859_4("ISO-8859-4"),
@@ -85,7 +94,7 @@ public enum Encode  {
 	windows_1256("windows-1256"),
 	windows_1258("windows-1258"),
 	windows_31j("windows-31j"),
-	x_Big5_Solaris("x-Big5_Solaris"),
+	x_Big5_Solaris("x-Big5-Solaris"),
 	x_euc_jp_linux("x-euc-jp-linux"),
 	x_EUC_TW("x-EUC-TW"),
 	x_eucJP_Open("x-eucJP-Open"),
@@ -123,8 +132,8 @@ public enum Encode  {
 	x_IBM964("x-IBM964"),
 	x_IBM970("x-IBM970"),
 	x_ISCII91("x-ISCII91"),
-	x_ISO2022_CN_CNS("x-ISO2022-CN-CNS"),
-	x_ISO2022_CN_GB("x-ISO2022-CN-GB"),
+	x_ISO2022_CN_CNS("x-ISO-2022-CN-CNS"),
+	x_ISO2022_CN_GB("x-ISO-2022-CN-GB"),
 	x_iso_8859_11("x-iso-8859-11"),
 	x_JISAutoDetect("x-JISAutoDetect"),
 	x_Johab("x-Johab"),
@@ -150,17 +159,23 @@ public enum Encode  {
 	x_windows_950("x-windows-950");
 
 
-	private final String name;
-	private final String uppercasename;
+	private final String name;// == Charset.name()
+	private final String uppercasename;// == Charset.name().toUpperCase()
 
+        private static org.apache.logging.log4j.Logger logger4j = org.apache.logging.log4j.LogManager.getLogger();
+        
 	//コンストラクタ
     Encode(String _name) {
-        this.name = _name;
+        this.name = _name;//IANA Charset name == Charset.name()
         this.uppercasename = _name.toUpperCase();
     }
 
-    public String getIANACharset() {
+    public String getIANACharsetName() {
         return this.name;
+    }
+    
+    public Charset getIANACharset(){
+        return Charset.forName(name);
     }
 
     public static String[] getIANAlist(){
@@ -168,7 +183,7 @@ public enum Encode  {
         String[] ianalist = new String[enumArray.length];
         int i = 0;
         for(Encode enumval : enumArray){
-            ianalist[i] = new String(enumval.getIANACharset());
+            ianalist[i++] = new String(enumval.getIANACharsetName());
         }
         return ianalist;
     }
@@ -177,12 +192,19 @@ public enum Encode  {
         // enum型全てを取得します。
         Encode[] enumArray = Encode.values();
 
-        // 取得出来たenum型分ループします。
-        for(Encode enumStr : enumArray) {
-            // 引数とenum型の文字列部分を比較します。
-            if (str.toUpperCase().equals(enumStr.uppercasename.toString())){
-                return enumStr;
+        try{
+            Charset cset = Charset.forName(str);
+            String charsetname = cset.name();
+        
+            // 取得出来たenum型分ループします。
+            for(Encode enumStr : enumArray) {
+                // 引数とenum型の文字列部分を比較します。
+                if (charsetname.toUpperCase().equals(enumStr.uppercasename)){
+                    return enumStr;
+                }
             }
+        }catch(Exception e1){
+            logger4j.error("unknown charset:" + str, e1);
         }
         return Encode.UTF_8;//default
     }
@@ -191,12 +213,19 @@ public enum Encode  {
         // enum型全てを取得します。
         Encode[] enumArray = Encode.values();
 
-        // 取得出来たenum型分ループします。
-        for(Encode enumStr : enumArray) {
-            // 引数とenum型の文字列部分を比較します。
-            if (str.toUpperCase().equals(enumStr.uppercasename.toString())){
-                return true;
+        try{
+            Charset cset = Charset.forName(str);
+            String charsetname = cset.name();
+            
+            // 取得出来たenum型分ループします。
+            for(Encode enumStr : enumArray) {
+                // 引数とenum型の文字列部分を比較します。
+                if (charsetname.toUpperCase().equals(enumStr.uppercasename)){
+                    return true;
+                }
             }
+        }catch(Exception e){
+            logger4j.error("unknown charset:" + str, e);
         }
         return false;//default
     }

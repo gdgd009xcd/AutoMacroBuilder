@@ -73,10 +73,10 @@ public class ParmGenTop extends javax.swing.JFrame {
         DefaultComboBoxModel<String> cbmodel = new DefaultComboBoxModel<String>();
         Encode[] enclist = Encode.values();
         for(Encode charset : enclist){
-            cbmodel.addElement(charset.getIANACharset());
+            cbmodel.addElement(charset.getIANACharsetName());
         }
         LANGUAGE.setModel(cbmodel);
-        LANGUAGE.setSelectedItem(ParmVars.enc.getIANACharset());
+        LANGUAGE.setSelectedItem(ParmVars.enc.getIANACharsetName());
         renderTable();
         current_row = 0;
         ParmGen pg = new ParmGen(pmt);
@@ -151,7 +151,7 @@ public class ParmGenTop extends javax.swing.JFrame {
             }else{
                 ScannerScope.setSelected(false);
             }
-            LANGUAGE.setSelectedItem(ParmVars.enc.getIANACharset());
+            LANGUAGE.setSelectedItem(ParmVars.enc.getIANACharsetName());
         }
         
         

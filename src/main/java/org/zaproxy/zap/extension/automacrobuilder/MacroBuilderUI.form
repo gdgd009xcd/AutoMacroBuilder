@@ -540,7 +540,7 @@
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="&lt;TakeOverCache&gt;">
+                    <TitledBorder title="&#x958b;&#x59cb;&#x6642;&#x306b;&#x30ad;&#x30e3;&#x30c3;&#x30b7;&#x30e5;&#x304b;&#x3089;Cookie /&#x30c8;&#x30fc;&#x30af;&#x30f3;&#x5024;&#x3092;&#x5f15;&#x304d;&#x7d99;&#x3050;">
                       <ResourceString PropertyName="titleX" bundle="burp/Bundle.properties" key="TakeOverCache" replaceFormat="bundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
                     </TitledBorder>
                   </Border>
@@ -602,7 +602,7 @@
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="&lt;TrackingParamBorder&gt;">
+                    <TitledBorder title="Tracking Params(e.g. CSRF token)">
                       <ResourceString PropertyName="titleX" bundle="burp/Bundle.properties" key="TrackingParamBorder" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
                     </TitledBorder>
                   </Border>

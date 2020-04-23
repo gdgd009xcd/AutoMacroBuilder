@@ -25,10 +25,10 @@ public class LangSelectDialog extends javax.swing.JDialog {
         DefaultComboBoxModel<String> cbmodel = new DefaultComboBoxModel<String>();
         Encode[] enclist = Encode.values();
         for(Encode charset : enclist){
-            cbmodel.addElement(charset.getIANACharset());
+            cbmodel.addElement(charset.getIANACharsetName());
         }
         LANGUAGE.setModel(cbmodel);
-        LANGUAGE.setSelectedItem(lang.getIANACharset());
+        LANGUAGE.setSelectedItem(lang.getIANACharsetName());
     }
 
     /**

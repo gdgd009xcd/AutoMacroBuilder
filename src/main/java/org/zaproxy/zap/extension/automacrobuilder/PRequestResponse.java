@@ -35,7 +35,7 @@ public class PRequestResponse {
         request = _req;
     }
     
-    void setComments(String _v){
+    public void setComments(String _v){
         comments = _v;
     }
     
@@ -62,7 +62,7 @@ public class PRequestResponse {
     boolean isError(){
         return iserror;
     }
-    void setError(boolean b){
+    public void setError(boolean b){
         iserror = b;
     }
     

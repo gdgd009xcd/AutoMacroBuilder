@@ -6,7 +6,10 @@
 
 package burp;
 
+import org.zaproxy.zap.extension.automacrobuilder.ParmGen;
 import org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTrace;
+import static org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTrace.PMT_CURRENT_BEGIN;
+import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
 
 
 /**
@@ -28,7 +31,25 @@ public class BurpMacroStartAction implements ISessionHandlingAction {
     @Override
     public void performAction(IHttpRequestResponse currentrequest, IHttpRequestResponse[] executedmacros) {
         tr.startBeforePreMacro();//前処理マクロを実行。
-        tr.startCurrentRequest(currentrequest);
+        startCurrentRequest(currentrequest);
+    }
+    
+    public void startCurrentRequest(IHttpRequestResponse currentRequest){
+        ParmVars.plog.clearComments();
+        ParmVars.plog.setError(false);
+        //state = PMT_CURRENT_BEGIN;
+        tr.setState(PMT_CURRENT_BEGIN);
+        ParmGen pgen = new ParmGen(tr);
+        IHttpService iserv = currentRequest.getHttpService();
+        String host = iserv.getHost();
+        int port = iserv.getPort();
+        boolean isSSL = (iserv.getProtocol().toLowerCase().equals("https")?true:false);
+        ParmVars.plog.debuglog(0, "Current StepNo:" + tr.getStepNo() + " "+ host );
+        byte[] retval = pgen.Run(host, port, isSSL, currentRequest.getRequest());
+        if ( retval != null){
+                currentRequest.setRequest(retval);
+
+        }
     }
     
 }

@@ -196,7 +196,7 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
             String name = (String)ReqParsedTableModel.getValueAt(j, 1);//name
             String namedecoded = name;
             try {
-                namedecoded = URLDecoder.decode(name, ParmVars.enc.getIANACharset());
+                namedecoded = URLDecoder.decode(name, ParmVars.enc.getIANACharsetName());
             } catch (UnsupportedEncodingException ex) {
                 Logger.getLogger(ParmGenAddParms.class.getName()).log(Level.SEVERE, null, ex);
             }

@@ -41,11 +41,11 @@ import org.zaproxy.zap.extension.automacrobuilder.ParmGenUtil;
 import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
 import org.zaproxy.zap.extension.automacrobuilder.Encode;
 import org.zaproxy.zap.extension.automacrobuilder.InterfaceLangOKNG;
-import org.zaproxy.zap.extension.automacrobuilder.LangSelectDialog;
+import org.zaproxy.zap.extension.automacrobuilder.generated.LangSelectDialog;
 import org.zaproxy.zap.extension.automacrobuilder.PRequest;
 import org.zaproxy.zap.extension.automacrobuilder.PResponse;
 import org.zaproxy.zap.extension.automacrobuilder.ParmGenJSONSave;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenTop;
+import org.zaproxy.zap.extension.automacrobuilder.generated.ParmGenTop;
 
 
 

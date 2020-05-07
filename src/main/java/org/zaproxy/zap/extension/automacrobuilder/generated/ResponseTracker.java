@@ -2,8 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.zaproxy.zap.extension.automacrobuilder;
+package org.zaproxy.zap.extension.automacrobuilder.generated;
 
+import org.zaproxy.zap.extension.automacrobuilder.generated.ParmGenRegex;
+import org.zaproxy.zap.extension.automacrobuilder.generated.ParmGenNew;
+import org.zaproxy.zap.extension.automacrobuilder.generated.ParmGenAddParms;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ResourceBundle;
@@ -13,6 +16,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 import javax.swing.text.BadLocationException;
+import org.zaproxy.zap.extension.automacrobuilder.InterfaceRegex;
+import org.zaproxy.zap.extension.automacrobuilder.PRequestResponse;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenJSONSave;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenSession;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenUtil;
+import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
+import org.zaproxy.zap.extension.automacrobuilder.StrSelectInfo;
+import org.zaproxy.zap.extension.automacrobuilder.interfaceParmGenWin;
 
 
 

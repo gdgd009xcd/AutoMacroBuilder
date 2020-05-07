@@ -2,13 +2,18 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.zaproxy.zap.extension.automacrobuilder;
+package org.zaproxy.zap.extension.automacrobuilder.generated;
 
+import org.zaproxy.zap.extension.automacrobuilder.generated.ParmGenAddParms;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ResourceBundle;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import org.zaproxy.zap.extension.automacrobuilder.FileReadLine;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenSession;
+import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
+import org.zaproxy.zap.extension.automacrobuilder.interfaceParmGenWin;
 
 /**
  *

@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package org.zaproxy.zap.extension.automacrobuilder;
+package org.zaproxy.zap.extension.automacrobuilder.generated;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,6 +14,10 @@ import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.ListModel;
+import org.zaproxy.zap.extension.automacrobuilder.ParmFileFilter;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenReadFile;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenWriteFile;
+import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
 
 /**
  *

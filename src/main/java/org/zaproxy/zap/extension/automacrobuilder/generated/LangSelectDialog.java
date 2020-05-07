@@ -3,9 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.zaproxy.zap.extension.automacrobuilder;
+package org.zaproxy.zap.extension.automacrobuilder.generated;
 
 import javax.swing.DefaultComboBoxModel;
+import org.zaproxy.zap.extension.automacrobuilder.Encode;
+import org.zaproxy.zap.extension.automacrobuilder.InterfaceLangOKNG;
+import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
 
 /**
  *

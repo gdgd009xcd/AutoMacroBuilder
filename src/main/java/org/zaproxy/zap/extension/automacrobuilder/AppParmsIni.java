@@ -1,7 +1,21 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Zed Attack Proxy (ZAP) and its related class files.
+ *
+ * ZAP is an HTTP/HTTPS proxy for assessing web application security.
+ *
+ * Copyright 2020 The ZAP Development Team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.zaproxy.zap.extension.automacrobuilder;
 
@@ -16,543 +30,571 @@ import java.util.ResourceBundle;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-/**
- *
- * @author daike
- */
+/** @author daike */
 //
 // class AppParmsIni
 //
 public class AppParmsIni {
-        private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
-	private String url;
-	private Pattern urlregex;
-	public ArrayList<AppValue> parmlist = null;
-        Iterator<AppValue> it;
-	public int len = 4;
-	private String type;
-	public int typeval;//number:0, rand:1, csv:2, track:3
-	public int inival = 0;
-	public int maxval = 2147483646;
-	FileReadLine frl = null;
-        public String csvname = null;
-	String exerr = "";
-	private String relativecntfile = "";//filename only. no contain directory.
-	String cstrcnt = null;
-	int rndval = 1;
-	//public int row;
-        public Boolean pause =false;
-        private int TrackFromStep =-1;// StepNo== -1:any  >0:TrackingFrom 
-        private int SetToStep = ParmVars.TOSTEPANY;// == TOSTEPANY:any   0<= SetToStep < TOSTEPANY:SetTo 
+    private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
+    private String url;
+    private Pattern urlregex;
+    public ArrayList<AppValue> parmlist = null;
+    Iterator<AppValue> it;
+    public int len = 4;
+    private String type;
+    public int typeval; // number:0, rand:1, csv:2, track:3
+    public int inival = 0;
+    public int maxval = 2147483646;
+    public FileReadLine frl = null;
+    public String csvname = null;
+    String exerr = "";
+    private String relativecntfile = ""; // filename only. no contain directory.
+    String cstrcnt = null;
+    int rndval = 1;
+    // public int row;
+    public Boolean pause = false;
+    private int TrackFromStep = -1; // StepNo== -1:any  >0:TrackingFrom
+    private int SetToStep =
+            ParmVars.TOSTEPANY; // == TOSTEPANY:any   0<= SetToStep < TOSTEPANY:SetTo
 
-        
-        public static final int T_NUMBER = 0;//数値昇順
-        public static final int T_RANDOM = 1;//乱数
-        public static final int T_CSV = 2;//CSV入力
-        public static final int T_TRACK = 3;//レスポンス追跡
-        public static final int T_TAMPER = 4;//TamperProxy
-        public static final String T_NUMBER_NAME = "number";
-        public static final String T_RANDOM_NAME = "random";
-        public static final String T_CSV_NAME = "csv";
-        public static final String T_TRACK_NAME = "track";
-        public static final String T_TAMPER_NAME = "tamper";
-        public static final int T_NUMBER_AVCNT = 2;
-        public static final int T_RANDOM_AVCNT = 2;
-        public static final int T_CSV_AVCNT = 2;
-        public static final int T_TRACK_AVCNT = 8;//csvファイルの旧フォーマットinival==0時は読み込み時のみ6
-        public static final int T_TRACK_OLD_AVCNT = 6;
-        public static final int T_TAMPER_AVCNT = 8;
+    public static final int T_NUMBER = 0; // 数値昇順
+    public static final int T_RANDOM = 1; // 乱数
+    public static final int T_CSV = 2; // CSV入力
+    public static final int T_TRACK = 3; // レスポンス追跡
+    public static final int T_TAMPER = 4; // TamperProxy
+    public static final String T_NUMBER_NAME = "number";
+    public static final String T_RANDOM_NAME = "random";
+    public static final String T_CSV_NAME = "csv";
+    public static final String T_TRACK_NAME = "track";
+    public static final String T_TAMPER_NAME = "tamper";
+    public static final int T_NUMBER_AVCNT = 2;
+    public static final int T_RANDOM_AVCNT = 2;
+    public static final int T_CSV_AVCNT = 2;
+    public static final int T_TRACK_AVCNT = 8; // csvファイルの旧フォーマットinival==0時は読み込み時のみ6
+    public static final int T_TRACK_OLD_AVCNT = 6;
+    public static final int T_TAMPER_AVCNT = 8;
 
-        
-        public enum NumberCounterTypes {
-            NumberCount,
-            DateCount,
-        }
-        
-        public void setTrackFromStep(int _step){
-            TrackFromStep = _step;
-        }
-        
-        public int getTrackFromStep(){
-            return TrackFromStep;
-        }
-        
-        public void setSetToStep(int _step){
-            SetToStep = _step;
-        }
-        
-        public int getSetToStep(){
-            return SetToStep;
-        }
-        
-        public boolean ispaused() {
-            return pause;
-        }
+    public enum NumberCounterTypes {
+        NumberCount,
+        DateCount,
+    }
 
-        public void setPause(boolean b){
-            pause = b;
-            String _c = getCurrentValue();
-            switch(typeval){
-                case T_NUMBER:
-                case T_CSV:
-                    int _i = Integer.parseInt(_c);
-                    if(pause){
-                        if ( _i > 0){
-                            _i--;//>0 ならデクリメントして元に戻す
-                            updateCurrentValue(_i);
-                        }
-                    }else{
-                        _i++;//インクリメント
+    public void setTrackFromStep(int _step) {
+        TrackFromStep = _step;
+    }
+
+    public int getTrackFromStep() {
+        return TrackFromStep;
+    }
+
+    public void setSetToStep(int _step) {
+        SetToStep = _step;
+    }
+
+    public int getSetToStep() {
+        return SetToStep;
+    }
+
+    public boolean ispaused() {
+        return pause;
+    }
+
+    public void setPause(boolean b) {
+        pause = b;
+        String _c = getCurrentValue();
+        switch (typeval) {
+            case T_NUMBER:
+            case T_CSV:
+                int _i = Integer.parseInt(_c);
+                if (pause) {
+                    if (_i > 0) {
+                        _i--; // >0 ならデクリメントして元に戻す
                         updateCurrentValue(_i);
                     }
-                    break;
-                case T_TRACK:
-                    break;
-                case T_RANDOM:
-                    break;
+                } else {
+                    _i++; // インクリメント
+                    updateCurrentValue(_i);
+                }
+                break;
+            case T_TRACK:
+                break;
+            case T_RANDOM:
+                break;
+        }
+    }
+
+    /*int getRow(){
+    	return row;
+    }*/
+
+    public void clearAppValues() {
+        if (parmlist != null) {
+            for (AppValue ap : parmlist) {
+                ParmGenTrackJarFactory.remove(ap.getTrackKey());
+            }
+        }
+        parmlist = new ArrayList<AppValue>();
+    }
+
+    public void addAppValue(AppValue app) {
+        if (parmlist != null) {
+            // app.setCol(parmlist.size());
+            parmlist.add(app);
+        }
+    }
+
+    public String getIniValDsp() {
+        switch (typeval) {
+            case T_NUMBER:
+                return Integer.toString(inival);
+            case T_CSV:
+                return frl.getFileName();
+            case T_TRACK:
+                return "";
+            case T_RANDOM:
+                return "";
+        }
+        return "";
+    }
+
+    public String getTypeValDsp() {
+        switch (typeval) {
+            case T_NUMBER:
+                return bundle.getString("ParmGen.数値昇順.text");
+            case T_CSV:
+                return bundle.getString("ParmGen.CSVファイル昇順.text");
+            case T_RANDOM:
+                return bundle.getString("ParmGen.乱数.text");
+            case T_TRACK:
+                return bundle.getString("ParmGen.追跡.text");
+            case T_TAMPER:
+                return bundle.getString("ParmGen.TAMPERPROXY.text");
+        }
+        return "";
+    }
+
+    public void setType(String _type) {
+        type = _type;
+        if (type.indexOf(T_RANDOM_NAME) != -1) { // random
+            for (int x = 0; x < len; x++) {
+                rndval = rndval * 10;
+            }
+            typeval = T_RANDOM;
+        } else if (type.indexOf(T_NUMBER_NAME) != -1) {
+            typeval = T_NUMBER;
+        } else if (type.indexOf(T_TRACK_NAME) != -1) {
+            typeval = T_TRACK;
+        } else if (type.indexOf(T_TAMPER_NAME) != -1) {
+            typeval = T_TAMPER;
+        } else {
+            typeval = T_CSV;
+        }
+    }
+
+    public int getType() {
+        return typeval;
+    }
+
+    public int getReadAVCnt(int _plen) {
+        switch (typeval) {
+            case T_NUMBER:
+                return T_NUMBER_AVCNT;
+            case T_CSV:
+                return T_CSV_AVCNT;
+            case T_RANDOM:
+                return T_RANDOM_AVCNT;
+            case T_TAMPER:
+                return T_TAMPER_AVCNT;
+            case T_TRACK:
+                if (_plen > 0) return _plen; // parameter count
+                else {
+                    return T_TRACK_OLD_AVCNT; // 旧フォーマット
                 }
         }
+        return 0;
+    }
 
-	/*int getRow(){
-		return row;
-	}*/
+    public String getLenDsp() {
+        return Integer.toString(len);
+    }
 
-        public void clearAppValues(){
-            if(parmlist!=null){
-                for(AppValue ap: parmlist){
-                    ParmGenTrackJarFactory.remove(ap.getTrackKey());
+    public int getAppValuesLineCnt() {
+        if (parmlist != null) {
+            int l = parmlist.size();
+            if (l <= 0) l = 1;
+            return l;
+        }
+        return 1;
+    }
+
+    public String getAppValuesDsp() {
+        it = parmlist.iterator();
+        String appvalues = "";
+        while (it.hasNext()) {
+            AppValue ap = it.next();
+            if (appvalues.length() > 0) {
+                appvalues += "\n";
+            }
+            appvalues += ap.getAppValueDsp(typeval);
+        }
+        return appvalues;
+    }
+
+    public String setUrl(String _url) {
+        exerr = null;
+        try {
+            url = _url;
+            urlregex = ParmGenUtil.Pattern_compile(url);
+
+        } catch (Exception e) {
+            urlregex = null;
+            exerr = e.toString();
+        }
+        return exerr;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public Pattern getPatternUrl() {
+        return urlregex;
+    }
+
+    // --------------constructors begin----------------
+
+    public AppParmsIni() {
+        setCntFileNameNew();
+        rewindAppValues();
+    }
+    // --------------constructors end----------------
+
+    public String getTypeVal() {
+        switch (typeval) {
+            case T_NUMBER:
+                return T_NUMBER_NAME;
+            case T_RANDOM:
+                return T_RANDOM_NAME;
+            case T_CSV:
+                return T_CSV_NAME;
+            case T_TRACK:
+                return T_TRACK_NAME;
+            case T_TAMPER:
+                return T_TAMPER_NAME;
+            default:
+                break;
+        }
+        return "";
+    }
+
+    private String getCurrentSaveDir() {
+        File cfile = new File(ParmVars.parmfile);
+        String dirname = cfile.getParent();
+        return dirname;
+    }
+
+    private String crtRandomFileName() {
+        String fname = null;
+
+        UUID uuid = UUID.randomUUID();
+        String uustr = uuid.toString();
+        fname = uustr + ".txt";
+        return fname;
+    }
+
+    private String getCntFullPathName() {
+        String fname = null;
+        File cfile = new File(ParmVars.parmfile);
+        String dirname = getCurrentSaveDir();
+        String filename = cfile.getName();
+
+        int lastpos = filename.lastIndexOf(".");
+        int slen = filename.length();
+        String name = filename;
+        if (lastpos > 0 && slen > lastpos) {
+            String prefix = filename.substring(0, lastpos);
+            String suffix = filename.substring(lastpos + 1);
+            name = prefix;
+        }
+
+        fname = dirname + ParmVars.fileSep + name + "_" + relativecntfile;
+        return fname;
+    }
+
+    private void setCntFileNameNew() {
+        if (relativecntfile == null || relativecntfile.length() == 0) {
+            relativecntfile = crtRandomFileName();
+        }
+    }
+
+    public void setRelativeCntFileName(String f) {
+        relativecntfile = f;
+    }
+
+    public String getRelativeCntFileName() {
+        return relativecntfile;
+    }
+
+    /*
+    void setRowAndCntFile(int _r){//deprecated. 2021/1 will be deleted.
+        row = _r;
+        setCntFileName();
+    }*/
+
+    /*void setRow(int r){
+        row = r;
+    }*/
+
+    // when entry AppParmIni/AppValue modified, accidentally last AppValue entry NOCOUNT flag maybe
+    // be set.
+    // so it must be clear NOCOUNT.
+    public void clearLastAppValueNOCOUNT() {
+
+        if (parmlist != null) {
+            int plast = parmlist.size() - 1;
+            if (plast >= 0) {
+                AppValue av = parmlist.get(plast);
+                av.clearNoCount();
+                parmlist.set(plast, av);
+            }
+        }
+    }
+
+    String getFillZeroInt(int v) {
+        String nval = Integer.toString(v);
+        int zero = len - nval.length();
+        while (zero > 0) {
+            nval = "0" + nval;
+            zero--;
+        }
+        return nval;
+    }
+
+    String getGenValue(
+            ParmGenMacroTrace pmt,
+            AppValue apv,
+            ParmGenTokenKey tk,
+            int currentStepNo,
+            int toStepNo,
+            int _valparttype,
+            int csvpos) {
+        int n;
+        switch (typeval) {
+            case T_NUMBER: // number
+                n = countUp(_valparttype, this);
+                if (n > -1) {
+                    return getFillZeroInt(n);
+                } else {
+                    return null;
                 }
-            }
-            parmlist = new ArrayList<AppValue>();
-        }
-        
-        public void addAppValue(AppValue app){
-            if(parmlist!=null){
-                //app.setCol(parmlist.size());
-                parmlist.add(app);
-            }
-        }
-
-        public String getIniValDsp(){
-            switch(typeval){
-                case T_NUMBER:
-                    return Integer.toString(inival);
-                case T_CSV:
-                    return frl.getFileName();
-                case T_TRACK:
-                    return "";
-                case T_RANDOM:
-                    return "";
-            }
-            return "";
-        }
-
-        public String getTypeValDsp(){
-            switch(typeval){
-                case T_NUMBER:
-                    return bundle.getString("ParmGen.数値昇順.text");
-                case T_CSV:
-                    return bundle.getString("ParmGen.CSVファイル昇順.text");
-                case T_RANDOM:
-                    return bundle.getString("ParmGen.乱数.text");
-                case T_TRACK:
-                    return bundle.getString("ParmGen.追跡.text");
-                case T_TAMPER:
-                    return bundle.getString("ParmGen.TAMPERPROXY.text");
-            }
-            return "";
-        }
-
-        public void setType(String _type){
-            type = _type;
-            if ( type.indexOf(T_RANDOM_NAME)!=-1){//random
-                    for(int x = 0; x < len; x++){
-                            rndval = rndval * 10;
+            case T_RANDOM: // random
+                Random rand = new Random();
+                n = rand.nextInt(rndval);
+                return getFillZeroInt(n);
+            case T_TRACK: // loc
+                // if ( global.Location != void ){
+                return pmt.getFetchResponseVal()
+                        .getLocVal(apv.getTrackKey(), tk, currentStepNo, toStepNo);
+                // }
+            default: // csv
+                if (frl != null) {
+                    ParmVars.plog.debuglog(1, "frl.csvfile:" + frl.csvfile);
+                    if (csvpos == -1) {
+                        csvpos = len;
                     }
-                    typeval = T_RANDOM;
-            }else if(type.indexOf(T_NUMBER_NAME)!=-1){
-                    typeval = T_NUMBER;
-            }else if(type.indexOf(T_TRACK_NAME)!=-1){
-                    typeval = T_TRACK;
-            }else if(type.indexOf(T_TAMPER_NAME)!=-1){
-                    typeval = T_TAMPER;
-            }else{
-                    typeval = T_CSV;
+                    return frl.readLine(_valparttype, csvpos, this); // CSVレコード
+                } else {
+                    ParmVars.plog.debuglog(1, "getGenValue frl is NULL");
+                }
+                break;
+        }
+        return null;
+    }
+
+    String getStrCnt(
+            ParmGenMacroTrace pmt,
+            AppValue apv,
+            ParmGenTokenKey tk,
+            int currentStepNo,
+            int toStepNo,
+            int _valparttype,
+            int csvpos) {
+        // if ( cstrcnt == null|| typeval == 3){
+        cstrcnt = getGenValue(pmt, apv, tk, currentStepNo, toStepNo, _valparttype, csvpos);
+        // }
+        return cstrcnt;
+    }
+
+    int countUp(int _valparttype, AppParmsIni _parent) {
+        // counter file open
+        int cnt = inival;
+        try {
+
+            FileReader fr = new FileReader(getCntFullPathName());
+            BufferedReader br = new BufferedReader(fr);
+            String rdata;
+            String alldata = "";
+            while ((rdata = br.readLine()) != null) {
+                rdata = rdata.replace("\r", "");
+                rdata = rdata.replace("\n", "");
+                alldata += rdata;
+            }
+            cnt = Integer.valueOf(alldata).intValue();
+
+            fr.close();
+
+        } catch (Exception e) {
+            ParmVars.plog.printlog("read file:" + getCntFullPathName() + " " + e.toString(), true);
+            cnt = inival;
+        }
+
+        int ncnt = cnt + 1;
+
+        if (((_valparttype & AppValue.C_NOCOUNT) == AppValue.C_NOCOUNT) || _parent.ispaused()) {
+            ncnt = cnt; // no countup
+        } else if (ncnt > maxval) {
+            ParmVars.plog.debuglog(
+                    0,
+                    "CountUp maxval reached. reset to inival"
+                            + Integer.toString(ncnt)
+                            + "->"
+                            + Integer.toString(inival));
+            ncnt = inival;
+        } else {
+            ParmVars.plog.debuglog(1, "CountUp ncnt:" + Integer.toString(ncnt));
+        }
+
+        if ((_valparttype & AppValue.C_NOCOUNT) != AppValue.C_NOCOUNT) {
+            try {
+                FileWriter filewriter = new FileWriter(getCntFullPathName(), false);
+                String s1 = String.valueOf(ncnt);
+                filewriter.write(s1);
+                filewriter.close();
+            } catch (Exception e) {
+                ParmVars.plog.printlog(
+                        "write file:" + getCntFullPathName() + " " + e.toString(), true);
+                throw new RuntimeException(e.toString());
             }
         }
+        return cnt;
+    }
 
-        public int getType(){
-            return typeval;
-        }
-
-        public int getReadAVCnt(int _plen){
-            switch(typeval){
-                case T_NUMBER:
-                    return T_NUMBER_AVCNT;
-                case T_CSV:
-                    return T_CSV_AVCNT;
-                case T_RANDOM:
-                    return T_RANDOM_AVCNT;
-                case T_TAMPER:
-                    return T_TAMPER_AVCNT;
-                case T_TRACK:
-                    if(_plen>0)return _plen;//parameter count
-                    else{
-                        return T_TRACK_OLD_AVCNT;//旧フォーマット
-                    }
+    int updateCounter(int i) {
+        if (i >= 0) {
+            try {
+                ParmVars.plog.debuglog(1, "cntfile:" + getCntFullPathName());
+                FileWriter filewriter = new FileWriter(getCntFullPathName(), false);
+                String s1 = String.valueOf(i);
+                filewriter.write(s1);
+                filewriter.close();
+            } catch (Exception e) {
+                ParmVars.plog.printException(e);
+                return -1;
             }
-            return 0;
         }
+        return i;
+    }
 
-        public String getLenDsp(){
-            return Integer.toString(len);
+    int updateCSV(int i) {
+        return frl.skipLine(i);
+    }
+
+    public String getCurrentValue() {
+        String rval = null;
+        switch (typeval) {
+            case T_NUMBER:
+                int i = countUp(AppValue.C_NOCOUNT, this);
+                rval = Integer.toString(i);
+                break;
+            case T_RANDOM:
+                break;
+            case T_CSV:
+                String rec = frl.readLine(AppValue.C_NOCOUNT, 0, this);
+                rval = String.valueOf(frl.current_line);
+                break;
+            case T_TRACK:
+                break;
+            default:
+                break;
         }
+        return rval;
+    }
 
-        public int getAppValuesLineCnt(){
-            if(parmlist !=null) {
-                int l =  parmlist.size();
-                if (l<=0) l=1;
-                return l;
-            }
-            return 1;
+    public String updateCurrentValue(int i) {
+        int r = -1;
+        String rval = null;
+        switch (typeval) {
+            case T_NUMBER:
+                r = updateCounter(i);
+                if (r != -1) {
+                    rval = Integer.toString(r);
+                }
+                break;
+            case T_RANDOM:
+                break;
+            case T_CSV:
+                r = frl.skipLine(i);
+                if (r != -1) {
+                    rval = String.valueOf(r);
+                }
+                break;
+            case T_TRACK:
+                break;
+            default:
+                break;
         }
+        return rval;
+    }
 
-        public String getAppValuesDsp(){
+    public final void rewindAppValues() {
+        if (parmlist != null) {
             it = parmlist.iterator();
-            String appvalues = "";
-            while(it.hasNext()){
-                AppValue ap = it.next();
-                if (appvalues.length()>0){
-                    appvalues +="\n";
-                }
-                appvalues += ap.getAppValueDsp(typeval);
-            }
-            return appvalues;
+        } else {
+            it = null;
         }
+    }
 
-	public String  setUrl(String _url){
-		exerr = null;
-		try{
-			url = _url;
-			urlregex = ParmGenUtil.Pattern_compile(url);
-
-		}catch(Exception e){
-                    urlregex = null;
-                    exerr = e.toString();
-		}
-		return exerr;
-	}
-        
-        public String getUrl(){
-            return url;
-        }
-        
-        public Pattern getPatternUrl(){
-            return urlregex;
-        }
-
-        // --------------constructors begin----------------
-        
-
-        public AppParmsIni(){
-            setCntFileNameNew();
-            rewindAppValues();
-        }
-        // --------------constructors end----------------
-        
-        public String getTypeVal(){
-            switch(typeval){
+    public Object[] getNextAppValuesRow() {
+        AppValue app;
+        if (it != null && it.hasNext()) {
+            app = it.next();
+            switch (typeval) {
                 case T_NUMBER:
-                    return T_NUMBER_NAME;
-                case T_RANDOM:
-                    return T_RANDOM_NAME;
-                case T_CSV:
-                    return T_CSV_NAME;
-                case T_TRACK:
-                    return T_TRACK_NAME;
-                case T_TAMPER:
-                    return T_TAMPER_NAME;
-                default:
-                    break;
-            }
-            return "";
-        }
-
-        
-
-        private String getCurrentSaveDir(){
-            File cfile = new File(ParmVars.parmfile);
-            String dirname = cfile.getParent();
-            return dirname;
-        }
-        
-        private String crtRandomFileName(){
-            String fname = null;
-            
-            UUID uuid = UUID.randomUUID();
-            String uustr = uuid.toString();
-            fname =  uustr + ".txt";
-            return fname;
-        }
-        
-        private String getCntFullPathName(){
-            String fname = null;
-            File cfile = new File(ParmVars.parmfile);
-            String dirname = getCurrentSaveDir();
-            String filename = cfile.getName();
-
-            int lastpos = filename.lastIndexOf(".");
-            int slen = filename.length();
-            String name = filename;
-            if(lastpos>0&& slen > lastpos){
-                String prefix = filename.substring(0, lastpos);
-                String suffix = filename.substring(lastpos+1);
-                name = prefix;
-            }
-            
-            fname = dirname + ParmVars.fileSep + name + "_" + relativecntfile;
-            return fname;
-        }
-        
-        private void setCntFileNameNew(){
-            if(relativecntfile==null||relativecntfile.length()==0){
-            	relativecntfile = crtRandomFileName();
-            }
-        }
-        
-        public void setRelativeCntFileName(String f){
-            relativecntfile = f;
-        }
-        
-        public String getRelativeCntFileName(){
-            return relativecntfile;
-        }
-        
-
-        /*
-        void setRowAndCntFile(int _r){//deprecated. 2021/1 will be deleted.
-            row = _r;
-            setCntFileName();
-        }*/
-        
-        /*void setRow(int r){
-            row = r;
-        }*/
-
-        // when entry AppParmIni/AppValue modified, accidentally last AppValue entry NOCOUNT flag maybe be set. 
-        // so it must be clear NOCOUNT.
-	void clearLastAppValueNOCOUNT(){
-
-		if ( parmlist != null){
-			int plast = parmlist.size() - 1;
-			if ( plast >= 0 ){
-				AppValue av = parmlist.get(plast);
-                                av.clearNoCount();
-				parmlist.set(plast, av);
-			}
-		}
-	}
-
-	String getFillZeroInt(int v){
-		String nval = Integer.toString(v);
-		int zero = len - nval.length();
-		while(zero>0){
-			nval = "0" + nval;
-			zero--;
-		}
-		return nval;
-	}
-
-	String getGenValue(ParmGenMacroTrace pmt, AppValue apv, ParmGenTokenKey tk, int currentStepNo, int toStepNo, int _valparttype,  int csvpos){
-		int n;
-		switch(typeval){
-		case T_NUMBER://number
-			n = countUp(_valparttype, this);
-			if ( n > -1 ){
-				return getFillZeroInt(n);
-			}else{
-				return null;
-			}
-		case T_RANDOM://random
-			Random rand = new Random();
-			n = rand.nextInt(rndval);
-			return  getFillZeroInt(n);
-		case T_TRACK://loc
-			//if ( global.Location != void ){
-			return pmt.getFetchResponseVal().getLocVal(apv.getTrackKey(), tk, currentStepNo, toStepNo);
-			//}
-		default://csv
-			if ( frl != null){
-				ParmVars.plog.debuglog(1, "frl.csvfile:" + frl.csvfile);
-				if ( csvpos == -1 ){
-					csvpos = len;
-				}
-				return frl.readLine(_valparttype, csvpos, this);//CSVレコード
-			}else{
-				ParmVars.plog.debuglog(1, "getGenValue frl is NULL");
-			}
-			break;
-		}
-		return null;
-	}
-
-	String getStrCnt(ParmGenMacroTrace pmt, AppValue apv, ParmGenTokenKey tk, int currentStepNo, int toStepNo,int _valparttype,  int csvpos){
-		//if ( cstrcnt == null|| typeval == 3){
-		cstrcnt = getGenValue(pmt, apv, tk, currentStepNo,toStepNo,_valparttype, csvpos);
-		//}
-		return cstrcnt;
-	}
-
-	int countUp(int _valparttype, AppParmsIni _parent){
-		//counter file open
-		int cnt = inival;
-                try {
-
-
-			FileReader fr = new FileReader(getCntFullPathName());
-			BufferedReader br = new BufferedReader(fr);
-			String rdata;
-			String alldata = "";
-			while((rdata = br.readLine()) != null) {
-				rdata = rdata.replace("\r","");
-				rdata = rdata.replace("\n","");
-				alldata += rdata;
-			}
-			cnt =Integer.valueOf(alldata).intValue();
-
-			fr.close();
-
-
-		} catch(Exception e) {
-			ParmVars.plog.printlog("read file:" + getCntFullPathName() + " " + e.toString(), true);
-                        cnt = inival;
-		}
-
-		int ncnt = cnt + 1;
-
-		if ( ((_valparttype & AppValue.C_NOCOUNT ) ==  AppValue.C_NOCOUNT) || _parent.ispaused()){
-			ncnt = cnt;//no countup
-		}else if(ncnt > maxval){
-			ParmVars.plog.debuglog(0, "CountUp maxval reached. reset to inival" + Integer.toString(ncnt) + "->" + Integer.toString(inival));
-			ncnt = inival;
-		}else{
-			ParmVars.plog.debuglog(1, "CountUp ncnt:" + Integer.toString(ncnt));
-		}
-
-
-		if ( (_valparttype & AppValue.C_NOCOUNT ) !=  AppValue.C_NOCOUNT){
-                    try {
-                            FileWriter filewriter = new FileWriter(getCntFullPathName(), false);
-                            String s1=String.valueOf(ncnt);
-                            filewriter.write(s1);
-                            filewriter.close();
-                    }catch (Exception e){
-                            ParmVars.plog.printlog("write file:" + getCntFullPathName() + " " + e.toString(), true);
-                            throw new RuntimeException(e.toString());
-                    }
-                }
-		return cnt;
-	}
-
-        int updateCounter(int i){
-            if (i >=0){
-                try {
-                    ParmVars.plog.debuglog(1, "cntfile:" + getCntFullPathName());
-                            FileWriter filewriter = new FileWriter(getCntFullPathName(), false);
-                            String s1=String.valueOf(i);
-                            filewriter.write(s1);
-                            filewriter.close();
-                    }catch (Exception e){
-                            ParmVars.plog.printException(e);
-                            return -1;
-                    }
-            }
-            return i;
-        }
-
-        int updateCSV(int i){
-            return frl.skipLine(i);
-        }
-
-        public String getCurrentValue(){
-            String rval = null;
-            switch(typeval){
-                case T_NUMBER:
-                    int i = countUp(AppValue.C_NOCOUNT, this);
-                    rval = Integer.toString(i);
-                    break;
+                    return new Object[] {
+                        app.getValPart(),
+                        (app.isEnabled() ? false : true),
+                        app.getVal(),
+                        app.isNoCount() ? false : true
+                    };
                 case T_RANDOM:
                     break;
                 case T_CSV:
-                    String rec = frl.readLine(AppValue.C_NOCOUNT, 0, this);
-                    rval = String.valueOf(frl.current_line);
-                    break;
+                    return new Object[] {
+                        app.getValPart(),
+                        (app.isEnabled() ? false : true),
+                        app.csvpos,
+                        app.getVal(),
+                        app.isNoCount() ? false : true
+                    };
                 case T_TRACK:
-                    break;
-                default:
-                    break;
-            }
-            return rval;
-        }
-
-        public String updateCurrentValue(int i){
-            int r = -1;
-            String rval = null;
-            switch(typeval){
-                case T_NUMBER:
-                    r = updateCounter(i);
-                    if(r!=-1){
-                        rval = Integer.toString(r);
-                    }
-                    break;
-                case T_RANDOM:
-                    break;
-                case T_CSV:
-                    r = frl.skipLine(i);
-                    if(r!=-1){
-                        rval = String.valueOf(r);
-                    }
-                    break;
-                case T_TRACK:
-                    break;
-                default:
-                    break;
-            }
-            return rval;
-        }
-
-        public final void rewindAppValues(){
-            if (parmlist!=null){
-                it = parmlist.iterator();
-            }else{
-                it = null;
-            }
-        }
-
-        public Object[] getNextAppValuesRow(){
-            AppValue app;
-            if(it!=null && it.hasNext()){
-                app = it.next();
-                switch(typeval){
-                case T_NUMBER:
-                     return new Object[] {app.getValPart(), (app.isEnabled()?false:true), app.getVal(), app.isNoCount()?false:true};
-                case T_RANDOM:
-                    break;
-                case T_CSV:
-                    return new Object[] {app.getValPart(), (app.isEnabled()?false:true), app.csvpos, app.getVal(), app.isNoCount()?false:true};
-                case T_TRACK:
-                    return new Object[] {app.getValPart(), (app.isEnabled()?false:true), app.getVal(),
+                    return new Object[] {
+                        app.getValPart(),
+                        (app.isEnabled() ? false : true),
+                        app.getVal(),
                         app.getresURL(),
                         app.getresRegex(),
                         app.getResValPart(),
                         Integer.toString(app.resRegexPos),
-                    app.token, app.urlencode, app.fromStepNo==-1?"*":Integer.toString(app.fromStepNo), app.toStepNo==ParmVars.TOSTEPANY?"*":Integer.toString(app.toStepNo), app.tokentype.name()};
+                        app.token,
+                        app.urlencode,
+                        app.fromStepNo == -1 ? "*" : Integer.toString(app.fromStepNo),
+                        app.toStepNo == ParmVars.TOSTEPANY ? "*" : Integer.toString(app.toStepNo),
+                        app.tokentype.name()
+                    };
                 default:
                     break;
-                }
-
             }
-            return null;
         }
+        return null;
+    }
 }
-

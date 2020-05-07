@@ -2,8 +2,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.zaproxy.zap.extension.automacrobuilder;
+package org.zaproxy.zap.extension.automacrobuilder.generated;
 
+import org.zaproxy.zap.extension.automacrobuilder.generated.ParmGenCSVLoader;
+import org.zaproxy.zap.extension.automacrobuilder.generated.ParmGenAutoTrack;
+import org.zaproxy.zap.extension.automacrobuilder.generated.ParmGenAttackListDialog;
+import org.zaproxy.zap.extension.automacrobuilder.generated.ParmGenAddParms;
 import java.io.File;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -13,6 +17,18 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import org.zaproxy.zap.extension.automacrobuilder.AppParmsIni;
+import org.zaproxy.zap.extension.automacrobuilder.AppValue;
+import org.zaproxy.zap.extension.automacrobuilder.FileReadLine;
+import org.zaproxy.zap.extension.automacrobuilder.InterfaceRegex;
+import org.zaproxy.zap.extension.automacrobuilder.PRequest;
+import org.zaproxy.zap.extension.automacrobuilder.PRequestResponse;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenJSONSave;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenSession;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenUtil;
+import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
+import org.zaproxy.zap.extension.automacrobuilder.TextPaneLineWrapper;
+import org.zaproxy.zap.extension.automacrobuilder.interfaceParmGenWin;
 
 /**
  *
@@ -23,7 +39,7 @@ public class ParmGenNew extends javax.swing.JFrame implements InterfaceRegex, in
     //下記定数P_XXXは、ModelTabsの各タブの出現順序と一致しなければならない。
     //ModelTabsStateChangedでタブ切り替えた場合に、切り替えたタブの番号ModelTabs.getSelectedIndex()の返値と下記定数は
     //対応している。
-    final static int P_NUMBERMODEL = 0;
+    public final static int P_NUMBERMODEL = 0;
     final static int P_CSVMODEL = 1;
     final static int P_TRACKMODEL = 2;
     final static int P_TAMPERMODEL = 3;
@@ -513,7 +529,7 @@ private void setAppParmsIni(){
         return ResponseArea.getText();
     }
 
-    ParmGenJSONSave getCSV(){
+    public ParmGenJSONSave getCSV(){
         return parentwin.csv;
     }
     

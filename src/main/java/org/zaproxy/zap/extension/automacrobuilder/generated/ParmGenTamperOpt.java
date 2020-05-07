@@ -4,7 +4,14 @@
  * and open the template in the editor.
  */
 
-package org.zaproxy.zap.extension.automacrobuilder;
+package org.zaproxy.zap.extension.automacrobuilder.generated;
+
+import org.zaproxy.zap.extension.automacrobuilder.AppValue;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenSession;
+import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
+import org.zaproxy.zap.extension.automacrobuilder.generated.ParmGenNew;
+import org.zaproxy.zap.extension.automacrobuilder.generated.ParmGenAddParms;
+import org.zaproxy.zap.extension.automacrobuilder.interfaceParmGenWin;
 
 
 /**
@@ -43,7 +50,7 @@ public class ParmGenTamperOpt extends javax.swing.JDialog implements interfacePa
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("automacrobuilder/Bundle"); // NOI18N
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/zaproxy/zap/extension/automacrobuilder/generated/Bundle"); // NOI18N
         jLabel1.setText(bundle.getString("ParmGenTamperOpt.jLabel1.text")); // NOI18N
 
         PayloadPosition.setModel(new javax.swing.DefaultComboBoxModel(AppValue.makePayloadPositionNames()));

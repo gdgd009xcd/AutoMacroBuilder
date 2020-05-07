@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.zaproxy.zap.extension.automacrobuilder;
+package org.zaproxy.zap.extension.automacrobuilder.generated;
 
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +11,13 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.ResourceBundle;
 import javax.swing.table.DefaultTableModel;
+import org.zaproxy.zap.extension.automacrobuilder.AppParmsIni;
+import org.zaproxy.zap.extension.automacrobuilder.AppValue;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenJSONSave;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTrace;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenToken;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenTokenKey;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenTokenValue;
 
 /**
  *

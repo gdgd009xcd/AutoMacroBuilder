@@ -2,8 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.zaproxy.zap.extension.automacrobuilder;
+package org.zaproxy.zap.extension.automacrobuilder.generated;
 
+import org.zaproxy.zap.extension.automacrobuilder.generated.ParmGenNew;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -15,6 +16,14 @@ import javax.swing.JFileChooser;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
+import org.zaproxy.zap.extension.automacrobuilder.AppParmsIni;
+import org.zaproxy.zap.extension.automacrobuilder.Encode;
+import org.zaproxy.zap.extension.automacrobuilder.LineWrapRenderer;
+import org.zaproxy.zap.extension.automacrobuilder.ParmFileFilter;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGen;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenJSONSave;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTrace;
+import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
 
 /**
  *

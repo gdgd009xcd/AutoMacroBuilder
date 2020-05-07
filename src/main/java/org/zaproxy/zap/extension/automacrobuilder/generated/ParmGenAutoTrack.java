@@ -2,14 +2,29 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.zaproxy.zap.extension.automacrobuilder;
+package org.zaproxy.zap.extension.automacrobuilder.generated;
 
+import org.zaproxy.zap.extension.automacrobuilder.generated.ParmGenAddParms;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ResourceBundle;
 
 import javax.swing.table.DefaultTableModel;
+import org.zaproxy.zap.extension.automacrobuilder.AppValue;
+import org.zaproxy.zap.extension.automacrobuilder.InterfaceCollection;
+import org.zaproxy.zap.extension.automacrobuilder.InterfaceRegex;
+import org.zaproxy.zap.extension.automacrobuilder.PRequestResponse;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenArrayList;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenGSONDecoder;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenJSONSave;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenParser;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenSession;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenToken;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenTokenKey;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenTokenValue;
+import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
+import org.zaproxy.zap.extension.automacrobuilder.interfaceParmGenWin;
 
 /**
  *
@@ -53,7 +68,7 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle(bundle.getString("ParmGenAutoTrack.title.text")); // NOI18N
 
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("automacrobuilder/Bundle"); // NOI18N
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/zaproxy/zap/extension/automacrobuilder/generated/Bundle"); // NOI18N
         jLabel1.setText(bundle.getString("ParmGenAutoTrack.jLabel1.text")); // NOI18N
 
         TokenTable.setModel(new javax.swing.table.DefaultTableModel(

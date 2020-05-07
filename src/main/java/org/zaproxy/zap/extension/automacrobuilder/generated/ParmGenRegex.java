@@ -3,7 +3,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.zaproxy.zap.extension.automacrobuilder;
+package org.zaproxy.zap.extension.automacrobuilder.generated;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,6 +22,10 @@ import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.text.*;
 import javax.swing.undo.UndoManager;
+import org.zaproxy.zap.extension.automacrobuilder.InterfaceParmGenRegexSaveCancelAction;
+import org.zaproxy.zap.extension.automacrobuilder.InterfaceRegex;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenUtil;
+import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
 
 /**
  *

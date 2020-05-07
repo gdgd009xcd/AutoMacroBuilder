@@ -1,56 +1,69 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Zed Attack Proxy (ZAP) and its related class files.
+ *
+ * ZAP is an HTTP/HTTPS proxy for assessing web application security.
+ *
+ * Copyright 2020 The ZAP Development Team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.zaproxy.zap.extension.automacrobuilder;
+
 import java.util.Objects;
 
-/**
- *
- * @author daike
- */
+/** @author daike */
 public class ParmGenTokenKey {
     private AppValue.TokenTypeNames tokentype;
     private int fcnt;
     private String name;
-    
-   
-    ParmGenTokenKey(AppValue.TokenTypeNames _tokentype, String _name, int _fcnt){
+
+    public ParmGenTokenKey(AppValue.TokenTypeNames _tokentype, String _name, int _fcnt) {
         tokentype = _tokentype;
         name = new String(_name);
         fcnt = _fcnt;
     }
-    
-    ParmGenTokenKey(ParmGenTokenKey tk){
-    	tokentype = tk.tokentype;
-    	name = new String(tk.name);
-    	fcnt = tk.fcnt;
+
+    ParmGenTokenKey(ParmGenTokenKey tk) {
+        tokentype = tk.tokentype;
+        name = new String(tk.name);
+        fcnt = tk.fcnt;
     }
-    
-    public String getName(){
+
+    public String getName() {
         return name;
     }
-    
-    public AppValue.TokenTypeNames GetTokenType(){
+
+    public AppValue.TokenTypeNames GetTokenType() {
         return tokentype;
     }
-    
-    public int getFcnt(){
+
+    public int getFcnt() {
         return fcnt;
     }
-    
-    public void setTokenType(AppValue.TokenTypeNames _tktype){
-    	tokentype = _tktype;
+
+    public void setTokenType(AppValue.TokenTypeNames _tktype) {
+        tokentype = _tktype;
     }
-    
+
     // HashMap
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof ParmGenTokenKey) {
             ParmGenTokenKey key = (ParmGenTokenKey) obj;
-            //name is case-sensitive.
-            return this.tokentype == key.tokentype && this.name.equals(key.name) && this.fcnt == key.fcnt;
+            // name is case-sensitive.
+            return this.tokentype == key.tokentype
+                    && this.name.equals(key.name)
+                    && this.fcnt == key.fcnt;
         } else {
             return false;
         }
@@ -58,7 +71,7 @@ public class ParmGenTokenKey {
 
     @Override
     public int hashCode() {
-        //name is case-sensitive.
-        return Objects.hash(tokentype, name,fcnt);
+        // name is case-sensitive.
+        return Objects.hash(tokentype, name, fcnt);
     }
 }

@@ -2,8 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.zaproxy.zap.extension.automacrobuilder;
+package org.zaproxy.zap.extension.automacrobuilder.generated;
 
+import org.zaproxy.zap.extension.automacrobuilder.generated.ParmGenNew;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -15,6 +16,11 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Document;
 import javax.swing.text.SimpleAttributeSet;
+import org.zaproxy.zap.extension.automacrobuilder.PRequest;
+import org.zaproxy.zap.extension.automacrobuilder.PRequestResponse;
+import org.zaproxy.zap.extension.automacrobuilder.PResponse;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenJSONSave;
+import org.zaproxy.zap.extension.automacrobuilder.interfaceParmGenWin;
 
 /**
  *

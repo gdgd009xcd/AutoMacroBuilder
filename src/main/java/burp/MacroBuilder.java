@@ -10,7 +10,7 @@ import burp.ITab;
 
 import java.awt.Component;
 import java.util.ArrayList;
-import org.zaproxy.zap.extension.automacrobuilder.MacroBuilderUI;
+import org.zaproxy.zap.extension.automacrobuilder.generated.MacroBuilderUI;
 import org.zaproxy.zap.extension.automacrobuilder.PRequestResponse;
 import org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTrace;
 

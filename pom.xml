@@ -66,6 +66,19 @@
     </resources>
     <plugins>
         <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <compilerArgs>
+            <arg>-Xlint:all</arg>
+            <arg>-Xlint:-path</arg>
+            <arg>-Xlint:-options</arg>
+            <!-- arg>-Werror</arg-->
+          </compilerArgs>
+        </configuration>
+      </plugin>
+        <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
         <version>2.1</version>
         <executions>
@@ -154,4 +167,13 @@
         </snapshots>
     </repository>
 </repositories>
+<pluginRepositories>
+        <pluginRepository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </pluginRepository>
+</pluginRepositories>
 </project>

@@ -24,7 +24,7 @@ public class FileInfo {
     FileInfo(String fullfilename){
         File file = new File(fullfilename);
         
-        String  fileSep = file.separator;
+        String  fileSep = File.separator;
         
         dirname = getNoNullString(file.getParent());
         basename = getNoNullString(file.getName());

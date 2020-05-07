@@ -17,7 +17,7 @@ public class ParmGenTrackingToken {
     private String regex = null;//option regex
 
 
-    ParmGenTrackingToken(ParmGenRequestToken _qtoken, ParmGenToken _rtoken, String optregex){
+    public ParmGenTrackingToken(ParmGenRequestToken _qtoken, ParmGenToken _rtoken, String optregex){
         QToken = _qtoken;
         RToken = _rtoken;
         regex = optregex;

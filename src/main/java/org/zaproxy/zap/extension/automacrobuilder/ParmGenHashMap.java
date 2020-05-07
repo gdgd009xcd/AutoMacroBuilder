@@ -14,6 +14,7 @@ import java.util.Map;
  *
  * @author youtube
  */
+@SuppressWarnings("serial")
 public  class ParmGenHashMap extends HashMap<ParmGenTokenKey,ParmGenTokenValue> implements InterfaceCollection<Map.Entry<ParmGenTokenKey,ParmGenTokenValue>>{
 
     

@@ -110,5 +110,12 @@ public class HeaderPattern {
       HeaderPattern that = (HeaderPattern) obj;
       return this.rptype == that.rptype && this.rpsubtype == that.rpsubtype && this.tkname.equals(that.tkname) && this.fcnt == that.fcnt;
     }
+
+    @Override
+    public int hashCode() {
+        int hcode  = Objects.hash(this.rptype, this.rpsubtype, this.tkname, this.fcnt);
+        
+        return hcode;
+    }
     
 }

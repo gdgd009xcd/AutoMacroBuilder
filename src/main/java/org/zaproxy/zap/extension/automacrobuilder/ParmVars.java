@@ -36,7 +36,7 @@ public class ParmVars {
         private static boolean issaved = false;
         static String fileSep = "/";//maybe unix filesystem.
         static String Version = "";// loaded JSON format version
-        final static int TOSTEPANY = 2147483647;//StepTo number means any value
+        public final static int TOSTEPANY = 2147483647;//StepTo number means any value
         static List<String> ExcludeMimeTypes = null;
         private static List<Pattern> ExcludeMimeTypesPatterns = null;
         private static org.apache.logging.log4j.Logger logger4j;
@@ -149,10 +149,17 @@ public class ParmVars {
         public static String getFileSep(){
             return fileSep;
         }
+
+        public static int getDisplayLength(){
+            return displaylength;
+        }
+
+        public static String getParmFile(){
+            return parmfile;
+        }
         
-	//
-	//
-	// HTTP Request parser
-	//
-	//
+        public static void setParmFile(String v){
+            parmfile = v;
+        }
+
 }

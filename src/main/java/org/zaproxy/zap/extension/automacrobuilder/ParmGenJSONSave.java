@@ -43,7 +43,7 @@ public class ParmGenJSONSave {
 
     }
     
-    ParmGenJSONSave( List<AppParmsIni> _newparmcsv,ParmGenMacroTrace _pmt){
+    public ParmGenJSONSave( List<AppParmsIni> _newparmcsv,ParmGenMacroTrace _pmt){
         saveParmGenSetUp(_pmt, _newparmcsv);
         pfile = null;
     }
@@ -51,7 +51,7 @@ public class ParmGenJSONSave {
     private void saveParmGenSetUp(ParmGenMacroTrace _pmt, List<AppParmsIni>_newparmcsv){
        pmt = _pmt;
        ParmGen pgen = new ParmGen(_pmt, _newparmcsv);
-       records = pgen.parmcsv;
+       records = ParmGen.parmcsv;
        logger4j.debug("records is " + (records==null?"null": "No null"));
        if (records==null){
            records = new ArrayList<AppParmsIni>();

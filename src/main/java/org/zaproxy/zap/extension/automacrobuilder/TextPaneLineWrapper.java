@@ -28,6 +28,7 @@ import javax.swing.text.ViewFactory;
  * long word line wrapper.
  * 
  */
+@SuppressWarnings("serial")
 public class TextPaneLineWrapper extends StyledEditorKit{
      ViewFactory defaultFactory=new WrapColumnFactory();
         public ViewFactory getViewFactory() {

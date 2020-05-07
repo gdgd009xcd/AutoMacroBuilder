@@ -50,9 +50,9 @@ public class GsonIterator {
                 JsonElement nelm = arrit.next();
                 jent = new GsonEntry(nelm);
             }else{
-                Map.Entry ment = objit.next();
-                String k = (String)ment.getKey();
-                JsonElement nelm = (JsonElement)ment.getValue();
+                Map.Entry<String, JsonElement> ment = objit.next();
+                String k = ment.getKey();
+                JsonElement nelm = ment.getValue();
                 jent = new GsonEntry(k, nelm);
             }
         }

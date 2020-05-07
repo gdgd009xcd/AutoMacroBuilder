@@ -11,6 +11,7 @@ import javax.swing.DefaultComboBoxModel;
  *
  * @author daike
  */
+@SuppressWarnings("serial")
 public class LangSelectDialog extends javax.swing.JDialog {
     InterfaceLangOKNG LangOKNG = null;
     Encode selected_lang ;

@@ -33,7 +33,7 @@ public class ParmGenParser {
     }
 
     //tokenらしき値を自動引継ぎ
-    ParmGenParser(String htmltext){
+    public ParmGenParser(String htmltext){
             init();
 
             try {

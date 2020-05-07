@@ -13,7 +13,7 @@ import javax.swing.table.TableCellRenderer;
  *
  * @author tms783
  */
-
+@SuppressWarnings("serial")
 class LineWrapRenderer extends JTextArea implements TableCellRenderer {
   LineWrapRenderer() {
     super();

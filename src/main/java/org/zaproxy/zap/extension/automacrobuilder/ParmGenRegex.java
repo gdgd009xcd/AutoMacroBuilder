@@ -27,6 +27,7 @@ import javax.swing.undo.UndoManager;
  *
  * @author tms783
  */
+@SuppressWarnings("serial")
 public class ParmGenRegex extends javax.swing.JDialog {
 
     UndoManager um;
@@ -40,8 +41,8 @@ public class ParmGenRegex extends javax.swing.JDialog {
     
     public static final String Escaperegex = "([\\[\\]\\{\\}\\(\\)\\*\\<\\>\\.\\?\\+\\\"\\\'\\$])";
     private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
-    private static  DefaultComboBoxModel comboModel_regextype = null;
-    private static  DefaultComboBoxModel comboModel_columnpolicy = null;
+    private static  DefaultComboBoxModel<String> comboModel_regextype = null;
+    private static  DefaultComboBoxModel<String> comboModel_columnpolicy = null;
     
     private void init(String regex, String orig){
         findplist.clear();
@@ -53,7 +54,7 @@ public class ParmGenRegex extends javax.swing.JDialog {
     // new される前に初期化。
     static{
         if(comboModel_regextype==null){
-            comboModel_regextype = new javax.swing.DefaultComboBoxModel(new String[] { 
+            comboModel_regextype = new javax.swing.DefaultComboBoxModel<String>(new String[] { 
             java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGenRegex.comboModel_regextype_number.text"),
             java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGenRegex.comboModel_regextype_number_alnum.text"),
             java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGenRegex.comboModel_regextype_number_percent.text"),
@@ -66,7 +67,7 @@ public class ParmGenRegex extends javax.swing.JDialog {
         }
 
         if(comboModel_columnpolicy==null){
-            comboModel_columnpolicy = new javax.swing.DefaultComboBoxModel(new String[] { 
+            comboModel_columnpolicy = new javax.swing.DefaultComboBoxModel<String>(new String[] { 
             java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGenRegex.comboModel_columnpolicy_fixed.text"),
             java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGenRegex.comboModel_columnpolicy_以上（最小マッチ）.text"),
             java.util.ResourceBundle.getBundle("burp/Bundle").getString("ParmGenRegex.comboModel_columnpolicy_以上（最大マッチ）.text"),
@@ -418,9 +419,9 @@ public class ParmGenRegex extends javax.swing.JDialog {
         OriginalText = new javax.swing.JTextPane();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        RegexType = new javax.swing.JComboBox();
+        RegexType = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
-        ColumnPolicy = new javax.swing.JComboBox();
+        ColumnPolicy = new javax.swing.JComboBox<>();
         From = new javax.swing.JTextField();
         To = new javax.swing.JTextField();
         FTlabel = new javax.swing.JLabel();
@@ -961,7 +962,7 @@ public class ParmGenRegex extends javax.swing.JDialog {
     private javax.swing.JButton Add;
     private javax.swing.JCheckBox CASE_INSENSITIVE;
     private javax.swing.JButton Cancel;
-    private javax.swing.JComboBox ColumnPolicy;
+    private javax.swing.JComboBox<String> ColumnPolicy;
     private javax.swing.JLabel FTlabel;
     private javax.swing.JTextField From;
     private javax.swing.JCheckBox MULTILINE;
@@ -972,7 +973,7 @@ public class ParmGenRegex extends javax.swing.JDialog {
     private javax.swing.JMenuItem Redo;
     private javax.swing.JButton RegexTest;
     private javax.swing.JTextPane RegexText;
-    private javax.swing.JComboBox RegexType;
+    private javax.swing.JComboBox<String> RegexType;
     private javax.swing.JButton Save;
     private javax.swing.JTextField To;
     private javax.swing.JMenuItem Undo;

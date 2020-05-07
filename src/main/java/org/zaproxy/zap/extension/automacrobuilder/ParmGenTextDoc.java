@@ -28,7 +28,7 @@ public class ParmGenTextDoc{
     private  JTextComponent tcompo;
     private static org.apache.logging.log4j.Logger logger4j = org.apache.logging.log4j.LogManager.getLogger();
     
-    ParmGenTextDoc(JTextComponent tc){
+    public ParmGenTextDoc(JTextComponent tc){
         tcompo = tc;
     }
 

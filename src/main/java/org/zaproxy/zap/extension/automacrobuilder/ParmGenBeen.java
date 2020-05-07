@@ -9,18 +9,25 @@ package org.zaproxy.zap.extension.automacrobuilder;
  *
  * @author daike
  */
-public class ParmGenBeen {
+public class ParmGenBeen implements DeepClone{
+    //primitive or final mermbers
     String v = null;
     int i = 0;
     boolean b = false;
+    
     //...etc.
     ParmGenBeen(){
         
     }
     
-    ParmGenBeen(ParmGenBeen sbeen){
-        v = sbeen.v;
-        i = sbeen.i;
-        b = sbeen.b;
+    
+    @Override
+    public ParmGenBeen clone() {
+        try {
+            ParmGenBeen nobj =  (ParmGenBeen)super.clone();//this class of which primitive or final member is olso copied
+            return nobj;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(); 
+        }
     }
 }

@@ -49,13 +49,13 @@ public class ParmGenSession {
     
     // 指定したnameのvalue値。nameが存在しない場合はnull
     public String get(String name){
-        return (String)map.get(name);
+        return map.get(name);
     }
     
     // 指定したname:iのvalue値。name:iが存在しない場合はnull
     public String get(int i, String name){
         String k = name + ":" + Integer.toString(i);//keyname:n
-        return (String)map.get(k);
+        return map.get(k);
     }
     
     public void clear(){

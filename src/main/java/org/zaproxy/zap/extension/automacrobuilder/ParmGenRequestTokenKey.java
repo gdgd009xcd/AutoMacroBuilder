@@ -16,7 +16,7 @@ public class ParmGenRequestTokenKey {
     private int fcnt;
     private String name;
     
-    enum RequestParamType {
+    public enum RequestParamType {
         Query,
         X_www_form_urlencoded,
         Json,

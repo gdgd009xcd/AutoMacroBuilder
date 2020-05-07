@@ -55,7 +55,7 @@ public class PRequestResponse {
         comments = comments + _v;
     }
     
-    String getComments(){
+    public String getComments(){
         return comments;
     }
     
@@ -66,7 +66,7 @@ public class PRequestResponse {
         iserror = b;
     }
     
-    void setMacroPos(int _p){
+    public void setMacroPos(int _p){
         macropos = _p;
     }
     

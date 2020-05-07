@@ -6,6 +6,7 @@
 
 package org.zaproxy.zap.extension.automacrobuilder;
 
+import org.zaproxy.zap.extension.automacrobuilder.generated.MacroBuilderUI;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.CookieManager;
@@ -121,7 +122,7 @@ public class ParmGenMacroTrace extends ClientDependent{
     //
     // setter
     //
-    void clear(){
+    public void clear(){
         ParmGen.clearAll();
         tidlist = null;
         locked = false;
@@ -139,31 +140,32 @@ public class ParmGenMacroTrace extends ClientDependent{
         
     }
 
-    void setUI(MacroBuilderUI _ui){
+    public void setUI(MacroBuilderUI _ui){
         ui = _ui;
     }
 
    
     
-    void setMBCookieFromJar(boolean b){
+    public void setMBCookieFromJar(boolean b){
         MBCookieFromJar = b;
     }
     
-    void setMBFinalResponse(boolean b){
+    public void setMBFinalResponse(boolean b){
         MBFinalResponse = b;
     }
-    void setMBResetToOriginal(boolean b){
+    
+    public void setMBResetToOriginal(boolean b){
         MBResetToOriginal = b;
     }
 
-    void setMBsettokencache(boolean b){
+    public void setMBsettokencache(boolean b){
         MBsettokencache = b;
     }
-    void setMBreplaceCookie(boolean b){
+    public void setMBreplaceCookie(boolean b){
         MBreplaceCookie = b;
     }
     
-    void setMBmonitorofprocessing(boolean b){
+    public void setMBmonitorofprocessing(boolean b){
         MBmonitorofprocessing =b;
     }
     
@@ -171,7 +173,7 @@ public class ParmGenMacroTrace extends ClientDependent{
         return MBmonitorofprocessing;
     }
     
-    void setMBreplaceTrackingParam(boolean _b){
+    public void setMBreplaceTrackingParam(boolean _b){
         MBreplaceTrackingParam = _b;
     }
     
@@ -184,7 +186,7 @@ public class ParmGenMacroTrace extends ClientDependent{
         return !MBreplaceTrackingParam && isCurrentRequest();
     }
     
-    void setWaitTimer(String msec){
+    public void setWaitTimer(String msec){
         try{
             waittimer = Integer.parseInt(msec);//msec
             if(waittimer <= 0) waittimer = 0;
@@ -207,7 +209,7 @@ public class ParmGenMacroTrace extends ClientDependent{
         state = PMT_CURRENT_END;
     }
 
-    void setCurrentRequest(int _p){
+    public void setCurrentRequest(int _p){
         if(rlist!=null&& rlist.size() > _p){
             selected_request = _p;
             EnableRequest(_p);//カレントリクエストは強制
@@ -226,13 +228,13 @@ public class ParmGenMacroTrace extends ClientDependent{
         return isCurrentRequest(stepno);
     }
     
-    void EnableRequest(int _idx){
+    public void EnableRequest(int _idx){
         if(rlist!=null&&rlist.size() > _idx){
             PRequestResponse prr = rlist.get(_idx);
             prr.Enable();
         }
     }
-    void DisableRequest(int _idx){
+    public void DisableRequest(int _idx){
         if(rlist!=null&&rlist.size() > _idx){
             PRequestResponse prr = rlist.get(_idx);
             prr.Disable();
@@ -262,7 +264,7 @@ public class ParmGenMacroTrace extends ClientDependent{
     
 
 
-    void updateOriginalRequest(int idx, PRequest _request){
+    public void updateOriginalRequest(int idx, PRequest _request){
         if(originalrlist!=null&&originalrlist.size()>0){
             PRequestResponse pqr = originalrlist.get(idx);
             pqr.updateRequest(_request);
@@ -270,7 +272,7 @@ public class ParmGenMacroTrace extends ClientDependent{
         }
     }
     
-    PRequestResponse getOriginalRequest(int idx){
+    public PRequestResponse getOriginalRequest(int idx){
         if(originalrlist!=null&&originalrlist.size()>0&&idx>-1&&idx<originalrlist.size()){
             PRequestResponse pqr = originalrlist.get(idx);
             return pqr;
@@ -531,7 +533,7 @@ public class ParmGenMacroTrace extends ClientDependent{
        return null;
     }
 
-    int getCurrentRequestPos(){
+    public int getCurrentRequestPos(){
         return selected_request;
     }
 
@@ -563,7 +565,7 @@ public class ParmGenMacroTrace extends ClientDependent{
        return false;
    }
    
-   void setRecords(ArrayList <PRequestResponse> _rlist){
+   public void setRecords(ArrayList <PRequestResponse> _rlist){
         //rlist = new ArrayList <PRequestResponse> (_rlist);//copy
         if(rlist==null){
             rlist = _rlist;//reference共有
@@ -676,7 +678,7 @@ public class ParmGenMacroTrace extends ClientDependent{
         return null;
     }
     
-    void sendToRepeater(int pos){
+    public void sendToRepeater(int pos){
         PRequestResponse pqr = null;
     	if((pqr=getRequestResponse(pos))!=null){
             setToolBaseLine(pqr);
@@ -692,7 +694,7 @@ public class ParmGenMacroTrace extends ClientDependent{
     	}
 
     }
-    void sendToScanner(int pos){
+    public void sendToScanner(int pos){
     	PRequestResponse pqr = null;
     	if((pqr=getRequestResponse(pos))!=null){
             setToolBaseLine(null);
@@ -712,7 +714,7 @@ public class ParmGenMacroTrace extends ClientDependent{
     
     
     
-    void sendToIntruder(int pos){
+    public void sendToIntruder(int pos){
     	PRequestResponse pqr = null;
     	if((pqr=getRequestResponse(pos))!=null){
             setToolBaseLine(null);

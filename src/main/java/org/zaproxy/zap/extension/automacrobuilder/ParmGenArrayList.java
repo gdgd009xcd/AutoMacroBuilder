@@ -11,6 +11,7 @@ import java.util.ArrayList;
  *
  * @author youtube
  */
+@SuppressWarnings("serial")
 public class ParmGenArrayList extends ArrayList<ParmGenToken> implements InterfaceCollection<ParmGenToken>{
 
     

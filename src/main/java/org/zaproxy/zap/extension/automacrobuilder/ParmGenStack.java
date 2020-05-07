@@ -12,6 +12,7 @@ import java.util.Deque;
  *
  * @author youtube
  */
+@SuppressWarnings("serial")
 public class ParmGenStack<T> extends ArrayDeque<T> {
     T getCurrent(){
         return peekFirst();

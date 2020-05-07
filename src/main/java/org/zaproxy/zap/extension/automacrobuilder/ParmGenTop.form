@@ -102,14 +102,8 @@
     </Component>
     <Component class="javax.swing.JComboBox" name="LANGUAGE">
       <Properties>
-        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="5">
-            <StringItem index="0" value="SJIS"/>
-            <StringItem index="1" value="EUC-JP"/>
-            <StringItem index="2" value="UTF-8"/>
-            <StringItem index="3" value="ISO8859-1"/>
-            <StringItem index="4" value="x-MacCentralEurope"/>
-          </StringArray>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="new javax.swing.DefaultComboBoxModel&lt;String&gt;(new String[] { &quot;SJIS&quot;, &quot;EUC-JP&quot;, &quot;UTF-8&quot;, &quot;ISO8859-1&quot;, &quot;x-MacCentralEurope&quot; })" type="code"/>
         </Property>
         <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
           <ResourceString bundle="burp/Bundle.properties" key="&#x6587;&#x5b57;&#x30b3;&#x30fc;&#x30c9;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
@@ -118,6 +112,9 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="LANGUAGEActionPerformed"/>
       </Events>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+      </AuxValues>
     </Component>
     <Component class="javax.swing.JButton" name="Add">
       <Properties>

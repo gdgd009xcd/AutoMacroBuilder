@@ -20,6 +20,7 @@ import javax.swing.text.SimpleAttributeSet;
  *
  * @author tms783
  */
+@SuppressWarnings("serial")
 public class SelectRequest extends javax.swing.JDialog {
 
     private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");

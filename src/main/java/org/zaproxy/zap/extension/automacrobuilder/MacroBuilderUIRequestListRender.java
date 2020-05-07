@@ -6,6 +6,7 @@
 
 package org.zaproxy.zap.extension.automacrobuilder;
 
+import org.zaproxy.zap.extension.automacrobuilder.generated.MacroBuilderUI;
 import java.awt.Color;
 import java.awt.Component;
 import javax.swing.DefaultListCellRenderer;
@@ -16,15 +17,16 @@ import javax.swing.JList;
  *
  * @author daike
  */
+@SuppressWarnings("serial")
 public class MacroBuilderUIRequestListRender extends DefaultListCellRenderer{
     ParmGenMacroTrace pmt;
     
-    MacroBuilderUIRequestListRender(MacroBuilderUI _ui){
+    public MacroBuilderUIRequestListRender(MacroBuilderUI _ui){
         pmt = _ui.getParmGenMacroTrace();
     }
     
     @Override
-    public Component getListCellRendererComponent(JList list, Object value,
+    public Component getListCellRendererComponent(JList<?> list, Object value,
             int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value,
                 index, isSelected, cellHasFocus);

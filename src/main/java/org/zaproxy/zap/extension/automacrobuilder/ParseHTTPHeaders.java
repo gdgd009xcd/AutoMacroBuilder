@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import static org.zaproxy.zap.extension.automacrobuilder.HashMapDeepCopy.hashMapDeepCopyStrKStrV;
 
 //
 //HTTP request/response parser
@@ -169,12 +170,12 @@ class ParseHTTPHeaders {
             port = pheaders.port;
             pathparams = new ArrayList<>(pheaders.pathparams);
             cookieparams = ParmGenUtil.copyStringArrayList(pheaders.cookieparams);
-            hashqueryparams = (HashMap<String,String>)pheaders.hashqueryparams.clone();
-            hashbodyparams = (HashMap<String,String>)pheaders.hashbodyparams.clone();
+            hashqueryparams = hashMapDeepCopyStrKStrV(pheaders.hashqueryparams);
+            hashbodyparams = hashMapDeepCopyStrKStrV(pheaders.hashbodyparams);
             queryparams = ParmGenUtil.copyStringArrayList(pheaders.queryparams);
             bodyparams = ParmGenUtil.copyStringArrayList(pheaders.bodyparams);
             headers = ParmGenUtil.copyStringArrayList(pheaders.headers);
-            hkeyUpper_Headers = copyhkeyUpper_Headers(pheaders.hkeyUpper_Headers);
+            hkeyUpper_Headers = HashMapDeepCopy.hashMapDeepCopyStrKParmGenHeaderV(pheaders.hkeyUpper_Headers);
             setcookieheaders = new ArrayList<>(pheaders.setcookieheaders);
             //REMOVE set_cookieparams = copyset_cookieparams(pheaders.set_cookieparams);
             content_type = pheaders.content_type;
@@ -194,25 +195,6 @@ class ParseHTTPHeaders {
             isrequest = pheaders.isrequest;
             
         }
-        
-        /**
-         * deep copy HashMap<String, ParmGenHeader>
-         * @return copied HashMap<String, ParmGenHeader>
-         */
-        private HashMap<String, ParmGenHeader> copyhkeyUpper_Headers(HashMap<String, ParmGenHeader> src){
-            if(src!=null){
-                HashMap<String, ParmGenHeader> copiedhkeyUpper_Headers = new HashMap<>();
-                for(Map.Entry<String, ParmGenHeader> e : src.entrySet()) {
-                    String k = e.getKey();
-                    ParmGenHeader pgh = e.getValue();
-                    copiedhkeyUpper_Headers.put(k, new ParmGenHeader(pgh));
-                }
-                return copiedhkeyUpper_Headers;
-            }
-            return null;
-        }
-        
-        
         
         private String httpMessageString(byte[] _binmessage, Encode _penc){
             pageenc = _penc;
@@ -308,11 +290,11 @@ class ParseHTTPHeaders {
             return parsedheaderlength;
         }
 
-        void setSSL(boolean _ssl){
+        public void setSSL(boolean _ssl){
             isSSL = _ssl;
         }
         
-        void setPort(int _p){
+        public void setPort(int _p){
             port = _p;
         }
         
@@ -745,7 +727,7 @@ class ParseHTTPHeaders {
                 if(cpvlist!=null){
                     //pathプロパティの短いものから長いものの順で、Cookie値を設定。 
                     // Set cookie values  after arrange path property in ascending order(from short path "/" to long path "/aaa/bbb").
-                    Collections.sort(cpvlist, new PathComparator().reversed());
+                    Collections.sort(cpvlist, new PathComparator<>().reversed());
                     ListIterator<CookiePathValue> itv = cpvlist.listIterator();
                     Boolean cpvlist_changed = false;
                     while(itv.hasNext()){
@@ -885,7 +867,7 @@ class ParseHTTPHeaders {
             return path;
         }
 
-	String getBody(){
+	public String getBody(){
 		return body;
 	}
 
@@ -904,7 +886,7 @@ class ParseHTTPHeaders {
             return status;
         }
 
-	String getMessage(){//return String in pageenc encoding 
+	public String getMessage(){//return String in pageenc encoding 
 
 		if ( message != null ){
 			return message;
@@ -965,7 +947,7 @@ class ParseHTTPHeaders {
                 return null;
 	}
 
-        String getHeaderOnly(){
+        public String getHeaderOnly(){
             StringBuilder sb = new StringBuilder();
 
             sb.append(getStartline() + "\r\n");
@@ -986,8 +968,9 @@ class ParseHTTPHeaders {
 	String getHeaderLine(int i){
 		String result = null;
 		if ( i >= 0 && headers.size() > i){
-			String[] nv = (String[])headers.get(i);
-			result = new String(nv[0]+ ": " + nv[1]);
+                        @SuppressWarnings("LocalVariableHidesMemberVariable")
+			String[] nv = headers.get(i);
+			result = nv[0]+ ": " + nv[1];
 		}
 		return result;
 	}
@@ -995,7 +978,8 @@ class ParseHTTPHeaders {
 	public String getHeader(String name){
 		int i = findHeader(name);
 		if ( i >= 0) {
-			String[] nv = (String[])headers.get(i);
+                        @SuppressWarnings("LocalVariableHidesMemberVariable")
+			String[] nv = headers.get(i);
 			return nv[1];
 		}
 		return null;
@@ -1015,13 +999,12 @@ class ParseHTTPHeaders {
 	// RFC 2616 - "Hypertext Transfer Protocol -- HTTP/1.1", Section 4.2, "Message Headers":
 	//Each header field consists of a name followed by a colon (":") and the field value. Field names are case-insensitive.
 	int findHeader(String name){
-		Iterator ite = headers.iterator();
-		String[] nv;
+		Iterator<String []> ite = headers.iterator();
 		int i = 0;
 		while(ite.hasNext()){
-			Object obj = ite.next();
+			String[] obj = ite.next();
 			if (obj instanceof String[]) {
-				nv = (String[])obj;
+				nv = obj;
 				if(name.toLowerCase().equals(nv[0].toLowerCase())){
 					return i;
 				}
@@ -1123,7 +1106,7 @@ class ParseHTTPHeaders {
             return false;
         }
         
-        protected ParmGenRequestToken getRequestBodyToken(String pname){
+        public ParmGenRequestToken getRequestBodyToken(String pname){
             if(getBodyParams()!=null){
         	for(String[] pair: bodyparams){//bodyparams
         		if(isEqualParam(pname, pair[0])){
@@ -1159,7 +1142,7 @@ class ParseHTTPHeaders {
             return false;
         }
         
-        protected ParmGenRequestToken getRequestQueryToken(String pname){
+        public  ParmGenRequestToken getRequestQueryToken(String pname){
             if(queryparams!=null){
         	for(String[] pair: queryparams){//queryparams
         		if(isEqualParam(pname, pair[0])){

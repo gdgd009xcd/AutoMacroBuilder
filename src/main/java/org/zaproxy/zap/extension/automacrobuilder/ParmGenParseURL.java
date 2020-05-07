@@ -18,7 +18,7 @@ public class ParmGenParseURL {
     String args = "";
     ArrayList<String[]> nvpairs = null;
     
-    ParmGenParseURL(String url){
+    public ParmGenParseURL(String url){
         nvpairs = new ArrayList<String[]>();
         if(url!=null){
             
@@ -104,7 +104,7 @@ public class ParmGenParseURL {
         return protocol;
     }
     
-    String getPath(){
+    public String getPath(){
         return path;
     }
     

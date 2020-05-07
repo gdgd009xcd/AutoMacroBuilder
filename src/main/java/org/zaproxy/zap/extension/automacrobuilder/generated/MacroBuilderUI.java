@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.zaproxy.zap.extension.automacrobuilder;
+package org.zaproxy.zap.extension.automacrobuilder.generated;
 
 import java.awt.Desktop;
 import java.io.File;
@@ -27,14 +27,44 @@ import java.util.regex.Pattern;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.ListCellRenderer;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Document;
+import org.zaproxy.zap.extension.automacrobuilder.AppParmsIni;
+import org.zaproxy.zap.extension.automacrobuilder.AppValue;
+import org.zaproxy.zap.extension.automacrobuilder.Encode;
+import org.zaproxy.zap.extension.automacrobuilder.HeaderPattern;
+import org.zaproxy.zap.extension.automacrobuilder.InterfaceCollection;
+import org.zaproxy.zap.extension.automacrobuilder.InterfaceParmGenRegexSaveCancelAction;
+import org.zaproxy.zap.extension.automacrobuilder.MacroBuilderUIRequestListRender;
+import org.zaproxy.zap.extension.automacrobuilder.PRequest;
+import org.zaproxy.zap.extension.automacrobuilder.PRequestResponse;
+import org.zaproxy.zap.extension.automacrobuilder.ParmFileFilter;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGen;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenArrayList;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenGSONDecoder;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenJSONSave;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTrace;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenParseURL;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenParser;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenRegex;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenRequestToken;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenRequestTokenKey;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenResToken;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenTextDoc;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenToken;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenTokenJDialog;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenTop;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenTrackingToken;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenUtil;
+import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
 
 /**
  *
  * @author daike
  */
+@SuppressWarnings("serial")
 public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfaceParmGenRegexSaveCancelAction {
 
     private static org.apache.logging.log4j.Logger logger4j = org.apache.logging.log4j.LogManager.getLogger();
@@ -60,11 +90,12 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     /**
      * Creates new form MacroBuilderUI
      */
+    @SuppressWarnings("unchecked")
     public MacroBuilderUI(ParmGenMacroTrace _pmt) {
         pmt = _pmt;
         initComponents();
-        RequestList.setCellRenderer(new MacroBuilderUIRequestListRender(this));
-        RequestListModel = new DefaultListModel();
+        RequestList.setCellRenderer((ListCellRenderer<Object>)new MacroBuilderUIRequestListRender(this));
+        RequestListModel = new DefaultListModel<>();
         RequestListModel.clear();
         RequestList.setModel(RequestListModel);
 
@@ -100,11 +131,12 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         
     }
     
-    ParmGenMacroTrace getParmGenMacroTrace() {
+    public ParmGenMacroTrace getParmGenMacroTrace() {
         return pmt;
     }
 
-    void clear() {
+    @SuppressWarnings("unchecked")
+    public void clear() {
         selected_request_idx = -1;
         isLoadedMacroRequestContents = false;
         isLoadedMacroResponseContents = false;
@@ -121,8 +153,9 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void addNewRequests(ArrayList<PRequestResponse> _rlist) {
-        DefaultListModel lmodel = new DefaultListModel();
+        DefaultListModel<String> lmodel = new DefaultListModel<>();
         AppParmsIni pini;
         if (_rlist != null) {
             if(rlist==null){
@@ -139,8 +172,8 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
 
                 //model.addRow(new Object[] {false, pini.url, pini.getIniValDsp(), pini.getLenDsp(), pini.getTypeValDsp(),pini.getAppValuesDsp(),pini.getCurrentValue()});
                 PRequestResponse pqr = it.next();
-                String url = pqr.request.url;
-                lmodel.addElement((Object) (String.format("%03d",ii++) + '|' + url));
+                String url = pqr.request.getURL();
+                lmodel.addElement((String.format("%03d",ii++) + '|' + url));
             }
             RequestList.setModel(lmodel);
         }
@@ -153,14 +186,14 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
             PRequestResponse pqr = rlist.get(cpos);
             if(pmt.isMBmonitorofprocessing()){
                 String reqstr = pqr.request.getMessage();
-                int len = ParmVars.displaylength > reqstr.length()?reqstr.length():ParmVars.displaylength;
+                int len = ParmVars.getDisplayLength() > reqstr.length()?reqstr.length():ParmVars.getDisplayLength();
                 Document  reqdoc = ParmGenUtil.createDoc(reqstr.substring(0,len));
                 if(reqdoc!=null){
                     MacroRequest.setDocument(reqdoc);
                 }
 
                 String resstr = pqr.response.getMessage();
-                len = ParmVars.displaylength > resstr.length() ? resstr.length():ParmVars.displaylength;
+                len = ParmVars.getDisplayLength() > resstr.length() ? resstr.length():ParmVars.getDisplayLength();
                 Document resdoc = ParmGenUtil.createDoc(resstr.substring(0,len));
                 if(resdoc!=null){
                     MacroResponse.setDocument(resdoc);
@@ -185,7 +218,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
      * WARNING: Do NOT modify this code. The content of this method is always
      * regenerated by the Form Editor.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked","serial"})
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -205,7 +238,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         jScrollPane2 = new javax.swing.JScrollPane();
         jPanel4 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        RequestList = new javax.swing.JList();
+        RequestList = new javax.swing.JList<>();
         paramlog = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane6 = new javax.swing.JScrollPane();
@@ -325,10 +358,10 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
 
         jScrollPane1.setAutoscrolls(true);
 
-        RequestList.setModel(new javax.swing.AbstractListModel() {
+        RequestList.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
+            public String getElementAt(int i) { return strings[i]; }
         });
         RequestList.setAutoscrolls(false);
         RequestList.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -482,7 +515,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
 
         jLabel2.setText(bundle.getString("MacroBuilderUI.マクロリクエスト一覧.text")); // NOI18N
 
-        jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getBundle("burp/Bundle").getString("MacroBuilderUI.TakeOverCache.text"))); // NOI18N
+        jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MacroBuilderUI.TakeOverCache.text"))); // NOI18N
 
         MBCookieFromJar.setSelected(true);
         MBCookieFromJar.setText(bundle.getString("MacroBuilderUI.TakeOverCacheCheckBox.text")); // NOI18N
@@ -541,7 +574,6 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         jLabel3.setText("<HTML>\n<DL>\n<BR>\n<LI>baseline(experimental): you can test(tamper) tracking tokens with scanner/intruder which has baseline request.\n<LI>replace(default): Tracking tokens is completely replaced with extracted value from previous page's response.\n<BR><BR>* For Details , refer ?button in the \"baseline/replace mode\" section. \n<DL>\n</HTML>");
         jLabel3.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
 
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/question.png"))); // NOI18N
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -767,14 +799,14 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                     messages.add(pqr);
                 }
             }
-            ParmGen pgen = new ParmGen(pmt);
-            if(pgen.twin==null){
-                    pgen.twin = new ParmGenTop(pmt, new ParmGenJSONSave(pmt,
+            
+            if(ParmGen.twin==null){
+                    ParmGen.twin = new ParmGenTop(pmt, new ParmGenJSONSave(pmt,
                         messages)
                         );
             }
             
-            pgen.twin.VisibleWhenJSONSaved(this);
+            ParmGen.twin.VisibleWhenJSONSaved(this);
             
         }
     }//GEN-LAST:event_customActionPerformed
@@ -840,6 +872,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                 break;
             case 2:
                 MacroCommentLoadContents();
+                break;
             default:
                 MacroRequestLoadContents();
                 break;
@@ -951,10 +984,11 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         Redraw();
     }//GEN-LAST:event_targetRequestActionPerformed
 
+    @SuppressWarnings("serial")
     private void ParamTrackingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ParamTrackingActionPerformed
         // TODO add your handling code here:
         //fileChooser起動
-    	File cfile = new File(ParmVars.parmfile);
+    	File cfile = new File(ParmVars.getParmFile());
         String dirname = cfile.getParent();
         JFileChooser jfc = new JFileChooser(dirname) {
 
@@ -985,7 +1019,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
             if(!pFilter.accept(file)){//拡張子無しの場合は付与
                 name += ".json";
             }
-            ParmVars.parmfile = name;
+            ParmVars.setParmFile(name);
             //エンコードの設定
             //ParmVars.encエンコードの決定
             //先頭ページのレスポンスのcharsetを取得
@@ -1136,7 +1170,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                         //boolean isformdata = pqrs.request.isFormData();
                         aparms.setUrl(TargetURLRegex);
                         aparms.len = 4;//default
-                        aparms.typeval = aparms.T_TRACK;
+                        aparms.typeval = AppParmsIni.T_TRACK;
                         aparms.inival = 0;
                         aparms.maxval = 0;
                         aparms.csvname = "";
@@ -1352,7 +1386,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
 
     private void LoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoadActionPerformed
         // TODO add your handling code here:
-        File cfile = new File(ParmVars.parmfile);
+        File cfile = new File(ParmVars.getParmFile());
         String dirname = cfile.getParent();
         JFileChooser jfc = new JFileChooser(dirname);
         jfc.setSelectedFile(cfile);
@@ -1415,7 +1449,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         // TODO add your handling code here:
         
         
-        File cfile = new File(ParmVars.parmfile);
+        File cfile = new File(ParmVars.getParmFile());
         String dirname = cfile.getParent();
         JFileChooser jfc = new JFileChooser(dirname);
         jfc.setSelectedFile(cfile);
@@ -1429,10 +1463,10 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                 name += ".json";
             }
             boolean filenamechanged = false;
-            if(ParmVars.parmfile==null||!ParmVars.parmfile.equals(name)){
+            if(ParmVars.getParmFile()==null||!ParmVars.getParmFile().equals(name)){
                 filenamechanged = true;
             }
-            ParmVars.parmfile = name;
+            ParmVars.setParmFile(name);
              //csv.save();
              ParmGenJSONSave csv = new ParmGenJSONSave(null, pmt);
              csv.GSONsave();
@@ -1646,7 +1680,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     private javax.swing.JButton ParamTracking;
     private javax.swing.JMenuItem Repeater;
     private javax.swing.JPopupMenu RequestEdit;
-    private javax.swing.JList RequestList;
+    private javax.swing.JList<String> RequestList;
     private javax.swing.JPopupMenu ResponseShow;
     private javax.swing.JButton Save;
     private javax.swing.JMenuItem Scanner;

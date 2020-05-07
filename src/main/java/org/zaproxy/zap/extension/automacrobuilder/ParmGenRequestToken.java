@@ -23,7 +23,7 @@ public class ParmGenRequestToken {
 
     }
     
-    ParmGenRequestToken(ParmGenToken tkn){
+    public ParmGenRequestToken(ParmGenToken tkn){
         if(tkn!=null){//  Is tkn convertable?
             switch(tkn.getTokenKey().GetTokenType()){
                 case JSON:

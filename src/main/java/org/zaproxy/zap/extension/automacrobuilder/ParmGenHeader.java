@@ -6,6 +6,7 @@
 package org.zaproxy.zap.extension.automacrobuilder;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ListIterator;
 
 
@@ -14,9 +15,9 @@ import java.util.ListIterator;
  *
  * @author daike
  */
-public class ParmGenHeader {
+public class ParmGenHeader implements DeepClone{
     private String name;//header name
-    private ArrayList<ParmGenBeen> values = null;//multiple same header name  which has different values header list.
+    private List<ParmGenBeen> values = null;//multiple same header name  which has different values header list.
                                                  //ex  Cookie: token=1234 <- been.i = 3
                                                  //    Cookie: goo=tokyo <- been.i = 4
     private String key_uppername;// uppercase header name
@@ -28,7 +29,7 @@ public class ParmGenHeader {
         if(name!=null){
             key_uppername = name.toUpperCase();
         }
-        values = new ArrayList<ParmGenBeen>();
+        values = new ArrayList<>();
         ParmGenBeen been = new ParmGenBeen();
         been.v = _v;
         been.i = _i;
@@ -36,12 +37,9 @@ public class ParmGenHeader {
         
     }
     
-    ParmGenHeader(ParmGenHeader sh){
+    private void copyFrom(ParmGenHeader sh){
         name = sh.name;
-        values = new ArrayList<>();
-        for(ParmGenBeen been: sh.values){
-            values.add(new ParmGenBeen(been));
-        }
+        values = ListDeepCopy.listDeepCopy(sh.values);
         key_uppername = sh.key_uppername;
     }
     
@@ -68,6 +66,18 @@ public class ParmGenHeader {
     
     public int getValuesSize(){
         return values.size();
+    }
+
+    @Override
+    public ParmGenHeader clone(){
+
+        try {
+            ParmGenHeader nobj =  (ParmGenHeader)super.clone();
+            nobj.copyFrom(this);
+            return nobj;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(); 
+        }
     }
     
 }

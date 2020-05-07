@@ -20,6 +20,7 @@ import javax.swing.text.BadLocationException;
  *
  * @author tms783
  */
+@SuppressWarnings("serial")
 public class ResponseTracker extends javax.swing.JFrame implements InterfaceRegex, interfaceParmGenWin {
     
     ParmGenNew parentwin;

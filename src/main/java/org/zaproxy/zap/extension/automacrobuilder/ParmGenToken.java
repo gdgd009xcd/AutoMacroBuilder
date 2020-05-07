@@ -40,11 +40,11 @@ public ParmGenTokenValue getTokenValue(){
     return ptv;
 }
 
-Boolean isEnabled() {
+public Boolean isEnabled() {
     return enabled;
 }
 
-void setEnabled(Boolean _enabled){
+public void setEnabled(Boolean _enabled){
     enabled = _enabled;
 }
 
@@ -57,6 +57,14 @@ void setEnabled(Boolean _enabled){
         } else {
             return false;
         }
+    }
+
+    @Override
+    public int hashCode() {
+        
+        int hash =   Objects.hash(this.enabled,this.ptk.hashCode(),this.ptv.hashCode());
+        
+        return hash;
     }
     
 }

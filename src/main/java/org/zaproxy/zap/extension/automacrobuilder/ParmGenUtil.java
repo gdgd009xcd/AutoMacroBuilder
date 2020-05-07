@@ -4,6 +4,7 @@
  */
 package org.zaproxy.zap.extension.automacrobuilder;
 
+import org.zaproxy.zap.extension.automacrobuilder.generated.MacroBuilderUI;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -353,7 +354,7 @@ public class ParmGenUtil {
      * @return ArrayList<String[]> or null
      */
     public static ArrayList<String[]> copyStringArrayList(ArrayList<String[]> slist){
-        if(slist!=null&&slist.size()>0){
+        if(slist!=null){
             ArrayList<String[]> nlist = new ArrayList<>();
             for(String[] sarray: slist){
                 String[] narray = copyStringArray(sarray);

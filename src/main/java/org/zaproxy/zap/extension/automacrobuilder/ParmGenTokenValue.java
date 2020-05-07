@@ -50,5 +50,12 @@ public class ParmGenTokenValue {
             return false;
         }
     }
+
+    @Override
+    public int hashCode() {
+
+        int hash =  Objects.hash(this.url, this.value, this.b);
+        return hash;
+    }
     
 }

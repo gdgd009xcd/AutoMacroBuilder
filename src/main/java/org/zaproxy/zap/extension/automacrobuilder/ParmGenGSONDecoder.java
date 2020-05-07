@@ -19,7 +19,7 @@ public class ParmGenGSONDecoder implements GsonParserListener {
     HashMap<String, Integer> samenamehash = null;
     HashMap<ParmGenTokenKey, ParmGenTokenValue> map = null;
     
-    ParmGenGSONDecoder(String jsondata){
+    public ParmGenGSONDecoder(String jsondata){
         
         gson = new Gson();
         parse(jsondata);
@@ -154,6 +154,7 @@ public class ParmGenGSONDecoder implements GsonParserListener {
     }
 
     @Override
+    @SuppressWarnings("fallthrough")
     public boolean receiver(GsonIterator git, GsonParser.EventType etype, String keyname, Object value, int level) {
         String val = "";
         int fcnt = 0;

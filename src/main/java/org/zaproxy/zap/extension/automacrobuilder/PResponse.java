@@ -89,7 +89,7 @@ public class PResponse extends ParseHTTPHeaders {
             	if(jsonparser!=null){
                     return jsonparser.fetchNameValue(name, fcnt, _tokentype);
                 }
-
+                break;
             default:
             	if(htmlparser!=null){
                     return htmlparser.fetchNameValue(name, fcnt, _tokentype);

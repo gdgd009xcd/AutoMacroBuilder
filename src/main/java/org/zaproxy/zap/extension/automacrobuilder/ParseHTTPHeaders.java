@@ -214,15 +214,17 @@ class ParseHTTPHeaders {
         isrequest = pheaders.isrequest;
     }
 
-    private String httpMessageString(byte[] _binmessage, Encode _penc) {
-        pageenc = _penc;
+    private String httpMessageString(byte[] _binmessage, Encode pageenc) {
+        
+        this.pageenc = pageenc != null ? pageenc : Encode.ISO_8859_1;
         String httpmessage = null;
+        
         try {
             httpmessage = new String(_binmessage, pageenc.getIANACharset());
         } catch (Exception ex) {
-            pageenc = Encode.ISO_8859_1; // falling default enc
+            this.pageenc = Encode.ISO_8859_1; // falling default enc
             try {
-                httpmessage = new String(_binmessage, pageenc.getIANACharset());
+                httpmessage = new String(_binmessage, this.pageenc.getIANACharset());
             } catch (Exception ex1) {
                 Logger.getLogger(ParseHTTPHeaders.class.getName()).log(Level.SEVERE, null, ex1);
                 httpmessage = null;

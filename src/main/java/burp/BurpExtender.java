@@ -21,14 +21,18 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.swing.AbstractButton;
 import javax.swing.JCheckBoxMenuItem;
 
@@ -332,6 +336,15 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
     }
 
     private Encode analyzeCharset(IHttpRequestResponse[] messageInfo){
+        
+        List<PResponse> resopt = null;
+        
+        if(messageInfo!=null&&messageInfo.length>0){
+            resopt = Arrays.stream(messageInfo).map(minfo -> new PResponse(minfo.getResponse(), Encode.ISO_8859_1)).collect(Collectors.toList());
+        }
+        
+        return Encode.analyzeCharset(resopt);
+        /***
         String tcharset = "";
         
         HashMap<Encode, String> langs = new HashMap<Encode,String>();
@@ -487,6 +500,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
         
         
         return Encode.UTF_8;
+        * ***/
     }
     
     private ArrayList <PRequestResponse> convertMessageInfoToArray(IHttpRequestResponse[] messageInfo, int toolflg){

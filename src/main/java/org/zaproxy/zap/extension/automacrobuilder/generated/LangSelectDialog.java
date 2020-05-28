@@ -34,6 +34,11 @@ public class LangSelectDialog extends javax.swing.JDialog {
         LANGUAGE.setModel(cbmodel);
         LANGUAGE.setSelectedItem(lang.getIANACharsetName());
     }
+    
+    public void setLang(Encode lang){
+        selected_lang = lang;
+        LANGUAGE.setSelectedItem(lang.getIANACharsetName());
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.

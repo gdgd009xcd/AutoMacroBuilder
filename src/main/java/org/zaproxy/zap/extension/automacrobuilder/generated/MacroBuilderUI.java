@@ -28,6 +28,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.ListCellRenderer;
+import javax.swing.UIManager;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Document;
@@ -64,11 +65,12 @@ import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
 @SuppressWarnings("serial")
 public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfaceParmGenRegexSaveCancelAction {
 
+    
     private static org.apache.logging.log4j.Logger logger4j = org.apache.logging.log4j.LogManager.getLogger();
     
     private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
 
-    ArrayList<PRequestResponse> rlist = null;
+    List<PRequestResponse> rlist = null;
     ParmGenMacroTrace pmt = null;
 
     DefaultListModel<String> RequestListModel = null;
@@ -83,7 +85,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     private boolean isLoadedMacroRequestContents = false;
     private boolean isLoadedMacroResponseContents = false;
     private boolean isLoadedMacroCommentContents = false;
-
+    
     /**
      * Creates new form MacroBuilderUI
      */
@@ -110,10 +112,17 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         
         // waittimer setting.
         jCheckBox2ActionPerformed(null);
-        
 
     }
-
+    
+    public javax.swing.JPopupMenu getPopupMenuForRequestList(){
+        return PopupMenuForRequestList;
+    }
+    
+    public javax.swing.JButton getScanMacroButton(){
+        return ScanMacro;
+    }
+    
     boolean isReplaceMode(){
         boolean mode = true;
         String selected = (String)TrackMode.getSelectedItem();
@@ -151,7 +160,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     }
 
     @SuppressWarnings("unchecked")
-    public void addNewRequests(ArrayList<PRequestResponse> _rlist) {
+    public void addNewRequests(List<PRequestResponse> _rlist) {
         DefaultListModel<String> lmodel = new DefaultListModel<>();
         AppParmsIni pini;
         if (_rlist != null) {
@@ -219,7 +228,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPopupMenu1 = new javax.swing.JPopupMenu();
+        PopupMenuForRequestList = new javax.swing.JPopupMenu();
         SendTo = new javax.swing.JMenu();
         Repeater = new javax.swing.JMenuItem();
         Scanner = new javax.swing.JMenuItem();
@@ -251,7 +260,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         ClearMacro = new javax.swing.JButton();
         Load = new javax.swing.JButton();
         Save = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        ScanMacro = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
         MBCookieFromJar = new javax.swing.JCheckBox();
@@ -298,7 +307,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         });
         SendTo.add(Intruder);
 
-        jPopupMenu1.add(SendTo);
+        PopupMenuForRequestList.add(SendTo);
 
         targetRequest.setText(bundle.getString("MacroBuilderUI.TARGETREQUEST.text")); // NOI18N
         targetRequest.addActionListener(new java.awt.event.ActionListener() {
@@ -306,7 +315,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                 targetRequestActionPerformed(evt);
             }
         });
-        jPopupMenu1.add(targetRequest);
+        PopupMenuForRequestList.add(targetRequest);
 
         disableRequest.setText(bundle.getString("MacroBuilderUI.DISABLEREQUEST.text")); // NOI18N
         disableRequest.addActionListener(new java.awt.event.ActionListener() {
@@ -314,7 +323,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                 disableRequestActionPerformed(evt);
             }
         });
-        jPopupMenu1.add(disableRequest);
+        PopupMenuForRequestList.add(disableRequest);
 
         enableRequest.setText(bundle.getString("MacroBuilderUI.ENABLEREQUEST.text")); // NOI18N
         enableRequest.addActionListener(new java.awt.event.ActionListener() {
@@ -322,7 +331,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                 enableRequestActionPerformed(evt);
             }
         });
-        jPopupMenu1.add(enableRequest);
+        PopupMenuForRequestList.add(enableRequest);
 
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("burp/Bundle"); // NOI18N
         showRequest.setText(bundle.getString("MacroBuilderUI.ShowRequest.text")); // NOI18N
@@ -502,11 +511,11 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
             }
         });
 
-        jButton3.setText(bundle.getString("MacroBuilderUI.NOP.text")); // NOI18N
-        jButton3.setEnabled(false);
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        ScanMacro.setText(bundle.getString("MacroBuilderUI.NOP.text")); // NOI18N
+        ScanMacro.setEnabled(false);
+        ScanMacro.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                ScanMacroActionPerformed(evt);
             }
         });
 
@@ -695,7 +704,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                                     .addComponent(ParamTracking, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(Load, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(Save, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addComponent(ScanMacro, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(26, 26, 26))
                     .addComponent(jSeparator1)
                     .addGroup(jPanel4Layout.createSequentialGroup()
@@ -738,7 +747,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(Save)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton3))
+                        .addComponent(ScanMacro))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(paramlog, javax.swing.GroupLayout.PREFERRED_SIZE, 328, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -936,7 +945,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     private void RequestListMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_RequestListMousePressed
         // TODO add your handling code here:
         if (evt.isPopupTrigger()) {
-            jPopupMenu1.show(evt.getComponent(), evt.getX(), evt.getY());
+            PopupMenuForRequestList.show(evt.getComponent(), evt.getX(), evt.getY());
         }
     }//GEN-LAST:event_RequestListMousePressed
 
@@ -961,14 +970,14 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     private void RequestListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_RequestListMouseClicked
         // TODO add your handling code here:
         if (evt.isPopupTrigger()) {
-            jPopupMenu1.show(evt.getComponent(), evt.getX(), evt.getY());
+            PopupMenuForRequestList.show(evt.getComponent(), evt.getX(), evt.getY());
         }
     }//GEN-LAST:event_RequestListMouseClicked
 
     private void RequestListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_RequestListMouseReleased
         // TODO add your handling code here:
         if (evt.isPopupTrigger()) {
-            jPopupMenu1.show(evt.getComponent(), evt.getX(), evt.getY());
+            PopupMenuForRequestList.show(evt.getComponent(), evt.getX(), evt.getY());
         }
     }//GEN-LAST:event_RequestListMouseReleased
 
@@ -1007,7 +1016,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         };
         ParmFileFilter pFilter = new ParmFileFilter();
         jfc.setFileFilter(pFilter);
-        ArrayList<PRequestResponse> orglist = pmt.getOriginalrlist();
+        List<PRequestResponse> orglist = pmt.getOriginalrlist();
         if (jfc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION && orglist!=null) {
 
             //code to handle choosed file here.
@@ -1561,9 +1570,9 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         }
     }//GEN-LAST:event_MacroResponseMouseReleased
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void ScanMacroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ScanMacroActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }//GEN-LAST:event_ScanMacroActionPerformed
 
     private void MBmonitorofprocessingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MBmonitorofprocessingActionPerformed
         // TODO add your handling code here:
@@ -1675,11 +1684,13 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     private javax.swing.JEditorPane MacroRequest;
     private javax.swing.JTextArea MacroResponse;
     private javax.swing.JButton ParamTracking;
+    private javax.swing.JPopupMenu PopupMenuForRequestList;
     private javax.swing.JMenuItem Repeater;
     private javax.swing.JPopupMenu RequestEdit;
     private javax.swing.JList<String> RequestList;
     private javax.swing.JPopupMenu ResponseShow;
     private javax.swing.JButton Save;
+    private javax.swing.JButton ScanMacro;
     private javax.swing.JMenuItem Scanner;
     private javax.swing.JMenu SendTo;
     private javax.swing.JComboBox<String> TrackMode;
@@ -1688,7 +1699,6 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     private javax.swing.JMenuItem edit;
     private javax.swing.JMenuItem enableRequest;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton3;
     private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -1701,7 +1711,6 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
-    private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;

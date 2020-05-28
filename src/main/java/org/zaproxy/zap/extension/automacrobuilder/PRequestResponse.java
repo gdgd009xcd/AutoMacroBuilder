@@ -19,6 +19,8 @@
  */
 package org.zaproxy.zap.extension.automacrobuilder;
 
+import org.zaproxy.zap.extension.automacrobuilder.mdepend.ClientDependMessageContainer;
+
 /** @author tms783 */
 public class PRequestResponse {
     public PRequest request;
@@ -27,6 +29,7 @@ public class PRequestResponse {
     Boolean disable = false; // ==true no execute.
     boolean iserror = false;
     int macropos = -1;
+    private ClientDependMessageContainer cdmc = null;
 
     // public PRequestResponse(byte[] brequest, byte[] bresponse , Encode _pageenc){
     //    request = new PRequest(brequest, _pageenc);
@@ -35,17 +38,40 @@ public class PRequestResponse {
     //    disable = false;
     // }
 
-    public PRequestResponse(
+    private void init(
             String h,
             int p,
             boolean ssl,
-            byte[] _binrequest,
-            byte[] _binresponse,
-            Encode _pageenc) {
-        request = new PRequest(h, p, ssl, _binrequest, _pageenc);
-        response = new PResponse(_binresponse, _pageenc);
+            byte[] binrequest,
+            byte[] binresponse,
+            Encode reqpageenc,
+            Encode respageenc) {
+        request = new PRequest(h, p, ssl, binrequest, reqpageenc);
+        response = new PResponse(binresponse, respageenc);
         comments = null;
         disable = false;
+    }
+
+    public PRequestResponse(
+            String h, int p, boolean ssl, byte[] binrequest, byte[] binresponse, Encode pageenc) {
+        cdmc = null;
+        init(h, p, ssl, binrequest, binresponse, pageenc, pageenc);
+    }
+
+    public PRequestResponse(ClientDependMessageContainer cdmc) {
+        this.cdmc = cdmc;
+        init(
+                cdmc.getHost(),
+                cdmc.getPort(),
+                cdmc.isSSL(),
+                cdmc.getRequestByte(),
+                cdmc.getResponseByte(),
+                cdmc.getRequestEncode(),
+                cdmc.getResponseEncode());
+    }
+
+    public ClientDependMessageContainer getClientDependMessageContainer() {
+        return this.cdmc;
     }
 
     void updateRequest(PRequest _req) {

@@ -2,7 +2,7 @@
 
 <Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
   <NonVisualComponents>
-    <Container class="javax.swing.JPopupMenu" name="jPopupMenu1">
+    <Container class="javax.swing.JPopupMenu" name="PopupMenuForRequestList">
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout">
         <Property name="useNullLayout" type="boolean" value="true"/>
@@ -190,7 +190,7 @@
                                           <Component id="ParamTracking" alignment="0" max="32767" attributes="0"/>
                                           <Component id="Load" alignment="0" max="32767" attributes="0"/>
                                           <Component id="Save" max="32767" attributes="0"/>
-                                          <Component id="jButton3" alignment="0" min="-2" pref="111" max="-2" attributes="0"/>
+                                          <Component id="ScanMacro" alignment="0" min="-2" pref="111" max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
                               </Group>
@@ -247,7 +247,7 @@
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Component id="Save" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                              <Component id="jButton3" min="-2" max="-2" attributes="0"/>
+                              <Component id="ScanMacro" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Component id="jScrollPane1" min="-2" pref="284" max="-2" attributes="0"/>
                       </Group>
@@ -521,7 +521,7 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="SaveActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JButton" name="jButton3">
+            <Component class="javax.swing.JButton" name="ScanMacro">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="burp/Bundle.properties" key="NOP" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
@@ -529,7 +529,7 @@
                 <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton3ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ScanMacroActionPerformed"/>
               </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel2">

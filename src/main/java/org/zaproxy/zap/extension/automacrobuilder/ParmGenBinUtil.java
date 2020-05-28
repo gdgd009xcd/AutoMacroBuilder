@@ -26,7 +26,7 @@ import java.io.IOException;
 //
 // ByteArray
 //
-class ParmGenBinUtil {
+public class ParmGenBinUtil {
 
     private ByteArrayOutputStream bstream = null;
 

@@ -9,6 +9,7 @@ import burp.BurpExtender;
 import burp.BurpIHttpService;
 import burp.IHttpRequestResponse;
 import burp.IScanQueueItem;
+import java.io.File;
 import java.nio.charset.Charset;
 import org.zaproxy.zap.extension.automacrobuilder.Encode;
 import org.zaproxy.zap.extension.automacrobuilder.PRequest;
@@ -22,6 +23,8 @@ import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
 public class ClientDependent {
     
     IScanQueueItem scanque = null;//scanner's queue
+    
+    final public static String LOG4JXML_DIR = System.getProperty("user.home") + "/.BurpSuite";
     
     public ClientDependent(){
         scanQueNull();

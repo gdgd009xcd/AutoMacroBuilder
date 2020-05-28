@@ -71,9 +71,9 @@ public class ParmGenTop extends javax.swing.JFrame {
         csv = _csv;//リファレンスを格納
         initComponents();
         LogfileOnOff.setSelected(ParmVars.plog.isLogfileOn());
-        TableColumnModel tcm = ParamTopList.getColumnModel();
-        tcm.getColumn(5).setCellRenderer(new LineWrapRenderer());
-        ParamTopList.setColumnModel(tcm);
+        //TableColumnModel tcm = ParamTopList.getColumnModel();
+        //tcm.getColumn(6).setCellRenderer(new LineWrapRenderer());
+        //ParamTopList.setColumnModel(tcm);
         default_rowheight = ParamTopList.getRowHeight();
         model = (DefaultTableModel)ParamTopList.getModel();
 
@@ -320,7 +320,7 @@ public class ParmGenTop extends javax.swing.JFrame {
                 {null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "", "FromTo", "", "初期値/CSVファイル", "桁数", "機能", "パターンリスト", "現在値"
+                "", "FromTo", "", "初期値/CSVファイル", "桁数", "", "パターンリスト", "現在値"
             }
         ) {
             Class[] types = new Class [] {
@@ -339,6 +339,7 @@ public class ParmGenTop extends javax.swing.JFrame {
             }
         });
         ParamTopList.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        ParamTopList.setRowHeight(18);
         ParamTopList.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(ParamTopList);
         if (ParamTopList.getColumnModel().getColumnCount() > 0) {
@@ -350,7 +351,7 @@ public class ParmGenTop extends javax.swing.JFrame {
             ParamTopList.getColumnModel().getColumn(3).setHeaderValue(bundle.getString("ParmGenTop.title2.text")); // NOI18N
             ParamTopList.getColumnModel().getColumn(4).setPreferredWidth(40);
             ParamTopList.getColumnModel().getColumn(4).setHeaderValue(bundle.getString("ParmGenTop.title3.text")); // NOI18N
-            ParamTopList.getColumnModel().getColumn(5).setPreferredWidth(60);
+            ParamTopList.getColumnModel().getColumn(5).setPreferredWidth(70);
             ParamTopList.getColumnModel().getColumn(5).setHeaderValue(bundle.getString("ParmGenTop.title4.text")); // NOI18N
             ParamTopList.getColumnModel().getColumn(6).setPreferredWidth(200);
             ParamTopList.getColumnModel().getColumn(6).setHeaderValue(bundle.getString("ParmGenTop.title5.text")); // NOI18N

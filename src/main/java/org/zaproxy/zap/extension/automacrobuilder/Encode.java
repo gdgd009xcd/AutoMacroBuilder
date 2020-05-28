@@ -22,6 +22,8 @@ package org.zaproxy.zap.extension.automacrobuilder;
 // https://docs.oracle.com/javase/jp/1.5.0/guide/intl/encoding.doc.html
 
 import java.nio.charset.Charset;
+import java.util.List;
+import java.util.Optional;
 
 public enum Encode {
 
@@ -220,27 +222,50 @@ public enum Encode {
         } catch (Exception e1) {
             logger4j.error("unknown charset:" + str, e1);
         }
-        return Encode.UTF_8; // default
+        return Encode.ISO_8859_1; // default
     }
 
     public static boolean isExistEnc(String str) {
         // enum型全てを取得します。
         Encode[] enumArray = Encode.values();
 
-        try {
-            Charset cset = Charset.forName(str);
-            String charsetname = cset.name();
+        if ( str != null ) {
+            try {
+                Charset cset = Charset.forName(str);
+                String charsetname = cset.name();
 
-            // 取得出来たenum型分ループします。
-            for (Encode enumStr : enumArray) {
-                // 引数とenum型の文字列部分を比較します。
-                if (charsetname.toUpperCase().equals(enumStr.uppercasename)) {
-                    return true;
+                // 取得出来たenum型分ループします。
+                for (Encode enumStr : enumArray) {
+                    // 引数とenum型の文字列部分を比較します。
+                    if (charsetname.toUpperCase().equals(enumStr.uppercasename)) {
+                        return true;
+                    }
                 }
+            } catch (Exception e) {
+                logger4j.error("unknown charset:" + str, e);
             }
-        } catch (Exception e) {
-            logger4j.error("unknown charset:" + str, e);
+        } else {
+            logger4j.error("charset is null");
         }
         return false; // default
+    }
+
+    public static Encode analyzeCharset(List<PResponse> responselist) {
+
+        if (responselist == null) return Encode.ISO_8859_1;
+
+        Optional<Encode> optenc =
+                responselist.stream()
+                        .filter(
+                                res -> {
+                                    String chrset = res.getCharset();
+                                    return chrset != null
+                                            && !chrset.isEmpty()
+                                            && Encode.isExistEnc(chrset);
+                                })
+                        .findFirst()
+                        .map(res -> Encode.getEnum(res.getCharset()));
+
+        return optenc.orElse(Encode.ISO_8859_1);
     }
 }

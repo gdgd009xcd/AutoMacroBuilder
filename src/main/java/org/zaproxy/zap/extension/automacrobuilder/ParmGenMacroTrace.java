@@ -38,8 +38,8 @@ public class ParmGenMacroTrace extends ClientDependent {
 
     MacroBuilderUI ui = null;
     Charset charset = StandardCharsets.ISO_8859_1;
-    private ArrayList<PRequestResponse> rlist = null; // マクロ実行後の全リクエストレスポンス
-    private ArrayList<PRequestResponse> originalrlist = null; // オリジナルリクエストレスポンス
+    private List<PRequestResponse> rlist = null; // マクロ実行後の全リクエストレスポンス
+    private List<PRequestResponse> originalrlist = null; // オリジナルリクエストレスポンス
 
     // *** REMOVE*** private ArrayList<String> set_cookienames = null;//レスポンスのSet-Cookie値の名前リスト
     int selected_request = 0; // 現在選択しているカレントのリクエスト
@@ -575,7 +575,7 @@ public class ParmGenMacroTrace extends ClientDependent {
         return false;
     }
 
-    public void setRecords(ArrayList<PRequestResponse> _rlist) {
+    public void setRecords(List<PRequestResponse> _rlist) {
         // rlist = new ArrayList <PRequestResponse> (_rlist);//copy
         if (rlist == null) {
             rlist = _rlist; // reference共有
@@ -658,7 +658,7 @@ public class ParmGenMacroTrace extends ClientDependent {
         return state;
     }
 
-    ArrayList<PRequestResponse> getRecords() {
+    List<PRequestResponse> getRecords() {
         return rlist;
     }
 
@@ -793,7 +793,7 @@ public class ParmGenMacroTrace extends ClientDependent {
         }
     }
 
-    public ArrayList<PRequestResponse> getOriginalrlist() {
+    public List<PRequestResponse> getOriginalrlist() {
         return originalrlist;
     }
 

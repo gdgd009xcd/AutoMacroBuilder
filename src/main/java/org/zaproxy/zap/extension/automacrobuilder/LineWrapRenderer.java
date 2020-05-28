@@ -43,6 +43,25 @@ public class LineWrapRenderer extends JTextArea implements TableCellRenderer {
             setBackground(table.getBackground());
         }
         setText((value == null) ? "" : value.toString());
+        
+        // Set the component width to match the width of its table cell
+        // and make the height arbitrarily large to accomodate all the contents
+        setSize(table.getColumnModel().getColumn(column).getWidth(), Short.MAX_VALUE);
+        
+        
+        
+        // Now get the JTextArea's fitted height for the given width
+        int rowHeight = this.getPreferredSize().height;
+
+        // Get the current table row height
+        int actualRowHeight = table.getRowHeight(row);
+
+        // Set table row height to fitted height.
+        // Important to check if this has been done already
+        // to prevent a never-ending loop.
+        if (rowHeight != actualRowHeight) {
+           table.setRowHeight(row, rowHeight);
+        }
         return this;
     }
 }

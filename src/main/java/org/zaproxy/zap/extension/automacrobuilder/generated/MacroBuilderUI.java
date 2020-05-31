@@ -1629,6 +1629,15 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         paramlogTabbedPaneSelectedContentsLoad();
     }//GEN-LAST:event_paramlogStateChanged
 
+    /**
+     * get current selected request index in RequestList.
+     * 
+     * @return int
+     */
+    public int getCurrentSelectedRequestIndex(){
+        return RequestList.getSelectedIndex();
+    }
+    
     @Override
     public void ParmGenRegexSaveAction(String message) {
         if(pmt!=null&&OriginalEditTarget!=-1){

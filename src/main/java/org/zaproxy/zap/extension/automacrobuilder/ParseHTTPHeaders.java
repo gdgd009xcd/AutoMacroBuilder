@@ -1215,6 +1215,10 @@ class ParseHTTPHeaders {
         return null;
     }
 
+    /**
+     * get byte of Body contents without headers.
+     * @return 
+     */
     public byte[] getBodyBytes() {
         if (bytebody != null) {
             return bytebody;

@@ -199,6 +199,11 @@ public class ParmGenMacroTrace extends ClientDependent {
         state = PMT_CURRENT_END;
     }
 
+    /**
+     * Set Current Request position number in PRequestResponse list(rlist)
+     * 
+     * @param _p position number(from 0 to rlist.size()-1)
+     */
     public void setCurrentRequest(int _p) {
         if (rlist != null && rlist.size() > _p) {
             selected_request = _p;
@@ -682,6 +687,18 @@ public class ParmGenMacroTrace extends ClientDependent {
             }
 
             return pqr;
+        }
+        return null;
+    }
+    
+    /**
+     * Get current selected PRequestResponse object from PRequstResponse list.
+     * 
+     * @return PRequestResponse
+     */
+    public PRequestResponse getCurrentRequestResponse(){
+        if(this.selected_request > -1){
+            return getRequestResponse(this.selected_request);
         }
         return null;
     }

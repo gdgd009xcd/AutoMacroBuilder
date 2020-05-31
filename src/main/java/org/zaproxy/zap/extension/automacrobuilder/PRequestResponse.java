@@ -70,6 +70,10 @@ public class PRequestResponse {
                 cdmc.getResponseEncode());
     }
 
+    public void setClientDependMessageContainer(ClientDependMessageContainer cdmc){
+        this.cdmc = cdmc;
+    }
+    
     public ClientDependMessageContainer getClientDependMessageContainer() {
         return this.cdmc;
     }

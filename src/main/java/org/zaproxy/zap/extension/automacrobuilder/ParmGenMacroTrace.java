@@ -36,6 +36,8 @@ import org.zaproxy.zap.extension.automacrobuilder.mdepend.ClientDependent;
 /** @author daike */
 public class ParmGenMacroTrace extends ClientDependent {
 
+    private LockInstance locker = null;
+    long threadid = -1;
     MacroBuilderUI ui = null;
     Charset charset = StandardCharsets.ISO_8859_1;
     private List<PRequestResponse> rlist = null; // マクロ実行後の全リクエストレスポンス
@@ -80,7 +82,6 @@ public class ParmGenMacroTrace extends ClientDependent {
     private ParmGenCookieManager cookieMan = null; // cookie manager
 
     private boolean locked = false;
-    private Queue<Long> tidlist = null;
 
     public String state_debugprint() {
         String msg = "PMT_UNKNOWN";
@@ -113,16 +114,17 @@ public class ParmGenMacroTrace extends ClientDependent {
         return msg;
     }
 
-    public ParmGenMacroTrace() {}
+    public ParmGenMacroTrace(LockInstance locker) {
+        this.locker = locker;
+    }
 
     //
     // setter
     //
     public void clear() {
         ParmGen.clearAll();
-        tidlist = null;
-        locked = false;
-        macroEnded(true);
+        this.locker.unlock(-1);
+        macroEnded();
         rlist = null;
         originalrlist = null;
         // REMOVE set_cookienames = null;
@@ -593,52 +595,14 @@ public class ParmGenMacroTrace extends ClientDependent {
 
     void macroStarted() {
         ParmVars.plog.debuglog(0, "<--Macro Started.-->");
-        macroLock();
+        this.threadid = this.locker.lock();
     }
 
-    public void macroEnded(boolean clrtidlist) {
+    public void macroEnded() {
         nullState();
-        macroUnLock();
-        if (clrtidlist) {
-            tidlist = null;
-        }
+        this.locker.unlock(this.threadid);
+        
         ParmVars.plog.debuglog(0, "<--Macro Complete Ended.-->");
-    }
-
-    public synchronized void macroLock() {
-        long tid = Thread.currentThread().getId();
-        if (tidlist == null) {
-            tidlist = new ArrayDeque<>();
-        }
-        tidlist.add(tid);
-        ParmVars.plog.debuglog(0, "macroLock Start. tid=" + tid);
-        while (locked == true) {
-            try {
-                ParmVars.plog.debuglog(0, "macroLock wait In.  tid=" + tid);
-                wait(); // availableがtrueの間、wait
-                ParmVars.plog.debuglog(0, "macroLock wait Out. tid=" + tid);
-            } catch (InterruptedException e) {
-            }
-        }
-        // workAreaに値をセットする処理
-        locked = true;
-
-        ParmVars.plog.debuglog(0, "macroLock  Done. tid=" + tid);
-    }
-
-    public synchronized void macroUnLock() {
-        // lockedにfalseを代入した後wait状態のスレッドを解除
-        locked = false;
-        notifyAll();
-        Long tid = new Long(-1);
-        try {
-            if (tidlist != null) {
-                tid = tidlist.remove();
-            }
-        } catch (Exception e) {
-
-        }
-        ParmVars.plog.debuglog(0, "macroUnLock Done. tid=" + tid);
     }
 
     private void nullState() {

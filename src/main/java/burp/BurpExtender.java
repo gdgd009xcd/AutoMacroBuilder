@@ -45,6 +45,7 @@ import org.zaproxy.zap.extension.automacrobuilder.ParmGenUtil;
 import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
 import org.zaproxy.zap.extension.automacrobuilder.Encode;
 import org.zaproxy.zap.extension.automacrobuilder.InterfaceLangOKNG;
+import org.zaproxy.zap.extension.automacrobuilder.LockInstance;
 import org.zaproxy.zap.extension.automacrobuilder.generated.LangSelectDialog;
 import org.zaproxy.zap.extension.automacrobuilder.PRequest;
 import org.zaproxy.zap.extension.automacrobuilder.PResponse;
@@ -155,7 +156,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                             }
 
                         }catch(Exception e){
-                            pmt.macroEnded(true);//something wrong happened. 
+                            pmt.macroEnded();//something wrong happened. 
                             ParmVars.plog.debuglog(0, "RequestRun Exception");
                             ParmVars.plog.printException(e);
                         }
@@ -192,12 +193,12 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                                         if(pmt.isMBFinalResponse()){
                                             messageInfo.setResponse(pmt.getPostMacroResponse());
                                         }
-                                        pmt.macroEnded(false);
+                                        pmt.macroEnded();
                                         percent = pmt.getScanQuePercentage();
                                         break;
                                     case ParmGenMacroTrace.PMT_POSTMACRO_NULL:
                                         ParmVars.plog.debuglog(0, "====postmacro response NULL========");
-                                        pmt.macroEnded(false);
+                                        pmt.macroEnded();
                                         percent = pmt.getScanQuePercentage();
                                     default:
                                         break;
@@ -207,11 +208,24 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                                 }
                             }
                         } catch (Exception ex) {
-                            pmt.macroEnded(true);//something wrong happened. 
+                            pmt.macroEnded();//something wrong happened. 
                             Logger.getLogger(BurpExtender.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
 
+                }else{// NOP
+                    if (messageIsRequest){
+                        if(pmt!=null&&pmt.isCurrentRequest()){
+                            // restore currentRequest
+                            byte[] originalrequestbytes = pmt.burpGetCurrentOriginalRequest();
+                            if( originalrequestbytes!=null) {
+                                messageInfo.setRequest(originalrequestbytes);
+                            }
+                        }
+                    }else{
+                        pmt.macroEnded();
+                    }
+                    
                 }
     		return;
                 
@@ -733,7 +747,8 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
         PrintWriter stdout = new PrintWriter(callbacks.getStdout(), true);
         PrintWriter stderr = new PrintWriter(callbacks.getStderr(), true);
         //ParmVars.plog.SetBurpPrintStreams(stdout, stderr);
-        pmt = new ParmGenMacroTrace();
+        LockInstance locker = new LockInstance();
+        pmt = new ParmGenMacroTrace(locker);
         //セッション管理
         callbacks.registerSessionHandlingAction(new BurpMacroStartAction(pmt));
         //callbacks.registerSessionHandlingAction(new BurpMacroLogAction());

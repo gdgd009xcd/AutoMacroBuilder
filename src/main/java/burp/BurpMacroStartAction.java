@@ -45,10 +45,10 @@ public class BurpMacroStartAction implements ISessionHandlingAction {
         int port = iserv.getPort();
         boolean isSSL = (iserv.getProtocol().toLowerCase().equals("https")?true:false);
         ParmVars.plog.debuglog(0, "Current StepNo:" + tr.getStepNo() + " "+ host );
+        tr.burpSetCurrentOriginalRequest(currentRequest.getRequest());
         byte[] retval = pgen.Run(host, port, isSSL, currentRequest.getRequest());
         if ( retval != null){
                 currentRequest.setRequest(retval);
-
         }
     }
     

@@ -23,7 +23,8 @@ import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
 public class ClientDependent {
     
     IScanQueueItem scanque = null;//scanner's queue
-    byte[] originalrequest;// performAction's IHttpRequestResponse currentrequest bytes
+    byte[] originalrequest = null;// performAction's IHttpRequestResponse currentrequest bytes
+    IHttpRequestResponse messageInfo = null;// performAction's IHttpRequestResponse
     
     final public static String LOG4JXML_DIR = System.getProperty("user.home") + "/.BurpSuite";
     
@@ -37,6 +38,14 @@ public class ClientDependent {
     
     public byte[] burpGetCurrentOriginalRequest(){
         return originalrequest;
+    }
+    
+    public void burpSetCurrentMessageInfo(IHttpRequestResponse messageInfo){
+        this.messageInfo = messageInfo;
+    }
+    
+    public IHttpRequestResponse burGetCurrentMessageInfo(){
+        return this.messageInfo;
     }
     
     protected void burpSendToRepeater(String host, int port, boolean useHttps, byte[] messages, String tabtitle){

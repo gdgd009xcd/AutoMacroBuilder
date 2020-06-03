@@ -37,16 +37,30 @@ import org.zaproxy.zap.extension.automacrobuilder.mdepend.ClientDependent;
 public class ParmGenMacroTrace extends ClientDependent {
 
     private LockInstance locker = null;
-    long threadid = -1;
+    
     MacroBuilderUI ui = null;
-    Charset charset = StandardCharsets.ISO_8859_1;
+    
+    // ============== instance unique members(copy per thread) BEGIN ==========
+    long threadid = -1;
     private List<PRequestResponse> rlist = null; // マクロ実行後の全リクエストレスポンス
     private List<PRequestResponse> originalrlist = null; // オリジナルリクエストレスポンス
 
-    // *** REMOVE*** private ArrayList<String> set_cookienames = null;//レスポンスのSet-Cookie値の名前リスト
     int selected_request = 0; // 現在選択しているカレントのリクエスト
-    int stepno = -1; // 実行中のリクエスト番号
+
     PRequestResponse toolbaseline = null; // Repeater's baseline request.
+
+    PRequestResponse postmacro_RequestResponse = null;
+
+    private FetchResponseVal fetchResVal = null; // token cache
+
+
+
+    private ParmGenCookieManager cookieMan = null; // cookie manager
+
+    // ============== instance unique members(copy per thread) END ==========
+
+    ListIterator<PRequestResponse> oit = null; // オリジナル
+    ListIterator<PRequestResponse> cit = null; // 実行
 
     boolean MBCookieUpdate = false; // ==true Cookie更新
     boolean MBCookieFromJar = false; // ==true 開始時Cookie.jarから引き継ぐ
@@ -57,16 +71,8 @@ public class ParmGenMacroTrace extends ClientDependent {
     boolean MBmonitorofprocessing = false;
     boolean MBreplaceTrackingParam = false;
 
-    int waittimer = 0; // 実行間隔(msec)
-
-    ListIterator<PRequestResponse> oit = null; // オリジナル
-    ListIterator<PRequestResponse> cit = null; // 実行
-    ListIterator<ParmGenParser> pit = null;
-
-    PRequestResponse postmacro_RequestResponse = null;
-
-    int state = PMT_POSTMACRO_NULL; // 下記の値。
-
+    int state = PMT_POSTMACRO_NULL;
+    // int state possible values
     public static final int PMT_PREMACRO_BEGIN = 0; // 前処理マクロ実行中
     public static final int PMT_PREMACRO_END = 1; // 前処理マクロ実行中
     public static final int PMT_CURRENT_BEGIN = 2; // カレントリクエスト開始
@@ -75,13 +81,10 @@ public class ParmGenMacroTrace extends ClientDependent {
     public static final int PMT_POSTMACRO_END = 5; // 後処理マクロ終了。
     public static final int PMT_POSTMACRO_NULL = 6; // 後処理マクロレスポンスnull
 
-    private FetchResponseVal fetchResVal = null; // token cache
-
+    private int stepno = -1; // 実行中のリクエスト番号
+    
     private ParmGenTWait TWaiter = null;
-
-    private ParmGenCookieManager cookieMan = null; // cookie manager
-
-    private boolean locked = false;
+    private int waittimer = 0; // 実行間隔(msec)
 
     public String state_debugprint() {
         String msg = "PMT_UNKNOWN";
@@ -132,7 +135,6 @@ public class ParmGenMacroTrace extends ClientDependent {
         stepno = -1;
         oit = null;
         cit = null;
-        pit = null;
         postmacro_RequestResponse = null;
         nullfetchResValAndCookieMan();
     }
@@ -313,16 +315,6 @@ public class ParmGenMacroTrace extends ClientDependent {
         state = PMT_PREMACRO_BEGIN;
         ParmVars.plog.debuglog(0, "BEGIN PreMacro");
 
-        // 1)synchronized preMacroLock
-        // 単一のスレッドが running = trueにセット only one thread set running =true then preMacroLock method
-        // end.
-        // 2）2番目に実行したスレッドはpreMacroLock内でrunning = true時、wait(); second excuting thread wait,because
-        // running == true.
-        //	他のスレッドは、2番目スレッドが終了するまで、synchronizedのため、待機。 the other threads wait until second executing
-        // thread complete preMacroLock.
-        // 3）共有storeからスレッド毎のローカルのFetchResponseVal, Cookieストアを生成。	local FetchResponseVal, Cookie
-        // store create from shared store.
-
         oit = null;
         cit = null;
 
@@ -356,13 +348,7 @@ public class ParmGenMacroTrace extends ClientDependent {
                     ppr.request.setCookiesFromCookieMan(cookieMan);
 
                     String noresponse = "";
-                    /*
-                    String host = ppr.request.getHost();
-                    int port = ppr.request.getPort();
-                    boolean isSSL = ppr.request.isSSL();
-                    Encode _pageenc = ppr.request.getPageEnc();
-                    BurpIHttpService bserv = new BurpIHttpService(host, port, isSSL);
-                    */
+
                     ParmVars.plog.debuglog(
                             0,
                             "PreMacro StepNo:"
@@ -373,15 +359,7 @@ public class ParmGenMacroTrace extends ClientDependent {
                                     + ppr.request.method
                                     + " "
                                     + ppr.request.url);
-                    // byte[] byteres = callbacks.makeHttpRequest(host,port, isSSL, byterequest);
 
-                    /*
-                    ParmVars.plog.clearComments();
-                    ParmVars.plog.setError(false);
-                    IHttpRequestResponse IHReqRes = callbacks.makeHttpRequest(bserv, byterequest);
-                    byte[] bytereq = IHReqRes.getRequest();
-                    byte[] byteres = IHReqRes.getResponse();
-                    */
                     PRequestResponse pqrs = clientHttpRequest(ppr.request);
 
                     if (pqrs != null) {
@@ -402,7 +380,10 @@ public class ParmGenMacroTrace extends ClientDependent {
 
     PRequest configureRequest(PRequest preq) {
 
+       
+        
         if (isRunning()) { // MacroBuilder list > 0 && state is Running.
+            preq.setThreadId2CustomHeader(threadid);
             // ここでリクエストのCookieをCookie.jarで更新する。
             String domain_req = preq.getHost().toLowerCase();
             String path_req = preq.getPath();
@@ -482,14 +463,6 @@ public class ParmGenMacroTrace extends ClientDependent {
                             ppr = opr;
                         }
 
-                        /*
-                        byte[] byterequest = ppr.request.getByteMessage();
-                        String host = ppr.request.getHost();
-                        int port = ppr.request.getPort();
-                        boolean isSSL = ppr.request.isSSL();
-                        Encode _pageenc = ppr.request.getPageEnc();
-                        BurpIHttpService bserv = new BurpIHttpService(host, port, isSSL);
-                        */
                         ParmVars.plog.debuglog(
                                 0,
                                 "PostMacro StepNo:"
@@ -500,20 +473,7 @@ public class ParmGenMacroTrace extends ClientDependent {
                                         + ppr.request.method
                                         + " "
                                         + ppr.request.url);
-                        /*
-                        ParmVars.plog.clearComments();
-                        ParmVars.plog.setError(false);
-                        postmacro_RequestResponse = callbacks.makeHttpRequest(bserv, byterequest);
-                        byte[] bytereq = postmacro_RequestResponse.getRequest();
-                        byte[] byteres = postmacro_RequestResponse.getResponse();
-                        if(bytereq==null){
-                            bytereq = new String("").getBytes();
-                        }
-                        if(byteres == null){
-                            byteres = new String("").getBytes();
-                        }
-                        PRequestResponse pqrs = new PRequestResponse(host, port, isSSL, bytereq, byteres, _pageenc);
-                        */
+
                         PRequestResponse pqrs = clientHttpRequest(ppr.request);
                         if (pqrs != null) {
                             postmacro_RequestResponse = pqrs;

@@ -117,6 +117,8 @@ class ParseHTTPHeaders {
                 ParmGenRequestTokenKey.RequestParamType.Header,
                 ParmGenRequestTokenKey.RequestParamSubType.Cookie),
     };
+    
+    public static final String CUSTOM_THREAD_ID_HEADERNAME = "X-PARMGEN-CUSTOM-HEADER";
 
     private void init() {
         body = null;
@@ -1340,5 +1342,20 @@ class ParseHTTPHeaders {
             }
         }
         return alist;
+    }
+    
+    public void setThreadId2CustomHeader(long tid){
+        String v = Long.toString(tid);
+        
+        setHeader(CUSTOM_THREAD_ID_HEADERNAME, v);
+    }
+    
+    public long getThreadId5CustomHeader(){
+        String v = getHeader(CUSTOM_THREAD_ID_HEADERNAME);
+        if ( v != null ) {
+            Long l = Long.parseLong(v);
+            return l;
+        }
+        return -1;
     }
 }

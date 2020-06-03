@@ -26,6 +26,9 @@ public class LockInstance {
     synchronized public long lock() {
         long tid = Thread.currentThread().getId();
         LOGGER4J.debug("start lock id:" + tid);
+        if (this.lockerthreadid == tid) {
+           unlock(-1); 
+        }
         while(locked){
             try {
                 LOGGER4J.debug("wait in:" + tid);

@@ -62,6 +62,8 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
     ParmGenMacroTrace pmt = null;
     IHttpRequestResponse[] selected_messageInfo = null;
     JMenuItem repeatermodeitem = null;
+    private static org.apache.logging.log4j.Logger LOGGER4J =
+            org.apache.logging.log4j.LogManager.getLogger();
 
     private String getToolname(int toolflag){
         String toolname = "";
@@ -111,11 +113,20 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
             boolean messageIsRequest,
             IHttpRequestResponse messageInfo)
         {
+            IHttpService tiserv = messageInfo.getHttpService();
+            String h = tiserv.getHost();
+            int p = tiserv.getPort();
+            boolean tisSSL = (tiserv.getProtocol().toLowerCase().equals("https")?true:false);
+            PRequest preq = new PRequest(h, p, tisSSL, messageInfo.getRequest(), ParmVars.enc);
+            long tid = preq.getThreadId5CustomHeader();
+            LOGGER4J.debug("processHttpMessage threadid:" + tid);
+            
                ParmGen pgen = new ParmGen(pmt);
                 String url = null;
                 String toolname = getToolname(toolflag);
                 
-                ParmVars.plog.debuglog(0, "toolname:" + toolname + " " + (messageIsRequest?"Request":"Response"));
+                LOGGER4J.debug("toolname:" + toolname + " " + (messageIsRequest?"Request":"Response"));
+                
                 switch(toolflag){
                     case IBurpExtenderCallbacks.TOOL_INTRUDER:
                     case IBurpExtenderCallbacks.TOOL_SCANNER:
@@ -136,10 +147,9 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                                         // update number sequeces...
 
                         try{
-                            ParmVars.plog.debuglog(0, "=====RequestRun start======");
+                            LOGGER4J.debug("=====RequestRun start======");
                             if(pmt!=null){
-                                ParmVars.plog.debuglog(0,"state:" + pmt.state_debugprint());
-
+                                LOGGER4J.debug("state:" + pmt.state_debugprint());
                             }
                             
 
@@ -153,12 +163,13 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                                         messageInfo.setRequest(retval);
 
                                 }
+                            } else {
+                                LOGGER4J.debug("current request object comment:" + messageInfo.getComment());
                             }
 
                         }catch(Exception e){
                             pmt.macroEnded();//something wrong happened. 
-                            ParmVars.plog.debuglog(0, "RequestRun Exception");
-                            ParmVars.plog.printException(e);
+                            LOGGER4J.error("RequestRun Exception", e);
                         }
 
                        
@@ -172,9 +183,9 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                             //PRequestResponse prs = new PRequestResponse(new String(messageInfo.getRequest(), ParmVars.enc.getIANACharset()), new String(messageInfo.getResponse(), ParmVars.enc.getIANACharset()));
                             PRequestResponse prs = new PRequestResponse(host, port, isSSL, messageInfo.getRequest(), messageInfo.getResponse(), ParmVars.enc);
                             url = prs.request.getURL();
-                            ParmVars.plog.debuglog(0, "=====ResponseRun start====== status:" + prs.response.getStatus());
+                            LOGGER4J.debug("=====ResponseRun start====== status:" + prs.response.getStatus());
                             int updtcnt = pgen.ResponseRun(url, messageInfo.getResponse(), ParmVars.enc);
-                            ParmVars.plog.debuglog(0, "=====ResponseRun end======");
+                            LOGGER4J.debug("=====ResponseRun end======");
                             if(pmt!=null){
                                 pmt.parseSetCookie(prs);//save Set-Cookie values into CookieStore.
                                 switch(pmt.getState()){
@@ -197,19 +208,20 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                                         percent = pmt.getScanQuePercentage();
                                         break;
                                     case ParmGenMacroTrace.PMT_POSTMACRO_NULL:
-                                        ParmVars.plog.debuglog(0, "====postmacro response NULL========");
+                                        LOGGER4J.debug("====postmacro response NULL========");
                                         pmt.macroEnded();
                                         percent = pmt.getScanQuePercentage();
                                     default:
                                         break;
                                 }
                                 if(percent != -1){
-                                    ParmVars.plog.debuglog(0, "ActiveScan [" + percent + "]%");
+                                    LOGGER4J.info("ActiveScan [" + percent + "]%");
                                 }
                             }
                         } catch (Exception ex) {
                             pmt.macroEnded();//something wrong happened. 
-                            Logger.getLogger(BurpExtender.class.getName()).log(Level.SEVERE, null, ex);
+                            LOGGER4J.error("", ex);
+                            //Logger.getLogger(BurpExtender.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
 
@@ -580,7 +592,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                 }
 
         }catch(Exception e){
-            ParmVars.plog.printException(e);
+            LOGGER4J.error("", e);
             return null;
         }
         return prr;
@@ -636,7 +648,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
 
                             String toolname = getToolname(toolflg);
-                            ParmVars.plog.debuglog(0, "updatebaselineAction:" + toolname + ":" + (repeaterbaseline==null?"NULL":"NONULL"));
+                            LOGGER4J.debug("updatebaselineAction:" + toolname + ":" + (repeaterbaseline==null?"NULL":"NONULL"));
                             UpdateToolBaseline(repeaterbaseline);
                             }
                     });
@@ -690,7 +702,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
             }
             catch (Exception e)
             {
-                ParmVars.plog.printException(e);
+                LOGGER4J.error("", e);
             }
         }
 

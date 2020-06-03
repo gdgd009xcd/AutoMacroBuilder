@@ -29,7 +29,11 @@ import java.util.List;
 import org.zaproxy.zap.extension.automacrobuilder.GSONSaveObject.AppParmsIni_List;
 import org.zaproxy.zap.extension.automacrobuilder.GSONSaveObject.AppValue_List;
 
-/** @author daike */
+/**
+ * This class Used only when saving parameter settings.
+ * 
+ * @author daike
+ */
 public class ParmGenJSONSave {
     private static org.apache.logging.log4j.Logger logger4j =
             org.apache.logging.log4j.LogManager.getLogger();

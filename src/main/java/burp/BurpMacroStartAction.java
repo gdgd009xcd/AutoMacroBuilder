@@ -19,6 +19,9 @@ import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
 public class BurpMacroStartAction implements ISessionHandlingAction {
     ParmGenMacroTrace tr;
     
+    private static org.apache.logging.log4j.Logger LOGGER4J =
+            org.apache.logging.log4j.LogManager.getLogger();
+    
     public BurpMacroStartAction(ParmGenMacroTrace _tr){
         tr = _tr;
     }
@@ -44,7 +47,7 @@ public class BurpMacroStartAction implements ISessionHandlingAction {
         String host = iserv.getHost();
         int port = iserv.getPort();
         boolean isSSL = (iserv.getProtocol().toLowerCase().equals("https")?true:false);
-        ParmVars.plog.debuglog(0, "Current StepNo:" + tr.getStepNo() + " "+ host );
+        LOGGER4J.debug("StartAction Current StepNo:" + tr.getStepNo() + " host:"+ host + "Threadid:" + Thread.currentThread().getId() );
         tr.burpSetCurrentOriginalRequest(currentRequest.getRequest());
         
         byte[] retval = pgen.Run(host, port, isSSL, currentRequest.getRequest());

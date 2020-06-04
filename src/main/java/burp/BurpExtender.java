@@ -119,7 +119,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
             boolean tisSSL = (tiserv.getProtocol().toLowerCase().equals("https")?true:false);
             PRequest preq = new PRequest(h, p, tisSSL, messageInfo.getRequest(), ParmVars.enc);
             long tid = preq.getThreadId5CustomHeader();
-            LOGGER4J.debug("processHttpMessage threadid:" + tid);
+            LOGGER4J.debug("processHttpMessage threadid:" + Thread.currentThread().getId() + " X-THREAD:" + tid);
             
                ParmGen pgen = new ParmGen(pmt);
                 String url = null;

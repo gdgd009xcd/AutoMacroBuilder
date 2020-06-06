@@ -155,8 +155,8 @@ public class ParmGen {
         //	}
 
         // if(av.toStepNo>0&&av.toStepNo!=pmt.getStepNo())return null;
-        if (av.toStepNo != ParmVars.TOSTEPANY) {
-            if (av.toStepNo != pmt.getStepNo()) return null;
+        if (av.getToStepNo() != ParmVars.TOSTEPANY) {
+            if (av.getToStepNo() != pmt.getStepNo()) return null;
         }
         // ArrayList<String []> headers = prequest.getHeaders();
 
@@ -489,7 +489,7 @@ public class ParmGen {
     }
 
     boolean FetchRequest(PRequest prequest, AppParmsIni pini, AppValue av, int r, int c) {
-        if (av.fromStepNo < 0 || av.fromStepNo == pmt.getStepNo()) {
+        if (av.getFromStepNo() < 0 || av.getFromStepNo() == pmt.getStepNo()) {
             String url = prequest.getURL();
             int row, col;
             row = r;
@@ -500,14 +500,14 @@ public class ParmGen {
                             .reqbodymatch(
                                     av,
                                     pmt.getStepNo(),
-                                    av.fromStepNo,
+                                    av.getFromStepNo(),
                                     url,
                                     prequest,
                                     row,
                                     col,
                                     true,
-                                    av.resRegexPos,
-                                    av.token);
+                                    av.getResRegexPos(),
+                                    av.getToken());
                 default:
                     break;
             }
@@ -526,7 +526,7 @@ public class ParmGen {
         boolean autotrack = false;
         String rowcolstr = Integer.toString(row) + "," + Integer.toString(col);
         // String path = new String(url);
-        if (av.fromStepNo < 0 || av.fromStepNo == pmt.getStepNo()) {
+        if (av.getFromStepNo() < 0 || av.getFromStepNo() == pmt.getStepNo()) {
             int qpos = -1;
             switch (av.getResTypeInt()) {
                     // switch(av.resPartType & AppValue.C_VTYPE){
@@ -544,13 +544,13 @@ public class ParmGen {
                             pmt.getFetchResponseVal()
                                     .headermatch(
                                             pmt.getStepNo(),
-                                            av.fromStepNo,
+                                            av.getFromStepNo(),
                                             url,
                                             presponse,
                                             row,
                                             col,
                                             true,
-                                            av.token,
+                                            av.getToken(),
                                             av);
                     break;
                 case AppValue.V_REQTRACKBODY: // request追跡なのでNOP.
@@ -565,7 +565,7 @@ public class ParmGen {
                                 pmt.getFetchResponseVal()
                                         .bodymatch(
                                                 pmt.getStepNo(),
-                                                av.fromStepNo,
+                                                av.getFromStepNo(),
                                                 url,
                                                 presponse,
                                                 row,
@@ -573,9 +573,9 @@ public class ParmGen {
                                                 true,
                                                 autotrack,
                                                 av,
-                                                av.resRegexPos,
-                                                av.token,
-                                                av.urlencode);
+                                                av.getResRegexPos(),
+                                                av.getToken(),
+                                                av.isUrlEncode());
                     } catch (UnsupportedEncodingException ex) {
                         Logger.getLogger(ParmGen.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -722,8 +722,8 @@ public class ParmGen {
                             }
                         }
 
-                        List<AppValue> parmlist = pini.parmlist;
-                        ListIterator<AppValue> pt = parmlist.listIterator();
+                        List<AppValue> parmlist = pini.getAppValueReadWriteOriginal();
+                        Iterator<AppValue> pt = parmlist.iterator();
                         if (parmlist == null || parmlist.isEmpty()) {
                             //
                         }
@@ -795,14 +795,14 @@ public class ParmGen {
             }
 
             AppParmsIni pini = null;
-            ListIterator<AppParmsIni> it = parmcsv.listIterator();
+            Iterator<AppParmsIni> it = parmcsv.iterator();
             int row = 0;
             while (it.hasNext()) {
                 pini = it.next();
                 if (pmt.CurrentRequestIsTrackFromTarget(pini)
-                        && pini.getType() == AppParmsIni.T_TRACK) {
-                    List<AppValue> parmlist = pini.parmlist;
-                    ListIterator<AppValue> pt = parmlist.listIterator();
+                        && pini.getTypeVal() == AppParmsIni.T_TRACK) {
+                    List<AppValue> parmlist = pini.getAppValueReadWriteOriginal();
+                    Iterator<AppValue> pt = parmlist.iterator();
                     boolean fetched;
                     boolean apvIsUpdated = false;
                     int col = 0;
@@ -811,14 +811,14 @@ public class ParmGen {
                         if (av.isEnabled() && av.getResTypeInt() >= AppValue.V_REQTRACKBODY) {
                             fetched = FetchRequest(prequest, pini, av, row, col);
                             if (fetched) {
-                                pt.set(av);
+                                //pt.set(av); no need set
                                 apvIsUpdated = true;
                             }
                         }
                         col++;
                     }
                     if (apvIsUpdated) {
-                        it.set(pini);
+                        //it.set(pini); no need set
                     }
                 }
                 row++;
@@ -846,22 +846,22 @@ public class ParmGen {
             if (url != null && parmcsv != null) {
 
                 AppParmsIni pini = null;
-                ListIterator<AppParmsIni> it = parmcsv.listIterator();
+                Iterator<AppParmsIni> it = parmcsv.iterator();
                 int row = 0;
                 while (it.hasNext()) {
                     pini = it.next();
 
                     if (pmt.CurrentRequestIsTrackFromTarget(pini)
-                            && pini.getType() == AppParmsIni.T_TRACK) {
+                            && pini.getTypeVal() == AppParmsIni.T_TRACK) {
                         boolean apvIsUpdated = false;
-                        List<AppValue> parmlist = pini.parmlist;
-                        ListIterator<AppValue> pt = parmlist.listIterator();
+                        List<AppValue> parmlist = pini.getAppValueReadWriteOriginal();
+                        Iterator<AppValue> pt = parmlist.iterator();
                         int col = 0;
                         while (pt.hasNext()) {
                             AppValue av = pt.next();
                             if (av.isEnabled()) {
                                 if (ParseResponse(url, presponse, pini, av, row, col)) {
-                                    pt.set(av);
+                                    //pt.set(av); no need set
                                     updtcnt++;
                                     apvIsUpdated = true;
                                 }
@@ -869,7 +869,7 @@ public class ParmGen {
                             col++;
                         }
                         if (apvIsUpdated) {
-                            it.set(pini);
+                            //it.set(pini); no need set
                         }
                     }
                     row++;

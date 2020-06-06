@@ -107,7 +107,7 @@ public class ParmGenNew extends javax.swing.JFrame implements InterfaceRegex, in
             rec = _rec;
             //rec.setCntFileName();
             addrec = null;
-            switch(rec.getType()){
+            switch(rec.getTypeVal()){
                 case AppParmsIni.T_NUMBER:
                     current_model = P_NUMBERMODEL;
                     break;
@@ -160,8 +160,8 @@ private void setAppParmsIni(){
         switch(current_model){
             case P_NUMBERMODEL:
                 numberTargetURL.setText(rec.getUrl());
-                NumberLen.setText(Integer.toString(rec.len));
-                NumberInit.setText(Integer.toString(rec.inival));
+                NumberLen.setText(Integer.toString(rec.getLen()));
+                NumberInit.setText(Integer.toString(rec.getIniVal()));
                 rec.rewindAppValues();
                 while((row=rec.getNextAppValuesRow())!=null){
                     ParamTableModels[P_NUMBERMODEL].addRow(row);
@@ -170,7 +170,7 @@ private void setAppParmsIni(){
                 break;
             case P_CSVMODEL:
                 csvTargetURL.setText(rec.getUrl());
-                csvFilePath.setText(rec.frl.getFileName());
+                csvFilePath.setText(rec.getFrlFileName());
                 rec.rewindAppValues();
                 CSVSkipLine.setText(rec.getCurrentValue());
                 while((row=rec.getNextAppValuesRow())!=null){
@@ -1634,32 +1634,32 @@ private void setAppParmsIni(){
         rec.setSetToStep(deftoStep);
         switch(current_model){
             case P_NUMBERMODEL:
-                rec.setType(AppParmsIni.T_NUMBER_NAME);
+                rec.setTypeValFromString(AppParmsIni.T_NUMBER_NAME);
                 rec.setUrl(numberTargetURL.getText());
-                rec.len = ParmGenUtil.parseMaxInt(NumberLen.getText());
-                if(rec.len>10){
-                    rec.len = 10;
-                }else if(rec.len<1){
-                    rec.len = 1;
+                rec.setLen(ParmGenUtil.parseMaxInt(NumberLen.getText()));
+                if(rec.getLen()>10){
+                    rec.setLen(10);
+                }else if(rec.getLen()<1){
+                    rec.setLen(1);
                 }
-                rec.inival = ParmGenUtil.parseMaxInt(NumberInit.getText());
+                rec.setIniVal(ParmGenUtil.parseMaxInt(NumberInit.getText()));
                 if(NumberRewind.isSelected()){
-                    rec.updateCurrentValue(rec.inival);
+                    rec.updateCurrentValue(rec.getIniVal());
                 }
                 break;
             case P_CSVMODEL:
-                rec.setType(AppParmsIni.T_CSV_NAME);
+                rec.setTypeValFromString(AppParmsIni.T_CSV_NAME);
                 rec.setUrl(csvTargetURL.getText());
-                rec.frl = new FileReadLine(csvFilePath.getText(), true);
+                rec.crtFrl(csvFilePath.getText(), true);
                 if(CSVrewind.isSelected()){
-                    rec.inival = ParmGenUtil.parseMinInt(CSVSkipLine.getText());
-                    rec.updateCurrentValue(rec.inival);
+                    rec.setIniVal(ParmGenUtil.parseMinInt(CSVSkipLine.getText()));
+                    rec.updateCurrentValue(rec.getIniVal());
                 }
                 break;
             case P_TRACKMODEL:
-                rec.setType(AppParmsIni.T_TRACK_NAME);
+                rec.setTypeValFromString(AppParmsIni.T_TRACK_NAME);
                 rec.setUrl(trackTargetURL.getText());
-                rec.inival = AppParmsIni.T_TRACK_AVCNT;
+                rec.setIniVal(AppParmsIni.T_TRACK_AVCNT);
                 int fromStep = -1;
                 try{
                     fromStep = Integer.parseInt(TrackFrom.getText());
@@ -1677,7 +1677,7 @@ private void setAppParmsIni(){
                 rec.setSetToStep(toStep);
                 break;
             case P_RANDOMMODEL:
-                rec.setType(AppParmsIni.T_RANDOM_NAME);
+                rec.setTypeValFromString(AppParmsIni.T_RANDOM_NAME);
                 break;
             default:
                 break;

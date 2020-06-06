@@ -21,6 +21,7 @@ package org.zaproxy.zap.extension.automacrobuilder;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,25 +35,28 @@ public class AppValue {
 
     // valparttype,         value, token, tamattack,tamadvance,tamposition,urlencode
     // 置換位置,置換しない,  value, Name,  Attack,   Advance,   Position,   URLencode
-    public String valpart; // 置換位置
+    private String valpart; // 置換位置
     private int valparttype; //  1-query, 2-body  3-header  4-path.... 16(10000) bit == no count
     // 32(100000) == no modify
     private String value = null; // value リクエストパラメータの正規表現文字列
     private Pattern valueregex; // リクエストパラメータの正規表現
 
-    public int csvpos;
-    // private int col;
-    private int trackkey = -1;
+    private int csvpos;
+    
+    private UUID trackkey = null;
     private String resURL = "";
     private Pattern Pattern_resURL = null;
     private String resRegex = "";
     private Pattern Pattern_resRegex = null;
     private int resPartType;
-    public int resRegexPos = -1; // 追跡token　ページ内出現位置 0start
-    public String token; // 追跡token　Name
-    public String resFetchedValue = null; // レスポンスからフェッチしたtokenの値
+    private int resRegexPos = -1; // 追跡token　ページ内出現位置 0start
+    private String token; // 追跡token　Name
+    //
+    // 下記パラメータは、GUI操作時の一時保存値で、保存対象外。スキャン時は未使用。
+    // This parameter does not use when scanning. only  temporarily use  for GUI manipulation
+    private String resFetchedValue = null; // レスポンスからフェッチしたtokenの値 Token obtained from response during tracking process
 
-    public TokenTypeNames tokentype = TokenTypeNames.INPUT;
+    private TokenTypeNames tokentype = TokenTypeNames.INPUT;
 
     public enum TokenTypeNames {
         DEFAULT,
@@ -66,11 +70,9 @@ public class AppValue {
         ACTION,
     };
 
-    public String tamattack;
-    public int tamadvance;
-
-    public boolean urlencode; // URLencodeする・しない
-    public ResEncodeTypes resencodetype = ResEncodeTypes.RAW; // 追跡元のエンコードタイプ json/raw/urlencode
+    private boolean urlencode; // Whether to  encode URL
+    
+    private ResEncodeTypes resencodetype = ResEncodeTypes.RAW; // 追跡元のエンコードタイプ Encode type of tracking param json/raw/urlencode
 
     public enum ResEncodeTypes {
         RAW,
@@ -78,10 +80,18 @@ public class AppValue {
         URLENCODE,
     }
 
-    public int fromStepNo = -1; // TRACK追跡元 <0 :　無条件で追跡　>=0: 指定StepNoのリクエスト追跡
-    public int toStepNo =
-            ParmVars.TOSTEPANY; // TRACK:更新先 <0 currentStepNo == responseStepNo - toStepNo ==0: 無条件
-    // 　>0:指定したStepNoのリクエスト更新
+    private int fromStepNo = -1; // TRACK追跡元 <0 :　無条件で追跡　>=0: 指定StepNoのリクエスト追跡 
+                                // Line number of response from which  getting tracking parameter  in RequestList sequence 
+                                // < 0: get tracking value from any response
+                                // >=0: get tracking value from specified request line number's response
+    private int toStepNo =
+            ParmVars.TOSTEPANY; // TRACK:更新先 
+                                // 　>0:指定したStepNoのリクエスト更新
+                                // Line number of request to which setting tracking paramter  in RequestList sequence 
+                                //  <0 : No Operation. 
+                                //  >=0 and < TOSTEPANY: set tracking value to specified line number's request
+                                //  ==TOSTEPANY: set tracking value to any request.
+    
 
     public static final int V_QUERY = 1;
     public static final int V_BODY = 2;
@@ -130,7 +140,7 @@ public class AppValue {
     private boolean enabled = true; // 有効
 
     private void initctype() {
-        trackkey = -1;
+        trackkey = null;
         resFetchedValue = null;
         enabled = true;
         tokentype = TokenTypeNames.INPUT;
@@ -202,7 +212,7 @@ public class AppValue {
         setresURL(_resURL);
         setresRegex(_resRegex);
         setresPartType(_resPartType);
-        setresRegexPos(_resRegexPos);
+        setResRegexPosFromString(_resRegexPos);
         token = _token;
         urlencode = _urlenc;
         fromStepNo = _fromStepNo;
@@ -210,19 +220,138 @@ public class AppValue {
         tokentype = parseTokenTypeName(_tokentypename);
     }
 
-    /*public void setCol(int c){
-        col = c;
-    }*/
-
-    /*public int getCol(){
-        return col;
-    }*/
-
-    public void setTrackKey(int k) {
-        trackkey = k;
+    /**
+     * Get toStepNo: Line number of request to which setting tracking value in RequestList sequence.
+     * 
+     * @return 
+     */
+    public int getToStepNo(){
+        return this.toStepNo;
+    }
+    
+    /**
+     * Set toStepNo: line number of request to which setting tracking value in RequestList sequence.
+     * 
+     * @param toStepNo 
+     */
+    public void setToStepNo(int toStepNo){
+        this.toStepNo = toStepNo;
+    }
+    
+    /**
+     * Get fromStepNo:  Line number of response from which  getting tracking parameter  in RequestList sequence 
+     * 
+     * @return 
+     */
+    public int getFromStepNo(){
+        return this.fromStepNo;
+    }
+    
+    /**
+     * Set fromStepNo:  Line number of response from which  getting tracking parameter  in RequestList sequence 
+     * 
+     * @param fromStepNo 
+     * 
+     */
+    public void setFromStepNo(int fromStepNo){
+        this.fromStepNo = fromStepNo;
+    }
+    
+    /**
+     * Whether to encode URL
+     * 
+     * @return 
+     */
+    public boolean isUrlEncode(){
+        return this.urlencode;
+    }
+    
+    /**
+     * Set urlencode value
+     * 
+     * @param urlencode 
+     */
+    public void setUrlEncode(boolean urlencode){
+        this.urlencode = urlencode;
+    }
+    
+    
+    /**
+     * Get TokenType value
+     * 
+     */
+    public TokenTypeNames getTokenType(){
+        return this.tokentype;
+    }
+    
+    /**
+     * Set TokenType value
+     * 
+     * @param tokentype 
+     */
+    public void setTokenType(TokenTypeNames tokentype){
+        this.tokentype = tokentype;
+    }
+    
+    
+    /**
+     * Get resFetchedValue 
+     * This parameter does not use when scanning. only  temporarily use  for GUI manipulation
+     * @param resFetchedValue 
+     */
+    public void setResFetchedValue(String resFetchedValue){
+        this.resFetchedValue = resFetchedValue;
+    }
+    
+    public String getResFetchedValue(){
+        return this.resFetchedValue;
+    }
+    
+    /**
+     * Set token value
+     * 
+     * @param token
+     */
+    public void setToken(String token){
+        this.token = token;
+    }
+    
+    /**
+     * Get token value
+     * 
+     * @return 
+     */
+    public String getToken(){
+        return this.token;
+    }
+    
+    /**
+     * Get csvpos value
+     * 
+     * @return 
+     */
+    public int getCsvpos(){
+        return this.csvpos;
+    }
+    
+    /**
+     * Set csvpos value
+     * 
+     * @param csvpos 
+     */
+    public void setCsvpos(int csvpos){
+        this.csvpos = csvpos;
     }
 
-    public int getTrackKey() {
+    /**
+     * Get the key. If the key has a null value, the key is created
+     * 
+     * @return UUID 
+     */
+    synchronized public UUID getTrackKey() {
+        if( trackkey == null ) {
+             trackkey = UUID.randomUUID();
+        }
         return trackkey;
     }
 
@@ -241,11 +370,30 @@ public class AppValue {
         return "";
     }
 
-    public void setResEncodeType(String t) {
-        resencodetype = parseResEncodeType(t);
+    /**
+     * Get ResEncodeTypes : response page content type JSON/RAW/URLENCODE..
+     * @return 
+     */
+    public ResEncodeTypes getResEncodeType(){
+        return this.resencodetype;
+    }
+    
+    /**
+     * Convert string representation to ResEncodeType and set its value to resencodetype parameter
+     * 
+     * @param t 
+     */
+    public void setResEncodeTypeFromString(String t) {
+        resencodetype = parseResEncodeTypeString(t);
     }
 
-    public ResEncodeTypes parseResEncodeType(String t) {
+    /**
+     * Convert string represantation to ResEncodeTypes
+     * 
+     * @param t
+     * @return 
+     */
+    public ResEncodeTypes parseResEncodeTypeString(String t) {
         ResEncodeTypes[] encarray = ResEncodeTypes.values();
         if (t != null && !t.isEmpty()) {
             String tupper = t.toUpperCase();
@@ -353,8 +501,31 @@ public class AppValue {
         resPartType = parseValPartType(respart);
     }
 
-    public void setresRegexPos(String _resregexpos) {
-        resRegexPos = Integer.parseInt(_resregexpos);
+    /**
+     * Get resRegexPos value
+     * 
+     * @return 
+     */
+    public int getResRegexPos(){
+        return this.resRegexPos;
+    }
+    
+    /**
+     * Set resRegexPos value
+     * 
+     * @param resRegexPos 
+     */
+    public void setResRegexPos(int resRegexPos){
+        this.resRegexPos = resRegexPos;
+    }
+    
+    /**
+     * Set String number to resRegexPos
+     * 
+     * @param _resregexpos 
+     */
+    public void setResRegexPosFromString(String _resregexpos) {
+        this.resRegexPos = Integer.parseInt(_resregexpos);
     }
 
     public int getTypeInt() {
@@ -545,7 +716,7 @@ public class AppValue {
 
         String errKeyName =
                 "TypeVal:"
-                        + Integer.toString(pini.typeval)
+                        + Integer.toString(pini.getTypeVal())
                         + " TargetPart:"
                         + getValPart()
                         + " TargetRegex:"

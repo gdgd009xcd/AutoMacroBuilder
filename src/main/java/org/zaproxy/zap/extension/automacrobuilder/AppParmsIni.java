@@ -24,7 +24,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.UUID;
@@ -38,24 +40,23 @@ public class AppParmsIni {
     private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
     private String url;
     private Pattern urlregex;
-    public ArrayList<AppValue> parmlist = null;
-    Iterator<AppValue> it;
-    public int len = 4;
+    private ArrayList<AppValue> parmlist = null;
+    private Iterator<AppValue> it;
+    private int len = 4;
     private String type;
-    public int typeval; // number:0, rand:1, csv:2, track:3
-    public int inival = 0;
-    public int maxval = 2147483646;
-    public FileReadLine frl = null;
-    public String csvname = null;
-    String exerr = "";
+    private int typeval; // number:0, rand:1, csv:2, track:3
+    private int inival = 0;
+    private int maxval = 2147483646;
+    private FileReadLine frl = null;
+    private String csvname = null;
+    private String exerr = "";
     private String relativecntfile = ""; // filename only. no contain directory.
-    String cstrcnt = null;
-    int rndval = 1;
+    private String cstrcnt = null;
+    private int rndval = 1;
     // public int row;
-    public Boolean pause = false;
+    private Boolean pause = false;
     private int TrackFromStep = -1; // StepNo== -1:any  >0:TrackingFrom
-    private int SetToStep =
-            ParmVars.TOSTEPANY; // == TOSTEPANY:any   0<= SetToStep < TOSTEPANY:SetTo
+    private int SetToStep = ParmVars.TOSTEPANY; // == TOSTEPANY:any   0<= SetToStep < TOSTEPANY:SetTo
 
     public static final int T_NUMBER = 0; // 数値昇順
     public static final int T_RANDOM = 1; // 乱数
@@ -74,6 +75,33 @@ public class AppParmsIni {
     public static final int T_TRACK_OLD_AVCNT = 6;
     public static final int T_TAMPER_AVCNT = 8;
 
+    public void setCsvName(String csvname){
+        this.csvname = csvname;
+    }
+    
+    public String getCsvName(){
+        return this.csvname;
+    }
+    
+    public void crtFrl(String filepath, boolean savekeep){
+        frl = new FileReadLine(filepath, savekeep);
+    }
+    
+    public String getFrlFileName(){
+        if( frl != null ) {
+            return frl.getFileName();
+        }
+        return null;
+    }
+    
+    public void setLen(int len){
+        this.len = len;
+    }
+    
+    public int getLen(){
+        return this.len;
+    }
+    
     public enum NumberCounterTypes {
         NumberCount,
         DateCount,
@@ -95,11 +123,28 @@ public class AppParmsIni {
         return SetToStep;
     }
 
-    public boolean ispaused() {
+    /**
+     * Get boolean pause value
+     * 
+     */
+    public boolean isPaused() {
         return pause;
     }
 
-    public void setPause(boolean b) {
+    /**
+     * Set pause when JSON load/parameter generate
+     * 
+     * @param b 
+     */
+    public void initPause(boolean b){
+        this.pause = b;
+    }
+    
+    /**
+     * Update pause status when GUI manipulation
+     * 
+    */
+    public void updatePause(boolean b) {
         pause = b;
         String _c = getCurrentValue();
         switch (typeval) {
@@ -128,11 +173,13 @@ public class AppParmsIni {
     }*/
 
     public void clearAppValues() {
+        /*
         if (parmlist != null) {
             for (AppValue ap : parmlist) {
-                ParmGenTrackJarFactory.remove(ap.getTrackKey());
+                ParmGenTrackKeyPerThread.remove(ap.getTrackKey());// これは不要。なぜなら、GSONSave時にFetchResponseValはNULLされる。
             }
         }
+        */
         parmlist = new ArrayList<AppValue>();
     }
 
@@ -143,6 +190,22 @@ public class AppParmsIni {
         }
     }
 
+    public int getIniVal(){
+        return this.inival;
+    }
+    
+    public void setIniVal(int inival){
+        this.inival = inival;
+    }
+    
+    public int getMaxVal(){
+        return this.maxval;
+    }
+    
+    public void setMaxVal(int maxval){
+        this.maxval = maxval;
+    }
+    
     public String getIniValDsp() {
         switch (typeval) {
             case T_NUMBER:
@@ -157,7 +220,7 @@ public class AppParmsIni {
         return "";
     }
 
-    public String getTypeValDsp() {
+    public String getTypeValDspString() {
         switch (typeval) {
             case T_NUMBER:
                 return bundle.getString("ParmGen.数値昇順.text");
@@ -173,7 +236,7 @@ public class AppParmsIni {
         return "";
     }
 
-    public void setType(String _type) {
+    public void setTypeValFromString(String _type) {
         type = _type;
         if (type.indexOf(T_RANDOM_NAME) != -1) { // random
             for (int x = 0; x < len; x++) {
@@ -191,8 +254,12 @@ public class AppParmsIni {
         }
     }
 
-    public int getType() {
+    public int getTypeVal() {
         return typeval;
+    }
+    
+    public void setTypeVal(int typeval) {
+        this.typeval = typeval;
     }
 
     public int getReadAVCnt(int _plen) {
@@ -265,11 +332,12 @@ public class AppParmsIni {
 
     public AppParmsIni() {
         setCntFileNameNew();
+        parmlist = new ArrayList<AppValue>();
         rewindAppValues();
     }
     // --------------constructors end----------------
 
-    public String getTypeVal() {
+    public String getTypeValToString() {
         switch (typeval) {
             case T_NUMBER:
                 return T_NUMBER_NAME;
@@ -450,7 +518,7 @@ public class AppParmsIni {
 
         int ncnt = cnt + 1;
 
-        if (((_valparttype & AppValue.C_NOCOUNT) == AppValue.C_NOCOUNT) || _parent.ispaused()) {
+        if (((_valparttype & AppValue.C_NOCOUNT) == AppValue.C_NOCOUNT) || _parent.isPaused()) {
             ncnt = cnt; // no countup
         } else if (ncnt > maxval) {
             ParmVars.plog.debuglog(
@@ -572,7 +640,7 @@ public class AppParmsIni {
                     return new Object[] {
                         app.getValPart(),
                         (app.isEnabled() ? false : true),
-                        app.csvpos,
+                        app.getCsvpos(),
                         app.getVal(),
                         app.isNoCount() ? false : true
                     };
@@ -584,17 +652,26 @@ public class AppParmsIni {
                         app.getresURL(),
                         app.getresRegex(),
                         app.getResValPart(),
-                        Integer.toString(app.resRegexPos),
-                        app.token,
-                        app.urlencode,
-                        app.fromStepNo == -1 ? "*" : Integer.toString(app.fromStepNo),
-                        app.toStepNo == ParmVars.TOSTEPANY ? "*" : Integer.toString(app.toStepNo),
-                        app.tokentype.name()
+                        Integer.toString(app.getResRegexPos()),
+                        app.getToken(),
+                        app.isUrlEncode(),
+                        app.getFromStepNo() == -1 ? "*" : Integer.toString(app.getFromStepNo()),
+                        app.getToStepNo() == ParmVars.TOSTEPANY ? "*" : Integer.toString(app.getToStepNo()),
+                        app.getTokenType().name()
                     };
                 default:
                     break;
             }
         }
         return null;
+    }
+    
+    /**
+     *  Get modifiable List<AppValue> Original.
+     * 
+     * @return 
+     */
+    public List<AppValue> getAppValueReadWriteOriginal(){
+        return parmlist;
     }
 }

@@ -44,12 +44,10 @@ public class ParmGenTokenJDialog extends javax.swing.JDialog {
         ParmGenTokenValue tval = null;
         ParmGenToken token = null;
         for(AppParmsIni pini: newparms){
-            if(pini.parmlist!=null){
-                for(AppValue ap: pini.parmlist){
-                    tkey = new ParmGenTokenKey(ap.tokentype, ap.token, ap.resRegexPos);
-                    tval = new ParmGenTokenValue(ap.getresURL(), ap.resFetchedValue, ap.isEnabled());
-                    map.put(tkey, tval);
-                }
+            for(AppValue ap: pini.getAppValueReadWriteOriginal()){
+                tkey = new ParmGenTokenKey(ap.getTokenType(), ap.getToken(), ap.getResRegexPos());
+                tval = new ParmGenTokenValue(ap.getresURL(), ap.getResFetchedValue(), ap.isEnabled());
+                map.put(tkey, tval);
             }
         }
         
@@ -211,13 +209,13 @@ public class ParmGenTokenJDialog extends javax.swing.JDialog {
             ListIterator<AppParmsIni> appit = alist.listIterator();
             while(appit.hasNext()){
                 AppParmsIni aini = appit.next();
-                List<AppValue> apvlist = aini.parmlist;
+                List<AppValue> apvlist = aini.getAppValueReadWriteOriginal();
                 ListIterator<AppValue> apvit = null;
                 if(apvlist!=null){
                     apvit = apvlist.listIterator();
                     while(apvit.hasNext()){
                         AppValue ap = apvit.next();
-                        ParmGenTokenKey _tkey = new ParmGenTokenKey(ap.tokentype, ap.token, ap.resRegexPos);
+                        ParmGenTokenKey _tkey = new ParmGenTokenKey(ap.getTokenType(), ap.getToken(), ap.getResRegexPos());
                         if(map.containsKey(_tkey)){
                             ParmGenTokenValue _tval = map.get(_tkey);
                             if(_tval.getBoolean()){
@@ -233,7 +231,7 @@ public class ParmGenTokenJDialog extends javax.swing.JDialog {
                     }
                 }
                 if(apvlist!=null){
-                    appit.set(aini);
+                    //appit.set(aini); no need set
                 }else{
                     appit.remove();
                 }

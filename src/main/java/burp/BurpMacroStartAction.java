@@ -33,8 +33,40 @@ public class BurpMacroStartAction implements ISessionHandlingAction {
 
     @Override
     public void performAction(IHttpRequestResponse currentrequest, IHttpRequestResponse[] executedmacros) {
+        Thread oldsender = tr.getSenderThread();
+        if (oldsender!=null) {
+            LOGGER4J.debug("oldsender id:" + oldsender.getId() +  " stat:" + getThreadStatus(oldsender.getState()));
+        }
         tr.startBeforePreMacro();//前処理マクロを実行。
         startCurrentRequest(currentrequest);
+    }
+    
+    private String getThreadStatus(Thread.State st){
+        String stval = "";
+        switch(st){
+            case NEW:
+                stval = "NEW";
+                break;
+            case RUNNABLE:
+                stval = "RUNNABLE";
+                break;
+            case BLOCKED:
+                stval = "BLOCKED";
+                break;
+            case WAITING:
+                stval = "WAITING";
+                break;
+            case TIMED_WAITING:
+                stval = "TIMED_WAITING";
+                break;
+            case TERMINATED:
+                stval = "TERMINATED";
+                break;
+            default:
+                stval = "UNKNOWN";
+                break;
+        }
+        return stval;
     }
     
     public void startCurrentRequest(IHttpRequestResponse currentRequest){
@@ -47,6 +79,7 @@ public class BurpMacroStartAction implements ISessionHandlingAction {
         String host = iserv.getHost();
         int port = iserv.getPort();
         boolean isSSL = (iserv.getProtocol().toLowerCase().equals("https")?true:false);
+        
         LOGGER4J.debug("StartAction Current StepNo:" + tr.getStepNo() + " host:"+ host + "Threadid:" + Thread.currentThread().getId() );
         tr.burpSetCurrentOriginalRequest(currentRequest.getRequest());
         

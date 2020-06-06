@@ -121,6 +121,12 @@ public class BurpExtender implements IBurpExtender,IHttpListener, IProxyListener
             long tid = preq.getThreadId5CustomHeader();
             LOGGER4J.debug("processHttpMessage threadid:" + Thread.currentThread().getId() + " X-THREAD:" + tid);
             
+             if (messageIsRequest){
+                 pmt.setSenderThread(Thread.currentThread());
+             }else{
+                 
+             }
+             
                ParmGen pgen = new ParmGen(pmt);
                 String url = null;
                 String toolname = getToolname(toolflag);

@@ -26,7 +26,17 @@ public class ClientDependent {
     byte[] originalrequest = null;// performAction's IHttpRequestResponse currentrequest bytes
     IHttpRequestResponse messageInfo = null;// performAction's IHttpRequestResponse
     
+    Thread senderth = null;
+    
     final public static String LOG4JXML_DIR = System.getProperty("user.home") + "/.BurpSuite";
+    
+    public void setSenderThread(Thread sth){
+        this.senderth = sth;
+    }
+    
+    public Thread getSenderThread(){
+        return this.senderth;
+    }
     
     public ClientDependent(){
         scanQueNull();

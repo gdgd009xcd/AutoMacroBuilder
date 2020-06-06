@@ -201,7 +201,7 @@ public class FileReadLine {
             line = line.replace("\r", "");
             line = line.replace("\n", "");
             if (((_valparttype & AppValue.C_NOCOUNT) == AppValue.C_NOCOUNT)
-                    || (_parent != null && _parent.ispaused())) {
+                    || (_parent != null && _parent.isPaused())) {
                 // debuglog(1, " no seek forward:" + Long.toString(seekp));
             } else {
                 ParmVars.plog.debuglog(1, " seek forward:" + Long.toString(seekp));

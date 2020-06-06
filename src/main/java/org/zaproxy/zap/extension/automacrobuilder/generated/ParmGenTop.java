@@ -51,14 +51,14 @@ public class ParmGenTop extends javax.swing.JFrame {
             int FromStep = pini.getTrackFromStep();
             int ToStep = pini.getSetToStep();
             FromTo = (FromStep>-1?Integer.toString(FromStep):"*") + "->" + (ToStep!=ParmVars.TOSTEPANY?Integer.toString(ToStep):"*");
-            if(pini.getType()!=AppParmsIni.T_TRACK){
+            if(pini.getTypeVal()!=AppParmsIni.T_TRACK){
                 if(ToStep<0||ToStep==ParmVars.TOSTEPANY){
                     FromTo = "*";
                 }else{
                     FromTo = Integer.toString(ToStep);
                 }
             }
-            model.addRow(new Object[] {pini.pause, FromTo, pini.getUrl(), pini.getIniValDsp(), pini.getLenDsp(), pini.getTypeValDsp(),pini.getAppValuesDsp(),pini.getCurrentValue()});
+            model.addRow(new Object[] {pini.isPaused(), FromTo, pini.getUrl(), pini.getIniValDsp(), pini.getLenDsp(), pini.getTypeValDspString(),pini.getAppValuesDsp(),pini.getCurrentValue()});
             //ParamTopList.setRowHeight(ri++, default_rowheight * pini.getAppValuesLineCnt());
         }
     }
@@ -127,7 +127,7 @@ public class ParmGenTop extends javax.swing.JFrame {
                         //ParmGen pglocal = new ParmGen(pmt);
                         AppParmsIni pini = ParmGen.parmcsv.get(row);
                         if(pini!=null){
-                            pini.setPause((boolean)cell);
+                            pini.updatePause((boolean)cell);
                         }
                     }
                 }

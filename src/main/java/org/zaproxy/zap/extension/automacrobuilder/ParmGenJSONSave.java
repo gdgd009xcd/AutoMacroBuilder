@@ -152,20 +152,20 @@ public class ParmGenJSONSave {
             // parms
             AppParmsIni_List AppParmsIni_ListObj = new AppParmsIni_List();
             AppParmsIni_ListObj.URL = prec.getUrl();
-            AppParmsIni_ListObj.len = prec.len;
-            AppParmsIni_ListObj.typeval = prec.typeval;
-            AppParmsIni_ListObj.inival = prec.inival;
-            AppParmsIni_ListObj.maxval = prec.maxval;
+            AppParmsIni_ListObj.len = prec.getLen();
+            AppParmsIni_ListObj.typeval = prec.getTypeVal();
+            AppParmsIni_ListObj.inival = prec.getIniVal();
+            AppParmsIni_ListObj.maxval = prec.getMaxVal();
             AppParmsIni_ListObj.csvname =
-                    (prec.typeval == AppParmsIni.T_CSV
-                            ? escapeDelimiters(prec.frl.getFileName(), "UTF-8")
+                    (prec.getTypeVal() == AppParmsIni.T_CSV
+                            ? escapeDelimiters(prec.getFrlFileName(), "UTF-8")
                             : "");
-            AppParmsIni_ListObj.pause = prec.pause;
+            AppParmsIni_ListObj.pause = prec.isPaused();
             AppParmsIni_ListObj.TrackFromStep = prec.getTrackFromStep();
             AppParmsIni_ListObj.SetToStep = prec.getSetToStep();
             AppParmsIni_ListObj.relativecntfilename = prec.getRelativeCntFileName();
 
-            Iterator<AppValue> pt = prec.parmlist.iterator();
+            Iterator<AppValue> pt = prec.getAppValueReadWriteOriginal().iterator();
 
             while (pt.hasNext()) {
                 AppValue param = pt.next();
@@ -173,7 +173,7 @@ public class ParmGenJSONSave {
                 AppValue_ListObj.valpart = param.getValPart();
                 AppValue_ListObj.isEnabled = param.isEnabled();
                 AppValue_ListObj.isNoCount = param.isNoCount();
-                AppValue_ListObj.csvpos = param.csvpos;
+                AppValue_ListObj.csvpos = param.getCsvpos();
                 AppValue_ListObj.value = escapeDelimiters(param.getVal(), null);
                 AppValue_ListObj.resURL = param.getresURL() == null ? "" : param.getresURL();
                 AppValue_ListObj.resRegex =
@@ -181,12 +181,12 @@ public class ParmGenJSONSave {
                                 ? ""
                                 : escapeDelimiters(param.getresRegex(), null));
                 AppValue_ListObj.resValpart = param.getResValPart();
-                AppValue_ListObj.resRegexPos = param.resRegexPos;
-                AppValue_ListObj.token = param.token == null ? "" : param.token;
-                AppValue_ListObj.urlencode = param.urlencode;
-                AppValue_ListObj.fromStepNo = param.fromStepNo;
-                AppValue_ListObj.toStepNo = param.toStepNo;
-                AppValue_ListObj.TokenType = param.tokentype.name();
+                AppValue_ListObj.resRegexPos = param.getResRegexPos();
+                AppValue_ListObj.token = param.getToken() == null ? "" : param.getToken();
+                AppValue_ListObj.urlencode = param.isUrlEncode();
+                AppValue_ListObj.fromStepNo = param.getFromStepNo();
+                AppValue_ListObj.toStepNo = param.getToStepNo();
+                AppValue_ListObj.TokenType = param.getTokenType().name();
 
                 AppParmsIni_ListObj.AppValue_List.add(AppValue_ListObj);
             }

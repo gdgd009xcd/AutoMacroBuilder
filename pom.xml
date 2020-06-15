@@ -34,11 +34,12 @@
     <scope>provided</scope>
 </dependency>
 
+<!-- below local maven dependency is MY OWN DUMMY that is not exist maven repository. it is used when debugging locally. (contains main)-->
 <!-- dependency>
     <groupId>mytest.comcom</groupId>
     <artifactId>mytest-comcom</artifactId>
     <version>2.1.04</version>
-    <scope>provided</scope>
+    <scope>compile</scope>
 </dependency -->
 
 
@@ -186,6 +187,7 @@
      <skip>true</skip>
    </configuration>
 </plugin>
+        
 </plugins>
 </build>
 <repositories>
@@ -201,10 +203,14 @@
 </repositories>
 <pluginRepositories>
         <pluginRepository>
-            <id>central</id>
+            <id>plugincentral</id>
             <url>https://repo.maven.apache.org/maven2/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
             <releases>
                 <enabled>true</enabled>
+               <updatePolicy>never</updatePolicy>
             </releases>
         </pluginRepository>
 </pluginRepositories>

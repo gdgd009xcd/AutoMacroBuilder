@@ -39,6 +39,10 @@ public class ParmGenCookieManager implements DeepClone {
     private CookieStore cookiestore = null;
 
     ParmGenCookieManager() {
+       init();
+    }
+    
+    private void init(){
         manager = new CookieManager();
         manager.setCookiePolicy(CookiePolicy.ACCEPT_NONE);
         cookiestore = manager.getCookieStore();
@@ -170,16 +174,24 @@ public class ParmGenCookieManager implements DeepClone {
     
     @Override
     public ParmGenCookieManager clone(){
-        ParmGenCookieManager nobj = new ParmGenCookieManager();// newly create.
-        List<URI> urilist = this.cookiestore.getURIs();
-        if( urilist != null ) {
-            urilist.forEach(uri -> {
-                List<HttpCookie> cookies = this.cookiestore.get(uri);
-                cookies.forEach(cookie -> {
-                    nobj.cookiestore.add(uri, castToType(cookie.clone()));// uri: immutable,  cookie has clone()
+        try {
+            ParmGenCookieManager nobj = (ParmGenCookieManager)super.clone();
+            nobj.init();
+        
+            List<URI> urilist = this.cookiestore.getURIs();
+            if( urilist != null ) {
+                urilist.forEach(uri -> {
+                    List<HttpCookie> cookies = this.cookiestore.get(uri);
+                    cookies.forEach(cookie -> {
+                        nobj.cookiestore.add(uri, castToType(cookie.clone()));// uri: immutable,  cookie has clone()
+                    });
                 });
-            });
+            }
+            return nobj;
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(ParmGenCookieManager.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return nobj;
+        
+        return null;
     }
 }

@@ -200,4 +200,9 @@ class HashMapDeepCopy {
         return hashMapDeepCopyKVClone(src, dest);
     }
     
+    public static HashMap<ParmGenTokenKey, ParmGenTokenValue> hashMapDeepElementCloneParmGenHashMap(HashMap<ParmGenTokenKey, ParmGenTokenValue> src, HashMap<ParmGenTokenKey, ParmGenTokenValue> dest){
+        if (src == null) return dest;
+        return hashMapDeepCopyKVClone(src, dest);
+    }
+    
  }

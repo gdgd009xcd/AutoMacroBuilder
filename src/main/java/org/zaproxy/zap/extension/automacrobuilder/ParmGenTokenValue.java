@@ -37,8 +37,12 @@ public class ParmGenTokenValue implements DeepClone {
     }
 
     ParmGenTokenValue(ParmGenTokenValue tv) {
-        url = new String(tv.url);
-        value = new String(tv.value);
+        setup(tv);
+    }
+    
+    private void setup(ParmGenTokenValue tv){
+        url = tv.url;
+        value = tv.value;
         b = tv.b;
     }
 
@@ -76,17 +80,14 @@ public class ParmGenTokenValue implements DeepClone {
     
     @Override
     public ParmGenTokenValue clone(){
-        ParmGenTokenValue nobj = null;
+
         try {
-            nobj = (ParmGenTokenValue)super.clone();
-            nobj.url = this.url;
-            nobj.value = this.value;
-            nobj.b = this.b;
+            ParmGenTokenValue nobj = (ParmGenTokenValue) super.clone();
+            nobj.setup(this);
+            return nobj;
         } catch (CloneNotSupportedException ex) {
             Logger.getLogger(ParmGenTokenValue.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-
-        return nobj;
+        return null;
     }
 }

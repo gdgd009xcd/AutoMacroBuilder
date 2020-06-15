@@ -31,13 +31,17 @@ public class ParmGenTokenKey implements DeepClone {
 
     public ParmGenTokenKey(AppValue.TokenTypeNames _tokentype, String _name, int _fcnt) {
         tokentype = _tokentype;
-        name = new String(_name);
+        name = _name;
         fcnt = _fcnt;
     }
 
     ParmGenTokenKey(ParmGenTokenKey tk) {
+        setup(tk);
+    }
+    
+    private void setup(ParmGenTokenKey tk){
         tokentype = tk.tokentype;
-        name = new String(tk.name);
+        name = tk.name;
         fcnt = tk.fcnt;
     }
 
@@ -79,16 +83,13 @@ public class ParmGenTokenKey implements DeepClone {
     
     @Override
     public ParmGenTokenKey clone(){
-        ParmGenTokenKey nobj = null;
         try {
-            nobj = (ParmGenTokenKey) super.clone();
-            nobj.fcnt = this.fcnt;
-            nobj.name = this.name;
-            nobj.tokentype = this.tokentype;
+            ParmGenTokenKey nobj = (ParmGenTokenKey) super.clone();
+            nobj.setup(this);
+            return nobj;
         } catch (CloneNotSupportedException ex) {
             Logger.getLogger(ParmGenTokenKey.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        return nobj;
+        return null;
     }
 }

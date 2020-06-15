@@ -54,6 +54,8 @@ public class PRequestResponse implements DeepClone {
         disable = false;
     }
 
+    
+    
     public PRequestResponse(
             String h, int p, boolean ssl, byte[] binrequest, byte[] binresponse, Encode pageenc) {
         cdmc = null;
@@ -126,9 +128,10 @@ public class PRequestResponse implements DeepClone {
     
     @Override
     public PRequestResponse clone() {
+        PRequestResponse nobj = null;
         try {
-            PRequestResponse nobj = (PRequestResponse)super.clone();
-            //public PRequest request;
+            nobj = (PRequestResponse)super.clone();
+                   //public PRequest request;
             nobj.request = this.request != null ? this.request.clone() : null;
             //public PResponse response;
             nobj.response = this.response != null ? this.response.clone() : null;
@@ -142,10 +145,10 @@ public class PRequestResponse implements DeepClone {
             nobj.macropos = this.macropos;
             //private ClientDependMessageContainer cdmc = null;
             nobj.cdmc = this.cdmc;
-            return nobj;
         } catch (CloneNotSupportedException ex) {
             Logger.getLogger(PRequestResponse.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return null;
+ 
+        return nobj;
     }
 }

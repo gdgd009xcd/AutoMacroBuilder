@@ -36,6 +36,8 @@ import org.zaproxy.zap.extension.automacrobuilder.mdepend.ClientDependent;
 /** @author daike */
 public class ParmGenMacroTrace extends ClientDependent {
 
+    private static org.apache.logging.log4j.Logger LOGGER4J = org.apache.logging.log4j.LogManager.getLogger();
+    
     //private LockInstance locker = null;
     
     MacroBuilderUI ui = null;
@@ -130,14 +132,26 @@ public class ParmGenMacroTrace extends ClientDependent {
      * @return 
      */
    public ParmGenMacroTrace getScanInstance(long tid){
-       ParmGenMacroTrace nobj = new ParmGenMacroTrace();
-       nobj.threadid = tid;
-       nobj.rlist = this.rlist;//reference
-       nobj.originalrlist = this.originalrlist;// reference
-       nobj.selected_request = this.selected_request;//specified scan target request
-       nobj.fetchResVal = this.fetchResVal.clone();//deepclone
-       nobj.cookieMan = this.cookieMan.clone();//deepclone
-       nobj.savelist = new ArrayList<>();
+        ParmGenMacroTrace nobj = new ParmGenMacroTrace();
+        nobj.threadid = tid;
+        nobj.rlist = this.rlist;//reference
+        nobj.originalrlist = this.originalrlist;// reference
+        nobj.selected_request = this.selected_request;//specified scan target request
+        nobj.fetchResVal = this.fetchResVal != null ? this.fetchResVal.clone() : null;//deepclone
+        nobj.cookieMan = this.cookieMan != null ? this.cookieMan.clone() : null;//deepclone
+        nobj.savelist = new ArrayList<>();
+        nobj.toolbaseline = this.toolbaseline !=null ? this.toolbaseline.clone(): null;
+        nobj.MBCookieUpdate = this.MBCookieUpdate; // ==true Cookie更新
+        nobj.MBCookieFromJar = this.MBCookieFromJar; // ==true 開始時Cookie.jarから引き継ぐ
+        nobj.MBFinalResponse = this.MBFinalResponse; // ==true 結果は最後に実行されたマクロのレスポンス
+        nobj.MBResetToOriginal = this.MBResetToOriginal; // ==true オリジナルリクエストを実行。
+        nobj.MBsettokencache = this.MBsettokencache; // 開始時tokenキャッシュ
+        nobj.MBreplaceCookie = this.MBreplaceCookie; // ==true Cookie引き継ぎ置き換え == false Cookie overwrite
+        nobj.MBmonitorofprocessing = this.MBmonitorofprocessing;
+        nobj.MBreplaceTrackingParam = this.MBreplaceTrackingParam;
+
+        nobj.waittimer = this.waittimer;
+        
        return nobj;
    }
    
@@ -578,8 +592,15 @@ public class ParmGenMacroTrace extends ClientDependent {
     }
 
     public void updaterlist(ParmGenMacroTrace pmt){
-        this.rlist = pmt.rlist;
-        this.ui.updaterlist(this.rlist);
+        int osiz = this.rlist != null ? this.rlist.size() : 0;
+        int ssiz = pmt.savelist != null ? pmt.savelist.size() : 0;
+        if ( osiz == ssiz ) {// if same size then normal end. different size then abnormal, so update is omitted.
+            this.rlist = pmt.savelist;
+            this.ui.updaterlist(this.rlist);
+            LOGGER4J.debug("result update succeeded. size:" + ssiz);
+        } else {
+            LOGGER4J.warn("result update failed  osiz:" + osiz + "!=ssiz:" + ssiz);
+        }
     }
     
     void macroStarted() {

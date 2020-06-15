@@ -21,6 +21,7 @@ public class OneThreadProcessor {
     private Thread th = null;
     private long starttime;
     private boolean isinterrupted = false;
+    private boolean isaborted = false;
     private InterfaceDoAction doaction;
     private List<InterfaceAction> actionlist;
     private int stage = -1;
@@ -45,7 +46,7 @@ public class OneThreadProcessor {
         this.tm = tm;
         LOGGER4J.info("ProcessCreated:" + id);
         this.isend =false;
-        
+        this.isaborted = false;
         this.starttime = 0;
         
         this.isinterrupted = false;
@@ -78,7 +79,7 @@ public class OneThreadProcessor {
         this.tm = tm;
         LOGGER4J.info("ProcessReplaced:" + id);
         this.isend =false;
-        
+        this.isaborted = false;
         this.starttime = 0;
         
         this.isinterrupted = false;
@@ -108,6 +109,14 @@ public class OneThreadProcessor {
     }
     
 
+    public void setAborted(){
+        this.isaborted = true;
+    }
+    
+    public boolean isAborted(){
+        return this.isaborted;
+    }
+    
     public void setInterrupt(){
         this.th.interrupt();
         this.isinterrupted = true;
@@ -122,18 +131,17 @@ public class OneThreadProcessor {
         
     public void doProcess(int n){
         // ================== A) thread local zone start.
-        boolean terminate = false;
+        boolean doendaction = false;
         this.stage = n;
         try{
             InterfaceAction action = actionlist.get(n);
             if ( action != null ) {
-                terminate = action.action(this.tm, this);
+                doendaction = action.action(this.tm, this);
             }
         } catch (Exception ex){
             LOGGER4J.error("id:" + id , ex);
         } finally {
-            if(terminate) terminated();
-            else Ended();
+            terminated(doendaction);
         }
     }
     
@@ -144,12 +152,13 @@ public class OneThreadProcessor {
     /**
      * run InterfaceEndAction endAction 
      * 
+     * @param noendaction false 
      * @return 
      */
-    public boolean terminated(){
+    public boolean terminated(boolean doendaction){
       // ================== A) thread local zone end.
         // This method should call the following function at the very end:
-        boolean aborted = this.tm.endProcess(this, this.doaction);
+        boolean aborted = this.tm.endProcess(this, this.doaction, doendaction);
         LOGGER4J.info("Process terminated:" + id );
         // thread local zone ended..
         return aborted;

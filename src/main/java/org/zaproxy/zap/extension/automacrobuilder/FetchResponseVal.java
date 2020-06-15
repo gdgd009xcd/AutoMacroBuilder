@@ -60,6 +60,15 @@ class FetchResponseVal implements DeepClone{
             
     //
     FetchResponseVal(ParmGenMacroTrace pmt) {
+        init(pmt);
+    }
+
+    /**
+     * for internal use
+     * 
+     * @param pmt 
+     */
+    private void init(ParmGenMacroTrace pmt) {
         this.pmt = pmt;
 
         // pattern = "<AuthUpload>(?:.|\r|\n|\t)*?<password>([a-zA-Z0-9]+)</password>";
@@ -69,9 +78,9 @@ class FetchResponseVal implements DeepClone{
         if (_enc == null) {
             _enc = Encode.UTF_8;
         }
-        initLocVal();
+        initLocVal();   
     }
-
+    
     private String strrowcol(int r, int c) {
         return Integer.toString(r) + "," + Integer.toString(c);
     }
@@ -586,18 +595,18 @@ class FetchResponseVal implements DeepClone{
     
     @Override
     public FetchResponseVal clone(){
-        FetchResponseVal nobj = null;
+        FetchResponseVal  nobj = null;
         try {
             nobj = (FetchResponseVal) super.clone();
             nobj._enc = this._enc;
             nobj.pmt = this.pmt;
             nobj.distances = HashMapDeepCopy.hashMapDeepCopyParmGenTokenKeyKIntegerV(this.distances);
             nobj.trackkeys = this.trackkeys.clone();
+            return nobj;
         } catch (CloneNotSupportedException ex) {
             Logger.getLogger(FetchResponseVal.class.getName()).log(Level.SEVERE, null, ex);
         }
         return nobj;
-                
     }
 }
 

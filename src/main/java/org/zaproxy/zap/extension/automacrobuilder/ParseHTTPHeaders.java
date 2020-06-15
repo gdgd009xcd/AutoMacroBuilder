@@ -1361,7 +1361,13 @@ class ParseHTTPHeaders implements DeepClone {
     
     @Override
     public ParseHTTPHeaders clone(){
-        ParseHTTPHeaders nobj = new ParseHTTPHeaders(this);
-        return nobj;
+        try {
+            ParseHTTPHeaders nobj = (ParseHTTPHeaders)super.clone();
+            nobj.deepcopy(this);
+            return nobj;
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(ParseHTTPHeaders.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 }

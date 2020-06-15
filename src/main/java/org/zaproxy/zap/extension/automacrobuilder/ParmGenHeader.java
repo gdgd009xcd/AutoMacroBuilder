@@ -22,6 +22,8 @@ package org.zaproxy.zap.extension.automacrobuilder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** @author daike */
 public class ParmGenHeader implements DeepClone {
@@ -32,6 +34,8 @@ public class ParmGenHeader implements DeepClone {
     //    Cookie: goo=tokyo <- been.i = 4
     private String key_uppername; // uppercase header name
 
+    
+    
     ParmGenHeader(int _i, String _n, String _v) {
         name = _n;
         key_uppername = _n;
@@ -76,13 +80,14 @@ public class ParmGenHeader implements DeepClone {
 
     @Override
     public ParmGenHeader clone() {
-
         try {
-            ParmGenHeader nobj = (ParmGenHeader) super.clone();
+            ParmGenHeader nobj = (ParmGenHeader)super.clone();
             nobj.copyFrom(this);
             return nobj;
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(ParmGenHeader.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+        return null;
     }
 }

@@ -11,6 +11,6 @@ package org.zaproxy.zap.extension.automacrobuilder;
  */
 public interface InterfaceAction {
     // concurrent executed method.
-    // return true then terminate process.
+    // return true: endaction execute.  false:  nothing to do endAction
     boolean action(ThreadManager tm, OneThreadProcessor otp);
 }

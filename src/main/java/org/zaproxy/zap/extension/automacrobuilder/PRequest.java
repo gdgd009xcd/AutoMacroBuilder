@@ -43,6 +43,7 @@ public class PRequest extends ParseHTTPHeaders {
                 host, port, isSSL, rawmessage.getBytes(StandardCharsets.ISO_8859_1), penc);
     }
     
+    @Override
     public PRequest clone(){
         PRequest nobj = (PRequest)super.clone();
         return nobj;

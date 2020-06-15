@@ -53,7 +53,8 @@ public class ParmGenHashMap extends HashMap<ParmGenTokenKey, ParmGenTokenValue>
     
     @Override
     public ParmGenHashMap clone(){
-        ParmGenHashMap nobj = (ParmGenHashMap)HashMapDeepCopy.hashMapDeepCopyParmGenHashMapSuper(this);
+        ParmGenHashMap nobj = (ParmGenHashMap) super.clone();
+        HashMapDeepCopy.hashMapDeepElementCloneParmGenHashMap(this, nobj);
         return nobj;
     }
     

@@ -28,8 +28,7 @@ public class ParmGenTrackingParam implements DeepClone {
     private int responseStepNo = -1;
 
     ParmGenTrackingParam() {
-        cachevalue = null;
-        responseStepNo = -1;
+        init();
     }
 
     public void init() {
@@ -55,14 +54,17 @@ public class ParmGenTrackingParam implements DeepClone {
     
     @Override
     public ParmGenTrackingParam clone(){
-        ParmGenTrackingParam nobj = null;
         try {
-            nobj = (ParmGenTrackingParam)super.clone();
+            ParmGenTrackingParam nobj = (ParmGenTrackingParam)super.clone();
+            nobj.init();
+        
             nobj.cachevalue = this.cachevalue;
             nobj.responseStepNo = this.responseStepNo;
+
+            return nobj;
         } catch (CloneNotSupportedException ex) {
             Logger.getLogger(ParmGenTrackingParam.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return nobj;
+        return null;
     }
 }

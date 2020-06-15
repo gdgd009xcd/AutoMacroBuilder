@@ -39,7 +39,7 @@ public class BurpMacroStartDoAction implements InterfaceDoAction {
     public boolean  performAction(ParmGenMacroTrace pmt, IHttpRequestResponse currentrequest, IHttpRequestResponse[] executedmacros) {
         pmt.startBeforePreMacro();//前処理マクロを実行。
         startCurrentRequest(pmt, currentrequest);
-        return false;
+        return true;
     }
     
     private String getThreadStatus(Thread.State st){
@@ -117,7 +117,11 @@ public class BurpMacroStartDoAction implements InterfaceDoAction {
 
     @Override
     public InterfaceEndAction endAction(ThreadManager tm, OneThreadProcessor otp) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+        // nothing to do 
+        InterfaceEndAction endaction = () -> {};
+        
+        return endaction;
     }
 
  

@@ -47,6 +47,10 @@ public class ParmGenParser implements DeepClone {
 
     // tokenらしき値を自動引継ぎ
     public ParmGenParser(String htmltext) {
+        setup(htmltext);
+    }
+    
+    private void setup(String htmltext){
         init();
 
         this.htmltext = htmltext;
@@ -295,13 +299,16 @@ public class ParmGenParser implements DeepClone {
     
     @Override
     public ParmGenParser clone() {
-        ParmGenParser nobj = null;
-
-        nobj = new ParmGenParser(this.htmltext);
-        nobj.map = HashMapDeepCopy.hashMapDeepCopyParmGenHashMapSuper(this.map);
-        nobj.defmap = HashMapDeepCopy.hashMapDeepCopyParmGenHashMapSuper(this.defmap);
-
-        return nobj;
+        try {
+            ParmGenParser nobj = (ParmGenParser) super.clone();
+            nobj.setup(this.htmltext);
+            nobj.map = HashMapDeepCopy.hashMapDeepCopyParmGenHashMapSuper(this.map);
+            nobj.defmap = HashMapDeepCopy.hashMapDeepCopyParmGenHashMapSuper(this.defmap);
+            return nobj;
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(ParmGenParser.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
+        return null;
     }
 }

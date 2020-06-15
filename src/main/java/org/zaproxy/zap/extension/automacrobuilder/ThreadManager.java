@@ -198,10 +198,9 @@ public class ThreadManager {
 
                 p = pmap.get(oldid);
                 
-                
-                if(oldp.isEnd()){//  oldp is interrupted but not Ended.
+                //if(oldp.isEnd()){//  oldp is interrupted but not Ended.
                     thcount++;
-                }
+                //}
             } finally {
             }
             
@@ -249,19 +248,20 @@ public class ThreadManager {
     
     
     
-    synchronized boolean endProcess(OneThreadProcessor p, InterfaceDoAction action){
+    synchronized boolean endProcess(OneThreadProcessor p, InterfaceDoAction action, boolean doendaction){
         OneThreadProcessor endp = null;
         boolean aborted = false;
         
         
         try {
-            
-            if (!p.wasInterrupted()) {
-                actionlist.add(action.endAction(this, p));
-                thcount--;
+            thcount--;
+            if (!p.wasInterrupted() && action != null && !p.isAborted()) {// interrupt or abnormal then endaction omit.
+                if(doendaction) {
+                    actionlist.add(action.endAction(this, p));
+                }
             } else {
                 aborted = true;
-                LOGGER4J.debug("id:" + p.getid() + " NO ENDACTION REASON: WASINTERRUPED.");
+                LOGGER4J.debug("id:" + p.getid() + " NO ENDACTION REASON:"+ (p.wasInterrupted()?" INTERRUPED." : "") + (p.isAborted()?" ABORTED." : ""));
             }
             
             LOGGER4J.debug("thcount:" + thcount);

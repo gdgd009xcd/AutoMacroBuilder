@@ -169,11 +169,15 @@
 </repositories>
 <pluginRepositories>
         <pluginRepository>
-            <id>central</id>
+            <id>plugincentral</id>
             <url>https://repo.maven.apache.org/maven2/</url>
+            <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
             <releases>
                 <enabled>true</enabled>
-            </releases>
+               <updatePolicy>never</updatePolicy>
+      </releases>
         </pluginRepository>
 </pluginRepositories>
 </project>

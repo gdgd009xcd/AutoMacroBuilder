@@ -19,8 +19,11 @@
  */
 package org.zaproxy.zap.extension.automacrobuilder;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /** @author daike */
-public class ParmGenTrackingParam {
+public class ParmGenTrackingParam implements DeepClone {
     private String cachevalue = null;
     private int responseStepNo = -1;
 
@@ -48,5 +51,18 @@ public class ParmGenTrackingParam {
 
     public int getResponseStepNo() {
         return responseStepNo;
+    }
+    
+    @Override
+    public ParmGenTrackingParam clone(){
+        ParmGenTrackingParam nobj = null;
+        try {
+            nobj = (ParmGenTrackingParam)super.clone();
+            nobj.cachevalue = this.cachevalue;
+            nobj.responseStepNo = this.responseStepNo;
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(ParmGenTrackingParam.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return nobj;
     }
 }

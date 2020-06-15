@@ -36,28 +36,30 @@ import org.zaproxy.zap.extension.automacrobuilder.mdepend.ClientDependent;
 /** @author daike */
 public class ParmGenMacroTrace extends ClientDependent {
 
-    private LockInstance locker = null;
+    //private LockInstance locker = null;
     
     MacroBuilderUI ui = null;
     
     // ============== instance unique members(copy per thread) BEGIN ==========
-    long threadid = -1;
+
     private List<PRequestResponse> rlist = null; // マクロ実行後の全リクエストレスポンス
     private List<PRequestResponse> originalrlist = null; // オリジナルリクエストレスポンス
 
     int selected_request = 0; // 現在選択しているカレントのリクエスト
 
-    PRequestResponse toolbaseline = null; // Repeater's baseline request.
+    private FetchResponseVal fetchResVal = null; // token cache  has DeepCloneable
 
-    PRequestResponse postmacro_RequestResponse = null;
-
-    private FetchResponseVal fetchResVal = null; // token cache
-
-
-
-    private ParmGenCookieManager cookieMan = null; // cookie manager
+    private ParmGenCookieManager cookieMan = null; // cookie manager has DeepCloneable
 
     // ============== instance unique members(copy per thread) END ==========
+    
+    private List<PRequestResponse> savelist = null;// scannned requestresponse results.
+
+    long threadid = -1;// thread id
+
+    PRequestResponse toolbaseline = null; // single shot request tool  baseline request such as Repeater. when mutithread scan, this parameter is null. 
+
+    PRequestResponse postmacro_RequestResponse = null;// after startPostMacro, this value has last RequestResponse.
 
     ListIterator<PRequestResponse> oit = null; // オリジナル
     ListIterator<PRequestResponse> cit = null; // 実行
@@ -85,6 +87,7 @@ public class ParmGenMacroTrace extends ClientDependent {
     
     private ParmGenTWait TWaiter = null;
     private int waittimer = 0; // 実行間隔(msec)
+    
 
     public String state_debugprint() {
         String msg = "PMT_UNKNOWN";
@@ -117,16 +120,33 @@ public class ParmGenMacroTrace extends ClientDependent {
         return msg;
     }
 
-    public ParmGenMacroTrace(LockInstance locker) {
-        this.locker = locker;
+    public ParmGenMacroTrace(/*LockInstance locker*/) {
+        //this.locker = locker;
     }
 
+    /**
+     * Get copy of this instance for scan
+     * 
+     * @return 
+     */
+   public ParmGenMacroTrace getScanInstance(long tid){
+       ParmGenMacroTrace nobj = new ParmGenMacroTrace();
+       nobj.threadid = tid;
+       nobj.rlist = this.rlist;//reference
+       nobj.originalrlist = this.originalrlist;// reference
+       nobj.selected_request = this.selected_request;//specified scan target request
+       nobj.fetchResVal = this.fetchResVal.clone();//deepclone
+       nobj.cookieMan = this.cookieMan.clone();//deepclone
+       nobj.savelist = new ArrayList<>();
+       return nobj;
+   }
+   
     //
     // setter
     //
     public void clear() {
         ParmGen.clearAll();
-        this.locker.unlock(-1);
+        //this.locker.unlock(-1);
         macroEnded();
         rlist = null;
         originalrlist = null;
@@ -195,11 +215,12 @@ public class ParmGenMacroTrace extends ClientDependent {
     // ３）カレントリクエスト終了(レスポンス受信後)後に実行
     public void endAfterCurrentRequest(PRequestResponse pqrs) {
         if (rlist != null && selected_request < rlist.size() && selected_request >= 0) {
-            pqrs.setComments(ParmVars.plog.getComments());
-            pqrs.setError(ParmVars.plog.isError());
-            rlist.set(selected_request, pqrs);
+            pqrs.setComments(getComments());
+            pqrs.setError(isError());
+            //rlist.set(selected_request, pqrs);
+            this.savelist.add(pqrs);
         }
-        ui.updateCurrentReqRes();
+        //ui.updateCurrentReqRes();
         state = PMT_CURRENT_END;
     }
 
@@ -290,6 +311,8 @@ public class ParmGenMacroTrace extends ClientDependent {
     public void startBeforePreMacro() {
         macroStarted();
 
+        this.savelist.clear();
+        
         if (waittimer > 0) {
             TWaiter = new ParmGenTWait(waittimer);
         } else {
@@ -329,8 +352,9 @@ public class ParmGenMacroTrace extends ClientDependent {
                     TWaiter.TWait();
                 }
                 while (cit.hasNext() && oit.hasNext()) {
-                    PRequestResponse ppr = cit.next();
-                    PRequestResponse opr = oit.next();
+                    // copy clone.
+                    PRequestResponse ppr = cit.next().clone();
+                    PRequestResponse opr = oit.next().clone();
                     stepno = n;
                     if (n++ >= selected_request) {
                         break;
@@ -360,10 +384,12 @@ public class ParmGenMacroTrace extends ClientDependent {
                                     + " "
                                     + ppr.request.url);
 
+                    ppr.request.setThreadId2CustomHeader(threadid);
                     PRequestResponse pqrs = clientHttpRequest(ppr.request);
 
                     if (pqrs != null) {
-                        cit.set(pqrs); // 更新
+                        //cit.set(pqrs); // 更新
+                        savelist.add(pqrs);
                     }
 
                     if (TWaiter != null) {
@@ -379,9 +405,6 @@ public class ParmGenMacroTrace extends ClientDependent {
     }
 
     PRequest configureRequest(PRequest preq) {
-
-       
-        
         if (isRunning()) { // MacroBuilder list > 0 && state is Running.
             preq.setThreadId2CustomHeader(threadid);
             // ここでリクエストのCookieをCookie.jarで更新する。
@@ -453,8 +476,8 @@ public class ParmGenMacroTrace extends ClientDependent {
                         }
                         n++;
 
-                        PRequestResponse ppr = cit.next();
-                        PRequestResponse opr = oit.next();
+                        PRequestResponse ppr = cit.next().clone();
+                        PRequestResponse opr = oit.next().clone();
                         if (ppr.isDisabled()) {
                             continue;
                         }
@@ -473,11 +496,12 @@ public class ParmGenMacroTrace extends ClientDependent {
                                         + ppr.request.method
                                         + " "
                                         + ppr.request.url);
-
+                        ppr.request.setThreadId2CustomHeader(threadid);
                         PRequestResponse pqrs = clientHttpRequest(ppr.request);
                         if (pqrs != null) {
                             postmacro_RequestResponse = pqrs;
-                            cit.set(pqrs); // 更新
+                            //cit.set(pqrs); // 更新
+                            this.savelist.add(pqrs);
                         }
                     }
                 }
@@ -553,14 +577,19 @@ public class ParmGenMacroTrace extends ClientDependent {
         ParmVars.plog.debuglog(0, "setRecords:" + rlist.size() + "/" + originalrlist.size());
     }
 
+    public void updaterlist(ParmGenMacroTrace pmt){
+        this.rlist = pmt.rlist;
+        this.ui.updaterlist(this.rlist);
+    }
+    
     void macroStarted() {
         ParmVars.plog.debuglog(0, "<--Macro Started.-->");
-        this.threadid = this.locker.lock();
+        //this.threadid = this.locker.lock();
     }
 
     public void macroEnded() {
         nullState();
-        this.locker.unlock(this.threadid);
+        //this.locker.unlock(this.threadid);
         
         ParmVars.plog.debuglog(0, "<--Macro Complete Ended.-->");
     }
@@ -572,7 +601,6 @@ public class ParmGenMacroTrace extends ClientDependent {
     }
 
     public void setToolBaseLine(PRequestResponse _baseline) {
-
         toolbaseline = _baseline;
     }
 
@@ -587,6 +615,10 @@ public class ParmGenMacroTrace extends ClientDependent {
         return state;
     }
 
+    public long getThreadId(){
+        return this.threadid;
+    }
+    
     List<PRequestResponse> getRecords() {
         return rlist;
     }
@@ -715,7 +747,7 @@ public class ParmGenMacroTrace extends ClientDependent {
 
     public void initFetchResponseVal() {
         if (fetchResVal == null) {
-            fetchResVal = new FetchResponseVal();
+            fetchResVal = new FetchResponseVal(this);
         }
     }
 

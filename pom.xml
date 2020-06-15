@@ -3,13 +3,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>burp</groupId>
     <artifactId>AutoMacroBuilder</artifactId>
-    <version>1.29</version>
+    <version>1.30</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <mainClass>project.Main.class</mainClass>
+        <mainClass>burp.StartBurp</mainClass>
     </properties>
 
 <dependencies>
@@ -33,6 +33,14 @@
     <version>1.7.22</version>
     <scope>provided</scope>
 </dependency>
+
+<!-- dependency>
+    <groupId>mytest.comcom</groupId>
+    <artifactId>mytest-comcom</artifactId>
+    <version>2.1.04</version>
+    <scope>provided</scope>
+</dependency -->
+
 
 
 <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
@@ -138,7 +146,7 @@
           </descriptors>
         <archive>
             <manifest>
-                <mainClass>burp.test</mainClass>
+                <mainClass>burp.StartBurp</mainClass>
             </manifest>
         </archive>
     </configuration>
@@ -154,7 +162,31 @@
         </execution>
     </executions>
 </plugin>
-    </plugins>
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-source-plugin</artifactId>
+    <configuration>
+     <skip>true</skip>
+   </configuration>
+    <version>2.4</version>
+</plugin>
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-javadoc-plugin</artifactId>
+    <version>2.10.4</version>
+    <configuration>
+     <skip>true</skip>
+   </configuration>
+</plugin>
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-deploy-plugin</artifactId>
+    <version>2.8.2</version>
+    <configuration>
+     <skip>true</skip>
+   </configuration>
+</plugin>
+</plugins>
 </build>
 <repositories>
     <repository>

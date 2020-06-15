@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
 // <?xml version="1.0" encoding="utf-8"?>
@@ -39,28 +41,26 @@ import java.util.regex.Matcher;
 // FetchResponse初期化
 //
 
-class FetchResponseVal {
+class FetchResponseVal implements DeepClone{
     //
-    int noclear = 0;
 
-    boolean sticky = false;
+    private static org.apache.logging.log4j.Logger LOGGER4J =
+            org.apache.logging.log4j.LogManager.getLogger();
 
-    // String [][] locarray = new String[rmax][cmax];
-    // String [][] locarray;
-
-    // stepno
-    // int [][] responseStepNos;
-    PLog _logger = null;
     Encode _enc = null;
 
+    // ====================== copy per thread members begin ===============
     // Key: String token  int toStepNo Val: distance = responseStepNo - currentStepNo
     private HashMap<ParmGenTokenKey, Integer> distances;
     
     private ParmGenTrackKeyPerThread trackkeys;
+    // ====================== copy per thread members end =================
+    
+    private ParmGenMacroTrace pmt;
             
     //
-    FetchResponseVal() {
-        _logger = ParmVars.plog;
+    FetchResponseVal(ParmGenMacroTrace pmt) {
+        this.pmt = pmt;
 
         // pattern = "<AuthUpload>(?:.|\r|\n|\t)*?<password>([a-zA-Z0-9]+)</password>";
         allocLocVal();
@@ -177,16 +177,10 @@ class FetchResponseVal {
             tkparam = trackkeys.create(k);
         }
 
-        // if ( locarray[r][c] == null ){
-        //        locarray[r][c] = val;
-        // }else if(sticky == false||overwrite == true){
-        //        locarray[r][c] = val;
-        // }
-
         String cachedval = tkparam.getValue();
         if (cachedval == null) {
             tkparam.setValue(val);
-        } else if (sticky == false || overwrite == true) {
+        } else if (overwrite == true) {
             tkparam.setValue(val);
         }
 
@@ -212,16 +206,8 @@ class FetchResponseVal {
     //    }
     // }
 
-    int noClear() {
-        return noclear;
-    }
-
-    void resetnoClear() {
-        noclear = 0;
-    }
-
     void printlog(String v) {
-        _logger.printlog(v, true);
+        LOGGER4J.info(v);
     }
 
     //
@@ -255,7 +241,7 @@ class FetchResponseVal {
                                             + " => "
                                             + matchval;
                             printlog(comments);
-                            ParmVars.plog.addComments(comments);
+                            pmt.addComments(comments);
                                     setLocVal(
                                             av.getTrackKey(),
                                             currentStepNo,
@@ -272,7 +258,7 @@ class FetchResponseVal {
                                         + c
                                         + " => null";
                         printlog(comments);
-                        ParmVars.plog.addComments(comments);
+                        pmt.addComments(comments);
                     }
                 }
             } else if (av.getPattern_resRegex() != null) {
@@ -308,7 +294,7 @@ class FetchResponseVal {
                                                 + " => "
                                                 + matchval;
                                 printlog(comments);
-                                ParmVars.plog.addComments(comments);
+                                pmt.addComments(comments);
                                         setLocVal(
                                                 av.getTrackKey(),
                                                 currentStepNo,
@@ -326,7 +312,7 @@ class FetchResponseVal {
                                                 + hval
                                                 + " => null";
                                 printlog(comments);
-                                ParmVars.plog.addComments(comments);
+                                pmt.addComments(comments);
                             }
                         }
                     }
@@ -377,7 +363,7 @@ class FetchResponseVal {
                                     + "] 例外："
                                     + e.toString();
                     printlog(comments);
-                    ParmVars.plog.addComments(comments);
+                    pmt.addComments(comments);
                     matcher = null;
                 }
 
@@ -432,7 +418,7 @@ class FetchResponseVal {
                                             + "="
                                             + ONETIMEPASSWD;
                             printlog(comments);
-                            ParmVars.plog.addComments(comments);
+                            pmt.addComments(comments);
                             return true;
                         } else {
                             comments =
@@ -445,7 +431,7 @@ class FetchResponseVal {
                                             + "="
                                             + "null";
                             printlog(comments);
-                            ParmVars.plog.addComments(comments);
+                            pmt.addComments(comments);
                         }
                     }
                 }
@@ -496,7 +482,7 @@ class FetchResponseVal {
                                                 + "="
                                                 + v;
                                 printlog(comments);
-                                ParmVars.plog.addComments(comments);
+                                pmt.addComments(comments);
                                 return true;
                             } else {
                                 String comments =
@@ -511,7 +497,7 @@ class FetchResponseVal {
                                                 + "="
                                                 + "null";
                                 printlog(comments);
-                                ParmVars.plog.addComments(comments);
+                                pmt.addComments(comments);
                             }
                         }
                     }
@@ -550,7 +536,7 @@ class FetchResponseVal {
                                         + "="
                                         + nv[1];
                         printlog(comments);
-                        ParmVars.plog.addComments(comments);
+                        pmt.addComments(comments);
                                 setLocVal(
                                         av.getTrackKey(),
                                         currentStepNo,
@@ -568,7 +554,7 @@ class FetchResponseVal {
                                         + nv[0]
                                         + "=null";
                         printlog(comments);
-                        ParmVars.plog.addComments(comments);
+                        pmt.addComments(comments);
                     }
                 }
             }
@@ -596,6 +582,22 @@ class FetchResponseVal {
             printlog("matcher例外：" + e.toString());
         }
         return false;
+    }
+    
+    @Override
+    public FetchResponseVal clone(){
+        FetchResponseVal nobj = null;
+        try {
+            nobj = (FetchResponseVal) super.clone();
+            nobj._enc = this._enc;
+            nobj.pmt = this.pmt;
+            nobj.distances = HashMapDeepCopy.hashMapDeepCopyParmGenTokenKeyKIntegerV(this.distances);
+            nobj.trackkeys = this.trackkeys.clone();
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(FetchResponseVal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return nobj;
+                
     }
 }
 

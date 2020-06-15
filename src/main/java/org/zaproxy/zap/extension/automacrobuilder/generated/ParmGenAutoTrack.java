@@ -8,6 +8,7 @@ import org.zaproxy.zap.extension.automacrobuilder.generated.ParmGenAddParms;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javax.swing.table.DefaultTableModel;
@@ -299,7 +300,7 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
             HashMap<String,Integer> namepos = new HashMap<String,Integer>();
             ArrayList<ParmGenToken> lst = pgser.getNameValues();
             ParmGenGSONDecoder jdec = new ParmGenGSONDecoder(body);
-            ArrayList<ParmGenToken> jlst = jdec.parseJSON2Token();
+            List<ParmGenToken> jlst = jdec.parseJSON2Token();
             lst.addAll(jlst);
 
             for(Iterator<ParmGenToken> it = lst.iterator();it.hasNext();){

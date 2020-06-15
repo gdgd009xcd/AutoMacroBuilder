@@ -6,10 +6,19 @@
 
 package burp;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import org.zaproxy.zap.extension.automacrobuilder.InterfaceAction;
+import org.zaproxy.zap.extension.automacrobuilder.InterfaceDoAction;
+import org.zaproxy.zap.extension.automacrobuilder.InterfaceEndAction;
+import org.zaproxy.zap.extension.automacrobuilder.OneThreadProcessor;
 import org.zaproxy.zap.extension.automacrobuilder.ParmGen;
 import org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTrace;
 import static org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTrace.PMT_CURRENT_BEGIN;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTraceProvider;
 import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
+import org.zaproxy.zap.extension.automacrobuilder.ThreadManager;
+import org.zaproxy.zap.extension.automacrobuilder.ThreadManagerProvider;
 
 
 /**
@@ -17,13 +26,22 @@ import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
  * @author daike
  */
 public class BurpMacroStartAction implements ISessionHandlingAction {
-    ParmGenMacroTrace tr;
+    
+
+    private BurpMacroStartDoActionProvider provider = null;
     
     private static org.apache.logging.log4j.Logger LOGGER4J =
             org.apache.logging.log4j.LogManager.getLogger();
     
-    public BurpMacroStartAction(ParmGenMacroTrace _tr){
-        tr = _tr;
+    public BurpMacroStartAction(){
+    }
+
+    private BurpMacroStartDoActionProvider getProvider(IHttpRequestResponse currentrequest, IHttpRequestResponse[] executedmacros){
+        if ( this.provider == null) {
+            this.provider = new BurpMacroStartDoActionProvider();
+        }
+        this.provider.setParamters(currentrequest, executedmacros);
+        return this.provider;
     }
     
     @Override
@@ -33,60 +51,6 @@ public class BurpMacroStartAction implements ISessionHandlingAction {
 
     @Override
     public void performAction(IHttpRequestResponse currentrequest, IHttpRequestResponse[] executedmacros) {
-        Thread oldsender = tr.getSenderThread();
-        if (oldsender!=null) {
-            LOGGER4J.debug("oldsender id:" + oldsender.getId() +  " stat:" + getThreadStatus(oldsender.getState()));
-        }
-        tr.startBeforePreMacro();//前処理マクロを実行。
-        startCurrentRequest(currentrequest);
+        ThreadManagerProvider.getThreadManager().beginProcess(getProvider(currentrequest, executedmacros));
     }
-    
-    private String getThreadStatus(Thread.State st){
-        String stval = "";
-        switch(st){
-            case NEW:
-                stval = "NEW";
-                break;
-            case RUNNABLE:
-                stval = "RUNNABLE";
-                break;
-            case BLOCKED:
-                stval = "BLOCKED";
-                break;
-            case WAITING:
-                stval = "WAITING";
-                break;
-            case TIMED_WAITING:
-                stval = "TIMED_WAITING";
-                break;
-            case TERMINATED:
-                stval = "TERMINATED";
-                break;
-            default:
-                stval = "UNKNOWN";
-                break;
-        }
-        return stval;
-    }
-    
-    public void startCurrentRequest(IHttpRequestResponse currentRequest){
-        ParmVars.plog.clearComments();
-        ParmVars.plog.setError(false);
-        //state = PMT_CURRENT_BEGIN;
-        tr.setState(PMT_CURRENT_BEGIN);
-        ParmGen pgen = new ParmGen(tr);
-        IHttpService iserv = currentRequest.getHttpService();
-        String host = iserv.getHost();
-        int port = iserv.getPort();
-        boolean isSSL = (iserv.getProtocol().toLowerCase().equals("https")?true:false);
-        
-        LOGGER4J.debug("StartAction Current StepNo:" + tr.getStepNo() + " host:"+ host + "Threadid:" + Thread.currentThread().getId() );
-        tr.burpSetCurrentOriginalRequest(currentRequest.getRequest());
-        
-        byte[] retval = pgen.Run(host, port, isSSL, currentRequest.getRequest());
-        if ( retval != null){
-                currentRequest.setRequest(retval);
-        }
-    }
-    
 }

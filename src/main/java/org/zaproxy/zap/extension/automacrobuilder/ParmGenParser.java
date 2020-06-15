@@ -21,20 +21,24 @@ package org.zaproxy.zap.extension.automacrobuilder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 /** @author tms783 */
-public class ParmGenParser {
+public class ParmGenParser implements DeepClone {
     // get the factory
+    String htmltext;
     Document doc;
     Elements elems;
     HashMap<ParmGenTokenKey, ParmGenTokenValue> map;
     HashMap<ParmGenTokenKey, ParmGenTokenValue> defmap; // T_DEFAULT
 
-    void init() {
+    private void init() {
+        htmltext = null;
         doc = null;
         elems = null;
         map = null;
@@ -45,6 +49,10 @@ public class ParmGenParser {
     public ParmGenParser(String htmltext) {
         init();
 
+        this.htmltext = htmltext;
+        Document doc = null;
+        Elements elems = null;
+        
         try {
             doc = Jsoup.parse(htmltext); // パース実行
             // elems =
@@ -56,7 +64,12 @@ public class ParmGenParser {
         } catch (Exception e) {
             // TODO Auto-generated catch block
             ParmVars.plog.printException(e);
+            doc = null;
+            elems = null;
         }
+        
+        this.doc = doc;
+        this.elems = elems;
     }
 
     void elemsprint(String _t) {
@@ -278,5 +291,17 @@ public class ParmGenParser {
             }
         }
         return null;
+    }
+    
+    @Override
+    public ParmGenParser clone() {
+        ParmGenParser nobj = null;
+
+        nobj = new ParmGenParser(this.htmltext);
+        nobj.map = HashMapDeepCopy.hashMapDeepCopyParmGenHashMapSuper(this.map);
+        nobj.defmap = HashMapDeepCopy.hashMapDeepCopyParmGenHashMapSuper(this.defmap);
+
+        return nobj;
+        
     }
 }

@@ -20,7 +20,7 @@
 package org.zaproxy.zap.extension.automacrobuilder;
 
 /** @author daike */
-public interface DeepClone extends Cloneable {
+public interface DeepClone /*extends Cloneable*/ {
     //
     //
     // Correct example:

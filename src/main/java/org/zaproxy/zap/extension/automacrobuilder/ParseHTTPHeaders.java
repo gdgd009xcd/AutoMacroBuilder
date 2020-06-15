@@ -38,7 +38,7 @@ import java.util.regex.Pattern;
 // HTTP request/response parser
 //
 
-class ParseHTTPHeaders {
+class ParseHTTPHeaders implements DeepClone {
     Pattern valueregex;
     // Pattern formdataregex;
     String formdataheader;
@@ -89,7 +89,7 @@ class ParseHTTPHeaders {
     String message; // when update method(Ex. setXXX) is called, then this value must set to null;
     private boolean isrequest; // == true - request, false - response
 
-    HeaderPattern[] headerpatterns = {
+    final HeaderPattern[] headerpatterns = {
         // Authorization: Bearer token68
         //         token68: alpha,digit, "-._~+/", "=" (RFC 6750 2.1 base64token )
         new HeaderPattern(
@@ -209,7 +209,7 @@ class ParseHTTPHeaders {
         formdata = pheaders.formdata;
         body = pheaders.body;
         bytebody = ParmGenUtil.copyBytes(pheaders.bytebody);
-        binbody = new ParmGenBinUtil(pheaders.binbody.getBytes());
+        binbody = pheaders.binbody != null ? new ParmGenBinUtil(pheaders.binbody.getBytes()) : null;
         iso8859bodyString = pheaders.iso8859bodyString;
         pageenc = pheaders.pageenc;
         message = pheaders.message;
@@ -1357,5 +1357,11 @@ class ParseHTTPHeaders {
             return l;
         }
         return -1;
+    }
+    
+    @Override
+    public ParseHTTPHeaders clone(){
+        ParseHTTPHeaders nobj = new ParseHTTPHeaders(this);
+        return nobj;
     }
 }

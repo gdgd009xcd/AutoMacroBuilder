@@ -22,22 +22,22 @@ package org.zaproxy.zap.extension.automacrobuilder;
 /** @author daike */
 public class ParmGenTWait {
     private long waittimer;
-    // for log4j
-    // private static final Logger LOGGER = Logger.getLogger(ParmGenTWait.class);
+    private static org.apache.logging.log4j.Logger LOGGER4J =
+            org.apache.logging.log4j.LogManager.getLogger();
 
     ParmGenTWait(long wtimer) {
         waittimer = wtimer;
     }
 
-    synchronized void TWait() {
+    void TWait() {
         if (waittimer > 0) {
-            ParmVars.plog.debuglog(0, "....sleep Start:" + waittimer + "(msec)");
+            LOGGER4J.debug("....sleep Start:" + waittimer + "(msec)");
             try {
-                wait(waittimer);
+                Thread.sleep(waittimer);
             } catch (Exception e) {
-                ParmVars.plog.debuglog(0, "....sleep Exception..");
+                LOGGER4J.debug("....sleep Exception..");
             }
-            ParmVars.plog.debuglog(0, "....sleep End.");
+            LOGGER4J.debug("....sleep End.");
         }
     }
 }

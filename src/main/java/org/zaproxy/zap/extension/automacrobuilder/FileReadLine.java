@@ -53,7 +53,7 @@ public class FileReadLine {
         return csvfile;
     }
 
-    public void rewind() {
+    private void rewind() {
         if (saveseekp) {
             try {
                 FileWriter filewriter = new FileWriter(seekfile, false);
@@ -77,7 +77,7 @@ public class FileReadLine {
      * @return
      * @throws IOException
      */
-    String readLineRandomAccessFileCharset(RandomAccessFile f) throws IOException {
+    private String readLineRandomAccessFileCharset(RandomAccessFile f) throws IOException {
         ParmGenBinUtil barray = new ParmGenBinUtil();
         byte[] onebyte = new byte[1];
         int c = -1;
@@ -109,7 +109,7 @@ public class FileReadLine {
         return new String(barray.getBytes(), ParmVars.enc.getIANACharset());
     }
 
-    public ArrayList<String> readColumns() {
+    synchronized public ArrayList<String> readColumns() {
         if (columns == null) {
             columns = new ArrayList<String>();
         }
@@ -121,7 +121,7 @@ public class FileReadLine {
         return null;
     }
 
-    int skipLine(int l) {
+    synchronized int skipLine(int l) {
         if (l >= 0) {
             rewind();
             columns = null;
@@ -137,7 +137,7 @@ public class FileReadLine {
         return current_line;
     }
 
-    String readLine(int _valparttype, int _pos, AppParmsIni _parent) {
+    synchronized String readLine(int _valparttype, int _pos, AppParmsIni _parent) {
         if (saveseekp) {
             seekp = 0;
             current_line = 0;

@@ -26,14 +26,17 @@ import java.net.HttpCookie;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static org.zaproxy.zap.extension.automacrobuilder.CastUtils.castToType;
 
 /** @author daike */
-public class ParmGenCookieManager {
-    CookieManager manager = null;
-    CookieStore cookiestore = null;
+public class ParmGenCookieManager implements DeepClone {
+    private CookieManager manager = null;
+    private CookieStore cookiestore = null;
 
     ParmGenCookieManager() {
         manager = new CookieManager();
@@ -54,6 +57,15 @@ public class ParmGenCookieManager {
         return null;
     }
 
+    /**
+     * add cookie  currently no used.
+     * 
+     * @param domain
+     * @param path
+     * @param name
+     * @param value
+     * @param isSSL 
+     */
     public void add(String domain, String path, String name, String value, boolean isSSL) {
         URI uri = getURI(domain, path, isSSL);
         HttpCookie hcookie = new HttpCookie(name, value);
@@ -154,5 +166,20 @@ public class ParmGenCookieManager {
      */
     public List<URI> getURIs() {
         return cookiestore.getURIs();
+    }
+    
+    @Override
+    public ParmGenCookieManager clone(){
+        ParmGenCookieManager nobj = new ParmGenCookieManager();// newly create.
+        List<URI> urilist = this.cookiestore.getURIs();
+        if( urilist != null ) {
+            urilist.forEach(uri -> {
+                List<HttpCookie> cookies = this.cookiestore.get(uri);
+                cookies.forEach(cookie -> {
+                    nobj.cookiestore.add(uri, castToType(cookie.clone()));// uri: immutable,  cookie has clone()
+                });
+            });
+        }
+        return nobj;
     }
 }

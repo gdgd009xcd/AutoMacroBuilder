@@ -162,7 +162,7 @@ public class ParmGen {
 
         String method = prequest.getMethod();
         String url = prequest.getURL();
-        String path = new String(url);
+        String path = url;
         String orig_url = null;
         String orig_path = null;
         String orig_query = null;
@@ -761,7 +761,7 @@ public class ParmGen {
                                 }
                             }
                         }
-                        ParmVars.plog.setError(iserror);
+                        pmt.setError(iserror);
                         ParmVars.plog.debuglog(1, "end");
                     }
                 }

@@ -217,7 +217,9 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         RequestList.repaint();
     }
     
-    
+    public void updaterlist(List<PRequestResponse> rlist){
+        this.rlist = rlist;
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -1075,7 +1077,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                             String value = tkn.getTokenValue().getValue();
                             ParmGenGSONDecoder reqjdecoder = new ParmGenGSONDecoder(pqrs.request.getBody());
 
-                            ArrayList<ParmGenToken> reqjtklist = reqjdecoder.parseJSON2Token();
+                            List<ParmGenToken> reqjtklist = reqjdecoder.parseJSON2Token();
 
                             ParmGenRequestToken _QToken = null;
                             ParmGenToken _RToken = null;
@@ -1330,7 +1332,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                     InterfaceCollection<ParmGenToken> ic = pqrs.response.getLocationTokens(tklist);
                     //JSON parse
                     ParmGenGSONDecoder jdecoder = new ParmGenGSONDecoder(body);
-                    ArrayList<ParmGenToken> jtklist = jdecoder.parseJSON2Token();
+                    List<ParmGenToken> jtklist = jdecoder.parseJSON2Token();
 
                     //add extracted tokens to tklist
                     tklist.addAll(bodytklist);

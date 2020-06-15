@@ -22,22 +22,18 @@ import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
  */
 public class ClientDependent {
     
+    // below members does not need copy per thread. these parameter is temporary used.
     IScanQueueItem scanque = null;//scanner's queue
     byte[] originalrequest = null;// performAction's IHttpRequestResponse currentrequest bytes
     IHttpRequestResponse messageInfo = null;// performAction's IHttpRequestResponse
     
-    Thread senderth = null;
+    private String comments = "";
+    
+    private boolean iserror = false;
+
     
     final public static String LOG4JXML_DIR = System.getProperty("user.home") + "/.BurpSuite";
-    
-    public void setSenderThread(Thread sth){
-        this.senderth = sth;
-    }
-    
-    public Thread getSenderThread(){
-        return this.senderth;
-    }
-    
+
     public ClientDependent(){
         scanQueNull();
     }
@@ -98,8 +94,8 @@ public class ClientDependent {
             Encode _pageenc = request.getPageEnc();
             BurpIHttpService bserv = new BurpIHttpService(host, port, isSSL);
             //byte[] byteres = callbacks.makeHttpRequest(host,port, isSSL, byterequest);
-            ParmVars.plog.clearComments();
-            ParmVars.plog.setError(false);
+            clearComments();
+            setError(false);
             IHttpRequestResponse IHReqRes = BurpExtender.mCallbacks.makeHttpRequest(bserv, byterequest);
             byte[] bytereq = IHReqRes.getRequest();
             byte[] byteres = IHReqRes.getResponse();
@@ -114,8 +110,8 @@ public class ClientDependent {
                 if(pqrs.response.getBodyContentLength()<=0){
                     noresponse = "\nNo Response(NULL)";
                 }
-                pqrs.setComments(ParmVars.plog.getComments() + noresponse);
-                pqrs.setError(ParmVars.plog.isError());
+                pqrs.setComments(getComments() + noresponse);
+                pqrs.setError(isError());
             }
         }
         
@@ -134,4 +130,27 @@ public class ClientDependent {
         scanque = null;
     }
     
+    public void clearComments() {
+        comments = ""; // no null
+    }
+
+    public void addComments(String _v) {
+        comments += _v + "\n";
+    }
+
+    void setComments(String _v) {
+        comments = _v;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public void setError(boolean _b) {
+        iserror = _b;
+    }
+
+    public boolean isError() {
+        return iserror;
+    }
 }

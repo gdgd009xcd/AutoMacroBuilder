@@ -22,6 +22,7 @@ package org.zaproxy.zap.extension.automacrobuilder;
 import static org.zaproxy.zap.extension.automacrobuilder.CastUtils.castToType;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 /** @author daike */
 class HashMapDeepCopy {
@@ -132,7 +133,7 @@ class HashMapDeepCopy {
 
     /**
      * HashMap<String, String> copy( that is same as HashMap<String,String>.clone() . because String
-     * is final fixed value.)
+     * is immutable. In other words String is "final fixed(unchangable)" object.)
      *
      * @param String
      * @param <V>
@@ -140,13 +141,63 @@ class HashMapDeepCopy {
      * @return HashMap<String,String> dest to which copy src
      */
     public static HashMap<String, String> hashMapDeepCopyStrKStrV(HashMap<String, String> src) {
+        if(src == null) return null;
         HashMap<String, String> dest = new HashMap<>();
         return hashMapDeepCopyPrimitive(src, dest);
     }
 
+    /**
+     * Copy HashMap<String, ParmGenHeader>
+     *      String is immutable
+     *      ParmGenHeader has clone()
+     * 
+     * @param src
+     * @return 
+     */
     public static HashMap<String, ParmGenHeader> hashMapDeepCopyStrKParmGenHeaderV(
             HashMap<String, ParmGenHeader> src) {
+        if(src == null) return null;
         HashMap<String, ParmGenHeader> dest = new HashMap<String, ParmGenHeader>();
         return hashMapDeepCopyStrK(src, dest);
     }
-}
+    /**
+     * Copy HashMap<UUID, ParmGenTrackParam>
+     *      UUID is immutable
+     *      ParmGenTrackParam has clone()
+     * 
+     * @param src
+     * @return 
+     */
+    public static HashMap<UUID, ParmGenTrackingParam> hashMapDeepCopyUuidKParmGenTrackingParamV(HashMap<UUID, ParmGenTrackingParam> src){
+        if(src == null) return null;
+        HashMap<UUID, ParmGenTrackingParam> dest = new HashMap<>();
+        return hashMapDeepCopyVClone(src, dest);
+    }
+    
+    /**
+     * Copy HashMap<ParmGenTokenKey,Integer>  
+     *      ParmGenTokenKey has clone()
+     *      Integer is immutable.
+     * 
+     * @param src
+     * @return 
+     */
+    public static HashMap<ParmGenTokenKey, Integer> hashMapDeepCopyParmGenTokenKeyKIntegerV(HashMap<ParmGenTokenKey, Integer> src){
+        if(src == null) return null;
+        HashMap<ParmGenTokenKey, Integer> dest = new HashMap<>();
+        return hashMapDeepCopyKClone(src, dest);
+    }
+    
+    /**
+     * copy HashMap<ParmGenTokenKey, ParmGenTokenValue>
+     * 
+     * @param src
+     * @return 
+     */
+    public static HashMap<ParmGenTokenKey, ParmGenTokenValue> hashMapDeepCopyParmGenHashMapSuper(HashMap<ParmGenTokenKey, ParmGenTokenValue> src){
+        if(src == null) return null;
+        HashMap<ParmGenTokenKey, ParmGenTokenValue> dest = new HashMap<>();
+        return hashMapDeepCopyKVClone(src, dest);
+    }
+    
+ }

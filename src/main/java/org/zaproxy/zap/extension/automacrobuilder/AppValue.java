@@ -787,7 +787,7 @@ public class AppValue {
                                             .getString("ParmGen.parameter_regex_msg1.text"),
                                     new Object[] {value, matchval, token, strcnt}));
                     //
-                    ParmVars.plog.addComments(
+                    pmt.addComments(
                             java.text.MessageFormat.format(
                                     java.util.ResourceBundle.getBundle("burp/Bundle")
                                             .getString("ParmGen.parameter_regex_msg2.text"),
@@ -801,7 +801,7 @@ public class AppValue {
                                     java.util.ResourceBundle.getBundle("burp/Bundle")
                                             .getString("ParmGen.parameter_regex_err1.text"),
                                     new Object[] {value, token, matchval}));
-                    ParmVars.plog.addComments(
+                    pmt.addComments(
                             java.text.MessageFormat.format(
                                     java.util.ResourceBundle.getBundle("burp/Bundle")
                                             .getString("ParmGen.parameter_regex_err2.text"),

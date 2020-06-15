@@ -449,20 +449,20 @@ public class AppParmsIni {
         int n;
         switch (typeval) {
             case T_NUMBER: // number
-                n = countUp(_valparttype, this);
+                n = countUp(_valparttype, this);// synchronized
                 if (n > -1) {
-                    return getFillZeroInt(n);
+                    return getFillZeroInt(n);//thread safe
                 } else {
                     return null;
                 }
             case T_RANDOM: // random
                 Random rand = new Random();
                 n = rand.nextInt(rndval);
-                return getFillZeroInt(n);
+                return getFillZeroInt(n);// thread safe
             case T_TRACK: // loc
                 // if ( global.Location != void ){
                 return pmt.getFetchResponseVal()
-                        .getLocVal(apv.getTrackKey(), tk, currentStepNo, toStepNo);
+                        .getLocVal(apv.getTrackKey(), tk, currentStepNo, toStepNo);// per thread object
                 // }
             default: // csv
                 if (frl != null) {
@@ -470,7 +470,7 @@ public class AppParmsIni {
                     if (csvpos == -1) {
                         csvpos = len;
                     }
-                    return frl.readLine(_valparttype, csvpos, this); // CSVレコード
+                    return frl.readLine(_valparttype, csvpos, this); // read CSV 1 record. synchronized
                 } else {
                     ParmVars.plog.debuglog(1, "getGenValue frl is NULL");
                 }
@@ -493,7 +493,7 @@ public class AppParmsIni {
         return cstrcnt;
     }
 
-    int countUp(int _valparttype, AppParmsIni _parent) {
+    synchronized int countUp(int _valparttype, AppParmsIni _parent) {
         // counter file open
         int cnt = inival;
         try {
@@ -563,21 +563,21 @@ public class AppParmsIni {
         return i;
     }
 
-    int updateCSV(int i) {
+    /*int updateCSV(int i) {
         return frl.skipLine(i);
-    }
+    }*/
 
     public String getCurrentValue() {
         String rval = null;
         switch (typeval) {
             case T_NUMBER:
-                int i = countUp(AppValue.C_NOCOUNT, this);
+                int i = countUp(AppValue.C_NOCOUNT, this);// synchronized
                 rval = Integer.toString(i);
                 break;
             case T_RANDOM:
                 break;
             case T_CSV:
-                String rec = frl.readLine(AppValue.C_NOCOUNT, 0, this);
+                String rec = frl.readLine(AppValue.C_NOCOUNT, 0, this);// synchronized
                 rval = String.valueOf(frl.current_line);
                 break;
             case T_TRACK:

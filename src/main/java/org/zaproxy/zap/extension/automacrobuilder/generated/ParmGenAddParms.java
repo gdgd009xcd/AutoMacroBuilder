@@ -8,6 +8,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -135,7 +136,7 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
         
         //JSON request
         ParmGenGSONDecoder reqjdecoder = new ParmGenGSONDecoder(selected_request.getBody());
-        ArrayList<ParmGenToken> reqjtklist = reqjdecoder.parseJSON2Token();
+        List<ParmGenToken> reqjtklist = reqjdecoder.parseJSON2Token();
         for(ParmGenToken tk: reqjtklist){
             rcnt++;
             String name = tk.getTokenKey().getName();

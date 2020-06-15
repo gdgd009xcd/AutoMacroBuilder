@@ -20,9 +20,11 @@
 package org.zaproxy.zap.extension.automacrobuilder;
 
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** @author daike */
-public class ParmGenTokenKey {
+public class ParmGenTokenKey implements DeepClone {
     private AppValue.TokenTypeNames tokentype;
     private int fcnt;
     private String name;
@@ -73,5 +75,20 @@ public class ParmGenTokenKey {
     public int hashCode() {
         // name is case-sensitive.
         return Objects.hash(tokentype, name, fcnt);
+    }
+    
+    @Override
+    public ParmGenTokenKey clone(){
+        ParmGenTokenKey nobj = null;
+        try {
+            nobj = (ParmGenTokenKey) super.clone();
+            nobj.fcnt = this.fcnt;
+            nobj.name = this.name;
+            nobj.tokentype = this.tokentype;
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(ParmGenTokenKey.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return nobj;
     }
 }

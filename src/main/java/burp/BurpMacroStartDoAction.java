@@ -36,8 +36,8 @@ public class BurpMacroStartDoAction implements InterfaceDoAction {
     }
     
    
-    public boolean  performAction(ParmGenMacroTrace pmt, IHttpRequestResponse currentrequest, IHttpRequestResponse[] executedmacros) {
-        pmt.startBeforePreMacro();//前処理マクロを実行。
+    public boolean  performAction(OneThreadProcessor otp, ParmGenMacroTrace pmt, IHttpRequestResponse currentrequest, IHttpRequestResponse[] executedmacros) {
+        pmt.startBeforePreMacro(otp);//前処理マクロを実行。
         startCurrentRequest(pmt, currentrequest);
         return true;
     }
@@ -107,7 +107,7 @@ public class BurpMacroStartDoAction implements InterfaceDoAction {
         //otp.setOptData(pmt);// pass ParmGenMacroTrace to OneThreadProcessor's optdata 
         
         actionlist.add((t, o) -> {
-            return performAction(pmt, currentrequest, executedmacros);
+            return performAction(o, pmt, currentrequest, executedmacros);
         });
         
         return actionlist;

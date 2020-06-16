@@ -34,8 +34,6 @@ public class ParmGenHeader implements DeepClone {
     //    Cookie: goo=tokyo <- been.i = 4
     private String key_uppername; // uppercase header name
 
-    
-    
     ParmGenHeader(int _i, String _n, String _v) {
         name = _n;
         key_uppername = _n;
@@ -81,7 +79,7 @@ public class ParmGenHeader implements DeepClone {
     @Override
     public ParmGenHeader clone() {
         try {
-            ParmGenHeader nobj = (ParmGenHeader)super.clone();
+            ParmGenHeader nobj = (ParmGenHeader) super.clone();
             nobj.copyFrom(this);
             return nobj;
         } catch (CloneNotSupportedException ex) {

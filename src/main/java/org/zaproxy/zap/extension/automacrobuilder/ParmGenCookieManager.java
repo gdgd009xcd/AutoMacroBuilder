@@ -26,12 +26,9 @@ import java.net.HttpCookie;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static org.zaproxy.zap.extension.automacrobuilder.CastUtils.castToType;
 
 /** @author daike */
 public class ParmGenCookieManager implements DeepClone {
@@ -39,10 +36,10 @@ public class ParmGenCookieManager implements DeepClone {
     private CookieStore cookiestore = null;
 
     ParmGenCookieManager() {
-       init();
+        init();
     }
-    
-    private void init(){
+
+    private void init() {
         manager = new CookieManager();
         manager.setCookiePolicy(CookiePolicy.ACCEPT_NONE);
         cookiestore = manager.getCookieStore();
@@ -62,13 +59,13 @@ public class ParmGenCookieManager implements DeepClone {
     }
 
     /**
-     * add cookie  currently no used.
-     * 
+     * add cookie currently no used.
+     *
      * @param domain
      * @param path
      * @param name
      * @param value
-     * @param isSSL 
+     * @param isSSL
      */
     public void add(String domain, String path, String name, String value, boolean isSSL) {
         URI uri = getURI(domain, path, isSSL);
@@ -171,27 +168,33 @@ public class ParmGenCookieManager implements DeepClone {
     public List<URI> getURIs() {
         return cookiestore.getURIs();
     }
-    
+
     @Override
-    public ParmGenCookieManager clone(){
+    public ParmGenCookieManager clone() {
         try {
-            ParmGenCookieManager nobj = (ParmGenCookieManager)super.clone();
+            ParmGenCookieManager nobj = (ParmGenCookieManager) super.clone();
             nobj.init();
-        
+
             List<URI> urilist = this.cookiestore.getURIs();
-            if( urilist != null ) {
-                urilist.forEach(uri -> {
-                    List<HttpCookie> cookies = this.cookiestore.get(uri);
-                    cookies.forEach(cookie -> {
-                        nobj.cookiestore.add(uri, castToType(cookie.clone()));// uri: immutable,  cookie has clone()
-                    });
-                });
+            if (urilist != null) {
+                urilist.forEach(
+                        uri -> {
+                            List<HttpCookie> cookies = this.cookiestore.get(uri);
+                            cookies.forEach(
+                                    cookie -> {
+                                        nobj.cookiestore.add(
+                                                uri,
+                                                CastUtils.castToType(
+                                                        cookie.clone())); // uri: immutable,
+                                        // cookie has clone()
+                                    });
+                        });
             }
             return nobj;
         } catch (CloneNotSupportedException ex) {
             Logger.getLogger(ParmGenCookieManager.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         return null;
     }
 }

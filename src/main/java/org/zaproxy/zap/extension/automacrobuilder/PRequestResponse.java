@@ -54,8 +54,6 @@ public class PRequestResponse implements DeepClone {
         disable = false;
     }
 
-    
-    
     public PRequestResponse(
             String h, int p, boolean ssl, byte[] binrequest, byte[] binresponse, Encode pageenc) {
         cdmc = null;
@@ -74,10 +72,10 @@ public class PRequestResponse implements DeepClone {
                 cdmc.getResponseEncode());
     }
 
-    public void setClientDependMessageContainer(ClientDependMessageContainer cdmc){
+    public void setClientDependMessageContainer(ClientDependMessageContainer cdmc) {
         this.cdmc = cdmc;
     }
-    
+
     public ClientDependMessageContainer getClientDependMessageContainer() {
         return this.cdmc;
     }
@@ -125,30 +123,30 @@ public class PRequestResponse implements DeepClone {
     public int getMacroPos() {
         return macropos;
     }
-    
+
     @Override
     public PRequestResponse clone() {
         PRequestResponse nobj = null;
         try {
-            nobj = (PRequestResponse)super.clone();
-                   //public PRequest request;
+            nobj = (PRequestResponse) super.clone();
+            // public PRequest request;
             nobj.request = this.request != null ? this.request.clone() : null;
-            //public PResponse response;
+            // public PResponse response;
             nobj.response = this.response != null ? this.response.clone() : null;
-            //String comments;
+            // String comments;
             nobj.comments = this.comments;
-            //Boolean disable = false; // ==true no execute.
+            // Boolean disable = false; // ==true no execute.
             nobj.disable = this.disable;
-            //boolean iserror = false;
+            // boolean iserror = false;
             nobj.iserror = this.iserror;
-            //int macropos = -1;
+            // int macropos = -1;
             nobj.macropos = this.macropos;
-            //private ClientDependMessageContainer cdmc = null;
+            // private ClientDependMessageContainer cdmc = null;
             nobj.cdmc = this.cdmc;
         } catch (CloneNotSupportedException ex) {
             Logger.getLogger(PRequestResponse.class.getName()).log(Level.SEVERE, null, ex);
         }
- 
+
         return nobj;
     }
 }

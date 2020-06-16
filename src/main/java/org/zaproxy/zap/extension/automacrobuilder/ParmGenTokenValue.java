@@ -39,8 +39,8 @@ public class ParmGenTokenValue implements DeepClone {
     ParmGenTokenValue(ParmGenTokenValue tv) {
         setup(tv);
     }
-    
-    private void setup(ParmGenTokenValue tv){
+
+    private void setup(ParmGenTokenValue tv) {
         url = tv.url;
         value = tv.value;
         b = tv.b;
@@ -77,9 +77,9 @@ public class ParmGenTokenValue implements DeepClone {
         int hash = Objects.hash(this.url, this.value, this.b);
         return hash;
     }
-    
+
     @Override
-    public ParmGenTokenValue clone(){
+    public ParmGenTokenValue clone() {
 
         try {
             ParmGenTokenValue nobj = (ParmGenTokenValue) super.clone();

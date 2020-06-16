@@ -43,7 +43,7 @@ public class ParmGen {
 
     private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
 
-    private static org.apache.logging.log4j.Logger logger4j =
+    private static org.apache.logging.log4j.Logger LOGGER4J =
             org.apache.logging.log4j.LogManager.getLogger();
 
     public static ParmGenTop twin = null;
@@ -69,7 +69,7 @@ public class ParmGen {
     private ArrayList<AppParmsIni> loadGSON(String filename) {
         //
         List<Exception> exlist = new ArrayList<>(); // Exception list
-        logger4j.info("loadGSON called.");
+        LOGGER4J.info("loadGSON called.");
 
         ArrayList<AppParmsIni> rlist = null;
         String pfile = filename;
@@ -88,7 +88,7 @@ public class ParmGen {
                 fr.close();
                 fr = null;
             } catch (Exception e) {
-                logger4j.error("File Open/RW error", e);
+                LOGGER4J.error("File Open/RW error", e);
                 exlist.add(e);
             } finally {
                 if (fr != null) {
@@ -97,7 +97,7 @@ public class ParmGen {
                         fr = null;
                     } catch (Exception e) {
                         fr = null;
-                        logger4j.error("File Close error", e);
+                        LOGGER4J.error("File Close error", e);
                         exlist.add(e);
                     }
                 }
@@ -127,12 +127,12 @@ public class ParmGen {
                 rlist = null;
             }
         } catch (Exception e) { // JSON file load failed.
-            logger4j.error("Parse error", e);
+            LOGGER4J.error("Parse error", e);
             exlist.add(e);
             rlist = null;
         }
 
-        logger4j.info("---------AppPermGen JSON load END ----------");
+        LOGGER4J.info("---------AppPermGen JSON load END ----------");
         return rlist;
     }
 
@@ -179,7 +179,7 @@ public class ParmGen {
             org_contarray = org_request.getBinBody();
             org_content_iso8859 = org_request.getISO8859BodyString();
         }
-        ParmVars.plog.debuglog(1, "method[" + method + "] request[" + url + "]");
+        LOGGER4J.debug("method[" + method + "] request[" + url + "]");
         int qpos = -1;
         String[] nvcont = null;
         switch (av.getTypeInt()) {
@@ -192,8 +192,8 @@ public class ParmGen {
                     String o_path = nvcont[1];
                     if (n_path != null && !path.equals(n_path)) {
                         url = n_path;
-                        ParmVars.plog.debuglog(1, " Original path[" + path + "]");
-                        ParmVars.plog.debuglog(1, " Modified path[" + n_path + "]");
+                        LOGGER4J.debug(" Original path[" + path + "]");
+                        LOGGER4J.debug(" Modified path[" + n_path + "]");
                         // request.setURL(new HttpUrl(url));
                         prequest.setURL(url);
                         if (org_request != null
@@ -218,8 +218,8 @@ public class ParmGen {
                         String o_query = nvcont[1];
                         if (n_query != null && !query.equals(n_query)) {
                             url = path + '?' + n_query;
-                            ParmVars.plog.debuglog(1, " Original query[" + query + "]");
-                            ParmVars.plog.debuglog(1, " Modified path[" + n_query + "]");
+                            LOGGER4J.debug(" Original query[" + query + "]");
+                            LOGGER4J.debug(" Modified path[" + n_query + "]");
                             // request.setURL(new HttpUrl(url));
                             prequest.setURL(url);
                             if (org_request != null
@@ -273,8 +273,8 @@ public class ParmGen {
                                 String n_hval = nvcont[0];
                                 String o_hval = nvcont[1];
                                 if (n_hval != null && !hval.equals(n_hval)) {
-                                    ParmVars.plog.debuglog(1, " Original header[" + hval + "]");
-                                    ParmVars.plog.debuglog(1, " Modified header[" + n_hval + "]");
+                                    LOGGER4J.debug(" Original header[" + hval + "]");
+                                    LOGGER4J.debug(" Modified header[" + n_hval + "]");
                                     String htitle = nv[0] + ": ";
                                     n_hval = n_hval.substring(htitle.length());
                                     prequest.setHeader(been.i, nv[0], n_hval);
@@ -297,7 +297,7 @@ public class ParmGen {
             default: // body
                 if (_contarray != null) {
                     if (boundaryarray == null) { // www-url-encoded
-                        ParmVars.plog.debuglog(1, "application/x-www-form-urlencoded");
+                        LOGGER4J.debug("application/x-www-form-urlencoded");
                         String content = null;
                         try {
                             content =
@@ -320,8 +320,8 @@ public class ParmGen {
                             String neworg_content_iso8859 = nvcont[1];
 
                             if (n_content != null && !content.equals(n_content)) {
-                                ParmVars.plog.debuglog(1, " Original body[" + content + "]");
-                                ParmVars.plog.debuglog(1, " Modified body[" + n_content + "]");
+                                LOGGER4J.debug(" Original body[" + content + "]");
+                                LOGGER4J.debug(" Modified body[" + n_content + "]");
                                 try {
                                     _contarray.initParmGenBinUtil(
                                             n_content.getBytes(ParmVars.enc.getIANACharsetName()));
@@ -353,7 +353,7 @@ public class ParmGen {
                             }
                         }
                     } else { // multipart/form-data
-                        ParmVars.plog.debuglog(1, "multipart/form-data");
+                        LOGGER4J.debug("multipart/form-data");
                         ParmGenBinUtil n_array = new ParmGenBinUtil();
                         int cpos = 0;
                         int npos = -1;
@@ -388,11 +388,10 @@ public class ParmGen {
                                         if (!partcontenttypevalue.isEmpty()) {
                                             partenc = ParmVars.formdataenc;
                                             partcontenttypevalue = partcontenttypevalue.trim();
-                                            ParmVars.plog.printlog(
+                                            LOGGER4J.debug(
                                                     "form-data Contentype:["
                                                             + partcontenttypevalue
-                                                            + "]",
-                                                    true);
+                                                            + "]");
                                         }
                                     }
                                 }
@@ -417,14 +416,12 @@ public class ParmGen {
                                     if (n_partdatastr != null
                                             && partdatastr != null
                                             && !partdatastr.equals(n_partdatastr)) {
-                                        ParmVars.plog.debuglog(
-                                                1, " Original body[" + partdatastr + "]");
-                                        ParmVars.plog.debuglog(
-                                                1, " Modified body[" + n_partdatastr + "]");
+                                        LOGGER4J.debug(" Original body[" + partdatastr + "]");
+                                        LOGGER4J.debug(" Modified body[" + n_partdatastr + "]");
                                         try {
                                             n_array.concat(n_partdatastr.getBytes(partenc));
                                         } catch (UnsupportedEncodingException e) {
-                                            ParmVars.plog.printException(e);
+                                            LOGGER4J.error("n_array.concat", e);
                                             n_array.concat(n_partdatastr.getBytes());
                                         }
                                         if (org_request != null
@@ -615,7 +612,7 @@ public class ParmGen {
     }
 
     public static void clearAll() {
-        logger4j.debug("clearAll.");
+        LOGGER4J.debug("clearAll.");
         parmcsv = null;
         twin = null;
     }
@@ -697,14 +694,13 @@ public class ParmGen {
                             Matcher ctypematcher = ctypepattern.matcher(content_type);
                             if (ctypematcher.find()) {
                                 String Boundary = ctypematcher.group(1);
-                                ParmVars.plog.debuglog(1, "boundary=" + Boundary);
+                                LOGGER4J.debug("boundary=" + Boundary);
                                 Boundary = "--" + Boundary; //
                                 boundaryarray = new ParmGenBinUtil(Boundary.getBytes());
                             }
                             hasboundary = true;
                         }
-                        ParmVars.plog.debuglog(
-                                0, "***URL正規表現[" + pini.getUrl() + "]マッチパターン[" + url + "]");
+                        LOGGER4J.debug("***URL正規表現[" + pini.getUrl() + "]マッチパターン[" + url + "]");
                         if (contarray == null) {
 
                             ParmGenBinUtil warray = new ParmGenBinUtil(requestbytes);
@@ -727,9 +723,9 @@ public class ParmGen {
                         if (parmlist == null || parmlist.isEmpty()) {
                             //
                         }
-                        ParmVars.plog.debuglog(1, "start");
+                        LOGGER4J.debug("start");
                         while (pt.hasNext()) {
-                            ParmVars.plog.debuglog(1, "loopin");
+                            LOGGER4J.debug("loopin");
                             AppValue av = pt.next();
                             if (av.isEnabled()) {
                                 if ((tempreq =
@@ -762,7 +758,7 @@ public class ParmGen {
                             }
                         }
                         pmt.setError(iserror);
-                        ParmVars.plog.debuglog(1, "end");
+                        LOGGER4J.debug("end");
                     }
                 }
             }
@@ -780,7 +776,7 @@ public class ParmGen {
                     try {
                         prequest.setBody(contarray.getBytes());
                     } catch (Exception e) {
-                        ParmVars.plog.printException(e);
+                        LOGGER4J.error("prequest.setBody", e);
                     }
                 }
                 if (ParmVars.ProxyAuth.length() > 0) {
@@ -811,14 +807,14 @@ public class ParmGen {
                         if (av.isEnabled() && av.getResTypeInt() >= AppValue.V_REQTRACKBODY) {
                             fetched = FetchRequest(prequest, pini, av, row, col);
                             if (fetched) {
-                                //pt.set(av); no need set
+                                // pt.set(av); no need set
                                 apvIsUpdated = true;
                             }
                         }
                         col++;
                     }
                     if (apvIsUpdated) {
-                        //it.set(pini); no need set
+                        // it.set(pini); no need set
                     }
                 }
                 row++;
@@ -861,7 +857,7 @@ public class ParmGen {
                             AppValue av = pt.next();
                             if (av.isEnabled()) {
                                 if (ParseResponse(url, presponse, pini, av, row, col)) {
-                                    //pt.set(av); no need set
+                                    // pt.set(av); no need set
                                     updtcnt++;
                                     apvIsUpdated = true;
                                 }
@@ -869,7 +865,7 @@ public class ParmGen {
                             col++;
                         }
                         if (apvIsUpdated) {
-                            //it.set(pini); no need set
+                            // it.set(pini); no need set
                         }
                     }
                     row++;
@@ -877,8 +873,7 @@ public class ParmGen {
             }
             // ### skip end.
         } else {
-            ParmVars.plog.debuglog(
-                    0,
+            LOGGER4J.debug(
                     "ResponseRun skipped url[" + url + "] MimeType[" + res_contentMimeType + "]");
         }
 

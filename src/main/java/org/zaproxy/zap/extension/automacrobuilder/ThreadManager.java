@@ -1,7 +1,21 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Zed Attack Proxy (ZAP) and its related class files.
+ *
+ * ZAP is an HTTP/HTTPS proxy for assessing web application security.
+ *
+ * Copyright 2020 The ZAP Development Team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.zaproxy.zap.extension.automacrobuilder;
 
@@ -14,6 +28,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
+ * ThreadManager
  *
  * @author daike
  */
@@ -21,25 +36,29 @@ public class ThreadManager {
     
     private static org.apache.logging.log4j.Logger LOGGER4J =
             org.apache.logging.log4j.LogManager.getLogger();
-    
-    static final long TEST_DIVIDER = 1;// release: 1 TEST: 10
-    
-    static final int MAX_PROCESS = 8;// Maximum number of concurrent process(sequece of InterfaceDoActions which run in getSequenceNo ascent order) 
-    
-    static final long MAX_WAIT_TIME = 30000 / TEST_DIVIDER;// Wait up to 30 seconds between httpsend and receive time
-    
-    static final long MAX_GIVE_UP_WAIT_TIME = 180 * 1000 / TEST_DIVIDER;// whole process wait until 3 minutes
-    
+
+    static final long TEST_DIVIDER = 1; // release: 1 TEST: 10
+
+    static final int MAX_PROCESS =
+            8; // Maximum number of concurrent process(sequece of InterfaceDoActions which run in
+    // getSequenceNo ascent order) 
+
+    static final long MAX_WAIT_TIME =
+            30000 / TEST_DIVIDER; // Wait up to 30 seconds between httpsend and receive time
+
+    static final long MAX_GIVE_UP_WAIT_TIME =
+            180 * 1000 / TEST_DIVIDER; // whole process wait until 3 minutes
+
     static final long RECYCLE_INTERVAL_TIME = MAX_WAIT_TIME;
-    
+
     private long thcount = 0;
-    
+
     private Map<Long, OneThreadProcessor> pmap = null;
-    
+
     private Map<String, Long> results = null;
-    
+
     private List<InterfaceEndAction> actionlist = null;
-    
+
     // debug params used when LOGGER4J.isDebugEnabled() is true
     private Long debug_endedcount;// total isEnd()  thread count
     private Long debug_totalcount;// total thread counter
@@ -252,12 +271,13 @@ public class ThreadManager {
         OneThreadProcessor endp = null;
         boolean aborted = false;
         
-        
         try {
             thcount--;
             if (!p.wasInterrupted() && action != null && !p.isAborted()) {// interrupt or abnormal then endaction omit.
                 if(doendaction) {
                     actionlist.add(action.endAction(this, p));
+                } else {
+                    LOGGER4J.warn("endaction is null id:" + p.getid());
                 }
             } else {
                 aborted = true;
@@ -273,7 +293,7 @@ public class ThreadManager {
                 LOGGER4J.debug("endProcess action end id:" + p.getid());
             }
         } catch (Exception ex) {
-            LOGGER4J.error("during endProcess id:" + p.getid(), ex);
+            LOGGER4J.error("endProcess failed id:" + p.getid(), ex);
         } finally {
             
             p.Ended();

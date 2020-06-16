@@ -42,13 +42,12 @@ public class ParmGenGSONDecoder implements GsonParserListener, DeepClone {
     public ParmGenGSONDecoder(String jsondata) {
         init(jsondata);
     }
-    
-    private void init(String jsondata){
+
+    private void init(String jsondata) {
         this.jsondata = jsondata;
         gson = new Gson();
         parse(jsondata);
     }
-        
 
     private void parse(String jsondata) {
         try {
@@ -178,25 +177,25 @@ public class ParmGenGSONDecoder implements GsonParserListener, DeepClone {
 
         return true;
     }
-    
-    @Override 
-    public ParmGenGSONDecoder clone(){
+
+    @Override
+    public ParmGenGSONDecoder clone() {
 
         try {
-            ParmGenGSONDecoder nobj = (ParmGenGSONDecoder)super.clone();
+            ParmGenGSONDecoder nobj = (ParmGenGSONDecoder) super.clone();
             nobj.init(this.jsondata);
             // List<ParmGenToken> tknlist = null;
             nobj.tknlist = ListDeepCopy.listDeepCopyParmGenToken(this.tknlist);
-            //HashMap<String, Integer> samenamehash = null;
+            // HashMap<String, Integer> samenamehash = null;
             nobj.samenamehash = this.samenamehash != null ? new HashMap<>(this.samenamehash) : null;
-            //HashMap<ParmGenTokenKey, ParmGenTokenValue> map = null;
+            // HashMap<ParmGenTokenKey, ParmGenTokenValue> map = null;
             nobj.map = HashMapDeepCopy.hashMapDeepCopyParmGenHashMapSuper(this.map);
 
             return nobj;
         } catch (CloneNotSupportedException ex) {
             Logger.getLogger(ParmGenGSONDecoder.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         return null;
     }
 }

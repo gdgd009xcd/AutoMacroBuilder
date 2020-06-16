@@ -155,7 +155,7 @@ public class BurpExtenderDoAction implements InterfaceDoAction
                                 switch(pmt.getState()){
                                     case ParmGenMacroTrace.PMT_CURRENT_BEGIN://カレントリクエストが終了。
                                         pmt.endAfterCurrentRequest(prs);
-                                        pmt.startPostMacro();
+                                        pmt.startPostMacro(otp);
                                         break;
                                     default:
                                         break;
@@ -248,7 +248,7 @@ public class BurpExtenderDoAction implements InterfaceDoAction
         ParmGenMacroTrace pmtoriginal = ParmGenMacroTraceProvider.getRunningInstance(pmt.getThreadId());
         if(pmtoriginal == pmt) {
             InterfaceEndAction action = () -> {
-                ParmGenMacroTraceProvider.getOriginalBase().updaterlist(pmt);
+                ParmGenMacroTraceProvider.getOriginalBase().updateOriginalBase(pmt);
                 ParmGenMacroTraceProvider.removeEndInstance(pmt.getThreadId());
             };
             return action;

@@ -1,14 +1,28 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Zed Attack Proxy (ZAP) and its related class files.
+ *
+ * ZAP is an HTTP/HTTPS proxy for assessing web application security.
+ *
+ * Copyright 2020 The ZAP Development Team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.zaproxy.zap.extension.automacrobuilder;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
+ * OneThreadProcessor
  *
  * @author daike
  */
@@ -27,79 +41,70 @@ public class OneThreadProcessor {
     private int stage = -1;
     private int seqno;
     private Object optdata = null;
-    
-   
+
     /**
      * Newly create doaction.
-     * 
-     *  it call void startAction(ThreadManager tm, OneThreadProcessor otp)
-     * 
+     *
+     * <p>it call void startAction(ThreadManager tm, OneThreadProcessor otp)
+     *
      * @param tm
      * @param th
-     * @param doaction 
+     * @param doaction
      */
-    public OneThreadProcessor(ThreadManager tm, Thread th, InterfaceDoActionProvider provider){
+    public OneThreadProcessor(ThreadManager tm, Thread th, InterfaceDoActionProvider provider) {
         this.doaction = provider.getDoActionInstance();
         this.seqno = provider.getSequnceNo();
         this.th = th;
         this.id = th.getId();
         this.tm = tm;
         LOGGER4J.info("ProcessCreated:" + id);
-        this.isend =false;
+        this.isend = false;
         this.isaborted = false;
         this.starttime = 0;
-        
+
         this.isinterrupted = false;
 
         this.actionlist = doaction.startAction(tm, this);
-        
-        
-     
-        
-        
-
     }
-    
-    public Thread getThread(){
+
+    public Thread getThread() {
         return this.th;
     }
-    
+
     /**
      * set initial parameter for RECYCLE doaction.
-     * 
-     * it call void startAction(ThreadManager tm, OneThreadProcessor otp)
-     * 
-     * @param th 
+     *
+     * <p>it call void startAction(ThreadManager tm, OneThreadProcessor otp)
+     *
+     * @param th
      */
-    public void setNewThread(Thread th, InterfaceDoActionProvider provider){
+    public void setNewThread(Thread th, InterfaceDoActionProvider provider) {
         this.doaction = provider.getDoActionInstance();
         this.seqno = provider.getSequnceNo();
         this.th = th;
         this.id = th.getId();
         this.tm = tm;
         LOGGER4J.info("ProcessReplaced:" + id);
-        this.isend =false;
+        this.isend = false;
         this.isaborted = false;
         this.starttime = 0;
-        
-        this.isinterrupted = false;
-        
-        this.actionlist = this.doaction.startAction(tm, this);
-        
 
+        this.isinterrupted = false;
+
+        this.actionlist = this.doaction.startAction(tm, this);
     }
-    
-    public void startTimer(){
-        this.starttime = System.currentTimeMillis ();
+
+    public void startTimer() {
+        this.starttime = System.currentTimeMillis();
     }
-    
-    public void endTimer(){
+
+    public void endTimer() {
         this.starttime = 0;
     }
-    
-    protected long howManyWaitTime(){
+
+    protected long howManyWaitTime() {
         long timecache = this.starttime;
-        if ( timecache != 0 ) {
+        if (timecache != 0) {
             // DO NOT USE this.starttime IN THIS BLOCK.
             // this.starttime parameter may be modified by other thread.
             long distc = System.currentTimeMillis() - timecache;
@@ -107,90 +112,94 @@ public class OneThreadProcessor {
         }
         return 0;
     }
-    
 
-    public void setAborted(){
+    public void setAborted() {
         this.isaborted = true;
     }
-    
-    public boolean isAborted(){
+
+    public boolean isAborted() {
         return this.isaborted;
     }
-    
-    public void setInterrupt(){
+
+    public void setInterrupt() {
         this.th.interrupt();
         this.isinterrupted = true;
     }
-    
-    public boolean wasInterrupted(){
-        if(Thread.currentThread().isInterrupted()){
+
+    public boolean wasInterrupted() {
+        if (Thread.currentThread().isInterrupted()) {
             this.isinterrupted = true;
         }
         return this.isinterrupted;
     }
-        
-    public void doProcess(int n){
+
+    public void doProcess(int n) {
         // ================== A) thread local zone start.
         boolean doendaction = false;
         this.stage = n;
-        try{
-            InterfaceAction action = actionlist.get(n);
-            if ( action != null ) {
-                doendaction = action.action(this.tm, this);
+        try {
+            if (actionlist != null) {
+                InterfaceAction action = actionlist.get(n);
+                if (action != null) {
+                    doendaction = action.action(this.tm, this);
+                } else {
+                    LOGGER4J.warn("action is null id:" + id);
+                }
+            } else {
+                LOGGER4J.warn("actionlist is null id:" + id);
             }
-        } catch (Exception ex){
-            LOGGER4J.error("id:" + id , ex);
+        } catch (Exception ex) {
+            setAborted();
+            LOGGER4J.error("action failed id:" + id, ex);
         } finally {
             terminated(doendaction);
         }
     }
-    
-    public long getid(){
+
+    public long getid() {
         return this.id;
     }
-    
+
     /**
-     * run InterfaceEndAction endAction 
-     * 
-     * @param noendaction false 
-     * @return 
+     * run InterfaceEndAction endAction
+     *
+     * @param noendaction false
+     * @return
      */
-    public boolean terminated(boolean doendaction){
-      // ================== A) thread local zone end.
+    public boolean terminated(boolean doendaction) {
+        // ================== A) thread local zone end.
         // This method should call the following function at the very end:
         boolean aborted = this.tm.endProcess(this, this.doaction, doendaction);
-        LOGGER4J.info("Process terminated:" + id );
+        LOGGER4J.info("Process terminated:" + id);
         // thread local zone ended..
         return aborted;
     }
-    
 
-    
-    protected void Ended(){
+    protected void Ended() {
         this.isend = true;
     }
-    
-    public boolean isEnd(){
+
+    public boolean isEnd() {
         return this.isend;
     }
-    
-    public void addAction(InterfaceAction action){
-        actionlist.add(action);
+
+    public void addAction(InterfaceAction action) {
+        if (actionlist != null) actionlist.add(action);
     }
 
-    public int getStage(){
+    public int getStage() {
         return this.stage;
     }
-    
-    public int getSequenceNo(){
+
+    public int getSequenceNo() {
         return this.seqno;
     }
-    
-    public <T> void setOptData(T d){
+
+    public <T> void setOptData(T d) {
         this.optdata = d;
     }
-    
-    public <T> T getOptData(){
+
+    public <T> T getOptData() {
         return CastUtils.castToType(this.optdata);
     }
 }

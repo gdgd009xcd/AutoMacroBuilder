@@ -51,13 +51,13 @@ public class ParmGenTrackingParam implements DeepClone {
     public int getResponseStepNo() {
         return responseStepNo;
     }
-    
+
     @Override
-    public ParmGenTrackingParam clone(){
+    public ParmGenTrackingParam clone() {
         try {
-            ParmGenTrackingParam nobj = (ParmGenTrackingParam)super.clone();
+            ParmGenTrackingParam nobj = (ParmGenTrackingParam) super.clone();
             nobj.init();
-        
+
             nobj.cachevalue = this.cachevalue;
             nobj.responseStepNo = this.responseStepNo;
 

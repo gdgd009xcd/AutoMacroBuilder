@@ -41,7 +41,7 @@ import java.util.regex.Matcher;
 // FetchResponse初期化
 //
 
-class FetchResponseVal implements DeepClone{
+class FetchResponseVal implements DeepClone {
     //
 
     private static org.apache.logging.log4j.Logger LOGGER4J =
@@ -52,12 +52,12 @@ class FetchResponseVal implements DeepClone{
     // ====================== copy per thread members begin ===============
     // Key: String token  int toStepNo Val: distance = responseStepNo - currentStepNo
     private HashMap<ParmGenTokenKey, Integer> distances;
-    
+
     private ParmGenTrackKeyPerThread trackkeys;
     // ====================== copy per thread members end =================
-    
+
     private ParmGenMacroTrace pmt;
-            
+
     //
     FetchResponseVal(ParmGenMacroTrace pmt) {
         init(pmt);
@@ -65,8 +65,8 @@ class FetchResponseVal implements DeepClone{
 
     /**
      * for internal use
-     * 
-     * @param pmt 
+     *
+     * @param pmt
      */
     private void init(ParmGenMacroTrace pmt) {
         this.pmt = pmt;
@@ -78,9 +78,9 @@ class FetchResponseVal implements DeepClone{
         if (_enc == null) {
             _enc = Encode.UTF_8;
         }
-        initLocVal();   
+        initLocVal();
     }
-    
+
     private String strrowcol(int r, int c) {
         return Integer.toString(r) + "," + Integer.toString(c);
     }
@@ -98,8 +98,7 @@ class FetchResponseVal implements DeepClone{
     }
 
     public void clearCachedLocVal() {
-        if(trackkeys != null)
-            trackkeys.clear();
+        if (trackkeys != null) trackkeys.clear();
     }
 
     public void clearDistances() {
@@ -178,10 +177,10 @@ class FetchResponseVal implements DeepClone{
     }
 
     /** set response's tracking token to TrackJarFactory */
-    private UUID setLocVal(UUID k, int currentStepNo, int fromStepNo, String val, boolean overwrite) {
+    private UUID setLocVal(
+            UUID k, int currentStepNo, int fromStepNo, String val, boolean overwrite) {
         ParmGenTrackingParam tkparam = trackkeys.get(k);
-        if (tkparam
-                == null) { // if tkparam has No exist, then create tkparam with new unique key
+        if (tkparam == null) { // if tkparam has No exist, then create tkparam with new unique key
             // key
             tkparam = trackkeys.create(k);
         }
@@ -251,12 +250,12 @@ class FetchResponseVal implements DeepClone{
                                             + matchval;
                             printlog(comments);
                             pmt.addComments(comments);
-                                    setLocVal(
-                                            av.getTrackKey(),
-                                            currentStepNo,
-                                            fromStepNo,
-                                            matchval,
-                                            overwrite);
+                            setLocVal(
+                                    av.getTrackKey(),
+                                    currentStepNo,
+                                    fromStepNo,
+                                    matchval,
+                                    overwrite);
                             return true;
                         }
                     } else {
@@ -304,12 +303,12 @@ class FetchResponseVal implements DeepClone{
                                                 + matchval;
                                 printlog(comments);
                                 pmt.addComments(comments);
-                                        setLocVal(
-                                                av.getTrackKey(),
-                                                currentStepNo,
-                                                fromStepNo,
-                                                matchval,
-                                                overwrite);
+                                setLocVal(
+                                        av.getTrackKey(),
+                                        currentStepNo,
+                                        fromStepNo,
+                                        matchval,
+                                        overwrite);
                                 return true;
                             } else {
                                 comments =
@@ -408,13 +407,12 @@ class FetchResponseVal implements DeepClone{
 
                         if (ONETIMEPASSWD != null && !ONETIMEPASSWD.isEmpty()) { // value値nullは追跡しない
 
-
-                                    setLocVal(
-                                            av.getTrackKey(),
-                                            currentStepNo,
-                                            fromStepNo,
-                                            ONETIMEPASSWD,
-                                            overwrite);
+                            setLocVal(
+                                    av.getTrackKey(),
+                                    currentStepNo,
+                                    fromStepNo,
+                                    ONETIMEPASSWD,
+                                    overwrite);
                             comments =
                                     "*****FETCHRESPONSE body key/r,c:"
                                             + av.getTrackKey()
@@ -471,12 +469,12 @@ class FetchResponseVal implements DeepClone{
                                 }
                                 String ONETIMEPASSWD = v.replaceAll(",", "%2C");
 
-                                        setLocVal(
-                                                av.getTrackKey(),
-                                                currentStepNo,
-                                                fromStepNo,
-                                                ONETIMEPASSWD,
-                                                overwrite);
+                                setLocVal(
+                                        av.getTrackKey(),
+                                        currentStepNo,
+                                        fromStepNo,
+                                        ONETIMEPASSWD,
+                                        overwrite);
                                 String comments =
                                         "*****FETCHRESPONSE auto track body key/r,c,p:"
                                                 + av.getTrackKey()
@@ -546,12 +544,7 @@ class FetchResponseVal implements DeepClone{
                                         + nv[1];
                         printlog(comments);
                         pmt.addComments(comments);
-                                setLocVal(
-                                        av.getTrackKey(),
-                                        currentStepNo,
-                                        fromStepNo,
-                                        nv[1],
-                                        overwrite);
+                        setLocVal(av.getTrackKey(), currentStepNo, fromStepNo, nv[1], overwrite);
                         return true;
                     } else {
                         comments =
@@ -580,7 +573,7 @@ class FetchResponseVal implements DeepClone{
                 Matcher matcher = av.getPattern_resURL().matcher(url);
                 if (matcher.find()) {
                     // printlog("*****FETCHRESPONSE URL match:" + url);
-                    ParmVars.plog.debuglog(0, " FETCH RESPONSE URL matched:[" + url + "]");
+                    LOGGER4J.debug(" FETCH RESPONSE URL matched:[" + url + "]");
                     return true;
                 }
                 // printlog("urlmatch find failed:r,c,url, rmax=" + strrowcol(r,c) + "," + url + ","
@@ -592,15 +585,16 @@ class FetchResponseVal implements DeepClone{
         }
         return false;
     }
-    
+
     @Override
-    public FetchResponseVal clone(){
-        FetchResponseVal  nobj = null;
+    public FetchResponseVal clone() {
+        FetchResponseVal nobj = null;
         try {
             nobj = (FetchResponseVal) super.clone();
             nobj._enc = this._enc;
             nobj.pmt = this.pmt;
-            nobj.distances = HashMapDeepCopy.hashMapDeepCopyParmGenTokenKeyKIntegerV(this.distances);
+            nobj.distances =
+                    HashMapDeepCopy.hashMapDeepCopyParmGenTokenKeyKIntegerV(this.distances);
             nobj.trackkeys = this.trackkeys.clone();
             return nobj;
         } catch (CloneNotSupportedException ex) {

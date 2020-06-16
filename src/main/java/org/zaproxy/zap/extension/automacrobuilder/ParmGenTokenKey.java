@@ -38,8 +38,8 @@ public class ParmGenTokenKey implements DeepClone {
     ParmGenTokenKey(ParmGenTokenKey tk) {
         setup(tk);
     }
-    
-    private void setup(ParmGenTokenKey tk){
+
+    private void setup(ParmGenTokenKey tk) {
         tokentype = tk.tokentype;
         name = tk.name;
         fcnt = tk.fcnt;
@@ -80,9 +80,9 @@ public class ParmGenTokenKey implements DeepClone {
         // name is case-sensitive.
         return Objects.hash(tokentype, name, fcnt);
     }
-    
+
     @Override
-    public ParmGenTokenKey clone(){
+    public ParmGenTokenKey clone() {
         try {
             ParmGenTokenKey nobj = (ParmGenTokenKey) super.clone();
             nobj.setup(this);

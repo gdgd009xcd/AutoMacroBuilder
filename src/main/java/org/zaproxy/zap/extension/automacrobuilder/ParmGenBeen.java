@@ -31,8 +31,8 @@ public class ParmGenBeen implements DeepClone {
 
     // ...etc.
     ParmGenBeen() {}
-    
-    private void copyparams(ParmGenBeen sobj){
+
+    private void copyparams(ParmGenBeen sobj) {
         this.v = sobj.v;
         this.i = sobj.i;
         this.b = sobj.b;
@@ -42,12 +42,12 @@ public class ParmGenBeen implements DeepClone {
     public ParmGenBeen clone() {
         ParmGenBeen nobj = null;
         try {
-            nobj = (ParmGenBeen)super.clone();
+            nobj = (ParmGenBeen) super.clone();
             nobj.copyparams(this);
         } catch (CloneNotSupportedException ex) {
             Logger.getLogger(ParmGenBeen.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         return nobj;
     }
 }

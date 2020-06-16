@@ -20,15 +20,11 @@
 package org.zaproxy.zap.extension.automacrobuilder;
 
 import java.net.HttpCookie;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Queue;
 import org.zaproxy.zap.extension.automacrobuilder.GSONSaveObject.PRequestResponses;
 import org.zaproxy.zap.extension.automacrobuilder.generated.MacroBuilderUI;
 import org.zaproxy.zap.extension.automacrobuilder.mdepend.ClientDependent;
@@ -36,12 +32,13 @@ import org.zaproxy.zap.extension.automacrobuilder.mdepend.ClientDependent;
 /** @author daike */
 public class ParmGenMacroTrace extends ClientDependent {
 
-    private static org.apache.logging.log4j.Logger LOGGER4J = org.apache.logging.log4j.LogManager.getLogger();
-    
-    //private LockInstance locker = null;
-    
+    private static org.apache.logging.log4j.Logger LOGGER4J =
+            org.apache.logging.log4j.LogManager.getLogger();
+
+    // private LockInstance locker = null;
+
     MacroBuilderUI ui = null;
-    
+
     // ============== instance unique members(copy per thread) BEGIN ==========
 
     private List<PRequestResponse> rlist = null; // マクロ実行後の全リクエストレスポンス
@@ -53,15 +50,17 @@ public class ParmGenMacroTrace extends ClientDependent {
 
     private ParmGenCookieManager cookieMan = null; // cookie manager has DeepCloneable
 
+    PRequestResponse toolbaseline = null; // single shot request tool  baseline request
+    // such as Repeater. when mutithread scan, this parameter is null.
+
     // ============== instance unique members(copy per thread) END ==========
-    
-    private List<PRequestResponse> savelist = null;// scannned requestresponse results.
 
-    long threadid = -1;// thread id
+    private List<PRequestResponse> savelist = null; // scannned requestresponse results.
 
-    PRequestResponse toolbaseline = null; // single shot request tool  baseline request such as Repeater. when mutithread scan, this parameter is null. 
+    long threadid = -1; // thread id
 
-    PRequestResponse postmacro_RequestResponse = null;// after startPostMacro, this value has last RequestResponse.
+    PRequestResponse postmacro_RequestResponse =
+            null; // after startPostMacro, this value has last RequestResponse.
 
     ListIterator<PRequestResponse> oit = null; // オリジナル
     ListIterator<PRequestResponse> cit = null; // 実行
@@ -86,10 +85,9 @@ public class ParmGenMacroTrace extends ClientDependent {
     public static final int PMT_POSTMACRO_NULL = 6; // 後処理マクロレスポンスnull
 
     private int stepno = -1; // 実行中のリクエスト番号
-    
+
     private ParmGenTWait TWaiter = null;
     private int waittimer = 0; // 実行間隔(msec)
-    
 
     public String state_debugprint() {
         String msg = "PMT_UNKNOWN";
@@ -122,45 +120,43 @@ public class ParmGenMacroTrace extends ClientDependent {
         return msg;
     }
 
-    public ParmGenMacroTrace(/*LockInstance locker*/) {
-        //this.locker = locker;
-    }
+    public ParmGenMacroTrace() {}
 
     /**
      * Get copy of this instance for scan
-     * 
-     * @return 
+     *
+     * @return
      */
-   public ParmGenMacroTrace getScanInstance(long tid){
+    public ParmGenMacroTrace getScanInstance(long tid) {
         ParmGenMacroTrace nobj = new ParmGenMacroTrace();
         nobj.threadid = tid;
-        nobj.rlist = this.rlist;//reference
-        nobj.originalrlist = this.originalrlist;// reference
-        nobj.selected_request = this.selected_request;//specified scan target request
-        nobj.fetchResVal = this.fetchResVal != null ? this.fetchResVal.clone() : null;//deepclone
-        nobj.cookieMan = this.cookieMan != null ? this.cookieMan.clone() : null;//deepclone
+        nobj.rlist = this.rlist; // reference
+        nobj.originalrlist = this.originalrlist; // reference
+        nobj.selected_request = this.selected_request; // specified scan target request
+        nobj.fetchResVal = this.fetchResVal != null ? this.fetchResVal.clone() : null; // deepclone
+        nobj.cookieMan = this.cookieMan != null ? this.cookieMan.clone() : null; // deepclone
         nobj.savelist = new ArrayList<>();
-        nobj.toolbaseline = this.toolbaseline !=null ? this.toolbaseline.clone(): null;
+        nobj.toolbaseline = this.toolbaseline != null ? this.toolbaseline.clone() : null;
         nobj.MBCookieUpdate = this.MBCookieUpdate; // ==true Cookie更新
         nobj.MBCookieFromJar = this.MBCookieFromJar; // ==true 開始時Cookie.jarから引き継ぐ
         nobj.MBFinalResponse = this.MBFinalResponse; // ==true 結果は最後に実行されたマクロのレスポンス
         nobj.MBResetToOriginal = this.MBResetToOriginal; // ==true オリジナルリクエストを実行。
         nobj.MBsettokencache = this.MBsettokencache; // 開始時tokenキャッシュ
-        nobj.MBreplaceCookie = this.MBreplaceCookie; // ==true Cookie引き継ぎ置き換え == false Cookie overwrite
+        nobj.MBreplaceCookie =
+                this.MBreplaceCookie; // ==true Cookie引き継ぎ置き換え == false Cookie overwrite
         nobj.MBmonitorofprocessing = this.MBmonitorofprocessing;
         nobj.MBreplaceTrackingParam = this.MBreplaceTrackingParam;
 
         nobj.waittimer = this.waittimer;
-        
-       return nobj;
-   }
-   
+
+        return nobj;
+    }
+
     //
     // setter
     //
     public void clear() {
         ParmGen.clearAll();
-        //this.locker.unlock(-1);
         macroEnded();
         rlist = null;
         originalrlist = null;
@@ -231,24 +227,23 @@ public class ParmGenMacroTrace extends ClientDependent {
         if (rlist != null && selected_request < rlist.size() && selected_request >= 0) {
             pqrs.setComments(getComments());
             pqrs.setError(isError());
-            //rlist.set(selected_request, pqrs);
+            // rlist.set(selected_request, pqrs);
             this.savelist.add(pqrs);
         }
-        //ui.updateCurrentReqRes();
+        // ui.updateCurrentReqRes();
         state = PMT_CURRENT_END;
     }
 
     /**
      * Set Current Request position number in PRequestResponse list(rlist)
-     * 
+     *
      * @param _p position number(from 0 to rlist.size()-1)
      */
     public void setCurrentRequest(int _p) {
         if (rlist != null && rlist.size() > _p) {
             selected_request = _p;
             EnableRequest(_p); // カレントリクエストは強制
-            ParmVars.plog.debuglog(
-                    0, "selected_request:" + selected_request + " rlist.size=" + rlist.size());
+            LOGGER4J.debug("selected_request:" + selected_request + " rlist.size=" + rlist.size());
         }
     }
 
@@ -322,11 +317,11 @@ public class ParmGenMacroTrace extends ClientDependent {
     }
 
     // １）前処理マクロ開始
-    public void startBeforePreMacro() {
+    public void startBeforePreMacro(OneThreadProcessor otp) {
         macroStarted();
 
         this.savelist.clear();
-        
+
         if (waittimer > 0) {
             TWaiter = new ParmGenTWait(waittimer);
         } else {
@@ -350,7 +345,7 @@ public class ParmGenMacroTrace extends ClientDependent {
             fetchResVal.clearDistances();
         }
         state = PMT_PREMACRO_BEGIN;
-        ParmVars.plog.debuglog(0, "BEGIN PreMacro");
+        LOGGER4J.debug("BEGIN PreMacro X-THREAD:" + threadid);
 
         oit = null;
         cit = null;
@@ -387,8 +382,7 @@ public class ParmGenMacroTrace extends ClientDependent {
 
                     String noresponse = "";
 
-                    ParmVars.plog.debuglog(
-                            0,
+                    LOGGER4J.debug(
                             "PreMacro StepNo:"
                                     + stepno
                                     + " "
@@ -402,7 +396,7 @@ public class ParmGenMacroTrace extends ClientDependent {
                     PRequestResponse pqrs = clientHttpRequest(ppr.request);
 
                     if (pqrs != null) {
-                        //cit.set(pqrs); // 更新
+                        // cit.set(pqrs); // 更新
                         savelist.add(pqrs);
                     }
 
@@ -412,9 +406,10 @@ public class ParmGenMacroTrace extends ClientDependent {
                 }
             }
         } catch (Exception e) {
-            ParmVars.plog.printException(e);
+            otp.setAborted();
+            LOGGER4J.error("Exception occrued X-Thread:" + threadid, e);
         }
-        ParmVars.plog.debuglog(0, "END PreMacro");
+        LOGGER4J.debug("END PreMacro X-Thread:" + threadid);
         state = PMT_PREMACRO_END;
     }
 
@@ -447,7 +442,7 @@ public class ParmGenMacroTrace extends ClientDependent {
                 String value = cookie.getValue();
                 if (value == null) value = "";
                 CookieKey cikey = new CookieKey(domain, name);
-                ParmVars.plog.debuglog(0, "Cookiekey domain:" + domain + " name=" + name);
+                LOGGER4J.debug("Cookiekey domain:" + domain + " name=" + name);
                 CookiePathValue cpvalue = new CookiePathValue(path, value);
                 ArrayList<CookiePathValue> cpvlist = cookiemap.get(cikey);
                 if (cpvlist == null) {
@@ -473,13 +468,13 @@ public class ParmGenMacroTrace extends ClientDependent {
     }
 
     // ４）後処理マクロの開始
-    public void startPostMacro() {
+    public void startPostMacro(OneThreadProcessor otp) {
         state = PMT_POSTMACRO_BEGIN;
         postmacro_RequestResponse = null;
         if (isMBFinalResponse()) {
             // 後処理マクロ　selected_request+1 ～最後まで実行。
             stepno = selected_request + 1;
-            ParmVars.plog.debuglog(0, "BEGIN PostMacro");
+            LOGGER4J.debug("BEGIN PostMacro X-Thread:" + threadid);
             try {
                 if (cit != null && oit != null) {
                     int n = stepno;
@@ -500,8 +495,7 @@ public class ParmGenMacroTrace extends ClientDependent {
                             ppr = opr;
                         }
 
-                        ParmVars.plog.debuglog(
-                                0,
+                        LOGGER4J.debug(
                                 "PostMacro StepNo:"
                                         + stepno
                                         + " "
@@ -509,18 +503,21 @@ public class ParmGenMacroTrace extends ClientDependent {
                                         + " "
                                         + ppr.request.method
                                         + " "
-                                        + ppr.request.url);
+                                        + ppr.request.url
+                                        + " X-Thread:"
+                                        + threadid);
                         ppr.request.setThreadId2CustomHeader(threadid);
                         PRequestResponse pqrs = clientHttpRequest(ppr.request);
                         if (pqrs != null) {
                             postmacro_RequestResponse = pqrs;
-                            //cit.set(pqrs); // 更新
+                            // cit.set(pqrs); // 更新
                             this.savelist.add(pqrs);
                         }
                     }
                 }
             } catch (Exception ex) {
-                ParmVars.plog.printException(ex);
+                otp.setAborted();
+                LOGGER4J.error("Exception occur X-Thread:" + threadid, ex);
             }
         }
         cit = null;
@@ -530,7 +527,7 @@ public class ParmGenMacroTrace extends ClientDependent {
             state = PMT_POSTMACRO_NULL;
         }
 
-        ParmVars.plog.debuglog(0, "END PostMacro");
+        LOGGER4J.debug("END PostMacro X-Thread:" + threadid);
     }
 
     byte[] getPostMacroRequest() {
@@ -588,31 +585,43 @@ public class ParmGenMacroTrace extends ClientDependent {
         } else {
             originalrlist.addAll(new ArrayList<PRequestResponse>(_rlist));
         }
-        ParmVars.plog.debuglog(0, "setRecords:" + rlist.size() + "/" + originalrlist.size());
+        LOGGER4J.debug("setRecords:" + rlist.size() + "/" + originalrlist.size());
     }
 
-    public void updaterlist(ParmGenMacroTrace pmt){
+    /**
+     * Update OriginalBase
+     *
+     * @param pmt
+     */
+    public void updateOriginalBase(ParmGenMacroTrace pmt) {
         int osiz = this.rlist != null ? this.rlist.size() : 0;
         int ssiz = pmt.savelist != null ? pmt.savelist.size() : 0;
-        if ( osiz == ssiz ) {// if same size then normal end. different size then abnormal, so update is omitted.
+        if (osiz == ssiz) { // if same size then normal end. different size then abnormal,
+            // so update is omitted.
             this.rlist = pmt.savelist;
             this.ui.updaterlist(this.rlist);
+            // private FetchResponseVal fetchResVal = null; // token cache  has DeepCloneable
+            this.fetchResVal = pmt.fetchResVal;
+            // private ParmGenCookieManager cookieMan = null; // cookie manager has DeepCloneable
+            this.cookieMan = pmt.cookieMan;
+            // PRequestResponse toolbaseline = null;
+            this.toolbaseline = pmt.toolbaseline;
             LOGGER4J.debug("result update succeeded. size:" + ssiz);
         } else {
             LOGGER4J.warn("result update failed  osiz:" + osiz + "!=ssiz:" + ssiz);
         }
     }
-    
+
     void macroStarted() {
-        ParmVars.plog.debuglog(0, "<--Macro Started.-->");
-        //this.threadid = this.locker.lock();
+        LOGGER4J.debug("<--Macro Started.--> X-Thread:" + threadid);
+        // this.threadid = this.locker.lock();
     }
 
     public void macroEnded() {
         nullState();
-        //this.locker.unlock(this.threadid);
-        
-        ParmVars.plog.debuglog(0, "<--Macro Complete Ended.-->");
+        // this.locker.unlock(this.threadid);
+
+        LOGGER4J.debug("<--Macro Complete Ended.--> X-Thread:" + threadid);
     }
 
     private void nullState() {
@@ -636,10 +645,10 @@ public class ParmGenMacroTrace extends ClientDependent {
         return state;
     }
 
-    public long getThreadId(){
+    public long getThreadId() {
         return this.threadid;
     }
-    
+
     List<PRequestResponse> getRecords() {
         return rlist;
     }
@@ -667,14 +676,14 @@ public class ParmGenMacroTrace extends ClientDependent {
         }
         return null;
     }
-    
+
     /**
      * Get current selected PRequestResponse object from PRequstResponse list.
-     * 
+     *
      * @return PRequestResponse
      */
-    public PRequestResponse getCurrentRequestResponse(){
-        if(this.selected_request > -1){
+    public PRequestResponse getCurrentRequestResponse() {
+        if (this.selected_request > -1) {
             return getRequestResponse(this.selected_request);
         }
         return null;

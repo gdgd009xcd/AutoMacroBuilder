@@ -31,6 +31,8 @@ import java.util.ArrayList;
 // class FileReadLine
 //
 public class FileReadLine {
+    private static org.apache.logging.log4j.Logger LOGGER4J =
+            org.apache.logging.log4j.LogManager.getLogger();
     String csvfile;
     String seekfile;
     RandomAccessFile raf = null;
@@ -62,7 +64,7 @@ public class FileReadLine {
                 filewriter.close();
             } catch (Exception e) {
                 //
-                ParmVars.plog.printException(e);
+                LOGGER4J.error("rewind", e);
             }
         }
         seekp = 0;
@@ -109,7 +111,7 @@ public class FileReadLine {
         return new String(barray.getBytes(), ParmVars.enc.getIANACharset());
     }
 
-    synchronized public ArrayList<String> readColumns() {
+    public synchronized ArrayList<String> readColumns() {
         if (columns == null) {
             columns = new ArrayList<String>();
         }
@@ -171,7 +173,7 @@ public class FileReadLine {
             raf = new RandomAccessFile(csvfile, "r");
 
             if (raf.length() <= seekp) {
-                ParmVars.plog.debuglog(1, "seekp reached EOF\n");
+                LOGGER4J.debug("seekp reached EOF\n");
                 raf.close();
                 raf = null;
                 return null;
@@ -204,7 +206,7 @@ public class FileReadLine {
                     || (_parent != null && _parent.isPaused())) {
                 // debuglog(1, " no seek forward:" + Long.toString(seekp));
             } else {
-                ParmVars.plog.debuglog(1, " seek forward:" + Long.toString(seekp));
+                LOGGER4J.debug(" seek forward:" + Long.toString(seekp));
                 // 現在のseek値取得
                 seekp = raf.getFilePointer();
                 current_line++;
@@ -217,15 +219,13 @@ public class FileReadLine {
                         filewriter.close();
                     } catch (Exception e) {
                         //
-                        ParmVars.plog.printlog(
-                                "FileReadLine::readLine failed  ERR:" + e.toString(), true);
+                        LOGGER4J.error("FileReadLine::readLine failed  ERR:" + e.toString(), e);
                     }
                 }
             }
         } catch (IOException e) {
-            ParmVars.plog.printlog(
-                    "FileReadLine::readLine failed csvfile:" + csvfile + " ERR:" + e.toString(),
-                    true);
+            LOGGER4J.error(
+                    "FileReadLine::readLine failed csvfile:" + csvfile + " ERR:" + e.toString(), e);
         } finally {
             if (raf != null) {
                 try {
@@ -237,5 +237,10 @@ public class FileReadLine {
             }
         }
         return line;
+    }
+
+    synchronized String getCurrentReadLine(int _valparttype, int _pos, AppParmsIni _parent) {
+        String line = readLine(_valparttype, _pos, _parent);
+        return String.valueOf(this.current_line);
     }
 }

@@ -117,7 +117,7 @@ class ParseHTTPHeaders implements DeepClone {
                 ParmGenRequestTokenKey.RequestParamType.Header,
                 ParmGenRequestTokenKey.RequestParamSubType.Cookie),
     };
-    
+
     public static final String CUSTOM_THREAD_ID_HEADERNAME = "X-PARMGEN-CUSTOM-HEADER";
 
     private void init() {
@@ -217,10 +217,10 @@ class ParseHTTPHeaders implements DeepClone {
     }
 
     private String httpMessageString(byte[] _binmessage, Encode pageenc) {
-        
+
         this.pageenc = pageenc != null ? pageenc : Encode.ISO_8859_1;
         String httpmessage = null;
-        
+
         try {
             httpmessage = new String(_binmessage, pageenc.getIANACharset());
         } catch (Exception ex) {
@@ -1219,7 +1219,8 @@ class ParseHTTPHeaders implements DeepClone {
 
     /**
      * get byte of Body contents without headers.
-     * @return 
+     *
+     * @return byte[]
      */
     public byte[] getBodyBytes() {
         if (bytebody != null) {
@@ -1343,26 +1344,26 @@ class ParseHTTPHeaders implements DeepClone {
         }
         return alist;
     }
-    
-    public void setThreadId2CustomHeader(long tid){
+
+    public void setThreadId2CustomHeader(long tid) {
         String v = Long.toString(tid);
-        
+
         setHeader(CUSTOM_THREAD_ID_HEADERNAME, v);
     }
-    
-    public long getThreadId5CustomHeader(){
+
+    public long getThreadId5CustomHeader() {
         String v = getHeader(CUSTOM_THREAD_ID_HEADERNAME);
-        if ( v != null ) {
+        if (v != null) {
             Long l = Long.parseLong(v);
             return l;
         }
         return -1;
     }
-    
+
     @Override
-    public ParseHTTPHeaders clone(){
+    public ParseHTTPHeaders clone() {
         try {
-            ParseHTTPHeaders nobj = (ParseHTTPHeaders)super.clone();
+            ParseHTTPHeaders nobj = (ParseHTTPHeaders) super.clone();
             nobj.deepcopy(this);
             return nobj;
         } catch (CloneNotSupportedException ex) {

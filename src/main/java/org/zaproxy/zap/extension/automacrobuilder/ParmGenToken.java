@@ -30,8 +30,6 @@ public class ParmGenToken implements DeepClone {
     ParmGenTokenValue ptv;
     Boolean enabled = false;
 
-    
-    
     ParmGenToken(
             AppValue.TokenTypeNames _tokentype,
             String url,
@@ -89,9 +87,9 @@ public class ParmGenToken implements DeepClone {
 
         return hash;
     }
-    
+
     @Override
-    public ParmGenToken  clone(){
+    public ParmGenToken clone() {
         try {
             ParmGenToken nobj = (ParmGenToken) super.clone();
             // ParmGenTokenKey ptk;

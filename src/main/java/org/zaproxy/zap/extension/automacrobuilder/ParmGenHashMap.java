@@ -26,7 +26,7 @@ import java.util.Map;
 /** @author youtube */
 @SuppressWarnings("serial")
 public class ParmGenHashMap extends HashMap<ParmGenTokenKey, ParmGenTokenValue>
-        implements InterfaceCollection<Map.Entry<ParmGenTokenKey, ParmGenTokenValue>> , DeepClone{
+        implements InterfaceCollection<Map.Entry<ParmGenTokenKey, ParmGenTokenValue>>, DeepClone {
 
     ParmGenHashMap() {}
 
@@ -50,12 +50,11 @@ public class ParmGenHashMap extends HashMap<ParmGenTokenKey, ParmGenTokenValue>
     public Iterator<Entry<ParmGenTokenKey, ParmGenTokenValue>> iterator() {
         return entrySet().iterator();
     }
-    
+
     @Override
-    public ParmGenHashMap clone(){
+    public ParmGenHashMap clone() {
         ParmGenHashMap nobj = (ParmGenHashMap) super.clone();
         HashMapDeepCopy.hashMapDeepElementCloneParmGenHashMap(this, nobj);
         return nobj;
     }
-    
 }

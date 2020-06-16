@@ -29,22 +29,22 @@ public class ParmGenTrackKeyPerThread implements DeepClone {
 
     private HashMap<UUID, ParmGenTrackingParam> trackjar =
             null; // Integer: unique key(ascend order.) ParmGenTrackingParam: tracking value
-    
+
     /**
      * for internal use only
-     * 
-     * @param sobj 
+     *
+     * @param sobj
      */
-    private void setup(ParmGenTrackKeyPerThread sobj){
+    private void setup(ParmGenTrackKeyPerThread sobj) {
         this.trackjar = HashMapDeepCopy.hashMapDeepCopyUuidKParmGenTrackingParamV(sobj.trackjar);
     }
-    
-    ParmGenTrackKeyPerThread(){
+
+    ParmGenTrackKeyPerThread() {
         trackjar = new HashMap<UUID, ParmGenTrackingParam>();
     }
-    
+
     // create new unique key. tracking value is null.
-    ParmGenTrackingParam  create(UUID k) {
+    ParmGenTrackingParam create(UUID k) {
         ParmGenTrackingParam tkparam = new ParmGenTrackingParam();
         trackjar.put(k, tkparam);
         return tkparam;
@@ -65,17 +65,17 @@ public class ParmGenTrackKeyPerThread implements DeepClone {
     void remove(UUID key) {
         trackjar.remove(key);
     }
-    
-    void clear(){
+
+    void clear() {
         if (trackjar != null) {
             trackjar.clear();
         }
     }
-    
+
     @Override
-    public ParmGenTrackKeyPerThread clone(){
+    public ParmGenTrackKeyPerThread clone() {
         try {
-            ParmGenTrackKeyPerThread nobj = (ParmGenTrackKeyPerThread)super.clone();
+            ParmGenTrackKeyPerThread nobj = (ParmGenTrackKeyPerThread) super.clone();
             nobj.setup(this);
             return nobj;
         } catch (CloneNotSupportedException ex) {
@@ -83,6 +83,4 @@ public class ParmGenTrackKeyPerThread implements DeepClone {
         }
         return null;
     }
-
-   
 }

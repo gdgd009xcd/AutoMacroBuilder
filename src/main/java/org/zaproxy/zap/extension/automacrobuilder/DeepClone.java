@@ -28,11 +28,15 @@ public interface DeepClone extends Cloneable {
     //    class crazyobject implements DeepClone{
     //
     //    ...
-    //        @Override
-    //        public crazyobject clone() {// return this Type object which is not java.lang.ObjectType.
+    //        {@literal @}Override
+    //        public crazyobject clone() { // return this Type object
+    //                                    //which is not java.lang.ObjectType.
     //               crazyobject nobj =  (crazyobject) super.clone();
-    //                 !! you must always use super.clone(). also inherit class must use super.clone. 
-    //                 DO NOT USE new XX constructor in clone(). if you use constructor then you will get java.lang.ClassCastException attack.                                   
+    //               // !! you must always use super.clone().
+    //               // also inherit class must use super.clone.
+    //               // DO NOT USE new XX constructor in clone().
+    //               // if you use constructor then
+    //               // you will get java.lang.ClassCastException attack.
     //               nobj.optlist = ListDeepCopy.listDeepCopy(this.optlist);// member of this class
     //               return nobj;
     //        }

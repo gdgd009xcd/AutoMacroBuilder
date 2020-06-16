@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -37,6 +36,9 @@ import java.util.regex.Pattern;
 // class AppParmsIni
 //
 public class AppParmsIni {
+    private static org.apache.logging.log4j.Logger LOGGER4J =
+            org.apache.logging.log4j.LogManager.getLogger();
+
     private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
     private String url;
     private Pattern urlregex;
@@ -56,7 +58,8 @@ public class AppParmsIni {
     // public int row;
     private Boolean pause = false;
     private int TrackFromStep = -1; // StepNo== -1:any  >0:TrackingFrom
-    private int SetToStep = ParmVars.TOSTEPANY; // == TOSTEPANY:any   0<= SetToStep < TOSTEPANY:SetTo
+    private int SetToStep =
+            ParmVars.TOSTEPANY; // == TOSTEPANY:any   0<= SetToStep < TOSTEPANY:SetTo
 
     public static final int T_NUMBER = 0; // 数値昇順
     public static final int T_RANDOM = 1; // 乱数
@@ -75,33 +78,33 @@ public class AppParmsIni {
     public static final int T_TRACK_OLD_AVCNT = 6;
     public static final int T_TAMPER_AVCNT = 8;
 
-    public void setCsvName(String csvname){
+    public void setCsvName(String csvname) {
         this.csvname = csvname;
     }
-    
-    public String getCsvName(){
+
+    public String getCsvName() {
         return this.csvname;
     }
-    
-    public void crtFrl(String filepath, boolean savekeep){
+
+    public void crtFrl(String filepath, boolean savekeep) {
         frl = new FileReadLine(filepath, savekeep);
     }
-    
-    public String getFrlFileName(){
-        if( frl != null ) {
+
+    public String getFrlFileName() {
+        if (frl != null) {
             return frl.getFileName();
         }
         return null;
     }
-    
-    public void setLen(int len){
+
+    public void setLen(int len) {
         this.len = len;
     }
-    
-    public int getLen(){
+
+    public int getLen() {
         return this.len;
     }
-    
+
     public enum NumberCounterTypes {
         NumberCount,
         DateCount,
@@ -124,8 +127,9 @@ public class AppParmsIni {
     }
 
     /**
-     * Get boolean pause value
-     * 
+     * is Paused
+     *
+     * <p>Get boolean pause value
      */
     public boolean isPaused() {
         return pause;
@@ -133,17 +137,18 @@ public class AppParmsIni {
 
     /**
      * Set pause when JSON load/parameter generate
-     * 
-     * @param b 
+     *
+     * @param b boolean
      */
-    public void initPause(boolean b){
+    public void initPause(boolean b) {
         this.pause = b;
     }
-    
+
     /**
      * Update pause status when GUI manipulation
-     * 
-    */
+     *
+     * @param b boolean
+     */
     public void updatePause(boolean b) {
         pause = b;
         String _c = getCurrentValue();
@@ -190,22 +195,22 @@ public class AppParmsIni {
         }
     }
 
-    public int getIniVal(){
+    public int getIniVal() {
         return this.inival;
     }
-    
-    public void setIniVal(int inival){
+
+    public void setIniVal(int inival) {
         this.inival = inival;
     }
-    
-    public int getMaxVal(){
+
+    public int getMaxVal() {
         return this.maxval;
     }
-    
-    public void setMaxVal(int maxval){
+
+    public void setMaxVal(int maxval) {
         this.maxval = maxval;
     }
-    
+
     public String getIniValDsp() {
         switch (typeval) {
             case T_NUMBER:
@@ -257,7 +262,7 @@ public class AppParmsIni {
     public int getTypeVal() {
         return typeval;
     }
-    
+
     public void setTypeVal(int typeval) {
         this.typeval = typeval;
     }
@@ -449,30 +454,35 @@ public class AppParmsIni {
         int n;
         switch (typeval) {
             case T_NUMBER: // number
-                n = countUp(_valparttype, this);// synchronized
+                n = countUp(_valparttype, this); // synchronized
                 if (n > -1) {
-                    return getFillZeroInt(n);//thread safe
+                    return getFillZeroInt(n); // thread safe
                 } else {
                     return null;
                 }
             case T_RANDOM: // random
                 Random rand = new Random();
                 n = rand.nextInt(rndval);
-                return getFillZeroInt(n);// thread safe
+                return getFillZeroInt(n); // thread safe
             case T_TRACK: // loc
                 // if ( global.Location != void ){
                 return pmt.getFetchResponseVal()
-                        .getLocVal(apv.getTrackKey(), tk, currentStepNo, toStepNo);// per thread object
+                        .getLocVal(
+                                apv.getTrackKey(),
+                                tk,
+                                currentStepNo,
+                                toStepNo); // per thread object
                 // }
             default: // csv
                 if (frl != null) {
-                    ParmVars.plog.debuglog(1, "frl.csvfile:" + frl.csvfile);
+                    LOGGER4J.debug("frl.csvfile:" + frl.csvfile);
                     if (csvpos == -1) {
                         csvpos = len;
                     }
-                    return frl.readLine(_valparttype, csvpos, this); // read CSV 1 record. synchronized
+                    return frl.readLine(
+                            _valparttype, csvpos, this); // read CSV 1 record. synchronized
                 } else {
-                    ParmVars.plog.debuglog(1, "getGenValue frl is NULL");
+                    LOGGER4J.debug("getGenValue frl is NULL");
                 }
                 break;
         }
@@ -512,7 +522,7 @@ public class AppParmsIni {
             fr.close();
 
         } catch (Exception e) {
-            ParmVars.plog.printlog("read file:" + getCntFullPathName() + " " + e.toString(), true);
+            LOGGER4J.error("read file:" + getCntFullPathName() + " " + e.toString(), e);
             cnt = inival;
         }
 
@@ -521,15 +531,14 @@ public class AppParmsIni {
         if (((_valparttype & AppValue.C_NOCOUNT) == AppValue.C_NOCOUNT) || _parent.isPaused()) {
             ncnt = cnt; // no countup
         } else if (ncnt > maxval) {
-            ParmVars.plog.debuglog(
-                    0,
+            LOGGER4J.debug(
                     "CountUp maxval reached. reset to inival"
                             + Integer.toString(ncnt)
                             + "->"
                             + Integer.toString(inival));
             ncnt = inival;
         } else {
-            ParmVars.plog.debuglog(1, "CountUp ncnt:" + Integer.toString(ncnt));
+            LOGGER4J.debug("CountUp ncnt:" + Integer.toString(ncnt));
         }
 
         if ((_valparttype & AppValue.C_NOCOUNT) != AppValue.C_NOCOUNT) {
@@ -539,8 +548,7 @@ public class AppParmsIni {
                 filewriter.write(s1);
                 filewriter.close();
             } catch (Exception e) {
-                ParmVars.plog.printlog(
-                        "write file:" + getCntFullPathName() + " " + e.toString(), true);
+                LOGGER4J.error("write file:" + getCntFullPathName() + " " + e.toString(), e);
                 throw new RuntimeException(e.toString());
             }
         }
@@ -550,13 +558,13 @@ public class AppParmsIni {
     int updateCounter(int i) {
         if (i >= 0) {
             try {
-                ParmVars.plog.debuglog(1, "cntfile:" + getCntFullPathName());
+                LOGGER4J.debug("cntfile:" + getCntFullPathName());
                 FileWriter filewriter = new FileWriter(getCntFullPathName(), false);
                 String s1 = String.valueOf(i);
                 filewriter.write(s1);
                 filewriter.close();
             } catch (Exception e) {
-                ParmVars.plog.printException(e);
+                LOGGER4J.error("updateCounter", e);
                 return -1;
             }
         }
@@ -571,14 +579,14 @@ public class AppParmsIni {
         String rval = null;
         switch (typeval) {
             case T_NUMBER:
-                int i = countUp(AppValue.C_NOCOUNT, this);// synchronized
+                int i = countUp(AppValue.C_NOCOUNT, this); // synchronized
                 rval = Integer.toString(i);
                 break;
             case T_RANDOM:
                 break;
             case T_CSV:
-                String rec = frl.readLine(AppValue.C_NOCOUNT, 0, this);// synchronized
-                rval = String.valueOf(frl.current_line);
+                rval = frl.getCurrentReadLine(AppValue.C_NOCOUNT, 0, this); // synchronized
+                // rval = String.valueOf(frl.current_line);
                 break;
             case T_TRACK:
                 break;
@@ -656,7 +664,9 @@ public class AppParmsIni {
                         app.getToken(),
                         app.isUrlEncode(),
                         app.getFromStepNo() == -1 ? "*" : Integer.toString(app.getFromStepNo()),
-                        app.getToStepNo() == ParmVars.TOSTEPANY ? "*" : Integer.toString(app.getToStepNo()),
+                        app.getToStepNo() == ParmVars.TOSTEPANY
+                                ? "*"
+                                : Integer.toString(app.getToStepNo()),
                         app.getTokenType().name()
                     };
                 default:
@@ -665,13 +675,13 @@ public class AppParmsIni {
         }
         return null;
     }
-    
+
     /**
-     *  Get modifiable List<AppValue> Original.
-     * 
-     * @return 
+     * Get modifiable {@code List<AppValue>} Original.
+     *
+     * @return parmlist {@code List<AppValue>}
      */
-    public List<AppValue> getAppValueReadWriteOriginal(){
+    public List<AppValue> getAppValueReadWriteOriginal() {
         return parmlist;
     }
 }

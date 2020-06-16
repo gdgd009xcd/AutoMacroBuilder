@@ -45,12 +45,11 @@ public class ListDeepCopy {
 
         return listDeepCopyVClone(src, dest);
     }
-    
-    public static List<ParmGenToken> listDeepCopyParmGenToken(List<ParmGenToken> src){
+
+    public static List<ParmGenToken> listDeepCopyParmGenToken(List<ParmGenToken> src) {
         if (src == null) return null;
         List<ParmGenToken> dest = new ArrayList<>();
-        
+
         return listDeepCopyVClone(src, dest);
-        
     }
 }

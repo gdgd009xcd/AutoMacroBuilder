@@ -79,7 +79,7 @@ class ParseHTTPHeaders implements DeepClone {
 
     String body; // encode = pageenc. maybe body's binary data != bytebody, because pageencoding
     // affect it.
-    byte[] bytebody;
+    byte[] bytebody; // bytes of contents without headers.
     ParmGenBinUtil binbody = null;
     String iso8859bodyString = null;
     // form-data 以外は、ページエンコードでOK。
@@ -666,6 +666,16 @@ class ParseHTTPHeaders implements DeepClone {
 
     void setBody(byte[] _bval) {
         bytebody = _bval;
+
+        if(isrequest) {
+            int bl = bytebody != null ? bytebody.length : 0;
+            int hl = content_length;
+            if (bl != hl) { // actual body length != header's content-length value
+                setHeader("Content-Length", Integer.toString(bl));
+                content_length = bl;
+            }
+        }
+
         try {
             body = new String(bytebody, pageenc.getIANACharset());
         } catch (Exception ex) {
@@ -907,8 +917,15 @@ class ParseHTTPHeaders implements DeepClone {
             return message;
         }
 
-        int blen = getStringBodyLength();
-        setHeader("Content-Length", Integer.toString(blen));
+        // content-length must set byte size!!
+        /*
+        String clengthheader = getHeader("Content-Length");
+        if (clengthheader == null || clengthheader.isEmpty()) {
+            byte[] cb = getBodyBytes();
+            int l = cb != null ? cb.length: 0;
+            setHeader("Content-Length", Integer.toString(l));
+        }
+        */
 
         StringBuilder sb = new StringBuilder();
 

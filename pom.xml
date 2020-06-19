@@ -9,7 +9,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <mainClass>project.Main.class</mainClass>
+        <mainClass>burp.StartBurp</mainClass>
     </properties>
 
 <dependencies>
@@ -34,6 +34,13 @@
     <scope>provided</scope>
 </dependency>
 
+<!-- below local maven dependency is MY OWN DUMMY that is not exist maven repository. it is used when debugging locally. (contains main)-->
+<!-- dependency>
+    <groupId>mytest.comcom</groupId>
+    <artifactId>mytest-comcom</artifactId>
+    <version>2.1.04</version>
+    <scope>compile</scope>
+</dependency -->
 
 <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
 <dependency>
@@ -138,7 +145,7 @@
           </descriptors>
         <archive>
             <manifest>
-                <mainClass>burp.test</mainClass>
+                <mainClass>burp.StartBurp</mainClass>
             </manifest>
         </archive>
     </configuration>
@@ -169,7 +176,7 @@
 </repositories>
 <pluginRepositories>
         <pluginRepository>
-            <id>central</id>
+            <id>plugincentral</id>
             <url>https://repo.maven.apache.org/maven2/</url>
             <releases>
                 <enabled>true</enabled>

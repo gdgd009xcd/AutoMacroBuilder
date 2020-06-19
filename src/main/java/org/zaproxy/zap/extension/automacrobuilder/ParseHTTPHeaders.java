@@ -19,26 +19,21 @@
  */
 package org.zaproxy.zap.extension.automacrobuilder;
 
-import static org.zaproxy.zap.extension.automacrobuilder.HashMapDeepCopy.hashMapDeepCopyStrKStrV;
-
 import java.net.HttpCookie;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.zaproxy.zap.extension.automacrobuilder.HashMapDeepCopy.hashMapDeepCopyStrKStrV;
+
 //
 // HTTP request/response parser
 //
 
-class ParseHTTPHeaders {
+class ParseHTTPHeaders implements DeepClone {
     Pattern valueregex;
     // Pattern formdataregex;
     String formdataheader;
@@ -79,7 +74,7 @@ class ParseHTTPHeaders {
 
     String body; // encode = pageenc. maybe body's binary data != bytebody, because pageencoding
     // affect it.
-    byte[] bytebody;
+    byte[] bytebody; // bytes of contents without headers.
     ParmGenBinUtil binbody = null;
     String iso8859bodyString = null;
     // form-data 以外は、ページエンコードでOK。
@@ -89,7 +84,7 @@ class ParseHTTPHeaders {
     String message; // when update method(Ex. setXXX) is called, then this value must set to null;
     private boolean isrequest; // == true - request, false - response
 
-    HeaderPattern[] headerpatterns = {
+    final HeaderPattern[] headerpatterns = {
         // Authorization: Bearer token68
         //         token68: alpha,digit, "-._~+/", "=" (RFC 6750 2.1 base64token )
         new HeaderPattern(
@@ -117,7 +112,7 @@ class ParseHTTPHeaders {
                 ParmGenRequestTokenKey.RequestParamType.Header,
                 ParmGenRequestTokenKey.RequestParamSubType.Cookie),
     };
-    
+
     public static final String CUSTOM_THREAD_ID_HEADERNAME = "X-PARMGEN-CUSTOM-HEADER";
 
     private void init() {
@@ -209,7 +204,7 @@ class ParseHTTPHeaders {
         formdata = pheaders.formdata;
         body = pheaders.body;
         bytebody = ParmGenUtil.copyBytes(pheaders.bytebody);
-        binbody = new ParmGenBinUtil(pheaders.binbody.getBytes());
+        binbody = pheaders.binbody != null ? new ParmGenBinUtil(pheaders.binbody.getBytes()) : null;
         iso8859bodyString = pheaders.iso8859bodyString;
         pageenc = pheaders.pageenc;
         message = pheaders.message;
@@ -217,10 +212,10 @@ class ParseHTTPHeaders {
     }
 
     private String httpMessageString(byte[] _binmessage, Encode pageenc) {
-        
+
         this.pageenc = pageenc != null ? pageenc : Encode.ISO_8859_1;
         String httpmessage = null;
-        
+
         try {
             httpmessage = new String(_binmessage, pageenc.getIANACharset());
         } catch (Exception ex) {
@@ -666,6 +661,16 @@ class ParseHTTPHeaders {
 
     void setBody(byte[] _bval) {
         bytebody = _bval;
+
+        if(isrequest) {
+            int bl = bytebody != null ? bytebody.length : 0;
+            int hl = content_length;
+            if (bl != hl) { // actual body length != header's content-length value
+                setHeader("Content-Length", Integer.toString(bl));
+                content_length = bl;
+            }
+        }
+
         try {
             body = new String(bytebody, pageenc.getIANACharset());
         } catch (Exception ex) {
@@ -907,8 +912,15 @@ class ParseHTTPHeaders {
             return message;
         }
 
-        int blen = getStringBodyLength();
-        setHeader("Content-Length", Integer.toString(blen));
+        // content-length must set byte size!!
+        /*
+        String clengthheader = getHeader("Content-Length");
+        if (clengthheader == null || clengthheader.isEmpty()) {
+            byte[] cb = getBodyBytes();
+            int l = cb != null ? cb.length: 0;
+            setHeader("Content-Length", Integer.toString(l));
+        }
+        */
 
         StringBuilder sb = new StringBuilder();
 
@@ -1219,7 +1231,8 @@ class ParseHTTPHeaders {
 
     /**
      * get byte of Body contents without headers.
-     * @return 
+     *
+     * @return byte[]
      */
     public byte[] getBodyBytes() {
         if (bytebody != null) {
@@ -1343,19 +1356,31 @@ class ParseHTTPHeaders {
         }
         return alist;
     }
-    
-    public void setThreadId2CustomHeader(long tid){
+
+    public void setThreadId2CustomHeader(long tid) {
         String v = Long.toString(tid);
-        
+
         setHeader(CUSTOM_THREAD_ID_HEADERNAME, v);
     }
-    
-    public long getThreadId5CustomHeader(){
+
+    public long getThreadId5CustomHeader() {
         String v = getHeader(CUSTOM_THREAD_ID_HEADERNAME);
-        if ( v != null ) {
+        if (v != null) {
             Long l = Long.parseLong(v);
             return l;
         }
         return -1;
+    }
+
+    @Override
+    public ParseHTTPHeaders clone() {
+        try {
+            ParseHTTPHeaders nobj = (ParseHTTPHeaders) super.clone();
+            nobj.deepcopy(this);
+            return nobj;
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(ParseHTTPHeaders.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 }

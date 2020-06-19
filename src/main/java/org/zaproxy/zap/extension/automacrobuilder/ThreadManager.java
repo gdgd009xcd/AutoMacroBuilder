@@ -287,7 +287,7 @@ public class ThreadManager {
             LOGGER4J.debug("thcount:" + thcount);
             
             if (thcount==0) {
-                LOGGER4J.debug("endProcess action begin id:" + p.getid());
+                LOGGER4J.debug("endProcess action begin id:" + p.getid() + "action.szie:" + actionlist.size());
                 actionlist.forEach(act -> act.action());
                 actionlist.clear();
                 LOGGER4J.debug("endProcess action end id:" + p.getid());

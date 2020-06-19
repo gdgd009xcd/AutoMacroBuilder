@@ -130,6 +130,7 @@ public class ParmGenMacroTrace extends ClientDependent {
     public ParmGenMacroTrace getScanInstance(long tid) {
         ParmGenMacroTrace nobj = new ParmGenMacroTrace();
         nobj.threadid = tid;
+        // nobj.setUUID(UUIDGenerator.getUUID()); // already set in super.constructor
         nobj.rlist = this.rlist; // reference
         nobj.originalrlist = this.originalrlist; // reference
         nobj.selected_request = this.selected_request; // specified scan target request
@@ -392,7 +393,8 @@ public class ParmGenMacroTrace extends ClientDependent {
                                     + " "
                                     + ppr.request.url);
 
-                    ppr.request.setThreadId2CustomHeader(threadid);
+                    //ppr.request.setUUID2CustomHeader(this.getUUID());
+                    setUUID2CustomHeader(ppr.request);
                     PRequestResponse pqrs = clientHttpRequest(ppr.request);
 
                     if (pqrs != null) {
@@ -415,7 +417,8 @@ public class ParmGenMacroTrace extends ClientDependent {
 
     PRequest configureRequest(PRequest preq) {
         if (isRunning()) { // MacroBuilder list > 0 && state is Running.
-            preq.setThreadId2CustomHeader(threadid);
+            //preq.setUUID2CustomHeader(this.getUUID());
+            setUUID2CustomHeader(preq);
             // ここでリクエストのCookieをCookie.jarで更新する。
             String domain_req = preq.getHost().toLowerCase();
             String path_req = preq.getPath();
@@ -460,8 +463,10 @@ public class ParmGenMacroTrace extends ClientDependent {
             }
 
             if (preq.setCookies(cookiemap, ReplaceCookieflg)) {
-                return preq;
             }
+            // This function when preq modified then he must return non null.
+            // e.g. preq.setThreadId2CustomHeader(threadid) modify preq's header.
+            return preq;
         }
 
         return null;
@@ -506,7 +511,8 @@ public class ParmGenMacroTrace extends ClientDependent {
                                         + ppr.request.url
                                         + " X-Thread:"
                                         + threadid);
-                        ppr.request.setThreadId2CustomHeader(threadid);
+                        //ppr.request.setUUID2CustomHeader(this.getUUID());
+                        setUUID2CustomHeader(ppr.request);
                         PRequestResponse pqrs = clientHttpRequest(ppr.request);
                         if (pqrs != null) {
                             postmacro_RequestResponse = pqrs;

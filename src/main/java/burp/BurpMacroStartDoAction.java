@@ -8,16 +8,10 @@ package burp;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import org.zaproxy.zap.extension.automacrobuilder.InterfaceAction;
-import org.zaproxy.zap.extension.automacrobuilder.InterfaceDoAction;
-import org.zaproxy.zap.extension.automacrobuilder.InterfaceEndAction;
-import org.zaproxy.zap.extension.automacrobuilder.OneThreadProcessor;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGen;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTrace;
+
+import org.zaproxy.zap.extension.automacrobuilder.*;
+
 import static org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTrace.PMT_CURRENT_BEGIN;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTraceProvider;
-import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
-import org.zaproxy.zap.extension.automacrobuilder.ThreadManager;
 
 
 /**
@@ -83,7 +77,7 @@ public class BurpMacroStartDoAction implements InterfaceDoAction {
         
         LOGGER4J.debug("StartAction Current StepNo:" + pmt.getStepNo() + " host:"+ host + "Threadid:" + Thread.currentThread().getId() );
         pmt.burpSetCurrentOriginalRequest(currentRequest.getRequest());
-        
+
         byte[] retval = pgen.Run(host, port, isSSL, currentRequest.getRequest());
         if ( retval != null){
             currentRequest.setRequest(retval);

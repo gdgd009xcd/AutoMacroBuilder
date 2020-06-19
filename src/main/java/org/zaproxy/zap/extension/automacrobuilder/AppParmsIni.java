@@ -369,7 +369,7 @@ public class AppParmsIni {
     private String crtRandomFileName() {
         String fname = null;
 
-        UUID uuid = UUID.randomUUID();
+        UUID uuid = UUIDGenerator.getUUID();
         String uustr = uuid.toString();
         fname = uustr + ".txt";
         return fname;

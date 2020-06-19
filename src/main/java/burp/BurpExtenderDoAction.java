@@ -20,13 +20,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -195,10 +189,12 @@ public class BurpExtenderDoAction implements InterfaceDoAction
                             // restore currentRequest
                             byte[] originalrequestbytes = pmt.burpGetCurrentOriginalRequest();
                             if( originalrequestbytes!=null) {
+                                LOGGER4J.debug("REQUEST  RESET To OriginalRequest.");
                                 messageInfo.setRequest(originalrequestbytes);
+                                ParmGenMacroTraceProvider.removeEndInstance(pmt.getUUID());
                             }
                         }
-                    }else{
+                    } else {
                         pmt.macroEnded();
                     }
                     
@@ -226,15 +222,16 @@ public class BurpExtenderDoAction implements InterfaceDoAction
         int p = tiserv.getPort();
         boolean tisSSL = (tiserv.getProtocol().toLowerCase().equals("https")?true:false);
         PRequest preq = new PRequest(h, p, tisSSL, messageInfo.getRequest(), ParmVars.enc);
-        long tid = preq.getThreadId5CustomHeader();
-        LOGGER4J.debug("processHttpMessage threadid:" + Thread.currentThread().getId() + " X-THREAD:" + tid);
-        ParmGenMacroTrace pmt = ParmGenMacroTraceProvider.getRunningInstance(tid);
+        UUID uuid = preq.getUUID5CustomHeader();
+        ParmGenMacroTrace pmt = ParmGenMacroTraceProvider.getRunningInstance(uuid);
         if(pmt != null) {
+            long tid = pmt.getThreadId();
+            LOGGER4J.debug("startAction "+ (messageIsRequest?"REQUEST":"RESPONSE")+" tool:"  + BurpExtender.getToolname(toolflag)+ " threadid:" + Thread.currentThread().getId() + " X-THREAD:" + tid + " UUID:" + uuid.toString());
             actionlist.add((t, o) ->{
                 return processHttpMessage(o, pmt, toolflag, messageIsRequest, messageInfo);
             });
         } else {
-            LOGGER4J.error("pmt is null");
+            LOGGER4J.error("startAction "+ (messageIsRequest?"REQUEST":"RESPONSE")+" tool:"  + BurpExtender.getToolname(toolflag)+"pmt is null");
         }
         return actionlist;
     }
@@ -245,17 +242,19 @@ public class BurpExtenderDoAction implements InterfaceDoAction
     public InterfaceEndAction endAction(ThreadManager tm, OneThreadProcessor otp) {
         ParmGenMacroTrace pmt = otp.getOptData();
         
-        ParmGenMacroTrace pmtoriginal = ParmGenMacroTraceProvider.getRunningInstance(pmt.getThreadId());
+        ParmGenMacroTrace pmtoriginal = ParmGenMacroTraceProvider.getRunningInstance(pmt.getUUID());
         if(pmtoriginal == pmt) {
             InterfaceEndAction action = () -> {
                 ParmGenMacroTraceProvider.getOriginalBase().updateOriginalBase(pmt);
-                ParmGenMacroTraceProvider.removeEndInstance(pmt.getThreadId());
+                ParmGenMacroTraceProvider.removeEndInstance(pmt.getUUID());
             };
             return action;
         } else {
             LOGGER4J.error("pmtoriginal id:"+ pmtoriginal.getThreadId() +" != pmt id:" + pmt.getThreadId());
         }
-        InterfaceEndAction nothingaction = () -> {};
+        InterfaceEndAction nothingaction = () -> {
+            LOGGER4J.debug("Endaction Nothing to do");
+        };
         
         return nothingaction;
 

@@ -49,7 +49,7 @@ public class OneThreadProcessor {
      *
      * @param tm
      * @param th
-     * @param doaction
+     * @param provider
      */
     public OneThreadProcessor(ThreadManager tm, Thread th, InterfaceDoActionProvider provider) {
         this.doaction = provider.getDoActionInstance();
@@ -138,7 +138,7 @@ public class OneThreadProcessor {
         boolean doendaction = false;
         this.stage = n;
         try {
-            if (actionlist != null) {
+            if (actionlist != null && actionlist.size() > 0) {
                 InterfaceAction action = actionlist.get(n);
                 if (action != null) {
                     doendaction = action.action(this.tm, this);
@@ -146,7 +146,7 @@ public class OneThreadProcessor {
                     LOGGER4J.warn("action is null id:" + id);
                 }
             } else {
-                LOGGER4J.warn("actionlist is null id:" + id);
+                LOGGER4J.warn("actionlist is null or size 0 id:" + id);
             }
         } catch (Exception ex) {
             setAborted();
@@ -163,7 +163,7 @@ public class OneThreadProcessor {
     /**
      * run InterfaceEndAction endAction
      *
-     * @param noendaction false
+     * @param doendaction false
      * @return
      */
     public boolean terminated(boolean doendaction) {

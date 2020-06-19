@@ -23,12 +23,7 @@ import static org.zaproxy.zap.extension.automacrobuilder.HashMapDeepCopy.hashMap
 
 import java.net.HttpCookie;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -1362,19 +1357,19 @@ class ParseHTTPHeaders implements DeepClone {
         return alist;
     }
 
-    public void setThreadId2CustomHeader(long tid) {
-        String v = Long.toString(tid);
+    public void setUUID2CustomHeader(UUID uuid) {
+        String v = uuid.toString();
 
         setHeader(CUSTOM_THREAD_ID_HEADERNAME, v);
     }
 
-    public long getThreadId5CustomHeader() {
+    public UUID getUUID5CustomHeader() {
         String v = getHeader(CUSTOM_THREAD_ID_HEADERNAME);
         if (v != null) {
-            Long l = Long.parseLong(v);
-            return l;
+            UUID uuid = UUID.fromString(v);
+            return uuid;
         }
-        return -1;
+        return null;
     }
 
     @Override

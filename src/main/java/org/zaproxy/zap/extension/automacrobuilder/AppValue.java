@@ -350,7 +350,7 @@ public class AppValue {
      */
     synchronized public UUID getTrackKey() {
         if( trackkey == null ) {
-             trackkey = UUID.randomUUID();
+             trackkey = UUIDGenerator.getUUID();
         }
         return trackkey;
     }

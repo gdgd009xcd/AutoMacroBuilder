@@ -20,6 +20,7 @@
 package org.zaproxy.zap.extension.automacrobuilder;
 
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -29,8 +30,10 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ParmGenMacroTraceProvider {
 
+    private static org.apache.logging.log4j.Logger LOGGER4J =
+            org.apache.logging.log4j.LogManager.getLogger();
     private static ParmGenMacroTrace pmt_originalbase = new ParmGenMacroTrace();
-    private static Map<Long, ParmGenMacroTrace> pmtmap = new ConcurrentHashMap<>();
+    private static Map<UUID, ParmGenMacroTrace> pmtmap = new ConcurrentHashMap<>();
 
     /**
      * get original ParmGenMacroTrace base instance for configuration ( for GUI )
@@ -49,15 +52,20 @@ public class ParmGenMacroTraceProvider {
      */
     public static ParmGenMacroTrace getNewParmGenMacroTraceInstance(long tid) {
         ParmGenMacroTrace newpmt = pmt_originalbase.getScanInstance(tid);
-        pmtmap.put(tid, newpmt);
+        pmtmap.put(newpmt.getUUID(), newpmt);
         return newpmt;
     }
 
-    public static ParmGenMacroTrace getRunningInstance(long tid) {
-        return pmtmap.get(tid);
+    public static ParmGenMacroTrace getRunningInstance(UUID uuid) {
+        try {
+            return pmtmap.get(uuid);
+        } catch (Exception e) {
+            LOGGER4J.debug("NULL");
+        }
+        return null;
     }
 
-    public static void removeEndInstance(long tid) {
-        pmtmap.remove(tid);
+    synchronized public static void removeEndInstance(UUID uuid) {
+        pmtmap.remove(uuid);
     }
 }

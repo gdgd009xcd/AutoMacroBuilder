@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.text.BadLocationException;
@@ -72,7 +73,9 @@ public class SelectRequest extends javax.swing.JDialog {
                 break;
         }
         RequestTable.setRowSelectionInterval(selected_message_idx, selected_message_idx);
-        RequestTableMouseClicked(null);
+        SwingUtilities.invokeLater(() -> {
+            RequestTableMouseClicked(null);
+        });
         
 
     }
@@ -282,14 +285,19 @@ public class SelectRequest extends javax.swing.JDialog {
         Document blank = new DefaultStyledDocument();
         Document qdoc = RequestEntity.getDocument();
         Document rdoc = ResponseEntity.getDocument();
-        RequestEntity.setDocument(blank);
-        ResponseEntity.setDocument(blank);
+        // RequestEntity.setDocument(blank);
+        // ResponseEntity.setDocument(blank);
+        //Document qdoc = new DefaultStyledDocument();
+        //Document rdoc = new DefaultStyledDocument();
+        
+
         try {
             qdoc.remove(0, qdoc.getLength());
             rdoc.remove(0, rdoc.getLength());
         } catch (BadLocationException ex) {
             Logger.getLogger(SelectRequest.class.getName()).log(Level.SEVERE, null, ex);
         }
+
         try {
             qdoc.insertString(0, _request, attr);
         } catch (BadLocationException ex) {

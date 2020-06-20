@@ -21,6 +21,7 @@ package org.zaproxy.zap.extension.automacrobuilder;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ResourceBundle;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,6 +34,8 @@ public class AppValue {
     private static org.apache.logging.log4j.Logger logger4j =
             org.apache.logging.log4j.LogManager.getLogger();
 
+    private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
+    
     // valparttype,         value, token, tamattack,tamadvance,tamposition,urlencode
     // 置換位置,置換しない,  value, Name,  Attack,   Advance,   Position,   URLencode
     private String valpart; // 置換位置
@@ -783,14 +786,12 @@ public class AppValue {
                     ParmVars.plog.debuglog(
                             0,
                             java.text.MessageFormat.format(
-                                    java.util.ResourceBundle.getBundle("burp/Bundle")
-                                            .getString("ParmGen.parameter_regex_msg1.text"),
+                                    bundle.getString("ParmGen.parameter_regex_msg1.text"),
                                     new Object[] {value, matchval, token, strcnt}));
                     //
                     pmt.addComments(
                             java.text.MessageFormat.format(
-                                    java.util.ResourceBundle.getBundle("burp/Bundle")
-                                            .getString("ParmGen.parameter_regex_msg2.text"),
+                                    bundle.getString("ParmGen.parameter_regex_msg2.text"),
                                     new Object[] {value, matchval, token, strcnt}));
                     errorhash_value = new ParmGenTokenValue("", strcnt, true);
                     errorhash.put(errorhash_key, errorhash_value);
@@ -798,13 +799,11 @@ public class AppValue {
                     ParmVars.plog.debuglog(
                             0,
                             java.text.MessageFormat.format(
-                                    java.util.ResourceBundle.getBundle("burp/Bundle")
-                                            .getString("ParmGen.parameter_regex_err1.text"),
+                                    bundle.getString("ParmGen.parameter_regex_err1.text"),
                                     new Object[] {value, token, matchval}));
                     pmt.addComments(
                             java.text.MessageFormat.format(
-                                    java.util.ResourceBundle.getBundle("burp/Bundle")
-                                            .getString("ParmGen.parameter_regex_err2.text"),
+                                    bundle.getString("ParmGen.parameter_regex_err2.text"),
                                     new Object[] {value, token, matchval}));
                     isnull = true;
                     errorhash_value = new ParmGenTokenValue("", strcnt, false);

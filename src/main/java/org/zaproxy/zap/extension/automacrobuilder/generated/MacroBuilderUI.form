@@ -88,7 +88,7 @@
         <MenuItem class="javax.swing.JMenuItem" name="showRequest">
           <Properties>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="burp/Bundle.properties" key="ShowRequest" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+              <ResourceString bundle="burp/Bundle.properties" key="ShowRequest" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
             </Property>
           </Properties>
           <Events>
@@ -787,14 +787,14 @@
               <Properties>
                 <Property name="selected" type="boolean" value="true"/>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="burp/Bundle.properties" key="MBtoStepNo" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                  <ResourceString bundle="burp/Bundle.properties" key="MBtoStepNo" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
                 </Property>
               </Properties>
             </Component>
             <Component class="javax.swing.JCheckBox" name="MBmonitorofprocessing">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="burp/Bundle.properties" key="MBmonitorofprocessing" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                  <ResourceString bundle="burp/Bundle.properties" key="MBmonitorofprocessing" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
                 </Property>
               </Properties>
               <Events>

@@ -34,11 +34,15 @@ import static org.zaproxy.zap.extension.automacrobuilder.HashMapDeepCopy.hashMap
 //
 
 class ParseHTTPHeaders implements DeepClone {
+    private static org.apache.logging.log4j.Logger LOGGER4J =
+            org.apache.logging.log4j.LogManager.getLogger();
     Pattern valueregex;
     // Pattern formdataregex;
     String formdataheader;
+    String formdatacontenttype;
     String formdatafooter;
     Pattern formdataheaderregex;
+    Pattern formdatacontenttyperegex;
     Pattern formdatafooterregex;
     private String[] nv = null; // temporary work parameter. no need copy in constructor.
     boolean crlf;
@@ -124,6 +128,7 @@ class ParseHTTPHeaders implements DeepClone {
         // formdataregex = ParmGenUtil.Pattern_compile("-{4,}[a-zA-Z0-9]+(?:\r\n)(?:[A-Z].*
         // name=\"(.*?)\".*(?:\r\n))(?:[A-Z].*(?:\r\n)){0,}(?:\r\n)((?:.|\r|\n)*?)(?:\r\n)-{4,}[a-zA-Z0-9]+");
         formdataheader = "(?:[A-Z].* name=\"(.*?)\".*(?:\r\n))(?:[A-Z].*(?:\r\n)){0,}(?:\r\n)";
+        formdatacontenttype = "(?:[A-Z].* name=\".*?\".*(?:\r|\n|\r\n))(?:Content-Type:[ \t]*([a-zA-Z\\.\\-0-9/]*)(?:\r|\n|\r\n)){1}(?:\r|\n|\r\n)";
         formdatafooter = "(?:\r\n)";
         nv = null;
         isSSL = false;
@@ -168,8 +173,10 @@ class ParseHTTPHeaders implements DeepClone {
         valueregex = pheaders.valueregex;
 
         formdataheader = pheaders.formdataheader;
+        formdatacontenttype = pheaders.formdatacontenttype;
         formdatafooter = pheaders.formdatafooter;
         formdataheaderregex = pheaders.formdataheaderregex;
+        formdatacontenttyperegex = pheaders.formdatacontenttyperegex;
         formdatafooterregex = pheaders.formdatafooterregex;
         nv = null; // tempoary work parameter. no need copy.
         crlf = pheaders.crlf;
@@ -469,6 +476,8 @@ class ParseHTTPHeaders implements DeepClone {
                                             boundary = boundaries[1];
                                             formdataheaderregex =
                                                     ParmGenUtil.Pattern_compile(formdataheader);
+                                            formdatacontenttyperegex =
+                                                    ParmGenUtil.Pattern_compile(formdatacontenttype);
                                             formdatafooterregex =
                                                     ParmGenUtil.Pattern_compile(
                                                             formdatafooter + "--" + boundary);
@@ -582,7 +591,18 @@ class ParseHTTPHeaders implements DeepClone {
                     dv = dv.replaceAll("\n", "<LF>");
                     ParmVars.plog.debuglog(1, dv);
                     Matcher fn = formdataheaderregex.matcher(formvalue);
-                    if (fn.find()) {
+                    Matcher contentfn = formdatacontenttyperegex.matcher(formvalue);
+                    boolean isbinarycontents = false;
+                    if (contentfn.find()) {
+                        int cnt = contentfn.groupCount();
+                        if ( cnt > 0) {
+                            String contenttype = contentfn.group(1);
+                            isbinarycontents = ParmGenUtil.isBinaryMimeContent(contenttype);
+                            LOGGER4J.debug((isbinarycontents?"BINARY ":" ") + "cnt:" + cnt + " content-type[" + contenttype + "]");
+                            
+                        }
+                    }
+                    if (fn.find() && !isbinarycontents) {
                         try {
                             String[] nvpair = new String[2];
                             int fgcnt = fn.groupCount();

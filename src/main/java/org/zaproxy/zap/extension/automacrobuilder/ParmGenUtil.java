@@ -424,4 +424,35 @@ public class ParmGenUtil {
                 .filter(f -> f.contains("."))
                 .map(f -> f.substring(filename.lastIndexOf(".") + 1));
     }
+    
+    public static String[] MIMEBINTYPES = {
+        "image",
+        "application",
+        "audio",
+        "font",
+        "model",
+        "video"
+    };
+    
+    /**
+     *  contenttype is binary mime data(image..etc.) or not
+     * 
+     * @param contenttype
+     * @return 
+     */
+    public static boolean isBinaryMimeContent(String contenttype) {
+        String[] str = contenttype.split("/");
+        if (str.length > 1) {
+            String type = str[0].toLowerCase();
+            String subtype = str[1].toLowerCase();
+            
+            for(int i = 0; i < MIMEBINTYPES.length; i++) {
+                if (type.equals(MIMEBINTYPES[i])) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
 }

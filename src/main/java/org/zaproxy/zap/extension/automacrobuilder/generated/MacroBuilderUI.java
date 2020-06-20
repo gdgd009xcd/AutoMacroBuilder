@@ -308,7 +308,6 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         });
         PopupMenuForRequestList.add(enableRequest);
 
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("burp/Bundle"); // NOI18N
         showRequest.setText(bundle.getString("MacroBuilderUI.ShowRequest.text")); // NOI18N
         showRequest.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1584,7 +1583,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         try {
             // TODO add your handling code here:
-            java.awt.Desktop.getDesktop().browse(new URI(java.util.ResourceBundle.getBundle("burp/Bundle").getString("MacroBuilderUI.baselinemode.text")));
+            java.awt.Desktop.getDesktop().browse(new URI(bundle.getString("MacroBuilderUI.baselinemode.text")));
         } catch (IOException ex) {
             Logger.getLogger(MacroBuilderUI.class.getName()).log(Level.SEVERE, null, ex);
         } catch (URISyntaxException ex) {

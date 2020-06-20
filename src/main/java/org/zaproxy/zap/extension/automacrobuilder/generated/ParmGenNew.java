@@ -7,12 +7,17 @@ package org.zaproxy.zap.extension.automacrobuilder.generated;
 import java.io.File;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 
 import org.zaproxy.zap.extension.automacrobuilder.*;
 
@@ -85,7 +90,19 @@ public class ParmGenNew extends javax.swing.JFrame implements InterfaceRegex, in
         String _requestmess = mess.request.getMessage();
 
         selected_requestURL.setText(_url);
-        RequestArea.setText(_requestmess);
+        
+        SwingUtilities.invokeLater(() -> {
+            Document doc = RequestArea.getDocument();
+
+            try {
+                doc.insertString(0, _requestmess, null);
+            } catch (BadLocationException ex) {
+                Logger.getLogger(ParmGenNew.class.getName()).log(Level.SEVERE, null, ex);
+            }
+           
+        });
+        
+        
 
         current_model = P_NUMBERMODEL;
 
@@ -672,7 +689,7 @@ private void setAppParmsIni(){
                 {null, null, null, null}
             },
             new String [] {
-                "置換箇所", "置換しない", "置換パターン", "インクリメント"
+                "", "", "", ""
             }
         ) {
             Class[] types = new Class [] {
@@ -686,7 +703,6 @@ private void setAppParmsIni(){
         nParamTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         nParamTable.getTableHeader().setReorderingAllowed(false);
         jScrollPane3.setViewportView(nParamTable);
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("burp/Bundle"); // NOI18N
         if (nParamTable.getColumnModel().getColumnCount() > 0) {
             nParamTable.getColumnModel().getColumn(0).setPreferredWidth(60);
             nParamTable.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("ParmGenNew.nParamTable.title0.text")); // NOI18N
@@ -754,6 +770,7 @@ private void setAppParmsIni(){
         });
 
         buttonGroup1.add(DateSelBtn);
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("burp/Bundle"); // NOI18N
         DateSelBtn.setText(bundle.getString("ParmGenNew.DateTimeTitle.text")); // NOI18N
         DateSelBtn.setEnabled(false);
         DateSelBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -1390,9 +1407,9 @@ private void setAppParmsIni(){
             }
         });
 
-        jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
         RequestArea.setEditorKit(new TextPaneLineWrapper());
+        RequestArea.setAutoscrolls(false);
+        RequestArea.setPreferredSize(new java.awt.Dimension(1000, 1500));
         jScrollPane1.setViewportView(RequestArea);
 
         selected_requestURL.setText("http:///xxxx");
@@ -1411,7 +1428,7 @@ private void setAppParmsIni(){
                 .addComponent(selected_requestURL, javax.swing.GroupLayout.DEFAULT_SIZE, 955, Short.MAX_VALUE)
                 .addContainerGap())
             .addGroup(ReqPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ReqPanelLayout.createSequentialGroup()
+                .addGroup(ReqPanelLayout.createSequentialGroup()
                     .addContainerGap()
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 955, Short.MAX_VALUE)
                     .addContainerGap()))
@@ -1421,12 +1438,12 @@ private void setAppParmsIni(){
             .addGroup(ReqPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(selected_requestURL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(73, Short.MAX_VALUE))
+                .addContainerGap(96, Short.MAX_VALUE))
             .addGroup(ReqPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(ReqPanelLayout.createSequentialGroup()
                     .addGap(47, 47, 47)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
-                    .addContainerGap()))
+                    .addGap(29, 29, 29)))
         );
 
         ResReqTabs.addTab(bundle.getString("ParmGenNew.ReqPanel.TabConstraints.tabTitle.text"), ReqPanel); // NOI18N
@@ -1462,11 +1479,11 @@ private void setAppParmsIni(){
             .addGroup(ResPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(selected_responseURL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(73, Short.MAX_VALUE))
+                .addContainerGap(96, Short.MAX_VALUE))
             .addGroup(ResPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ResPanelLayout.createSequentialGroup()
                     .addGap(47, 47, 47)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 67, Short.MAX_VALUE)
                     .addContainerGap()))
         );
 

@@ -19,8 +19,6 @@
  */
 package org.zaproxy.zap.extension.automacrobuilder;
 
-import static org.zaproxy.zap.extension.automacrobuilder.HashMapDeepCopy.hashMapDeepCopyStrKStrV;
-
 import java.net.HttpCookie;
 import java.net.URLDecoder;
 import java.util.*;
@@ -28,6 +26,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static org.zaproxy.zap.extension.automacrobuilder.HashMapDeepCopy.hashMapDeepCopyStrKStrV;
 
 //
 // HTTP request/response parser

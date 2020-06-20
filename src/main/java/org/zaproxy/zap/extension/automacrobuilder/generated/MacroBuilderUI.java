@@ -5,10 +5,8 @@
  */
 package org.zaproxy.zap.extension.automacrobuilder.generated;
 
-import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -28,35 +26,10 @@ import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.ListCellRenderer;
-import javax.swing.UIManager;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Document;
-import org.zaproxy.zap.extension.automacrobuilder.AppParmsIni;
-import org.zaproxy.zap.extension.automacrobuilder.AppValue;
-import org.zaproxy.zap.extension.automacrobuilder.Encode;
-import org.zaproxy.zap.extension.automacrobuilder.HeaderPattern;
-import org.zaproxy.zap.extension.automacrobuilder.InterfaceCollection;
-import org.zaproxy.zap.extension.automacrobuilder.InterfaceParmGenRegexSaveCancelAction;
-import org.zaproxy.zap.extension.automacrobuilder.MacroBuilderUIRequestListRender;
-import org.zaproxy.zap.extension.automacrobuilder.PRequest;
-import org.zaproxy.zap.extension.automacrobuilder.PRequestResponse;
-import org.zaproxy.zap.extension.automacrobuilder.ParmFileFilter;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGen;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenArrayList;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenGSONDecoder;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenJSONSave;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTrace;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenParseURL;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenParser;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenRequestToken;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenRequestTokenKey;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenResToken;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenTextDoc;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenToken;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenTrackingToken;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenUtil;
-import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
+
+import org.zaproxy.zap.extension.automacrobuilder.*;
 
 /**
  *

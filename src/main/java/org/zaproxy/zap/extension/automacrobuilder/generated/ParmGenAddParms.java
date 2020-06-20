@@ -18,16 +18,8 @@ import javax.swing.DefaultComboBoxModel;
 
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
-import org.zaproxy.zap.extension.automacrobuilder.AppValue;
-import org.zaproxy.zap.extension.automacrobuilder.PRequest;
-import org.zaproxy.zap.extension.automacrobuilder.PRequestResponse;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenGSONDecoder;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenJSONSave;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenSession;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenToken;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenUtil;
-import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
-import org.zaproxy.zap.extension.automacrobuilder.interfaceParmGenWin;
+
+import org.zaproxy.zap.extension.automacrobuilder.*;
 
 /**
  *

@@ -9,8 +9,6 @@ package org.zaproxy.zap.extension.automacrobuilder.generated;
 import org.zaproxy.zap.extension.automacrobuilder.AppValue;
 import org.zaproxy.zap.extension.automacrobuilder.ParmGenSession;
 import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
-import org.zaproxy.zap.extension.automacrobuilder.generated.ParmGenNew;
-import org.zaproxy.zap.extension.automacrobuilder.generated.ParmGenAddParms;
 import org.zaproxy.zap.extension.automacrobuilder.interfaceParmGenWin;
 
 

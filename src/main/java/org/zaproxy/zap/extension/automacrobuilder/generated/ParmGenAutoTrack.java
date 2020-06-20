@@ -4,7 +4,6 @@
  */
 package org.zaproxy.zap.extension.automacrobuilder.generated;
 
-import org.zaproxy.zap.extension.automacrobuilder.generated.ParmGenAddParms;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -12,20 +11,8 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import javax.swing.table.DefaultTableModel;
-import org.zaproxy.zap.extension.automacrobuilder.AppValue;
-import org.zaproxy.zap.extension.automacrobuilder.InterfaceCollection;
-import org.zaproxy.zap.extension.automacrobuilder.InterfaceRegex;
-import org.zaproxy.zap.extension.automacrobuilder.PRequestResponse;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenArrayList;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenGSONDecoder;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenJSONSave;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenParser;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenSession;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenToken;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenTokenKey;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenTokenValue;
-import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
-import org.zaproxy.zap.extension.automacrobuilder.interfaceParmGenWin;
+
+import org.zaproxy.zap.extension.automacrobuilder.*;
 
 /**
  *

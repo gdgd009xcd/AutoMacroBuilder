@@ -4,10 +4,6 @@
  */
 package org.zaproxy.zap.extension.automacrobuilder.generated;
 
-import org.zaproxy.zap.extension.automacrobuilder.generated.ParmGenCSVLoader;
-import org.zaproxy.zap.extension.automacrobuilder.generated.ParmGenAutoTrack;
-import org.zaproxy.zap.extension.automacrobuilder.generated.ParmGenAttackListDialog;
-import org.zaproxy.zap.extension.automacrobuilder.generated.ParmGenAddParms;
 import java.io.File;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -17,18 +13,8 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
-import org.zaproxy.zap.extension.automacrobuilder.AppParmsIni;
-import org.zaproxy.zap.extension.automacrobuilder.AppValue;
-import org.zaproxy.zap.extension.automacrobuilder.FileReadLine;
-import org.zaproxy.zap.extension.automacrobuilder.InterfaceRegex;
-import org.zaproxy.zap.extension.automacrobuilder.PRequest;
-import org.zaproxy.zap.extension.automacrobuilder.PRequestResponse;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenJSONSave;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenSession;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenUtil;
-import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
-import org.zaproxy.zap.extension.automacrobuilder.TextPaneLineWrapper;
-import org.zaproxy.zap.extension.automacrobuilder.interfaceParmGenWin;
+
+import org.zaproxy.zap.extension.automacrobuilder.*;
 
 /**
  *

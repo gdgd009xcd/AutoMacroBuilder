@@ -19,15 +19,12 @@
  */
 package org.zaproxy.zap.extension.automacrobuilder;
 
-import java.net.HttpCookie;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ListIterator;
 import org.zaproxy.zap.extension.automacrobuilder.GSONSaveObject.PRequestResponses;
 import org.zaproxy.zap.extension.automacrobuilder.generated.MacroBuilderUI;
 import org.zaproxy.zap.extension.automacrobuilder.mdepend.ClientDependent;
+
+import java.net.HttpCookie;
+import java.util.*;
 
 /** @author daike */
 public class ParmGenMacroTrace extends ClientDependent {

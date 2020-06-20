@@ -85,7 +85,7 @@ public class AppValue {
                                 // < 0: get tracking value from any response
                                 // >=0: get tracking value from specified request line number's response
     private int toStepNo =
-            ParmVars.TOSTEPANY; // TRACK:更新先 
+            ParmVars.TOSTEPANY; // TRACK:更新先
                                 // 　>0:指定したStepNoのリクエスト更新
                                 // Line number of request to which setting tracking paramter  in RequestList sequence 
                                 //  <0 : No Operation. 
@@ -699,7 +699,7 @@ public class AppValue {
                 // tk = new ParmGenTokenKey(AppValue.TokenTypeNames.DEFAULT, token, toStepNo);
                 tk =
                         new ParmGenTokenKey(
-                                AppValue.TokenTypeNames.DEFAULT,
+                                TokenTypeNames.DEFAULT,
                                 token,
                                 currentStepNo); // token: tracking param name, currentStepNo: target
                 // request StepNo
@@ -726,7 +726,7 @@ public class AppValue {
                         + " TokenName:"
                         + token;
         ParmGenTokenKey errorhash_key =
-                new ParmGenTokenKey(AppValue.TokenTypeNames.DEFAULT, errKeyName, 0);
+                new ParmGenTokenKey(TokenTypeNames.DEFAULT, errKeyName, 0);
         Matcher m = valueregex.matcher(contents);
         Matcher m_org = null;
 

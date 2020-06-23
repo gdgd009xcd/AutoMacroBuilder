@@ -127,7 +127,7 @@ public class OneThreadProcessor {
     }
 
     public boolean wasInterrupted() {
-        if (Thread.currentThread().isInterrupted()) {
+        if (th.isInterrupted()) {
             this.isinterrupted = true;
         }
         return this.isinterrupted;

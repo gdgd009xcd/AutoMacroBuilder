@@ -22,8 +22,11 @@ package org.zaproxy.zap.extension.automacrobuilder;
 import org.zaproxy.zap.extension.automacrobuilder.GSONSaveObject.PRequestResponses;
 import org.zaproxy.zap.extension.automacrobuilder.generated.MacroBuilderUI;
 import org.zaproxy.zap.extension.automacrobuilder.mdepend.ClientDependent;
+import org.zaproxy.zap.extension.automacrobuilder.mdepend.ClientRequest;
 
+import java.io.IOException;
 import java.net.HttpCookie;
+import java.nio.charset.Charset;
 import java.util.*;
 
 /** @author daike */
@@ -86,6 +89,8 @@ public class ParmGenMacroTrace extends ClientDependent {
     private ParmGenTWait TWaiter = null;
     private int waittimer = 0; // 実行間隔(msec)
 
+    private static InterfaceClientRequest clientrequest = new ClientRequest();
+
     public String state_debugprint() {
         String msg = "PMT_UNKNOWN";
         switch (state) {
@@ -117,7 +122,9 @@ public class ParmGenMacroTrace extends ClientDependent {
         return msg;
     }
 
-    public ParmGenMacroTrace() {}
+    public ParmGenMacroTrace() {
+    }
+
 
     /**
      * Get copy of this instance for scan
@@ -392,7 +399,8 @@ public class ParmGenMacroTrace extends ClientDependent {
 
                     //ppr.request.setUUID2CustomHeader(this.getUUID());
                     setUUID2CustomHeader(ppr.request);
-                    PRequestResponse pqrs = clientHttpRequest(ppr.request);
+                    //PRequestResponse pqrs = clientHttpRequest(ppr.request);
+                    PRequestResponse pqrs = clientrequest.clientRequest(this, ppr.request);
 
                     if (pqrs != null) {
                         // cit.set(pqrs); // 更新
@@ -510,7 +518,8 @@ public class ParmGenMacroTrace extends ClientDependent {
                                         + threadid);
                         //ppr.request.setUUID2CustomHeader(this.getUUID());
                         setUUID2CustomHeader(ppr.request);
-                        PRequestResponse pqrs = clientHttpRequest(ppr.request);
+                        // PRequestResponse pqrs = clientHttpRequest(ppr.request);
+                        PRequestResponse pqrs = clientrequest.clientRequest(this, ppr.request);
                         if (pqrs != null) {
                             postmacro_RequestResponse = pqrs;
                             // cit.set(pqrs); // 更新
@@ -814,4 +823,8 @@ public class ParmGenMacroTrace extends ClientDependent {
             cookieMan.parse(domain, path, cheader);
         }
     }
+
+
+
+
 }

@@ -4,56 +4,22 @@
 
 package burp;
 
-import burp.BurpMacroStartAction;
-import burp.IBurpExtender;
-import burp.IBurpExtenderCallbacks;
-import burp.IContextMenuFactory;
-import burp.IContextMenuInvocation;
-import burp.IHttpListener;
-import burp.IHttpRequestResponse;
-import burp.IHttpService;
-import burp.IInterceptedProxyMessage;
-import burp.IProxyListener;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.swing.AbstractButton;
-import javax.swing.JCheckBoxMenuItem;
 
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import org.zaproxy.zap.extension.automacrobuilder.PRequestResponse;
 import org.zaproxy.zap.extension.automacrobuilder.ParmGen;
 import org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTrace;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenUtil;
 import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
-import org.zaproxy.zap.extension.automacrobuilder.Encode;
 import org.zaproxy.zap.extension.automacrobuilder.InterfaceAction;
 import org.zaproxy.zap.extension.automacrobuilder.InterfaceDoAction;
 import org.zaproxy.zap.extension.automacrobuilder.InterfaceEndAction;
-import org.zaproxy.zap.extension.automacrobuilder.InterfaceLangOKNG;
-import org.zaproxy.zap.extension.automacrobuilder.LockInstance;
 import org.zaproxy.zap.extension.automacrobuilder.OneThreadProcessor;
-import org.zaproxy.zap.extension.automacrobuilder.generated.LangSelectDialog;
 import org.zaproxy.zap.extension.automacrobuilder.PRequest;
-import org.zaproxy.zap.extension.automacrobuilder.PResponse;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenJSONSave;
+
 import static org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTrace.PMT_POSTMACRO_NULL;
 import org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTraceProvider;
 import org.zaproxy.zap.extension.automacrobuilder.ThreadManager;
-import org.zaproxy.zap.extension.automacrobuilder.generated.ParmGenTop;
-
 
 
 public class BurpExtenderDoAction implements InterfaceDoAction

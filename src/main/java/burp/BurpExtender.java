@@ -4,50 +4,27 @@
 
 package burp;
 
-import burp.BurpMacroStartAction;
-import burp.IBurpExtender;
-import burp.IBurpExtenderCallbacks;
-import burp.IContextMenuFactory;
-import burp.IContextMenuInvocation;
-import burp.IHttpListener;
-import burp.IHttpRequestResponse;
-import burp.IHttpService;
-import burp.IInterceptedProxyMessage;
-import burp.IProxyListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.swing.AbstractButton;
-import javax.swing.JCheckBoxMenuItem;
 
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
+
 import org.zaproxy.zap.extension.automacrobuilder.PRequestResponse;
 import org.zaproxy.zap.extension.automacrobuilder.ParmGen;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTrace;
 import org.zaproxy.zap.extension.automacrobuilder.ParmGenUtil;
 import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
 import org.zaproxy.zap.extension.automacrobuilder.Encode;
 import org.zaproxy.zap.extension.automacrobuilder.InterfaceLangOKNG;
-import org.zaproxy.zap.extension.automacrobuilder.LockInstance;
 import org.zaproxy.zap.extension.automacrobuilder.generated.LangSelectDialog;
 import org.zaproxy.zap.extension.automacrobuilder.PRequest;
 import org.zaproxy.zap.extension.automacrobuilder.PResponse;

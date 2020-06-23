@@ -632,6 +632,15 @@ public class ParmGen {
         return noerror;
     }
 
+    /**
+     * Set tracked cookie and token in request argument
+     * this function for Burp version
+     * @param _h
+     * @param port
+     * @param isSSL
+     * @param requestbytes
+     * @return
+     */
     public byte[] Run(String _h, int port, boolean isSSL, byte[] requestbytes) {
 
         ParmGenBinUtil boundaryarray = null;
@@ -826,11 +835,235 @@ public class ParmGen {
         return null;
     }
 
+    /**
+     * Set tracked cookie and token in request argument
+     * This function for Zap-extension
+     *
+     * @param prequest
+     * @return
+     */
+    public PRequest RunPRequest(PRequest prequest) {
+
+        ParmGenBinUtil boundaryarray = null;
+        ParmGenBinUtil contarray = null;
+
+        if (parmcsv == null || parmcsv.size() <= 0) {
+            // NOP
+            if (pmt.isRunning()) {
+                // PRequest prequest = new PRequest(_h, port, isSSL, requestbytes, ParmVars.enc);
+                PRequest cookierequest = pmt.configureRequest(prequest);
+                if (cookierequest != null) {
+                    // return cookierequest.getByteMessage();
+                    return cookierequest;
+                }
+            }
+        } else {
+            // error hash
+            ParmGenHashMap errorhash = new ParmGenHashMap();
+
+            // Request request = connection.getRequest();
+            // PRequest prequest = new PRequest(_h, port, isSSL, requestbytes, ParmVars.enc);
+            byte[] requestbytes = prequest.getBodyBytes();
+
+            // check if we have parameters
+            // Construct a new HttpUrl object, since they are immutable
+            // This is a bit of a cheat!
+            // String url = request.getURL().toString();
+            String url = prequest.getURL();
+
+            String content_type = prequest.getHeader("Content-Type");
+
+            PRequestResponse org_PRequestResponse = pmt.getCurrentOriginalRequest(); // copy
+            PRequest org_Request = null;
+            if (pmt.isCurrentRequest() && pmt.isOverWriteCurrentRequestTrackigParam()) {
+                PRequestResponse repeaterPRR = pmt.getToolBaseline(); // reference
+                if (repeaterPRR != null) {
+                    org_Request = repeaterPRR.request;
+                } else { // intruder or scanner..
+                    org_Request = org_PRequestResponse.request;
+                }
+            }
+
+            boolean hasboundary = false;
+            PRequest tempreq = null;
+            PRequest modreq = null;
+            if (url != null) {
+
+                AppParmsIni pini = null;
+                ListIterator<AppParmsIni> it = parmcsv.listIterator();
+                while (it.hasNext()) {
+                    pini = it.next();
+                    Matcher urlmatcher = pini.getPatternUrl().matcher(url);
+                    if (urlmatcher.find() && pmt.CurrentRequestIsSetToTarget(pini)) {
+                        // Content-Type: multipart/form-data;
+                        // boundary=---------------------------30333176734664
+                        if (content_type != null
+                                && !content_type.equals("")
+                                && hasboundary == false) { // found
+                            Pattern ctypepattern =
+                                    ParmGenUtil.Pattern_compile(
+                                            "multipart/form-data;.*?boundary=(.+)$");
+                            Matcher ctypematcher = ctypepattern.matcher(content_type);
+                            if (ctypematcher.find()) {
+                                String Boundary = ctypematcher.group(1);
+                                LOGGER4J.debug("boundary=" + Boundary);
+                                Boundary = "--" + Boundary; //
+                                boundaryarray = new ParmGenBinUtil(Boundary.getBytes());
+                            }
+                            hasboundary = true;
+                        }
+                        LOGGER4J.debug("***URL正規表現[" + pini.getUrl() + "]マッチパターン[" + url + "]");
+                        if (contarray == null) {
+
+                            ParmGenBinUtil warray = new ParmGenBinUtil(requestbytes);
+                            try {
+                                // ParmVars.plog.debuglog(1,"request length : " +
+                                // Integer.toString(warray.length()) + "/" +
+                                // Integer.toString(prequest.getParsedHeaderLength()));
+                                if (warray.length() > prequest.getParsedHeaderLength()) {
+                                    byte[] wbyte =
+                                            warray.subBytes(prequest.getParsedHeaderLength());
+                                    contarray = new ParmGenBinUtil(wbyte);
+                                }
+                            } catch (Exception e) {
+                                // contarray is null . No Body...
+                            }
+                        }
+
+                        List<AppValue> parmlist = pini.getAppValueReadWriteOriginal();
+                        Iterator<AppValue> pt = parmlist.iterator();
+
+                        while (pt.hasNext()) {
+                            AppValue av = pt.next();
+                            if (av.isEnabled()) {
+                                if ((tempreq =
+                                        ParseRequest(
+                                                prequest,
+                                                org_Request,
+                                                boundaryarray,
+                                                contarray,
+                                                pini,
+                                                av,
+                                                errorhash))
+                                        != null) {
+                                    modreq = tempreq;
+                                    prequest = tempreq;
+                                }
+                            }
+                        }
+                        // ここでerrorhashを評価し、setErrorする。
+                        Iterator<Map.Entry<ParmGenTokenKey, ParmGenTokenValue>> ic =
+                                errorhash.iterator();
+                        boolean iserror = false;
+                        if (ic != null) {
+                            while (ic.hasNext()) {
+                                Map.Entry<ParmGenTokenKey, ParmGenTokenValue> entry = ic.next();
+                                ParmGenTokenValue errorhash_value = entry.getValue();
+                                if (!errorhash_value.getBoolean()) {
+                                    iserror = true;
+                                    break;
+                                }
+                            }
+                        }
+                        pmt.setError(iserror);
+                    }
+                }
+            }
+            // byte[] retval = null;
+            PRequest retval = null;
+
+            PRequest cookierequest = pmt.configureRequest(prequest);
+            if (cookierequest != null) {
+                prequest = cookierequest;
+                // retval = prequest.getByteMessage();
+                retval = prequest;
+            }
+
+            if (modreq != null) {
+                // You have to use connection.setRequest() to make any changes take effect!
+                if (contarray != null) {
+                    try {
+                        prequest.setBody(contarray.getBytes());
+                    } catch (Exception e) {
+                        LOGGER4J.error("prequest.setBody", e);
+                    }
+                }
+                if (ParmVars.ProxyAuth.length() > 0) {
+                    prequest.setHeader(
+                            "Proxy-Authorization", ParmVars.ProxyAuth); // username:passwd => base64
+                }
+                // retval = prequest.getByteMessage();
+                retval = prequest;
+            } else if (ParmVars.ProxyAuth.length() > 0) {
+                prequest.setHeader(
+                        "Proxy-Authorization", ParmVars.ProxyAuth); // username:passwd => base64
+                // retval = prequest.getByteMessage();
+                retval = prequest;
+            }
+
+            AppParmsIni pini = null;
+            Iterator<AppParmsIni> it = parmcsv.iterator();
+            int row = 0;
+            while (it.hasNext()) {
+                pini = it.next();
+                if (pmt.CurrentRequestIsTrackFromTarget(pini)
+                        && pini.getTypeVal() == AppParmsIni.T_TRACK) {
+                    List<AppValue> parmlist = pini.getAppValueReadWriteOriginal();
+                    Iterator<AppValue> pt = parmlist.iterator();
+                    boolean fetched;
+                    boolean apvIsUpdated = false;
+                    int col = 0;
+                    while (pt.hasNext()) {
+                        AppValue av = pt.next();
+                        if (av.isEnabled() && av.getResTypeInt() >= AppValue.V_REQTRACKBODY) {
+                            fetched = FetchRequest(prequest, pini, av, row, col);
+                            if (fetched) {
+                                // pt.set(av); no need set
+                                apvIsUpdated = true;
+                            }
+                        }
+                        col++;
+                    }
+                    if (apvIsUpdated) {
+                        // it.set(pini); no need set
+                    }
+                }
+                row++;
+            }
+
+            return retval;
+        }
+
+        return null;
+    }
+
+    /**
+     * Parse Response and extract tracking tokens from it.
+     *
+     * @param url
+     * @param response_bytes
+     * @param _pageenc
+     * @return
+     */
     public int ResponseRun(String url, byte[] response_bytes, Encode _pageenc) {
 
         int updtcnt = 0;
 
         PResponse presponse = new PResponse(response_bytes, _pageenc);
+        return ResponseRun(url, presponse);
+
+    }
+
+    /**
+     * Parse response and extract tracking tokens from it.
+     *
+     * @param url
+     * @param presponse
+     * @return
+     */
+    public int ResponseRun(String url, PResponse presponse) {
+
+        int updtcnt = 0;
 
         String res_content_type = presponse.getContent_Type();
         String res_content_subtype = presponse.getContent_Subtype();
@@ -879,4 +1112,5 @@ public class ParmGen {
 
         return updtcnt;
     }
+
 }

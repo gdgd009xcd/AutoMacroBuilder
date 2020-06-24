@@ -25,10 +25,21 @@ package org.zaproxy.zap.extension.automacrobuilder;
  * @author daike
  */
 public interface InterfaceDoActionProvider {
-    // sequnce number 0start
+    /**
+     * get sequence number: 0start
+     *
+     * @return
+     */
     int getSequnceNo();
-    // action number 0start: specified number Action run in List<InterfaceAction> getActionList()
+    /**
+     * get Action number: specified number Action run in List<InterfaceAction> getActionList()
+     * @return
+     */
     int getActionNo();
-    // create new InterfaceDoAction  Instance.
+    /**
+     * create new InterfaceDoAction Instance as Singleton
+     *
+     * @return
+     */
     InterfaceDoAction getDoActionInstance();
 }

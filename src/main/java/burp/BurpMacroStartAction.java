@@ -16,9 +16,8 @@ import org.zaproxy.zap.extension.automacrobuilder.ThreadManagerProvider;
  * @author daike
  */
 public class BurpMacroStartAction implements ISessionHandlingAction {
-    
 
-    private BurpMacroStartDoActionProvider provider = null;
+    private BurpMacroStartDoActionProvider provider = new BurpMacroStartDoActionProvider();
     
     private static org.apache.logging.log4j.Logger LOGGER4J =
             org.apache.logging.log4j.LogManager.getLogger();
@@ -27,9 +26,6 @@ public class BurpMacroStartAction implements ISessionHandlingAction {
     }
 
     private BurpMacroStartDoActionProvider getProvider(IHttpRequestResponse currentrequest, IHttpRequestResponse[] executedmacros){
-        if ( this.provider == null) {
-            this.provider = new BurpMacroStartDoActionProvider();
-        }
         this.provider.setParamters(currentrequest, executedmacros);
         return this.provider;
     }

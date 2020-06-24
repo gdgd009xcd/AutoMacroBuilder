@@ -556,6 +556,13 @@ public class ParmGenMacroTrace extends ClientDependent {
         return null;
     }
 
+    public PResponse getPostMacroPResponse() {
+        if (postmacro_RequestResponse != null) {
+            return postmacro_RequestResponse.response;
+        }
+        return null;
+    }
+
     public int getCurrentRequestPos() {
         return selected_request;
     }

@@ -85,7 +85,7 @@ public class BurpMacroStartDoAction implements InterfaceDoAction {
     }
 
     /**
-     * Initialize action. It runs synchronusly.
+     * newly create action and Initialize it. this function runs synchronusly.
      * 
      * @param tm
      * @param otp 

@@ -175,7 +175,13 @@ public class BurpExtenderDoAction implements InterfaceDoAction
  
 
     
-    
+    /**
+     * get parameters from provider and create InterfaceAction. this function runs as synchronusly
+     *
+     * @param tm
+     * @param otp
+     * @return 
+     */
 
     @Override
     public List<InterfaceAction> startAction(ThreadManager tm, OneThreadProcessor otp) {

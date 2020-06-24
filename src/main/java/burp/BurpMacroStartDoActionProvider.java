@@ -14,7 +14,7 @@ import org.zaproxy.zap.extension.automacrobuilder.InterfaceDoActionProvider;
  */
 public class BurpMacroStartDoActionProvider implements InterfaceDoActionProvider {
 
-    private BurpMacroStartDoAction doactioninstance = null;
+    private BurpMacroStartDoAction doactioninstance = new BurpMacroStartDoAction(this);
     private IHttpRequestResponse currentrequest = null;
     private IHttpRequestResponse[] executedmacros = null;
     
@@ -53,11 +53,13 @@ public class BurpMacroStartDoActionProvider implements InterfaceDoActionProvider
         return 0;
     }
 
+    /**
+     * get DoactionInstance as singleton
+     *
+     * @return 
+     */
     @Override
     public InterfaceDoAction getDoActionInstance() {
-        if (this.doactioninstance == null) {
-            this.doactioninstance = new BurpMacroStartDoAction(this);
-        }
         return this.doactioninstance;
     }
     

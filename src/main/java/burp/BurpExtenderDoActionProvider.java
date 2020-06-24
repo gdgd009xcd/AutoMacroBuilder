@@ -14,7 +14,7 @@ import org.zaproxy.zap.extension.automacrobuilder.InterfaceDoActionProvider;
  */
 public class BurpExtenderDoActionProvider implements InterfaceDoActionProvider {
     
-    private BurpExtenderDoAction doaction = null;
+    private BurpExtenderDoAction doaction = new BurpExtenderDoAction(this);
     private int toolflag;
     private boolean messageIsRequest;
     IHttpRequestResponse messageInfo;
@@ -47,11 +47,13 @@ public class BurpExtenderDoActionProvider implements InterfaceDoActionProvider {
         return 0;
     }
 
+    /**
+     * get DoAction instance as singleton
+     *
+     * @return 
+     */
     @Override
     public InterfaceDoAction getDoActionInstance() {
-        if(this.doaction==null) {
-            this.doaction = new BurpExtenderDoAction(this);
-        }
         return this.doaction;
     }
     

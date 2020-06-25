@@ -957,6 +957,11 @@ class ParseHTTPHeaders implements DeepClone {
         return message;
     }
 
+    /**
+     * get Byte message ( header + CRLF + body )
+     *
+     * @return
+     */
     public byte[] getByteMessage() {
 
         if (bytebody != null) { // byte[] bytebodyから

@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 // class AppValue
 //
 public class AppValue {
-    private static org.apache.logging.log4j.Logger logger4j =
+    private static org.apache.logging.log4j.Logger LOGGER4J =
             org.apache.logging.log4j.LogManager.getLogger();
 
     private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
@@ -463,7 +463,7 @@ public class AppValue {
             Pattern_resURL = ParmGenUtil.Pattern_compile(resURL);
         } catch (Exception e) {
             Pattern_resURL = null;
-            ParmVars.plog.debuglog(0, "ERROR: setresURL " + e.toString());
+            LOGGER4J.error("ERROR: setresURL ", e);
         }
     }
 
@@ -494,7 +494,7 @@ public class AppValue {
         try {
             Pattern_resRegex = ParmGenUtil.Pattern_compile(resRegex);
         } catch (Exception e) {
-            ParmVars.plog.debuglog(0, "ERROR: setresRegex " + e.toString());
+            LOGGER4J.error("ERROR: setresRegex ", e);
             Pattern_resRegex = null;
         }
     }
@@ -661,7 +661,7 @@ public class AppValue {
             valueregex = ParmGenUtil.Pattern_compile(value);
             noerror = true;
         } catch (UnsupportedEncodingException e) {
-            logger4j.error("decode failed value:[" + _value + "]", e);
+            LOGGER4J.error("decode failed value:[" + _value + "]", e);
             valueregex = null;
         }
 
@@ -695,8 +695,6 @@ public class AppValue {
                 if (currentStepNo != toStepNo) {
                     return null; //
                 } else {
-                    // ParmVars.plog.debuglog(0, "replaceContents currentStepNo==toStepNo " +
-                    // currentStepNo + "==" + toStepNo);
                 }
                 // tokentype 固定。tokentypeは追跡元のタイプなので、追跡先toStepNoの埋め込み先タイプとは無関係で無視する。
                 // tk = new ParmGenTokenKey(AppValue.TokenTypeNames.DEFAULT, token, toStepNo);
@@ -772,19 +770,16 @@ public class AppValue {
             if (spt != -1 && ept != -1) {
                 strcnt =
                         pini.getStrCnt(pmt, this, tk, currentStepNo, toStepNo, valparttype, csvpos);
-                ParmVars.plog.printLF();
                 boolean isnull = false;
                 ParmGenTokenValue errorhash_value = null;
                 String org_newval = strcnt;
                 if (org_matchval != null) {
                     ParmGenStringDiffer differ = new ParmGenStringDiffer(org_matchval, matchval);
-                    ParmVars.plog.debuglog(
-                            0, "org_matchval[" + org_matchval + "] matchval[" + matchval + "]");
+                    LOGGER4J.debug("org_matchval[" + org_matchval + "] matchval[" + matchval + "]");
                     strcnt = differ.replaceOrgMatchedValue(strcnt);
                 }
                 if (strcnt != null) {
-                    ParmVars.plog.debuglog(
-                            0,
+                    LOGGER4J.info(
                             java.text.MessageFormat.format(
                                     bundle.getString("ParmGen.parameter_regex_msg1.text"),
                                     new Object[] {value, matchval, token, strcnt}));
@@ -796,8 +791,7 @@ public class AppValue {
                     errorhash_value = new ParmGenTokenValue("", strcnt, true);
                     errorhash.put(errorhash_key, errorhash_value);
                 } else {
-                    ParmVars.plog.debuglog(
-                            0,
+                    LOGGER4J.info(
                             java.text.MessageFormat.format(
                                     bundle.getString("ParmGen.parameter_regex_err1.text"),
                                     new Object[] {value, token, matchval}));
@@ -815,7 +809,6 @@ public class AppValue {
                 if (isnull) { // 値取得失敗時は、オリジナルに戻す。
                     strcnt = matchval;
                     org_newval = org_matchval;
-                    // ParmVars.plog.setError(isnull);
                 }
                 newcontents += contents.substring(cpt, spt) + strcnt;
                 cpt = ept;

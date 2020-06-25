@@ -5,6 +5,8 @@
  */
 package burp;
 
+import java.util.HashSet;
+import java.util.Set;
 import org.zaproxy.zap.extension.automacrobuilder.InterfaceDoAction;
 import org.zaproxy.zap.extension.automacrobuilder.InterfaceDoActionProvider;
 
@@ -14,27 +16,10 @@ import org.zaproxy.zap.extension.automacrobuilder.InterfaceDoActionProvider;
  */
 public class BurpExtenderDoActionProvider implements InterfaceDoActionProvider {
     
-    private BurpExtenderDoAction doaction = new BurpExtenderDoAction(this);
-    private int toolflag;
-    private boolean messageIsRequest;
-    IHttpRequestResponse messageInfo;
-    
+    private BurpExtenderDoAction doaction = new BurpExtenderDoAction();
+
     public void setParameters(int toolflag, boolean messageIsRequest, IHttpRequestResponse messageInfo){
-        this.toolflag = toolflag;
-        this.messageIsRequest = messageIsRequest;
-        this.messageInfo = messageInfo;
-    }
-    
-    public int getToolFlag(){
-        return this.toolflag;
-    }
-    
-    public boolean getMessageIsRequest(){
-        return this.messageIsRequest;
-    }
-    
-    public IHttpRequestResponse getMessageInfo(){
-        return this.messageInfo;
+        doaction.setParameters(toolflag, messageIsRequest, messageInfo);
     }
     
     @Override

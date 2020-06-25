@@ -120,7 +120,6 @@ class HashMapDeepCopy {
     /**
      * {@literal HashMap<String, V extends DeepClone> deep copy}
      *
-     * @param String
      * @param {@code <V>}
      * @param src copy from
      * @param dest to which copy src
@@ -135,7 +134,6 @@ class HashMapDeepCopy {
      * {@code HashMap<String, String>} copy( that is same as {@code HashMap<String,String>}.clone().
      * because String is immutable. In other words String is "final fixed(unchangable)" object.)
      *
-     * @param String
      * @param {@code <V>}
      * @param src copy from
      * @return {@code HashMap<String,String>} dest to which copy src

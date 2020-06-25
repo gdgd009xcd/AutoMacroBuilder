@@ -274,10 +274,16 @@ public class ThreadManager {
         try {
             thcount--;
             if (!p.wasInterrupted() && action != null && !p.isAborted()) {// interrupt or abnormal then endaction omit.
+                InterfaceEndAction endaction = action.endAction(this, p); // Whether to run endAction or not, always get endaction
+                                                                               // because if endAction stored ThreadLocal, then must be remove it.
                 if(doendaction) {
-                    actionlist.add(action.endAction(this, p));
+                    if ( endaction != null ) {
+                        actionlist.add(endaction);
+                    } else {
+                        LOGGER4J.warn("endaction is null id:" + p.getid());
+                    }
                 } else {
-                    LOGGER4J.warn("endaction is null id:" + p.getid());
+                    LOGGER4J.warn("skipped endaction because DoAction return false id:" + p.getid());
                 }
             } else {
                 aborted = true;

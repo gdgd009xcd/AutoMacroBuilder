@@ -89,7 +89,9 @@ public class ParmGenMacroTrace extends ClientDependent {
     private ParmGenTWait TWaiter = null;
     private int waittimer = 0; // 実行間隔(msec)
 
-    private static InterfaceClientRequest clientrequest = new ClientRequest();
+    public static ClientRequest clientrequest = new ClientRequest();
+
+    private Object sender = null;
 
     public String state_debugprint() {
         String msg = "PMT_UNKNOWN";
@@ -125,15 +127,15 @@ public class ParmGenMacroTrace extends ClientDependent {
     public ParmGenMacroTrace() {
     }
 
-
     /**
      * Get copy of this instance for scan
      *
      * @return
      */
-    public ParmGenMacroTrace getScanInstance(long tid) {
+    public <T> ParmGenMacroTrace getScanInstance(T sender) {
         ParmGenMacroTrace nobj = new ParmGenMacroTrace();
-        nobj.threadid = tid;
+        nobj.sender = sender;
+        nobj.threadid = Thread.currentThread().getId();
         // nobj.setUUID(UUIDGenerator.getUUID()); // already set in super.constructor
         nobj.rlist = this.rlist; // reference
         nobj.originalrlist = this.originalrlist; // reference
@@ -831,7 +833,9 @@ public class ParmGenMacroTrace extends ClientDependent {
         }
     }
 
-
+    public <T> T getSender() {
+        return CastUtils.castToType(this.sender);
+    }
 
 
 }

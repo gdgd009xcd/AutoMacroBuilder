@@ -863,7 +863,7 @@ public class ParmGen {
 
             // Request request = connection.getRequest();
             // PRequest prequest = new PRequest(_h, port, isSSL, requestbytes, ParmVars.enc);
-            byte[] requestbytes = prequest.getBodyBytes();
+            byte[] requestbytes = prequest.getByteMessage();
 
             // check if we have parameters
             // Construct a new HttpUrl object, since they are immutable

@@ -20,13 +20,34 @@ import static org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTrace.PMT_C
  */
 public class BurpMacroStartDoAction implements InterfaceDoAction {
     
-    private BurpMacroStartDoActionProvider provider = null;
-    
     private static org.apache.logging.log4j.Logger LOGGER4J =
             org.apache.logging.log4j.LogManager.getLogger();
     
-    public BurpMacroStartDoAction(BurpMacroStartDoActionProvider provider){
-        this.provider = provider;
+    // ACTION LIST is per thread instance.
+    private ThreadLocal<List<InterfaceAction>> ACTION_LIST = new ThreadLocal<>();
+        
+    
+    public BurpMacroStartDoAction(){
+
+    }
+    
+    /**
+     * Set parameters used in DoAction
+     * 
+     * @param currentrequest
+     * @param executedmacros 
+     */
+    public void setParamters(IHttpRequestResponse currentrequest, IHttpRequestResponse[] executedmacros){
+        // create ParmGenMacroTrace new Instance per thread.
+        final ParmGenMacroTrace pmt = ParmGenMacroTraceProvider.getNewParmGenMacroTraceInstance(Thread.currentThread().getId());
+        
+        List<InterfaceAction> actionlist = new CopyOnWriteArrayList<>();
+        
+        actionlist.add((t, o) -> {
+            return performAction(o, pmt, currentrequest, executedmacros);
+        });
+        
+        ACTION_LIST.set(actionlist);
     }
     
    
@@ -92,19 +113,12 @@ public class BurpMacroStartDoAction implements InterfaceDoAction {
      */
     @Override
     public List<InterfaceAction> startAction(ThreadManager tm, OneThreadProcessor otp) {
-        List<InterfaceAction> actionlist = new CopyOnWriteArrayList<>();
-        // copy all parameters locally
-        final IHttpRequestResponse currentrequest = this.provider.getCurrentRequest();
-        final IHttpRequestResponse[] executedmacros = provider.getExecutedMacros();
-        final ParmGenMacroTrace pmt = ParmGenMacroTraceProvider.getNewParmGenMacroTraceInstance(otp.getid());
-        
-        //otp.setOptData(pmt);// pass ParmGenMacroTrace to OneThreadProcessor's optdata 
-        
-        actionlist.add((t, o) -> {
-            return performAction(o, pmt, currentrequest, executedmacros);
-        });
-        
-        return actionlist;
+       try {
+            List<InterfaceAction> actionlist = ACTION_LIST.get();
+            return actionlist;
+       } finally {
+           ACTION_LIST.remove();
+       }
     }
 
  
@@ -113,9 +127,8 @@ public class BurpMacroStartDoAction implements InterfaceDoAction {
     public InterfaceEndAction endAction(ThreadManager tm, OneThreadProcessor otp) {
         
         // nothing to do 
-        InterfaceEndAction endaction = () -> {};
         
-        return endaction;
+        return null;
     }
 
  

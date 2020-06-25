@@ -27,28 +27,39 @@ import java.util.List;
  * @author daike
  */
 public interface InterfaceDoAction {
-    //
-    // start action (synchronized)
-    // This function is called by where:
-    //             synchronized OneThreadProcessor getProcess(InterfaceDoActionProvider provider)
-    // new Instance:
-    //        public OneThreadProcessor(ThreadManager tm, Thread th, InterfaceDoAction doaction)
-    // RECYCLED    :
-    //        public void setNewThread(Thread th)
-    //
-    // before action: do  initiatize or copy fields... and return acttion list.
-    // action list:  actions can be performed by specifying the list number
-    // at the appropriate entry point.
+    /**
+     * start action (synchronized)
+     * <PRE>
+     * This function is "synchronized" called  where:
+     *      synchronized OneThreadProcessor getProcess(InterfaceDoActionProvider provider)
+     * new Instance:
+     *     public OneThreadProcessor(ThreadManager tm, Thread th, InterfaceDoAction doaction)
+     * RECYCLED    :
+     *     public void setNewThread(Thread th)
+     *
+     * purpose: do  initiatize or copy fields... and return <b>action list</b>.
+     * <b>action list</b>:  this is list of InterfaceAction.  The InterfaceAction will be called
+     * with the number specified by InterfaceDoActionProvider.getActionNo()
+     *
+     * </PRE>
+     * @param tm
+     * @param otp
+     * @return
+     */
     List<InterfaceAction> startAction(ThreadManager tm, OneThreadProcessor otp);
-    //
-    //
-    // {@code List<InterfaceAction>} getActionList();
-    //
-    // end action (synchronized)
-    // This function is called by where:
-    //     synchronized void endProcess(OneThreadProcessor p, InterfaceDoAction action)
-    //
-    // after action: do some result save/update etc...
-    //
-    InterfaceEndAction endAction(ThreadManager tm, OneThreadProcessor otp);
+
+    /**
+     * {@code List<InterfaceAction>} getActionList();
+     * <PRE>
+     * end action (synchronized)
+     * This function is "synchronized" called  where:
+     *      synchronized void endProcess(OneThreadProcessor p, InterfaceDoAction action)
+     * purpose: do some result save/update or post-processing etc... after startAction has done.
+     *
+     * </PRE>
+     * @param tm
+     * @param otp
+     * @return
+     */
+     InterfaceEndAction endAction(ThreadManager tm, OneThreadProcessor otp);
 }

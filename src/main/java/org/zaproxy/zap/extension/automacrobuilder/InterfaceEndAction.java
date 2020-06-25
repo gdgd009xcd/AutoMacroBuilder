@@ -25,5 +25,10 @@ package org.zaproxy.zap.extension.automacrobuilder;
  * @author daike
  */
 public interface InterfaceEndAction {
+    /**
+     * this EndAction synchronusly called  after InterfaceAction is done.<P>
+     * purpose: save/store InterfaceAction's results or some post processing.
+     *
+     */
     public void action();
 }

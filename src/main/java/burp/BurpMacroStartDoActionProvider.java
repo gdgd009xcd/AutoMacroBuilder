@@ -14,9 +14,7 @@ import org.zaproxy.zap.extension.automacrobuilder.InterfaceDoActionProvider;
  */
 public class BurpMacroStartDoActionProvider implements InterfaceDoActionProvider {
 
-    private BurpMacroStartDoAction doactioninstance = new BurpMacroStartDoAction(this);
-    private IHttpRequestResponse currentrequest = null;
-    private IHttpRequestResponse[] executedmacros = null;
+    private BurpMacroStartDoAction doactioninstance = new BurpMacroStartDoAction();
     
     BurpMacroStartDoActionProvider(){
     }
@@ -28,18 +26,7 @@ public class BurpMacroStartDoActionProvider implements InterfaceDoActionProvider
      * @param executedmacros 
      */
     public void setParamters(IHttpRequestResponse currentrequest, IHttpRequestResponse[] executedmacros){
-        this.currentrequest = currentrequest;
-        this.executedmacros = executedmacros;
-    }
-    
-    // Get parameter currentRequest for used in DoAction
-    public IHttpRequestResponse getCurrentRequest(){
-        return this.currentrequest;
-    }
-    
-    // Get parameter executemacros for used in DoAction
-    public IHttpRequestResponse[] getExecutedMacros(){
-        return this.executedmacros;
+        doactioninstance.setParamters(currentrequest, executedmacros);
     }
     
     // 

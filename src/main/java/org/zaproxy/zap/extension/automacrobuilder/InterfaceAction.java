@@ -26,12 +26,15 @@ package org.zaproxy.zap.extension.automacrobuilder;
  */
 public interface InterfaceAction {
     /**
+     *
+     *
      * <PRE>
      * main Action concurrently  called  per thread by THreadManager.
      * if this action return true, then InterfaceEndAction will "synchronized" called
      * return true: endAction execute.
      *       false:  nothing to do endAction
      * </PRE>
+     *
      * @param tm
      * @param otp
      * @return

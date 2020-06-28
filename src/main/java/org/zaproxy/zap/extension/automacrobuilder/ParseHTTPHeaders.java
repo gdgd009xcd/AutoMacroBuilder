@@ -19,6 +19,8 @@
  */
 package org.zaproxy.zap.extension.automacrobuilder;
 
+import static org.zaproxy.zap.extension.automacrobuilder.HashMapDeepCopy.hashMapDeepCopyStrKStrV;
+
 import java.net.HttpCookie;
 import java.net.URLDecoder;
 import java.util.*;
@@ -26,8 +28,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static org.zaproxy.zap.extension.automacrobuilder.HashMapDeepCopy.hashMapDeepCopyStrKStrV;
 
 //
 // HTTP request/response parser
@@ -128,7 +128,8 @@ class ParseHTTPHeaders implements DeepClone {
         // formdataregex = ParmGenUtil.Pattern_compile("-{4,}[a-zA-Z0-9]+(?:\r\n)(?:[A-Z].*
         // name=\"(.*?)\".*(?:\r\n))(?:[A-Z].*(?:\r\n)){0,}(?:\r\n)((?:.|\r|\n)*?)(?:\r\n)-{4,}[a-zA-Z0-9]+");
         formdataheader = "(?:[A-Z].* name=\"(.*?)\".*(?:\r\n))(?:[A-Z].*(?:\r\n)){0,}(?:\r\n)";
-        formdatacontenttype = "(?:[A-Z].* name=\".*?\".*(?:\r|\n|\r\n))(?:Content-Type:[ \t]*([a-zA-Z\\.\\-0-9/]*)(?:\r|\n|\r\n)){1}(?:\r|\n|\r\n)";
+        formdatacontenttype =
+                "(?:[A-Z].* name=\".*?\".*(?:\r|\n|\r\n))(?:Content-Type:[ \t]*([a-zA-Z\\.\\-0-9/]*)(?:\r|\n|\r\n)){1}(?:\r|\n|\r\n)";
         formdatafooter = "(?:\r\n)";
         nv = null;
         isSSL = false;
@@ -410,12 +411,14 @@ class ParseHTTPHeaders implements DeepClone {
                                     String[] nv = parms[i].trim().split("=");
                                     String[] nvpair = new String[2];
                                     if (nv.length > 0) {
-                                        nvpair[0] = new String(nv[0]);
+                                        nvpair[0] = nv[0]; // nv[0] is not null
+                                    } else {
+                                        nvpair[0] = "";
                                     }
                                     if (nv.length > 1) {
-                                        nvpair[1] = new String(nv[1]);
+                                        nvpair[1] = nv[1]; // nv[1] is not null
                                     } else {
-                                        nvpair[1] = new String("");
+                                        nvpair[1] = "";
                                     }
                                     queryparams.add(nvpair);
                                     hashqueryparams.put(
@@ -477,7 +480,8 @@ class ParseHTTPHeaders implements DeepClone {
                                             formdataheaderregex =
                                                     ParmGenUtil.Pattern_compile(formdataheader);
                                             formdatacontenttyperegex =
-                                                    ParmGenUtil.Pattern_compile(formdatacontenttype);
+                                                    ParmGenUtil.Pattern_compile(
+                                                            formdatacontenttype);
                                             formdatafooterregex =
                                                     ParmGenUtil.Pattern_compile(
                                                             formdatafooter + "--" + boundary);
@@ -595,11 +599,16 @@ class ParseHTTPHeaders implements DeepClone {
                     boolean isbinarycontents = false;
                     if (contentfn.find()) {
                         int cnt = contentfn.groupCount();
-                        if ( cnt > 0) {
+                        if (cnt > 0) {
                             String contenttype = contentfn.group(1);
                             isbinarycontents = ParmGenUtil.isBinaryMimeContent(contenttype);
-                            LOGGER4J.debug((isbinarycontents?"BINARY ":" ") + "cnt:" + cnt + " content-type[" + contenttype + "]");
-                            
+                            LOGGER4J.debug(
+                                    (isbinarycontents ? "BINARY " : " ")
+                                            + "cnt:"
+                                            + cnt
+                                            + " content-type["
+                                            + contenttype
+                                            + "]");
                         }
                     }
                     if (fn.find() && !isbinarycontents) {
@@ -682,7 +691,7 @@ class ParseHTTPHeaders implements DeepClone {
     void setBody(byte[] _bval) {
         bytebody = _bval;
 
-        if(isrequest) {
+        if (isrequest) {
             int bl = bytebody != null ? bytebody.length : 0;
             int hl = content_length;
             if (bl != hl) { // actual body length != header's content-length value

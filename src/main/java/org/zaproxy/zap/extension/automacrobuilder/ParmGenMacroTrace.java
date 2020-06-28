@@ -19,15 +19,12 @@
  */
 package org.zaproxy.zap.extension.automacrobuilder;
 
+import java.net.HttpCookie;
+import java.util.*;
 import org.zaproxy.zap.extension.automacrobuilder.GSONSaveObject.PRequestResponses;
 import org.zaproxy.zap.extension.automacrobuilder.generated.MacroBuilderUI;
 import org.zaproxy.zap.extension.automacrobuilder.mdepend.ClientDependent;
 import org.zaproxy.zap.extension.automacrobuilder.mdepend.ClientRequest;
-
-import java.io.IOException;
-import java.net.HttpCookie;
-import java.nio.charset.Charset;
-import java.util.*;
 
 /** @author daike */
 public class ParmGenMacroTrace extends ClientDependent {
@@ -124,8 +121,7 @@ public class ParmGenMacroTrace extends ClientDependent {
         return msg;
     }
 
-    public ParmGenMacroTrace() {
-    }
+    public ParmGenMacroTrace() {}
 
     /**
      * Get copy of this instance for scan
@@ -399,9 +395,9 @@ public class ParmGenMacroTrace extends ClientDependent {
                                     + " "
                                     + ppr.request.url);
 
-                    //ppr.request.setUUID2CustomHeader(this.getUUID());
+                    // ppr.request.setUUID2CustomHeader(this.getUUID());
                     setUUID2CustomHeader(ppr.request);
-                    //PRequestResponse pqrs = clientHttpRequest(ppr.request);
+                    // PRequestResponse pqrs = clientHttpRequest(ppr.request);
                     PRequestResponse pqrs = clientrequest.clientRequest(this, ppr.request);
 
                     if (pqrs != null) {
@@ -424,7 +420,7 @@ public class ParmGenMacroTrace extends ClientDependent {
 
     PRequest configureRequest(PRequest preq) {
         if (isRunning()) { // MacroBuilder list > 0 && state is Running.
-            //preq.setUUID2CustomHeader(this.getUUID());
+            // preq.setUUID2CustomHeader(this.getUUID());
             setUUID2CustomHeader(preq);
             // ここでリクエストのCookieをCookie.jarで更新する。
             String domain_req = preq.getHost().toLowerCase();
@@ -469,8 +465,7 @@ public class ParmGenMacroTrace extends ClientDependent {
                 ReplaceCookieflg = MBreplaceCookie;
             }
 
-            if (preq.setCookies(cookiemap, ReplaceCookieflg)) {
-            }
+            if (preq.setCookies(cookiemap, ReplaceCookieflg)) {}
             // This function when preq modified then he must return non null.
             // e.g. preq.setThreadId2CustomHeader(threadid) modify preq's header.
             return preq;
@@ -518,7 +513,7 @@ public class ParmGenMacroTrace extends ClientDependent {
                                         + ppr.request.url
                                         + " X-Thread:"
                                         + threadid);
-                        //ppr.request.setUUID2CustomHeader(this.getUUID());
+                        // ppr.request.setUUID2CustomHeader(this.getUUID());
                         setUUID2CustomHeader(ppr.request);
                         // PRequestResponse pqrs = clientHttpRequest(ppr.request);
                         PRequestResponse pqrs = clientrequest.clientRequest(this, ppr.request);
@@ -836,6 +831,4 @@ public class ParmGenMacroTrace extends ClientDependent {
     public <T> T getSender() {
         return CastUtils.castToType(this.sender);
     }
-
-
 }

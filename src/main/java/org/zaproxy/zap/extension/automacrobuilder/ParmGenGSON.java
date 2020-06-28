@@ -182,7 +182,7 @@ public class ParmGenGSON implements GsonParserListener {
                         if (current != null && current.toUpperCase().equals("APPPARMSINI_LIST")) {
                             // ParmVars.plog.debuglog(0, "START_OBJECT level1 name:" + current);
                             aparms = new AppParmsIni(); // add new record
-                            //aparms.parmlist = new ArrayList<AppValue>();
+                            // aparms.parmlist = new ArrayList<AppValue>();
                         } else if (current != null
                                 && current.toUpperCase().equals("PREQUESTRESPONSE")) {
                             initReqRes();
@@ -201,7 +201,8 @@ public class ParmGenGSON implements GsonParserListener {
                                             aparms.crtFrl(decodedname, true);
                                         } catch (Exception e) {
                                             logger4j.error(
-                                                    "decode failed:[" + aparms.getCsvName() + "]", e);
+                                                    "decode failed:[" + aparms.getCsvName() + "]",
+                                                    e);
                                             ExceptionErrors.add(e);
                                         }
                                     }

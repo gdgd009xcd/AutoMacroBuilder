@@ -65,7 +65,7 @@ public class ParmGenMacroTraceProvider {
         return null;
     }
 
-    synchronized public static void removeEndInstance(UUID uuid) {
+    public static synchronized void removeEndInstance(UUID uuid) {
         pmtmap.remove(uuid);
     }
 }

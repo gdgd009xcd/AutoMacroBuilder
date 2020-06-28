@@ -832,4 +832,30 @@ public class AppValue {
         nv[1] = o_newcontents;
         return nv;
     }
+
+    /**
+     * whether this object same as argument specified or not
+     *
+     * @param app
+     * @return
+     */
+    public boolean isSameContents(AppValue app) {
+        if ( ParmGenUtil.nullableStringEquals(this.valpart, app.valpart)
+            && this.valparttype == app.valparttype
+            && ParmGenUtil.nullableStringEquals(this.value, app.value)
+            && this.csvpos == app.csvpos
+            && ParmGenUtil.nullableStringEquals(this.resURL, app.resURL)
+            && ParmGenUtil.nullableStringEquals(this.resRegex, app.resRegex)
+            && this.resPartType == app.resPartType
+            && this.resRegexPos == app.resRegexPos
+            && ParmGenUtil.nullableStringEquals(this.token, app.token)
+            && this.tokentype == app.tokentype
+            && this.urlencode == app.urlencode
+            && this.resencodetype == app.resencodetype
+            && this.fromStepNo == app.fromStepNo
+            && this.toStepNo == app.toStepNo){
+            return true;
+        }
+        return false;
+    }
 }

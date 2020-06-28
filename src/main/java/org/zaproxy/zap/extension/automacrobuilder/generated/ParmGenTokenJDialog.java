@@ -5,6 +5,7 @@
  */
 package org.zaproxy.zap.extension.automacrobuilder.generated;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
@@ -234,10 +235,25 @@ public class ParmGenTokenJDialog extends javax.swing.JDialog {
             
             
         }
-        //トークン一覧のチェックON/OFFをnewparmsに反映
-        ParmGenJSONSave csv = new ParmGenJSONSave(newparms, pmt);
+
+        // Duplicate registration parameter deletion
+        List<AppParmsIni> resultlist = new ArrayList<>();
+        if ( ParmGen.parmcsv!= null && newparms != null) {
+            newparms.stream().forEach(newpini -> {
+                long samecnt = ParmGen.parmcsv.stream().filter(oldpini ->
+                        newpini.isSameContents(oldpini)
+                ).count();
+                if (samecnt <= 0) {
+                    resultlist.add(newpini);
+                }
+            });
+            resultlist.addAll(ParmGen.parmcsv);
+        }
+
+        ParmGenJSONSave csv = new ParmGenJSONSave(resultlist, pmt);
         csv.GSONsave();
         dispose();
+
     }//GEN-LAST:event_OKActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed

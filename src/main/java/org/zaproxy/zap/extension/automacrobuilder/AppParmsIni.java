@@ -672,6 +672,37 @@ public class AppParmsIni {
     }
 
     /**
+     * whether this object is same as argument specified or not.
+     *
+     * @param bini
+     * @return
+     */
+    public boolean isSameContents(AppParmsIni bini) {
+
+        if (ParmGenUtil.nullableStringEquals(this.url, bini.url)
+                && this.len == bini.len
+                && ParmGenUtil.nullableStringEquals(this.type, bini.type)
+                && this.typeval == bini.typeval
+                && this.inival == bini.inival
+                && this.maxval == bini.maxval
+                && ParmGenUtil.nullableStringEquals(this.getFrlFileName(), bini.getFrlFileName())
+                && this.TrackFromStep == bini.TrackFromStep
+                && this.SetToStep == bini.SetToStep) {
+            boolean issame = true;
+            for (AppValue thisapp : this.parmlist) {
+                for (AppValue otherapp : bini.parmlist) {
+                    if (!thisapp.isSameContents(otherapp)) {
+                        issame = false;
+                        break;
+                    }
+                }
+            }
+            return issame;
+        }
+        return false;
+    }
+
+    /**
      * Get modifiable {@code List<AppValue>} Original.
      *
      * @return parmlist {@code List<AppValue>}

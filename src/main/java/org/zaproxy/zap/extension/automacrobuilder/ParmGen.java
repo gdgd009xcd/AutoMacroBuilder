@@ -1113,4 +1113,53 @@ public class ParmGen {
         return updtcnt;
     }
 
+    /**
+     * exchange SetToStep minpos and maxpos in parmcsv
+     *
+     * @param minpos
+     * @param maxpos
+     */
+
+    public static void exchangeStepNo(int minpos, int maxpos) {
+        if (parmcsv != null && !parmcsv.isEmpty()) {
+            parmcsv.stream().forEach(pini_filtered -> {
+                int settostep = pini_filtered.getSetToStep();
+                if ( settostep == minpos ) {
+                    pini_filtered.setSetToStep(maxpos);
+                } else if (settostep == maxpos) {
+                    pini_filtered.setSetToStep(minpos);
+                }
+                int fromstep = pini_filtered.getTrackFromStep();
+                if ( fromstep == minpos ) {
+                    pini_filtered.setTrackFromStep(maxpos);
+                } else if ( fromstep == maxpos) {
+                    pini_filtered.setTrackFromStep(minpos);
+                }
+            });
+        }
+    }
+
+    /**
+     * Get AppParmsIni which has stepno specified in TrackFromStep/SetToStep parameter
+     *
+     * @param stepno
+     * @return
+     */
+    public static List<AppParmsIni> getAppParmIniHasStepNoSpecified(int stepno) {
+        List<AppParmsIni> hasnolist = new ArrayList<>();
+
+        if (parmcsv != null && !parmcsv.isEmpty()) {
+            parmcsv.stream().filter(pini -> {
+                if( pini.getTrackFromStep() >= stepno
+                || (pini.getSetToStep() >= stepno && pini.getSetToStep()!= ParmVars.TOSTEPANY)) {
+                    return true;
+                }
+                return false;
+            }).forEach(pini_filtered -> {
+                hasnolist.add(pini_filtered);
+            });
+        }
+        return hasnolist;
+    }
+
 }

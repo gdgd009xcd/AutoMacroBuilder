@@ -77,6 +77,16 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="enableRequestActionPerformed"/>
           </Events>
         </MenuItem>
+        <MenuItem class="javax.swing.JMenuItem" name="deleteRequest">
+          <Properties>
+            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+              <ResourceString bundle="burp/Bundle.properties" key="DELETEREQUEST" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+            </Property>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="deleteRequestActionPerformed"/>
+          </Events>
+        </MenuItem>
       </SubComponents>
     </Container>
     <Container class="javax.swing.JPopupMenu" name="RequestEdit">
@@ -154,7 +164,7 @@
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="jScrollPane2" pref="1346" max="32767" attributes="0"/>
+          <Component id="jScrollPane2" pref="1241" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>
@@ -190,7 +200,9 @@
                                           <Component id="ParamTracking" alignment="0" max="32767" attributes="0"/>
                                           <Component id="Load" alignment="0" max="32767" attributes="0"/>
                                           <Component id="Save" max="32767" attributes="0"/>
-                                          <Component id="ScanMacro" alignment="0" min="-2" pref="111" max="-2" attributes="0"/>
+                                          <Component id="StartScan" alignment="0" min="-2" pref="111" max="-2" attributes="0"/>
+                                          <Component id="UpSelected" min="-2" pref="111" max="-2" attributes="0"/>
+                                          <Component id="DownSelected" min="-2" pref="111" max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
                               </Group>
@@ -236,22 +248,26 @@
                       <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" attributes="0">
+                          <Component id="jScrollPane1" alignment="0" min="-2" pref="284" max="-2" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
                               <Component id="ParamTracking" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="custom" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
                               <Component id="ClearMacro" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" max="-2" attributes="0"/>
                               <Component id="Load" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
                               <Component id="Save" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                              <Component id="ScanMacro" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="UpSelected" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="DownSelected" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="StartScan" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="jScrollPane1" min="-2" pref="284" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="paramlog" min="-2" pref="328" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="jPanel5" min="-2" max="-2" attributes="0"/>
@@ -521,15 +537,15 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="SaveActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JButton" name="ScanMacro">
+            <Component class="javax.swing.JButton" name="StartScan">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="burp/Bundle.properties" key="NOP" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                  <ResourceString bundle="burp/Bundle.properties" key="StartScan" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
                 </Property>
                 <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ScanMacroActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="StartScanActionPerformed"/>
               </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel2">
@@ -728,7 +744,6 @@
             </Component>
             <Component class="javax.swing.JCheckBox" name="MBfromStepNo">
               <Properties>
-                <Property name="selected" type="boolean" value="true"/>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="burp/Bundle.properties" key="&#x8ffd;&#x8de1;FROM&#x8a2d;&#x5b9a;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
                 </Property>
@@ -785,7 +800,6 @@
             </Container>
             <Component class="javax.swing.JCheckBox" name="MBtoStepNo">
               <Properties>
-                <Property name="selected" type="boolean" value="true"/>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="burp/Bundle.properties" key="MBtoStepNo" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
                 </Property>
@@ -799,6 +813,26 @@
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="MBmonitorofprocessingActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JButton" name="UpSelected">
+              <Properties>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="UpSelected" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="UpSelectedActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JButton" name="DownSelected">
+              <Properties>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="burp/Bundle.properties" key="DownSelected" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+                </Property>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="DownSelectedActionPerformed"/>
               </Events>
             </Component>
           </SubComponents>

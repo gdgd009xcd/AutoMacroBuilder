@@ -822,15 +822,15 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
 
     private void MacroRequestLoadContents(){
                 
-        if(selected_request_idx!=-1&&!isLoadedMacroRequestContents){
+        if(selected_request_idx!=-1&&!isLoadedMacroRequestContents) {
             PRequestResponse pqr = rlist.get(selected_request_idx);
 
             ParmGenTextDoc reqdoc = new ParmGenTextDoc(MacroRequest);
 
             String reqmess = "";
-            if(pqr.request.getBodyContentLength() < REQUEST_DISPMAXSIZ){
+            if (pqr.request.getBodyContentLength() < REQUEST_DISPMAXSIZ) {
                 reqmess = pqr.request.getMessage();
-            }else{//Content-Length < REQUEST_DISPMAXSIZ then no display body contents..
+            } else { // Content-Length < REQUEST_DISPMAXSIZ then no display body contents.. sorry this dirty work.
                 reqmess = pqr.request.getHeaderOnly();
                 reqmess = reqmess + "\r\n" + ".........omitted displaying body content......";
             }

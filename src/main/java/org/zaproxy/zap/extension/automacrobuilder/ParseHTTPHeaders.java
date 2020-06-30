@@ -117,7 +117,8 @@ class ParseHTTPHeaders implements DeepClone {
                 ParmGenRequestTokenKey.RequestParamSubType.Cookie),
     };
 
-    public static final String CUSTOM_THREAD_ID_HEADERNAME = "X-PARMGEN-CUSTOM-HEADER";
+    public static final String CUSTOM_THREAD_ID_HEADERNAME = "X-PARMGEN-THREAD-HEADER";
+    public static final String CUSTOM_PARAMS_HEADERNAME = "X-PARMGEN-PARAMS-HEADER";
 
     private void init() {
         body = null;
@@ -673,7 +674,7 @@ class ParseHTTPHeaders implements DeepClone {
         isHeaderModified = true;
     }
 
-    void removeHeader(String name) {
+    public void removeHeader(String name) {
         ParmGenHeader phg = getParmGenHeader(name);
         if (phg != null) {
             ListIterator<ParmGenBeen> it = phg.getValuesIter();
@@ -1405,7 +1406,20 @@ class ParseHTTPHeaders implements DeepClone {
         }
         return null;
     }
+    
+    public void setParamsCustomHeader(ParmGenMacroTraceParams pmtParams) {
+        setHeader(CUSTOM_PARAMS_HEADERNAME, pmtParams.toString());
+    }
 
+    public ParmGenMacroTraceParams getParamsCustomHeader() {
+        String v = getHeader(CUSTOM_PARAMS_HEADERNAME);
+        ParmGenMacroTraceParams pmtParams = new ParmGenMacroTraceParams();
+        if (v != null) {
+            pmtParams.setString(v);
+        }
+        return pmtParams;
+    }
+    
     @Override
     public ParseHTTPHeaders clone() {
         try {

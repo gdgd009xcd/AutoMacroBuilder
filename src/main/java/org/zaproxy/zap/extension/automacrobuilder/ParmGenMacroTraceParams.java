@@ -43,12 +43,12 @@ public class ParmGenMacroTraceParams {
     }
     
     public String toString() {
-        return Integer.toString(selected_request) + ":" + Integer.toString(last_stepno);
+        return Integer.toString(selected_request) + "|" + Integer.toString(last_stepno);
     }
     
     public void setString(String s) {
         if (s != null) {
-            String[] nv = s.split(":");
+            String[] nv = s.split("\\|");
             String[] nvpair = new String[2];
             if (nv.length > 0) {
                 nvpair[0] = nv[0]; // nv[0] is not null

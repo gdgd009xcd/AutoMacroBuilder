@@ -4,27 +4,15 @@
  */
 package org.zaproxy.zap.extension.automacrobuilder.generated;
 
-import org.zaproxy.zap.extension.automacrobuilder.generated.ParmGenAddParms;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javax.swing.table.DefaultTableModel;
-import org.zaproxy.zap.extension.automacrobuilder.AppValue;
-import org.zaproxy.zap.extension.automacrobuilder.InterfaceCollection;
-import org.zaproxy.zap.extension.automacrobuilder.InterfaceRegex;
-import org.zaproxy.zap.extension.automacrobuilder.PRequestResponse;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenArrayList;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenGSONDecoder;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenJSONSave;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenParser;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenSession;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenToken;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenTokenKey;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenTokenValue;
-import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
-import org.zaproxy.zap.extension.automacrobuilder.interfaceParmGenWin;
+
+import org.zaproxy.zap.extension.automacrobuilder.*;
 
 /**
  *
@@ -68,7 +56,6 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle(bundle.getString("ParmGenAutoTrack.title.text")); // NOI18N
 
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/zaproxy/zap/extension/automacrobuilder/generated/Bundle"); // NOI18N
         jLabel1.setText(bundle.getString("ParmGenAutoTrack.jLabel1.text")); // NOI18N
 
         TokenTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -154,13 +141,13 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 70, Short.MAX_VALUE)
                         .addGap(18, 18, 18))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(32, 32, 32)
                         .addComponent(valuefilter)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addComponent(TokenTablePane, javax.swing.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE)
+                .addComponent(TokenTablePane, javax.swing.GroupLayout.DEFAULT_SIZE, 357, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -299,7 +286,7 @@ public class ParmGenAutoTrack extends javax.swing.JFrame implements InterfaceReg
             HashMap<String,Integer> namepos = new HashMap<String,Integer>();
             ArrayList<ParmGenToken> lst = pgser.getNameValues();
             ParmGenGSONDecoder jdec = new ParmGenGSONDecoder(body);
-            ArrayList<ParmGenToken> jlst = jdec.parseJSON2Token();
+            List<ParmGenToken> jlst = jdec.parseJSON2Token();
             lst.addAll(jlst);
 
             for(Iterator<ParmGenToken> it = lst.iterator();it.hasNext();){

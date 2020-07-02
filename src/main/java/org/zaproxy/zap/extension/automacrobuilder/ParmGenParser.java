@@ -21,20 +21,24 @@ package org.zaproxy.zap.extension.automacrobuilder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 /** @author tms783 */
-public class ParmGenParser {
+public class ParmGenParser implements DeepClone {
     // get the factory
+    String htmltext;
     Document doc;
     Elements elems;
     HashMap<ParmGenTokenKey, ParmGenTokenValue> map;
     HashMap<ParmGenTokenKey, ParmGenTokenValue> defmap; // T_DEFAULT
 
-    void init() {
+    private void init() {
+        htmltext = null;
         doc = null;
         elems = null;
         map = null;
@@ -43,8 +47,16 @@ public class ParmGenParser {
 
     // tokenらしき値を自動引継ぎ
     public ParmGenParser(String htmltext) {
+        setup(htmltext);
+    }
+    
+    private void setup(String htmltext){
         init();
 
+        this.htmltext = htmltext;
+        Document doc = null;
+        Elements elems = null;
+        
         try {
             doc = Jsoup.parse(htmltext); // パース実行
             // elems =
@@ -56,7 +68,12 @@ public class ParmGenParser {
         } catch (Exception e) {
             // TODO Auto-generated catch block
             ParmVars.plog.printException(e);
+            doc = null;
+            elems = null;
         }
+        
+        this.doc = doc;
+        this.elems = elems;
     }
 
     void elemsprint(String _t) {
@@ -277,6 +294,21 @@ public class ParmGenParser {
                 }
             }
         }
+        return null;
+    }
+    
+    @Override
+    public ParmGenParser clone() {
+        try {
+            ParmGenParser nobj = (ParmGenParser) super.clone();
+            nobj.setup(this.htmltext);
+            nobj.map = HashMapDeepCopy.hashMapDeepCopyParmGenHashMapSuper(this.map);
+            nobj.defmap = HashMapDeepCopy.hashMapDeepCopyParmGenHashMapSuper(this.defmap);
+            return nobj;
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(ParmGenParser.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         return null;
     }
 }

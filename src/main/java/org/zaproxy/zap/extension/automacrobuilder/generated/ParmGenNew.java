@@ -4,31 +4,22 @@
  */
 package org.zaproxy.zap.extension.automacrobuilder.generated;
 
-import org.zaproxy.zap.extension.automacrobuilder.generated.ParmGenCSVLoader;
-import org.zaproxy.zap.extension.automacrobuilder.generated.ParmGenAutoTrack;
-import org.zaproxy.zap.extension.automacrobuilder.generated.ParmGenAttackListDialog;
-import org.zaproxy.zap.extension.automacrobuilder.generated.ParmGenAddParms;
 import java.io.File;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
-import org.zaproxy.zap.extension.automacrobuilder.AppParmsIni;
-import org.zaproxy.zap.extension.automacrobuilder.AppValue;
-import org.zaproxy.zap.extension.automacrobuilder.FileReadLine;
-import org.zaproxy.zap.extension.automacrobuilder.InterfaceRegex;
-import org.zaproxy.zap.extension.automacrobuilder.PRequest;
-import org.zaproxy.zap.extension.automacrobuilder.PRequestResponse;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenJSONSave;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenSession;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenUtil;
-import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
-import org.zaproxy.zap.extension.automacrobuilder.TextPaneLineWrapper;
-import org.zaproxy.zap.extension.automacrobuilder.interfaceParmGenWin;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+
+import org.zaproxy.zap.extension.automacrobuilder.*;
 
 /**
  *
@@ -36,9 +27,12 @@ import org.zaproxy.zap.extension.automacrobuilder.interfaceParmGenWin;
  */
 @SuppressWarnings("serial")
 public class ParmGenNew extends javax.swing.JFrame implements InterfaceRegex, interfaceParmGenWin {
-    //下記定数P_XXXは、ModelTabsの各タブの出現順序と一致しなければならない。
-    //ModelTabsStateChangedでタブ切り替えた場合に、切り替えたタブの番号ModelTabs.getSelectedIndex()の返値と下記定数は
-    //対応している。
+    
+    private static org.apache.logging.log4j.Logger LOGGER4J = org.apache.logging.log4j.LogManager.getLogger();
+    
+    // 下記定数P_XXXは、ModelTabsの各タブの出現順序と一致しなければならない。
+    // ModelTabsStateChangedでタブ切り替えた場合に、切り替えたタブの番号ModelTabs.getSelectedIndex()の返値と下記定数は
+    // 対応している。
     public final static int P_NUMBERMODEL = 0;
     final static int P_CSVMODEL = 1;
     final static int P_TRACKMODEL = 2;
@@ -52,6 +46,8 @@ public class ParmGenNew extends javax.swing.JFrame implements InterfaceRegex, in
     private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
 
     private boolean current_model_selected = false;
+    private boolean blockUnderInitComponents = true; // blocking behavior while running initComponents.
+    
     private int current_model;
 
     int current_tablerowidx;
@@ -84,8 +80,12 @@ public class ParmGenNew extends javax.swing.JFrame implements InterfaceRegex, in
 
         parentwin = _parentwin;
 
-
+        LOGGER4J.debug("initComponents started");
+        blockUnderInitComponents = true;
         initComponents();
+        blockUnderInitComponents = false; // blocking behavior while running initComponents.
+        LOGGER4J.debug("initComponents end.");
+        
         ParamTableModels[P_NUMBERMODEL] = (DefaultTableModel)nParamTable.getModel();
         ParamTableModels[P_CSVMODEL] = (DefaultTableModel)csvParamTable.getModel();
         ParamTableModels[P_TRACKMODEL] = (DefaultTableModel)trackTable.getModel();
@@ -93,13 +93,25 @@ public class ParmGenNew extends javax.swing.JFrame implements InterfaceRegex, in
 
         addJComboBoxToJTable();
 
-        ModelTabs.setEnabledAt(3, false);
+
         PRequestResponse mess = ParmGenJSONSave.proxy_messages.get(0);
         String _url = mess.request.getURL();
         String _requestmess = mess.request.getMessage();
 
         selected_requestURL.setText(_url);
-        RequestArea.setText(_requestmess);
+        
+        SwingUtilities.invokeLater(() -> {
+            Document doc = RequestArea.getDocument();
+
+            try {
+                doc.insertString(0, _requestmess, null);
+            } catch (BadLocationException ex) {
+                Logger.getLogger(ParmGenNew.class.getName()).log(Level.SEVERE, null, ex);
+            }
+           
+        });
+        
+        
 
         current_model = P_NUMBERMODEL;
 
@@ -107,7 +119,7 @@ public class ParmGenNew extends javax.swing.JFrame implements InterfaceRegex, in
             rec = _rec;
             //rec.setCntFileName();
             addrec = null;
-            switch(rec.getType()){
+            switch(rec.getTypeVal()){
                 case AppParmsIni.T_NUMBER:
                     current_model = P_NUMBERMODEL;
                     break;
@@ -124,6 +136,7 @@ public class ParmGenNew extends javax.swing.JFrame implements InterfaceRegex, in
                     current_model = P_TAMPERMODEL;
                     break;
             }
+            
             current_model_selected = true;
             CSVrewind.setSelected(false);
             NumberRewind.setSelected(false);
@@ -139,8 +152,14 @@ public class ParmGenNew extends javax.swing.JFrame implements InterfaceRegex, in
 
 
         ResponseArea.setToolTipText(bundle.getString("ParmGenNew.<HTML>※追跡パラメータの登録方法<BR>追跡する値を選択し、追加ボタンを押す。</HTML>.text"));
-
+        
+        if (current_model != P_TRACKMODEL) {
+            TrackFromLabel.setEnabled(false);
+            TrackFrom.setEnabled(false);
+        }
+        // after deternimed current_model_selected must run these functions.
         ModelTabs.setSelectedIndex(current_model);
+        ModelTabs.setEnabledAt(3, false);
 
     }
 
@@ -160,8 +179,8 @@ private void setAppParmsIni(){
         switch(current_model){
             case P_NUMBERMODEL:
                 numberTargetURL.setText(rec.getUrl());
-                NumberLen.setText(Integer.toString(rec.len));
-                NumberInit.setText(Integer.toString(rec.inival));
+                NumberLen.setText(Integer.toString(rec.getLen()));
+                NumberInit.setText(Integer.toString(rec.getIniVal()));
                 rec.rewindAppValues();
                 while((row=rec.getNextAppValuesRow())!=null){
                     ParamTableModels[P_NUMBERMODEL].addRow(row);
@@ -170,7 +189,7 @@ private void setAppParmsIni(){
                 break;
             case P_CSVMODEL:
                 csvTargetURL.setText(rec.getUrl());
-                csvFilePath.setText(rec.frl.getFileName());
+                csvFilePath.setText(rec.getFrlFileName());
                 rec.rewindAppValues();
                 CSVSkipLine.setText(rec.getCurrentValue());
                 while((row=rec.getNextAppValuesRow())!=null){
@@ -611,10 +630,6 @@ private void setAppParmsIni(){
         trackTable = new javax.swing.JTable();
         jLabel9 = new javax.swing.JLabel();
         trackTargetURL = new javax.swing.JTextField();
-        TrackFromLabel = new javax.swing.JLabel();
-        SetToLabel = new javax.swing.JLabel();
-        SetTo = new javax.swing.JTextField();
-        TrackFrom = new javax.swing.JTextField();
         SeqRandom = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         tamperTargetURL = new javax.swing.JTextField();
@@ -640,6 +655,10 @@ private void setAppParmsIni(){
         jScrollPane2 = new javax.swing.JScrollPane();
         ResponseArea = new javax.swing.JTextPane();
         selected_responseURL = new javax.swing.JTextField();
+        TrackFromLabel = new javax.swing.JLabel();
+        TrackFrom = new javax.swing.JTextField();
+        SetToLabel = new javax.swing.JLabel();
+        SetTo = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle(bundle.getString("ParmGenNew.PARMGEN編集画面.text")); // NOI18N
@@ -686,7 +705,7 @@ private void setAppParmsIni(){
                 {null, null, null, null}
             },
             new String [] {
-                "置換箇所", "置換しない", "置換パターン", "インクリメント"
+                "", "", "", ""
             }
         ) {
             Class[] types = new Class [] {
@@ -700,7 +719,6 @@ private void setAppParmsIni(){
         nParamTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         nParamTable.getTableHeader().setReorderingAllowed(false);
         jScrollPane3.setViewportView(nParamTable);
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("burp/Bundle"); // NOI18N
         if (nParamTable.getColumnModel().getColumnCount() > 0) {
             nParamTable.getColumnModel().getColumn(0).setPreferredWidth(60);
             nParamTable.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("ParmGenNew.nParamTable.title0.text")); // NOI18N
@@ -768,6 +786,7 @@ private void setAppParmsIni(){
         });
 
         buttonGroup1.add(DateSelBtn);
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("burp/Bundle"); // NOI18N
         DateSelBtn.setText(bundle.getString("ParmGenNew.DateTimeTitle.text")); // NOI18N
         DateSelBtn.setEnabled(false);
         DateSelBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -835,7 +854,7 @@ private void setAppParmsIni(){
                     .addComponent(SimpleDateFormatStr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(MsecLabel)
                     .addComponent(AddMsec, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(44, Short.MAX_VALUE))
+                .addContainerGap(20, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout SeqNumberLayout = new javax.swing.GroupLayout(SeqNumber);
@@ -849,19 +868,20 @@ private void setAppParmsIni(){
                         .addComponent(jLabel5)
                         .addGap(19, 19, 19)
                         .addComponent(numberTargetURL, javax.swing.GroupLayout.PREFERRED_SIZE, 338, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(57, 526, Short.MAX_VALUE))
+                        .addGap(57, 532, Short.MAX_VALUE))
                     .addGroup(SeqNumberLayout.createSequentialGroup()
                         .addGroup(SeqNumberLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(SeqNumberLayout.createSequentialGroup()
                                 .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 791, Short.MAX_VALUE)
-                                .addGap(18, 18, 18)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(SeqNumberLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(NumberRegexTest, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(nParamUP, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(nParamDOWN, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(nParamDel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(nParamAdd, javax.swing.GroupLayout.DEFAULT_SIZE, 146, Short.MAX_VALUE))))
+                                    .addComponent(nParamAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(12, 12, 12)))
                         .addContainerGap())))
         );
         SeqNumberLayout.setVerticalGroup(
@@ -873,9 +893,10 @@ private void setAppParmsIni(){
                     .addComponent(jLabel5))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(13, 13, 13)
                 .addGroup(SeqNumberLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(SeqNumberLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(nParamAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(nParamDel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -884,12 +905,8 @@ private void setAppParmsIni(){
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(nParamDOWN, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(NumberRegexTest, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())
-                    .addGroup(SeqNumberLayout.createSequentialGroup()
-                        .addGap(13, 13, 13)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addComponent(NumberRegexTest, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(47, Short.MAX_VALUE))
         );
 
         ModelTabs.addTab(bundle.getString("ParmGenNew.SeqNumber.TabConstrains.tabTitle.text"), SeqNumber); // NOI18N
@@ -1040,15 +1057,15 @@ private void setAppParmsIni(){
                         .addComponent(csvFilePath))
                     .addGroup(SeqCSVLayout.createSequentialGroup()
                         .addComponent(jLabel6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
-                        .addComponent(csvTargetURL, javax.swing.GroupLayout.PREFERRED_SIZE, 631, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane4))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 38, Short.MAX_VALUE)
+                        .addComponent(csvTargetURL, javax.swing.GroupLayout.PREFERRED_SIZE, 670, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.LEADING))
                 .addGroup(SeqCSVLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(SeqCSVLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(SeqCSVLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(SeqCSVLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(SeqCSVLayout.createSequentialGroup()
-                                    .addGap(63, 63, 63)
+                                    .addGap(24, 24, 24)
                                     .addComponent(csvParamDel, javax.swing.GroupLayout.DEFAULT_SIZE, 146, Short.MAX_VALUE))
                                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, SeqCSVLayout.createSequentialGroup()
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1094,7 +1111,7 @@ private void setAppParmsIni(){
                         .addComponent(csvParamDOWN, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(csvParamRegexTest, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(143, Short.MAX_VALUE))
+                .addContainerGap(135, Short.MAX_VALUE))
         );
 
         ModelTabs.addTab(bundle.getString("ParmGenNew.SeqCSV.TabConstraints.tabTitle.text"), SeqCSV); // NOI18N
@@ -1183,14 +1200,6 @@ private void setAppParmsIni(){
             }
         });
 
-        TrackFromLabel.setText(bundle.getString("ParmGenNew.TrackFromLabel.text")); // NOI18N
-
-        SetToLabel.setText(bundle.getString("ParmGenNew.SetToLabel.text")); // NOI18N
-
-        SetTo.setText("*");
-
-        TrackFrom.setText("-1");
-
         javax.swing.GroupLayout SeqResponseLayout = new javax.swing.GroupLayout(SeqResponse);
         SeqResponse.setLayout(SeqResponseLayout);
         SeqResponseLayout.setHorizontalGroup(
@@ -1198,35 +1207,30 @@ private void setAppParmsIni(){
             .addGroup(SeqResponseLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(SeqResponseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 810, Short.MAX_VALUE)
+                    .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 811, Short.MAX_VALUE)
                     .addGroup(SeqResponseLayout.createSequentialGroup()
-                        .addGroup(SeqResponseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel9)
-                            .addComponent(TrackFromLabel))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(SeqResponseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(SeqResponseLayout.createSequentialGroup()
-                                .addComponent(TrackFrom, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(SetToLabel)
-                                .addGap(18, 18, 18)
-                                .addComponent(SetTo, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(trackTargetURL))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel9)
+                        .addGap(36, 36, 36)
+                        .addComponent(trackTargetURL)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(SeqResponseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton10, javax.swing.GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
+                    .addComponent(jButton10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(nParamDel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(nParamDel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(nParamDel12, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(nParamAdd4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                    .addComponent(nParamAdd4, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(17, 17, 17))
         );
         SeqResponseLayout.setVerticalGroup(
             SeqResponseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(SeqResponseLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(SeqResponseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(SeqResponseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(trackTargetURL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel9))
+                .addGap(36, 36, 36)
+                .addGroup(SeqResponseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(SeqResponseLayout.createSequentialGroup()
                         .addComponent(nParamAdd4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -1236,20 +1240,8 @@ private void setAppParmsIni(){
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(nParamDel14)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton10))
-                    .addGroup(SeqResponseLayout.createSequentialGroup()
-                        .addGroup(SeqResponseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(trackTargetURL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel9))
-                        .addGap(18, 18, 18)
-                        .addGroup(SeqResponseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(TrackFromLabel)
-                            .addComponent(SetToLabel)
-                            .addComponent(SetTo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(TrackFrom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(53, 53, 53))
+                        .addComponent(jButton10)))
+                .addContainerGap())
         );
 
         ModelTabs.addTab(bundle.getString("ParmGenNew.SeqResponse.TabConstraints.tabTitle.text"), SeqResponse); // NOI18N
@@ -1404,9 +1396,9 @@ private void setAppParmsIni(){
             }
         });
 
-        jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
         RequestArea.setEditorKit(new TextPaneLineWrapper());
+        RequestArea.setAutoscrolls(false);
+        RequestArea.setPreferredSize(new java.awt.Dimension(1000, 1500));
         jScrollPane1.setViewportView(RequestArea);
 
         selected_requestURL.setText("http:///xxxx");
@@ -1422,25 +1414,19 @@ private void setAppParmsIni(){
             ReqPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(ReqPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(selected_requestURL, javax.swing.GroupLayout.DEFAULT_SIZE, 955, Short.MAX_VALUE)
+                .addGroup(ReqPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(selected_requestURL, javax.swing.GroupLayout.DEFAULT_SIZE, 955, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 955, Short.MAX_VALUE))
                 .addContainerGap())
-            .addGroup(ReqPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ReqPanelLayout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 955, Short.MAX_VALUE)
-                    .addContainerGap()))
         );
         ReqPanelLayout.setVerticalGroup(
             ReqPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(ReqPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(selected_requestURL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(73, Short.MAX_VALUE))
-            .addGroup(ReqPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(ReqPanelLayout.createSequentialGroup()
-                    .addGap(47, 47, 47)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
-                    .addContainerGap()))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 39, Short.MAX_VALUE)
+                .addGap(28, 28, 28))
         );
 
         ResReqTabs.addTab(bundle.getString("ParmGenNew.ReqPanel.TabConstraints.tabTitle.text"), ReqPanel); // NOI18N
@@ -1476,15 +1462,23 @@ private void setAppParmsIni(){
             .addGroup(ResPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(selected_responseURL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(73, Short.MAX_VALUE))
+                .addContainerGap(85, Short.MAX_VALUE))
             .addGroup(ResPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ResPanelLayout.createSequentialGroup()
                     .addGap(47, 47, 47)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 56, Short.MAX_VALUE)
                     .addContainerGap()))
         );
 
         ResReqTabs.addTab(bundle.getString("ParmGenNew.ResPanel.TabConstraints.tabTitle.text"), ResPanel); // NOI18N
+
+        TrackFromLabel.setText(bundle.getString("ParmGenNew.TrackFromLabel.text")); // NOI18N
+
+        TrackFrom.setText("-1");
+
+        SetToLabel.setText(bundle.getString("ParmGenNew.SetToLabel.text")); // NOI18N
+
+        SetTo.setText("*");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -1510,6 +1504,16 @@ private void setAppParmsIni(){
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(ModelTabs, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jSeparator1)))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addComponent(TrackFromLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(TrackFrom, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(SetToLabel)
+                .addGap(18, 18, 18)
+                .addComponent(SetTo, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1518,9 +1522,15 @@ private void setAppParmsIni(){
                 .addComponent(RequestSelectBtn)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(ResReqTabs)
-                .addGap(18, 18, 18)
-                .addComponent(ModelTabs, javax.swing.GroupLayout.PREFERRED_SIZE, 412, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(TrackFromLabel)
+                    .addComponent(SetToLabel)
+                    .addComponent(SetTo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(TrackFrom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(ModelTabs, javax.swing.GroupLayout.PREFERRED_SIZE, 381, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(33, 33, 33)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -1634,32 +1644,32 @@ private void setAppParmsIni(){
         rec.setSetToStep(deftoStep);
         switch(current_model){
             case P_NUMBERMODEL:
-                rec.setType(AppParmsIni.T_NUMBER_NAME);
+                rec.setTypeValFromString(AppParmsIni.T_NUMBER_NAME);
                 rec.setUrl(numberTargetURL.getText());
-                rec.len = ParmGenUtil.parseMaxInt(NumberLen.getText());
-                if(rec.len>10){
-                    rec.len = 10;
-                }else if(rec.len<1){
-                    rec.len = 1;
+                rec.setLen(ParmGenUtil.parseMaxInt(NumberLen.getText()));
+                if(rec.getLen()>10){
+                    rec.setLen(10);
+                }else if(rec.getLen()<1){
+                    rec.setLen(1);
                 }
-                rec.inival = ParmGenUtil.parseMaxInt(NumberInit.getText());
+                rec.setIniVal(ParmGenUtil.parseMaxInt(NumberInit.getText()));
                 if(NumberRewind.isSelected()){
-                    rec.updateCurrentValue(rec.inival);
+                    rec.updateCurrentValue(rec.getIniVal());
                 }
                 break;
             case P_CSVMODEL:
-                rec.setType(AppParmsIni.T_CSV_NAME);
+                rec.setTypeValFromString(AppParmsIni.T_CSV_NAME);
                 rec.setUrl(csvTargetURL.getText());
-                rec.frl = new FileReadLine(csvFilePath.getText(), true);
+                rec.crtFrl(csvFilePath.getText(), true);
                 if(CSVrewind.isSelected()){
-                    rec.inival = ParmGenUtil.parseMinInt(CSVSkipLine.getText());
-                    rec.updateCurrentValue(rec.inival);
+                    rec.setIniVal(ParmGenUtil.parseMinInt(CSVSkipLine.getText()));
+                    rec.updateCurrentValue(rec.getIniVal());
                 }
                 break;
             case P_TRACKMODEL:
-                rec.setType(AppParmsIni.T_TRACK_NAME);
+                rec.setTypeValFromString(AppParmsIni.T_TRACK_NAME);
                 rec.setUrl(trackTargetURL.getText());
-                rec.inival = AppParmsIni.T_TRACK_AVCNT;
+                rec.setIniVal(AppParmsIni.T_TRACK_AVCNT);
                 int fromStep = -1;
                 try{
                     fromStep = Integer.parseInt(TrackFrom.getText());
@@ -1677,7 +1687,7 @@ private void setAppParmsIni(){
                 rec.setSetToStep(toStep);
                 break;
             case P_RANDOMMODEL:
-                rec.setType(AppParmsIni.T_RANDOM_NAME);
+                rec.setTypeValFromString(AppParmsIni.T_RANDOM_NAME);
                 break;
             default:
                 break;
@@ -1815,15 +1825,23 @@ private void setAppParmsIni(){
 
     private void ModelTabsStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_ModelTabsStateChanged
         // TODO add your handling code here:
+        if (blockUnderInitComponents) return; // block while running initComponent
+        
         int i = ModelTabs.getSelectedIndex();
         if ( i!=-1&&current_model_selected==false){
             current_model = i;
             switch(current_model){
                 case P_TRACKMODEL:
+                    LOGGER4J.debug("TrackFromEnabled current_model:" + i);
                     ResReqTabs.add(bundle.getString("ParmGenNew.レスポンス.text"), ResPanel);
                     ResReqTabs.setSelectedIndex(P_REQUESTTAB);
+                    TrackFromLabel.setEnabled(true);
+                    TrackFrom.setEnabled(true);
                     break;
                 default:
+                    LOGGER4J.debug("TrackFromDisabled current_model:" + i);
+                    TrackFromLabel.setEnabled(false);
+                    TrackFrom.setEnabled(false);
                     ResReqTabs.remove(ResPanel);
                     break;
             }

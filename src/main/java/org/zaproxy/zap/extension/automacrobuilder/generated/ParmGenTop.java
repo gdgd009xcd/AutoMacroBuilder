@@ -4,7 +4,6 @@
  */
 package org.zaproxy.zap.extension.automacrobuilder.generated;
 
-import org.zaproxy.zap.extension.automacrobuilder.generated.ParmGenNew;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -15,15 +14,8 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumnModel;
-import org.zaproxy.zap.extension.automacrobuilder.AppParmsIni;
-import org.zaproxy.zap.extension.automacrobuilder.Encode;
-import org.zaproxy.zap.extension.automacrobuilder.LineWrapRenderer;
-import org.zaproxy.zap.extension.automacrobuilder.ParmFileFilter;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGen;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenJSONSave;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTrace;
-import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
+
+import org.zaproxy.zap.extension.automacrobuilder.*;
 
 /**
  *
@@ -51,14 +43,14 @@ public class ParmGenTop extends javax.swing.JFrame {
             int FromStep = pini.getTrackFromStep();
             int ToStep = pini.getSetToStep();
             FromTo = (FromStep>-1?Integer.toString(FromStep):"*") + "->" + (ToStep!=ParmVars.TOSTEPANY?Integer.toString(ToStep):"*");
-            if(pini.getType()!=AppParmsIni.T_TRACK){
+            if(pini.getTypeVal()!=AppParmsIni.T_TRACK){
                 if(ToStep<0||ToStep==ParmVars.TOSTEPANY){
                     FromTo = "*";
                 }else{
                     FromTo = Integer.toString(ToStep);
                 }
             }
-            model.addRow(new Object[] {pini.pause, FromTo, pini.getUrl(), pini.getIniValDsp(), pini.getLenDsp(), pini.getTypeValDsp(),pini.getAppValuesDsp(),pini.getCurrentValue()});
+            model.addRow(new Object[] {pini.isPaused(), FromTo, pini.getUrl(), pini.getIniValDsp(), pini.getLenDsp(), pini.getTypeValDspString(),pini.getAppValuesDsp(),pini.getCurrentValue()});
             //ParamTopList.setRowHeight(ri++, default_rowheight * pini.getAppValuesLineCnt());
         }
     }
@@ -127,7 +119,7 @@ public class ParmGenTop extends javax.swing.JFrame {
                         //ParmGen pglocal = new ParmGen(pmt);
                         AppParmsIni pini = ParmGen.parmcsv.get(row);
                         if(pini!=null){
-                            pini.setPause((boolean)cell);
+                            pini.updatePause((boolean)cell);
                         }
                     }
                 }

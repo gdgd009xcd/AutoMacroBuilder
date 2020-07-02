@@ -23,21 +23,28 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class ParmGenGSONDecoder implements GsonParserListener {
+public class ParmGenGSONDecoder implements GsonParserListener, DeepClone {
 
     private static org.apache.logging.log4j.Logger logger4j =
             org.apache.logging.log4j.LogManager.getLogger();
     Gson gson = null;
     JsonElement element = null;
-    // JsonParser parser = null;
+    String jsondata = null;
 
-    ArrayList<ParmGenToken> tknlist = null;
+    List<ParmGenToken> tknlist = null;
     HashMap<String, Integer> samenamehash = null;
     HashMap<ParmGenTokenKey, ParmGenTokenValue> map = null;
 
     public ParmGenGSONDecoder(String jsondata) {
+        init(jsondata);
+    }
 
+    private void init(String jsondata) {
+        this.jsondata = jsondata;
         gson = new Gson();
         parse(jsondata);
     }
@@ -89,7 +96,7 @@ public class ParmGenGSONDecoder implements GsonParserListener {
      *
      * <p>}
      */
-    public ArrayList<ParmGenToken> parseJSON2Token() {
+    public List<ParmGenToken> parseJSON2Token() {
         tknlist = new ArrayList<ParmGenToken>();
         map = new HashMap<ParmGenTokenKey, ParmGenTokenValue>();
         String URL = "";
@@ -169,5 +176,26 @@ public class ParmGenGSONDecoder implements GsonParserListener {
         }
 
         return true;
+    }
+
+    @Override
+    public ParmGenGSONDecoder clone() {
+
+        try {
+            ParmGenGSONDecoder nobj = (ParmGenGSONDecoder) super.clone();
+            nobj.init(this.jsondata);
+            // List<ParmGenToken> tknlist = null;
+            nobj.tknlist = ListDeepCopy.listDeepCopyParmGenToken(this.tknlist);
+            // HashMap<String, Integer> samenamehash = null;
+            nobj.samenamehash = this.samenamehash != null ? new HashMap<>(this.samenamehash) : null;
+            // HashMap<ParmGenTokenKey, ParmGenTokenValue> map = null;
+            nobj.map = HashMapDeepCopy.hashMapDeepCopyParmGenHashMapSuper(this.map);
+
+            return nobj;
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(ParmGenGSONDecoder.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return null;
     }
 }

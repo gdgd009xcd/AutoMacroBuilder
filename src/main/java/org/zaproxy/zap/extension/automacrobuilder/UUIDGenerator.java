@@ -19,25 +19,10 @@
  */
 package org.zaproxy.zap.extension.automacrobuilder;
 
-/** @author daike */
-public class ParmGenTWait {
-    private long waittimer;
-    private static org.apache.logging.log4j.Logger LOGGER4J =
-            org.apache.logging.log4j.LogManager.getLogger();
+import java.util.UUID;
 
-    ParmGenTWait(long wtimer) {
-        waittimer = wtimer;
-    }
-
-    void TWait() {
-        if (waittimer > 0) {
-            LOGGER4J.debug("....sleep Start:" + waittimer + "(msec)");
-            try {
-                Thread.sleep(waittimer);
-            } catch (Exception e) {
-                LOGGER4J.debug("....sleep Exception..");
-            }
-            LOGGER4J.debug("....sleep End.");
-        }
+public class UUIDGenerator {
+    public static synchronized UUID getUUID() {
+        return UUID.randomUUID();
     }
 }

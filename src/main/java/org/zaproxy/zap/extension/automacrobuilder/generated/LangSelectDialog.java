@@ -5,6 +5,7 @@
  */
 package org.zaproxy.zap.extension.automacrobuilder.generated;
 
+import java.util.ResourceBundle;
 import javax.swing.DefaultComboBoxModel;
 import org.zaproxy.zap.extension.automacrobuilder.Encode;
 import org.zaproxy.zap.extension.automacrobuilder.InterfaceLangOKNG;
@@ -16,6 +17,8 @@ import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
  */
 @SuppressWarnings("serial")
 public class LangSelectDialog extends javax.swing.JDialog {
+    private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
+    
     InterfaceLangOKNG LangOKNG = null;
     Encode selected_lang ;
     /**
@@ -59,7 +62,6 @@ public class LangSelectDialog extends javax.swing.JDialog {
         setModal(true);
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("burp/Bundle"); // NOI18N
         jLabel1.setText(bundle.getString("LangSelectDialog.表示言語を選択してください。.text")); // NOI18N
 
         LANGUAGE.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));

@@ -5,19 +5,15 @@
  */
 package org.zaproxy.zap.extension.automacrobuilder.generated;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.ResourceBundle;
 import javax.swing.table.DefaultTableModel;
-import org.zaproxy.zap.extension.automacrobuilder.AppParmsIni;
-import org.zaproxy.zap.extension.automacrobuilder.AppValue;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenJSONSave;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTrace;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenToken;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenTokenKey;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenTokenValue;
+
+import org.zaproxy.zap.extension.automacrobuilder.*;
 
 /**
  *
@@ -44,12 +40,10 @@ public class ParmGenTokenJDialog extends javax.swing.JDialog {
         ParmGenTokenValue tval = null;
         ParmGenToken token = null;
         for(AppParmsIni pini: newparms){
-            if(pini.parmlist!=null){
-                for(AppValue ap: pini.parmlist){
-                    tkey = new ParmGenTokenKey(ap.tokentype, ap.token, ap.resRegexPos);
-                    tval = new ParmGenTokenValue(ap.getresURL(), ap.resFetchedValue, ap.isEnabled());
-                    map.put(tkey, tval);
-                }
+            for(AppValue ap: pini.getAppValueReadWriteOriginal()){
+                tkey = new ParmGenTokenKey(ap.getTokenType(), ap.getToken(), ap.getResRegexPos());
+                tval = new ParmGenTokenValue(ap.getresURL(), ap.getResFetchedValue(), ap.isEnabled());
+                map.put(tkey, tval);
             }
         }
         
@@ -211,13 +205,13 @@ public class ParmGenTokenJDialog extends javax.swing.JDialog {
             ListIterator<AppParmsIni> appit = alist.listIterator();
             while(appit.hasNext()){
                 AppParmsIni aini = appit.next();
-                List<AppValue> apvlist = aini.parmlist;
+                List<AppValue> apvlist = aini.getAppValueReadWriteOriginal();
                 ListIterator<AppValue> apvit = null;
                 if(apvlist!=null){
                     apvit = apvlist.listIterator();
                     while(apvit.hasNext()){
                         AppValue ap = apvit.next();
-                        ParmGenTokenKey _tkey = new ParmGenTokenKey(ap.tokentype, ap.token, ap.resRegexPos);
+                        ParmGenTokenKey _tkey = new ParmGenTokenKey(ap.getTokenType(), ap.getToken(), ap.getResRegexPos());
                         if(map.containsKey(_tkey)){
                             ParmGenTokenValue _tval = map.get(_tkey);
                             if(_tval.getBoolean()){
@@ -233,7 +227,7 @@ public class ParmGenTokenJDialog extends javax.swing.JDialog {
                     }
                 }
                 if(apvlist!=null){
-                    appit.set(aini);
+                    //appit.set(aini); no need set
                 }else{
                     appit.remove();
                 }
@@ -241,10 +235,30 @@ public class ParmGenTokenJDialog extends javax.swing.JDialog {
             
             
         }
-        //トークン一覧のチェックON/OFFをnewparmsに反映
-        ParmGenJSONSave csv = new ParmGenJSONSave(newparms, pmt);
+
+        // Duplicate registration parameter deletion
+        List<AppParmsIni> resultlist = ParmGen.parmcsv;
+
+        if ( ParmGen.parmcsv!= null && newparms != null) {
+            List<AppParmsIni> merged = new ArrayList<>();
+            newparms.stream().forEach(newpini -> {
+                long samecnt = ParmGen.parmcsv.stream().filter(oldpini ->
+                        newpini.isSameContents(oldpini)
+                ).count();
+                if (samecnt <= 0) {
+                    merged.add(newpini);
+                }
+            });
+            resultlist = merged;
+            resultlist.addAll(ParmGen.parmcsv);
+        } else if (newparms !=null && !newparms.isEmpty()) { // ParmGen.parmcsv == null && !newparms.isEmpty()
+            resultlist = newparms;
+        }
+
+        ParmGenJSONSave csv = new ParmGenJSONSave(resultlist, pmt);
         csv.GSONsave();
         dispose();
+
     }//GEN-LAST:event_OKActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed

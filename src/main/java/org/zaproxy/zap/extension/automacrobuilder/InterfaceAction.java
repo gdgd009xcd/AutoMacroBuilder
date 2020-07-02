@@ -19,25 +19,25 @@
  */
 package org.zaproxy.zap.extension.automacrobuilder;
 
-/** @author daike */
-public class ParmGenTWait {
-    private long waittimer;
-    private static org.apache.logging.log4j.Logger LOGGER4J =
-            org.apache.logging.log4j.LogManager.getLogger();
-
-    ParmGenTWait(long wtimer) {
-        waittimer = wtimer;
-    }
-
-    void TWait() {
-        if (waittimer > 0) {
-            LOGGER4J.debug("....sleep Start:" + waittimer + "(msec)");
-            try {
-                Thread.sleep(waittimer);
-            } catch (Exception e) {
-                LOGGER4J.debug("....sleep Exception..");
-            }
-            LOGGER4J.debug("....sleep End.");
-        }
-    }
+/**
+ * InterfaceAction
+ *
+ * @author daike
+ */
+public interface InterfaceAction {
+    /**
+     *
+     *
+     * <PRE>
+     * main Action concurrently  called  per thread by THreadManager.
+     * if this action return true, then InterfaceEndAction will "synchronized" called
+     * return true: endAction execute.
+     *       false:  nothing to do endAction
+     * </PRE>
+     *
+     * @param tm
+     * @param otp
+     * @return
+     */
+    boolean action(ThreadManager tm, OneThreadProcessor otp);
 }

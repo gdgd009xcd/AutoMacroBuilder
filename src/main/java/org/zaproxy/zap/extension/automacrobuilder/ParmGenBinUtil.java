@@ -129,4 +129,12 @@ public class ParmGenBinUtil {
         byte[] b = {dest};
         return indexOf(b, 0);
     }
+
+    /**
+     * clear data
+     *
+     */
+    public void clear() {
+        bstream.reset();
+    }
 }

@@ -31,11 +31,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /** @author daike */
-public class ParmGenCookieManager {
-    CookieManager manager = null;
-    CookieStore cookiestore = null;
+public class ParmGenCookieManager implements DeepClone {
+    private CookieManager manager = null;
+    private CookieStore cookiestore = null;
 
     ParmGenCookieManager() {
+        init();
+    }
+
+    private void init() {
         manager = new CookieManager();
         manager.setCookiePolicy(CookiePolicy.ACCEPT_NONE);
         cookiestore = manager.getCookieStore();
@@ -54,6 +58,15 @@ public class ParmGenCookieManager {
         return null;
     }
 
+    /**
+     * add cookie currently no used.
+     *
+     * @param domain
+     * @param path
+     * @param name
+     * @param value
+     * @param isSSL
+     */
     public void add(String domain, String path, String name, String value, boolean isSSL) {
         URI uri = getURI(domain, path, isSSL);
         HttpCookie hcookie = new HttpCookie(name, value);
@@ -154,5 +167,34 @@ public class ParmGenCookieManager {
      */
     public List<URI> getURIs() {
         return cookiestore.getURIs();
+    }
+
+    @Override
+    public ParmGenCookieManager clone() {
+        try {
+            ParmGenCookieManager nobj = (ParmGenCookieManager) super.clone();
+            nobj.init();
+
+            List<URI> urilist = this.cookiestore.getURIs();
+            if (urilist != null) {
+                urilist.forEach(
+                        uri -> {
+                            List<HttpCookie> cookies = this.cookiestore.get(uri);
+                            cookies.forEach(
+                                    cookie -> {
+                                        nobj.cookiestore.add(
+                                                uri,
+                                                CastUtils.castToType(
+                                                        cookie.clone())); // uri: immutable,
+                                        // cookie has clone()
+                                    });
+                        });
+            }
+            return nobj;
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(ParmGenCookieManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return null;
     }
 }

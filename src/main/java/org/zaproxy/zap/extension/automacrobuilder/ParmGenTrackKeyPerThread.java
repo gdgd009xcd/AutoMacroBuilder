@@ -20,43 +20,67 @@
 package org.zaproxy.zap.extension.automacrobuilder;
 
 import java.util.HashMap;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** @author daike */
-public class ParmGenTrackJarFactory {
+public class ParmGenTrackKeyPerThread implements DeepClone {
 
-    static HashMap<Integer, ParmGenTrackingParam> trackjar =
+    private HashMap<UUID, ParmGenTrackingParam> trackjar =
             null; // Integer: unique key(ascend order.) ParmGenTrackingParam: tracking value
-    static Integer keymax = -1;
 
-    static void clear() {
-        keymax = 0;
-        trackjar = new HashMap<Integer, ParmGenTrackingParam>();
+    /**
+     * for internal use only
+     *
+     * @param sobj
+     */
+    private void setup(ParmGenTrackKeyPerThread sobj) {
+        this.trackjar = HashMapDeepCopy.hashMapDeepCopyUuidKParmGenTrackingParamV(sobj.trackjar);
+    }
+
+    ParmGenTrackKeyPerThread() {
+        trackjar = new HashMap<UUID, ParmGenTrackingParam>();
     }
 
     // create new unique key. tracking value is null.
-    static int create() {
+    ParmGenTrackingParam create(UUID k) {
         ParmGenTrackingParam tkparam = new ParmGenTrackingParam();
-        trackjar.put(keymax, tkparam);
-        return keymax++;
+        trackjar.put(k, tkparam);
+        return tkparam;
     }
 
     // save tracking value with unique key.
-    static void put(Integer key, ParmGenTrackingParam tkparam) {
+    void put(UUID key, ParmGenTrackingParam tkparam) {
         trackjar.put(key, tkparam);
         // ParmVars.plog.debuglog(0, "TrackJar put key:" + key);
     }
 
     // get tracking value with unique key.
-    static ParmGenTrackingParam get(Integer key) {
+    ParmGenTrackingParam get(UUID key) {
         // ParmVars.plog.debuglog(0, "TrackJar get key:" + key);
         return trackjar.get(key);
     }
 
-    static void remove(Integer key) {
+    void remove(UUID key) {
         trackjar.remove(key);
     }
 
-    static {
-        clear();
+    void clear() {
+        if (trackjar != null) {
+            trackjar.clear();
+        }
+    }
+
+    @Override
+    public ParmGenTrackKeyPerThread clone() {
+        try {
+            ParmGenTrackKeyPerThread nobj = (ParmGenTrackKeyPerThread) super.clone();
+            nobj.setup(this);
+            return nobj;
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(ParmGenTrackKeyPerThread.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 }

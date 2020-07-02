@@ -72,7 +72,7 @@
       <Properties>
         <Property name="horizontalAlignment" type="int" value="0"/>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="burp/Bundle.properties" key="&#x8868;&#x793a;&#x8a00;&#x8a9e;&#x3092;&#x9078;&#x629e;&#x3057;&#x3066;&#x304f;&#x3060;&#x3055;&#x3044;&#x3002;" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
+          <ResourceString bundle="burp/Bundle.properties" key="&#x8868;&#x793a;&#x8a00;&#x8a9e;&#x3092;&#x9078;&#x629e;&#x3057;&#x3066;&#x304f;&#x3060;&#x3055;&#x3044;&#x3002;" replaceFormat="bundle.getString(&quot;{sourceFileName}.{key}.text&quot;)"/>
         </Property>
       </Properties>
     </Component>

@@ -229,7 +229,7 @@ public enum Encode {
         // enum型全てを取得します。
         Encode[] enumArray = Encode.values();
 
-        if ( str != null ) {
+        if (str != null) {
             try {
                 Charset cset = Charset.forName(str);
                 String charsetname = cset.name();

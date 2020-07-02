@@ -19,25 +19,28 @@
  */
 package org.zaproxy.zap.extension.automacrobuilder;
 
-/** @author daike */
-public class ParmGenTWait {
-    private long waittimer;
-    private static org.apache.logging.log4j.Logger LOGGER4J =
-            org.apache.logging.log4j.LogManager.getLogger();
-
-    ParmGenTWait(long wtimer) {
-        waittimer = wtimer;
-    }
-
-    void TWait() {
-        if (waittimer > 0) {
-            LOGGER4J.debug("....sleep Start:" + waittimer + "(msec)");
-            try {
-                Thread.sleep(waittimer);
-            } catch (Exception e) {
-                LOGGER4J.debug("....sleep Exception..");
-            }
-            LOGGER4J.debug("....sleep End.");
-        }
-    }
+/**
+ * InterfaceDoActionProvider
+ *
+ * @author daike
+ */
+public interface InterfaceDoActionProvider {
+    /**
+     * get sequence number: 0start
+     *
+     * @return
+     */
+    int getSequnceNo();
+    /**
+     * get Action number: specified number Action run in List<InterfaceAction> getActionList()
+     *
+     * @return
+     */
+    int getActionNo();
+    /**
+     * create new InterfaceDoAction Instance as Singleton
+     *
+     * @return
+     */
+    InterfaceDoAction getDoActionInstance();
 }

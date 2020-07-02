@@ -8,6 +8,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,16 +18,8 @@ import javax.swing.DefaultComboBoxModel;
 
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
-import org.zaproxy.zap.extension.automacrobuilder.AppValue;
-import org.zaproxy.zap.extension.automacrobuilder.PRequest;
-import org.zaproxy.zap.extension.automacrobuilder.PRequestResponse;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenGSONDecoder;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenJSONSave;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenSession;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenToken;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenUtil;
-import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
-import org.zaproxy.zap.extension.automacrobuilder.interfaceParmGenWin;
+
+import org.zaproxy.zap.extension.automacrobuilder.*;
 
 /**
  *
@@ -135,7 +128,7 @@ public class ParmGenAddParms extends javax.swing.JDialog implements interfacePar
         
         //JSON request
         ParmGenGSONDecoder reqjdecoder = new ParmGenGSONDecoder(selected_request.getBody());
-        ArrayList<ParmGenToken> reqjtklist = reqjdecoder.parseJSON2Token();
+        List<ParmGenToken> reqjtklist = reqjdecoder.parseJSON2Token();
         for(ParmGenToken tk: reqjtklist){
             rcnt++;
             String name = tk.getTokenKey().getName();

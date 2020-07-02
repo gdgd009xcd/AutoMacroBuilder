@@ -12,6 +12,7 @@
       <scope>runtime</scope>
       <excludes>
           <!-- exclude>*:gson</exclude -->
+          <exclude>*:mytest-comcom</exclude>
       </excludes>
     </dependencySet>
     

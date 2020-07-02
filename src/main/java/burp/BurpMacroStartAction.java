@@ -6,10 +6,9 @@
 
 package burp;
 
-import org.zaproxy.zap.extension.automacrobuilder.ParmGen;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTrace;
 import static org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTrace.PMT_CURRENT_BEGIN;
-import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
+
+import org.zaproxy.zap.extension.automacrobuilder.ThreadManagerProvider;
 
 
 /**
@@ -17,10 +16,18 @@ import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
  * @author daike
  */
 public class BurpMacroStartAction implements ISessionHandlingAction {
-    ParmGenMacroTrace tr;
+
+    private BurpMacroStartDoActionProvider provider = new BurpMacroStartDoActionProvider();
     
-    public BurpMacroStartAction(ParmGenMacroTrace _tr){
-        tr = _tr;
+    private static org.apache.logging.log4j.Logger LOGGER4J =
+            org.apache.logging.log4j.LogManager.getLogger();
+    
+    public BurpMacroStartAction(){
+    }
+
+    private BurpMacroStartDoActionProvider getProvider(IHttpRequestResponse currentrequest, IHttpRequestResponse[] executedmacros){
+        this.provider.setParamters(currentrequest, executedmacros);
+        return this.provider;
     }
     
     @Override
@@ -30,27 +37,6 @@ public class BurpMacroStartAction implements ISessionHandlingAction {
 
     @Override
     public void performAction(IHttpRequestResponse currentrequest, IHttpRequestResponse[] executedmacros) {
-        tr.startBeforePreMacro();//前処理マクロを実行。
-        startCurrentRequest(currentrequest);
+        ThreadManagerProvider.getThreadManager().beginProcess(getProvider(currentrequest, executedmacros));
     }
-    
-    public void startCurrentRequest(IHttpRequestResponse currentRequest){
-        ParmVars.plog.clearComments();
-        ParmVars.plog.setError(false);
-        //state = PMT_CURRENT_BEGIN;
-        tr.setState(PMT_CURRENT_BEGIN);
-        ParmGen pgen = new ParmGen(tr);
-        IHttpService iserv = currentRequest.getHttpService();
-        String host = iserv.getHost();
-        int port = iserv.getPort();
-        boolean isSSL = (iserv.getProtocol().toLowerCase().equals("https")?true:false);
-        ParmVars.plog.debuglog(0, "Current StepNo:" + tr.getStepNo() + " "+ host );
-        tr.burpSetCurrentOriginalRequest(currentRequest.getRequest());
-        
-        byte[] retval = pgen.Run(host, port, isSSL, currentRequest.getRequest());
-        if ( retval != null){
-                currentRequest.setRequest(retval);
-        }
-    }
-    
 }

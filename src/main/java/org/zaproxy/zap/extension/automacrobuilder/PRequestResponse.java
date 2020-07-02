@@ -19,10 +19,12 @@
  */
 package org.zaproxy.zap.extension.automacrobuilder;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.zaproxy.zap.extension.automacrobuilder.mdepend.ClientDependMessageContainer;
 
 /** @author tms783 */
-public class PRequestResponse {
+public class PRequestResponse implements DeepClone {
     public PRequest request;
     public PResponse response;
     String comments;
@@ -70,10 +72,10 @@ public class PRequestResponse {
                 cdmc.getResponseEncode());
     }
 
-    public void setClientDependMessageContainer(ClientDependMessageContainer cdmc){
+    public void setClientDependMessageContainer(ClientDependMessageContainer cdmc) {
         this.cdmc = cdmc;
     }
-    
+
     public ClientDependMessageContainer getClientDependMessageContainer() {
         return this.cdmc;
     }
@@ -120,5 +122,31 @@ public class PRequestResponse {
 
     public int getMacroPos() {
         return macropos;
+    }
+
+    @Override
+    public PRequestResponse clone() {
+        PRequestResponse nobj = null;
+        try {
+            nobj = (PRequestResponse) super.clone();
+            // public PRequest request;
+            nobj.request = this.request != null ? this.request.clone() : null;
+            // public PResponse response;
+            nobj.response = this.response != null ? this.response.clone() : null;
+            // String comments;
+            nobj.comments = this.comments;
+            // Boolean disable = false; // ==true no execute.
+            nobj.disable = this.disable;
+            // boolean iserror = false;
+            nobj.iserror = this.iserror;
+            // int macropos = -1;
+            nobj.macropos = this.macropos;
+            // private ClientDependMessageContainer cdmc = null;
+            nobj.cdmc = this.cdmc;
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(PRequestResponse.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return nobj;
     }
 }

@@ -4,3 +4,9 @@
 /.classpath
 /.project
 /bin/
+.idea/
+.idea
+/.idea/
+nb-configuration.xml
+nbactions-release-profile.xml
+nbactions.xml

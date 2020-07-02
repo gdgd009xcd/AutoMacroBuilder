@@ -24,6 +24,9 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
 // <?xml version="1.0" encoding="utf-8"?>
@@ -38,25 +41,35 @@ import java.util.regex.Matcher;
 // FetchResponse初期化
 //
 
-class FetchResponseVal {
+class FetchResponseVal implements DeepClone {
     //
-    int noclear = 0;
 
-    boolean sticky = false;
+    private static org.apache.logging.log4j.Logger LOGGER4J =
+            org.apache.logging.log4j.LogManager.getLogger();
 
-    // String [][] locarray = new String[rmax][cmax];
-    // String [][] locarray;
-
-    // stepno
-    // int [][] responseStepNos;
-    PLog _logger = null;
     Encode _enc = null;
 
+    // ====================== copy per thread members begin ===============
     // Key: String token  int toStepNo Val: distance = responseStepNo - currentStepNo
     private HashMap<ParmGenTokenKey, Integer> distances;
+
+    private ParmGenTrackKeyPerThread trackkeys;
+    // ====================== copy per thread members end =================
+
+    private ParmGenMacroTrace pmt;
+
     //
-    FetchResponseVal() {
-        _logger = ParmVars.plog;
+    FetchResponseVal(ParmGenMacroTrace pmt) {
+        init(pmt);
+    }
+
+    /**
+     * for internal use
+     *
+     * @param pmt
+     */
+    private void init(ParmGenMacroTrace pmt) {
+        this.pmt = pmt;
 
         // pattern = "<AuthUpload>(?:.|\r|\n|\t)*?<password>([a-zA-Z0-9]+)</password>";
         allocLocVal();
@@ -73,7 +86,7 @@ class FetchResponseVal {
     }
 
     private void allocLocVal() {
-
+        trackkeys = new ParmGenTrackKeyPerThread();
         distances = new HashMap<ParmGenTokenKey, Integer>();
     }
 
@@ -85,7 +98,7 @@ class FetchResponseVal {
     }
 
     public void clearCachedLocVal() {
-        ParmGenTrackJarFactory.clear();
+        if (trackkeys != null) trackkeys.clear();
     }
 
     public void clearDistances() {
@@ -104,9 +117,9 @@ class FetchResponseVal {
      * @param toStepNo int
      * @return token value String
      */
-    String getLocVal(int k, ParmGenTokenKey tk, int currentStepNo, int toStepNo) {
+    String getLocVal(UUID k, ParmGenTokenKey tk, int currentStepNo, int toStepNo) {
         String rval = null;
-        ParmGenTrackingParam tkparam = ParmGenTrackJarFactory.get(k);
+        ParmGenTrackingParam tkparam = trackkeys.get(k);
         if (tkparam != null) {
 
             // String v = locarray[r][c];
@@ -154,8 +167,8 @@ class FetchResponseVal {
         return rval;
     }
 
-    private int getStepNo(int k) {
-        ParmGenTrackingParam tkparam = ParmGenTrackJarFactory.get(k);
+    private int getStepNo(UUID k) {
+        ParmGenTrackingParam tkparam = trackkeys.get(k);
         if (tkparam != null) {
             // return responseStepNos[r][c];
             return tkparam.getResponseStepNo();
@@ -164,25 +177,18 @@ class FetchResponseVal {
     }
 
     /** set response's tracking token to TrackJarFactory */
-    private int setLocVal(int k, int currentStepNo, int fromStepNo, String val, boolean overwrite) {
-        ParmGenTrackingParam tkparam = ParmGenTrackJarFactory.get(k);
-        if (tkparam
-                == null) { // if unique key is No exist, then create tracking param with new unique
+    private UUID setLocVal(
+            UUID k, int currentStepNo, int fromStepNo, String val, boolean overwrite) {
+        ParmGenTrackingParam tkparam = trackkeys.get(k);
+        if (tkparam == null) { // if tkparam has No exist, then create tkparam with new unique key
             // key
-            k = ParmGenTrackJarFactory.create();
-            tkparam = ParmGenTrackJarFactory.get(k);
+            tkparam = trackkeys.create(k);
         }
-
-        // if ( locarray[r][c] == null ){
-        //        locarray[r][c] = val;
-        // }else if(sticky == false||overwrite == true){
-        //        locarray[r][c] = val;
-        // }
 
         String cachedval = tkparam.getValue();
         if (cachedval == null) {
             tkparam.setValue(val);
-        } else if (sticky == false || overwrite == true) {
+        } else if (overwrite == true) {
             tkparam.setValue(val);
         }
 
@@ -195,7 +201,7 @@ class FetchResponseVal {
             tkparam.setResponseStepNo(currentStepNo);
         }
 
-        ParmGenTrackJarFactory.put(k, tkparam);
+        trackkeys.put(k, tkparam);
 
         return k;
     }
@@ -208,16 +214,8 @@ class FetchResponseVal {
     //    }
     // }
 
-    int noClear() {
-        return noclear;
-    }
-
-    void resetnoClear() {
-        noclear = 0;
-    }
-
     void printlog(String v) {
-        _logger.printlog(v, true);
+        LOGGER4J.info(v);
     }
 
     //
@@ -233,7 +231,7 @@ class FetchResponseVal {
             boolean overwrite,
             String name,
             AppValue av) {
-        AppValue.TokenTypeNames _tokentype = av.tokentype;
+        AppValue.TokenTypeNames _tokentype = av.getTokenType();
         String comments = "";
         if (urlmatch(av, url)) {
             if (_tokentype == AppValue.TokenTypeNames.LOCATION) {
@@ -251,14 +249,13 @@ class FetchResponseVal {
                                             + " => "
                                             + matchval;
                             printlog(comments);
-                            ParmVars.plog.addComments(comments);
-                            av.setTrackKey(
-                                    setLocVal(
-                                            av.getTrackKey(),
-                                            currentStepNo,
-                                            fromStepNo,
-                                            matchval,
-                                            overwrite));
+                            pmt.addComments(comments);
+                            setLocVal(
+                                    av.getTrackKey(),
+                                    currentStepNo,
+                                    fromStepNo,
+                                    matchval,
+                                    overwrite);
                             return true;
                         }
                     } else {
@@ -269,7 +266,7 @@ class FetchResponseVal {
                                         + c
                                         + " => null";
                         printlog(comments);
-                        ParmVars.plog.addComments(comments);
+                        pmt.addComments(comments);
                     }
                 }
             } else if (av.getPattern_resRegex() != null) {
@@ -305,14 +302,13 @@ class FetchResponseVal {
                                                 + " => "
                                                 + matchval;
                                 printlog(comments);
-                                ParmVars.plog.addComments(comments);
-                                av.setTrackKey(
-                                        setLocVal(
-                                                av.getTrackKey(),
-                                                currentStepNo,
-                                                fromStepNo,
-                                                matchval,
-                                                overwrite));
+                                pmt.addComments(comments);
+                                setLocVal(
+                                        av.getTrackKey(),
+                                        currentStepNo,
+                                        fromStepNo,
+                                        matchval,
+                                        overwrite);
                                 return true;
                             } else {
                                 comments =
@@ -324,7 +320,7 @@ class FetchResponseVal {
                                                 + hval
                                                 + " => null";
                                 printlog(comments);
-                                ParmVars.plog.addComments(comments);
+                                pmt.addComments(comments);
                             }
                         }
                     }
@@ -350,7 +346,7 @@ class FetchResponseVal {
             String name,
             boolean _uencode)
             throws UnsupportedEncodingException {
-        AppValue.TokenTypeNames _tokentype = av.tokentype;
+        AppValue.TokenTypeNames _tokentype = av.getTokenType();
         if (urlmatch(av, url)) {
 
             Matcher matcher = null;
@@ -375,7 +371,7 @@ class FetchResponseVal {
                                     + "] 例外："
                                     + e.toString();
                     printlog(comments);
-                    ParmVars.plog.addComments(comments);
+                    pmt.addComments(comments);
                     matcher = null;
                 }
 
@@ -387,7 +383,7 @@ class FetchResponseVal {
                     }
 
                     if (matchval != null) {
-                        switch (av.resencodetype) {
+                        switch (av.getResEncodeType()) {
                             case JSON:
                                 ParmGenGSONDecoder jdec = new ParmGenGSONDecoder(null);
                                 matchval = jdec.decodeStringValue(matchval);
@@ -411,13 +407,12 @@ class FetchResponseVal {
 
                         if (ONETIMEPASSWD != null && !ONETIMEPASSWD.isEmpty()) { // value値nullは追跡しない
 
-                            av.setTrackKey(
-                                    setLocVal(
-                                            av.getTrackKey(),
-                                            currentStepNo,
-                                            fromStepNo,
-                                            ONETIMEPASSWD,
-                                            overwrite));
+                            setLocVal(
+                                    av.getTrackKey(),
+                                    currentStepNo,
+                                    fromStepNo,
+                                    ONETIMEPASSWD,
+                                    overwrite);
                             comments =
                                     "*****FETCHRESPONSE body key/r,c:"
                                             + av.getTrackKey()
@@ -430,7 +425,7 @@ class FetchResponseVal {
                                             + "="
                                             + ONETIMEPASSWD;
                             printlog(comments);
-                            ParmVars.plog.addComments(comments);
+                            pmt.addComments(comments);
                             return true;
                         } else {
                             comments =
@@ -443,7 +438,7 @@ class FetchResponseVal {
                                             + "="
                                             + "null";
                             printlog(comments);
-                            ParmVars.plog.addComments(comments);
+                            pmt.addComments(comments);
                         }
                     }
                 }
@@ -474,13 +469,12 @@ class FetchResponseVal {
                                 }
                                 String ONETIMEPASSWD = v.replaceAll(",", "%2C");
 
-                                av.setTrackKey(
-                                        setLocVal(
-                                                av.getTrackKey(),
-                                                currentStepNo,
-                                                fromStepNo,
-                                                ONETIMEPASSWD,
-                                                overwrite));
+                                setLocVal(
+                                        av.getTrackKey(),
+                                        currentStepNo,
+                                        fromStepNo,
+                                        ONETIMEPASSWD,
+                                        overwrite);
                                 String comments =
                                         "*****FETCHRESPONSE auto track body key/r,c,p:"
                                                 + av.getTrackKey()
@@ -495,7 +489,7 @@ class FetchResponseVal {
                                                 + "="
                                                 + v;
                                 printlog(comments);
-                                ParmVars.plog.addComments(comments);
+                                pmt.addComments(comments);
                                 return true;
                             } else {
                                 String comments =
@@ -510,7 +504,7 @@ class FetchResponseVal {
                                                 + "="
                                                 + "null";
                                 printlog(comments);
-                                ParmVars.plog.addComments(comments);
+                                pmt.addComments(comments);
                             }
                         }
                     }
@@ -549,14 +543,8 @@ class FetchResponseVal {
                                         + "="
                                         + nv[1];
                         printlog(comments);
-                        ParmVars.plog.addComments(comments);
-                        av.setTrackKey(
-                                setLocVal(
-                                        av.getTrackKey(),
-                                        currentStepNo,
-                                        fromStepNo,
-                                        nv[1],
-                                        overwrite));
+                        pmt.addComments(comments);
+                        setLocVal(av.getTrackKey(), currentStepNo, fromStepNo, nv[1], overwrite);
                         return true;
                     } else {
                         comments =
@@ -568,7 +556,7 @@ class FetchResponseVal {
                                         + nv[0]
                                         + "=null";
                         printlog(comments);
-                        ParmVars.plog.addComments(comments);
+                        pmt.addComments(comments);
                     }
                 }
             }
@@ -585,7 +573,7 @@ class FetchResponseVal {
                 Matcher matcher = av.getPattern_resURL().matcher(url);
                 if (matcher.find()) {
                     // printlog("*****FETCHRESPONSE URL match:" + url);
-                    ParmVars.plog.debuglog(0, " FETCH RESPONSE URL matched:[" + url + "]");
+                    LOGGER4J.debug(" FETCH RESPONSE URL matched:[" + url + "]");
                     return true;
                 }
                 // printlog("urlmatch find failed:r,c,url, rmax=" + strrowcol(r,c) + "," + url + ","
@@ -596,6 +584,23 @@ class FetchResponseVal {
             printlog("matcher例外：" + e.toString());
         }
         return false;
+    }
+
+    @Override
+    public FetchResponseVal clone() {
+        FetchResponseVal nobj = null;
+        try {
+            nobj = (FetchResponseVal) super.clone();
+            nobj._enc = this._enc;
+            nobj.pmt = this.pmt;
+            nobj.distances =
+                    HashMapDeepCopy.hashMapDeepCopyParmGenTokenKeyKIntegerV(this.distances);
+            nobj.trackkeys = this.trackkeys.clone();
+            return nobj;
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(FetchResponseVal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return nobj;
     }
 }
 

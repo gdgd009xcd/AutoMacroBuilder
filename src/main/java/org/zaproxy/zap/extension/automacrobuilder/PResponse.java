@@ -22,9 +22,9 @@ package org.zaproxy.zap.extension.automacrobuilder;
 import java.util.Map.Entry;
 
 public class PResponse extends ParseHTTPHeaders {
-    private ParmGenHashMap map;
-    private ParmGenParser htmlparser;
-    private ParmGenGSONDecoder jsonparser;
+    private ParmGenHashMap map = null;
+    private ParmGenParser htmlparser = null;
+    private ParmGenGSONDecoder jsonparser = null;
     // PResponse(){
     //	super();
     // }
@@ -114,5 +114,17 @@ public class PResponse extends ParseHTTPHeaders {
         }
 
         return null;
+    }
+
+    public PResponse clone() {
+        PResponse nobj = (PResponse) super.clone();
+        // private ParmGenHashMap map = null;
+        nobj.map = this.map != null ? this.map.clone() : null;
+        // private ParmGenParser htmlparser = null;
+        nobj.htmlparser = this.htmlparser != null ? this.htmlparser.clone() : null;
+        // private ParmGenGSONDecoder jsonparser =null;
+        nobj.jsonparser = this.jsonparser != null ? this.jsonparser.clone() : null;
+
+        return nobj;
     }
 }

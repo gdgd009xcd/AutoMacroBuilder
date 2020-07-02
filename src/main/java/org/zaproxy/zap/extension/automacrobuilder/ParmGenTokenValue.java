@@ -20,9 +20,11 @@
 package org.zaproxy.zap.extension.automacrobuilder;
 
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** @author daike */
-public class ParmGenTokenValue {
+public class ParmGenTokenValue implements DeepClone {
     private String url; // url is LOCATION header's URL "VALUE". It is Not a key value.  LOCATION:
     // http://brah.com/xxx...
     private String value;
@@ -35,8 +37,12 @@ public class ParmGenTokenValue {
     }
 
     ParmGenTokenValue(ParmGenTokenValue tv) {
-        url = new String(tv.url);
-        value = new String(tv.value);
+        setup(tv);
+    }
+
+    private void setup(ParmGenTokenValue tv) {
+        url = tv.url;
+        value = tv.value;
         b = tv.b;
     }
 
@@ -70,5 +76,18 @@ public class ParmGenTokenValue {
 
         int hash = Objects.hash(this.url, this.value, this.b);
         return hash;
+    }
+
+    @Override
+    public ParmGenTokenValue clone() {
+
+        try {
+            ParmGenTokenValue nobj = (ParmGenTokenValue) super.clone();
+            nobj.setup(this);
+            return nobj;
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(ParmGenTokenValue.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 }

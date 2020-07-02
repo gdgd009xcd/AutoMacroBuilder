@@ -19,25 +19,16 @@
  */
 package org.zaproxy.zap.extension.automacrobuilder;
 
-/** @author daike */
-public class ParmGenTWait {
-    private long waittimer;
-    private static org.apache.logging.log4j.Logger LOGGER4J =
-            org.apache.logging.log4j.LogManager.getLogger();
-
-    ParmGenTWait(long wtimer) {
-        waittimer = wtimer;
-    }
-
-    void TWait() {
-        if (waittimer > 0) {
-            LOGGER4J.debug("....sleep Start:" + waittimer + "(msec)");
-            try {
-                Thread.sleep(waittimer);
-            } catch (Exception e) {
-                LOGGER4J.debug("....sleep Exception..");
-            }
-            LOGGER4J.debug("....sleep End.");
-        }
-    }
+/**
+ * InterfaceEndAction
+ *
+ * @author daike
+ */
+public interface InterfaceEndAction {
+    /**
+     * this EndAction synchronusly called after InterfaceAction is done.
+     *
+     * <p>purpose: save/store InterfaceAction's results or some post processing.
+     */
+    public void action();
 }

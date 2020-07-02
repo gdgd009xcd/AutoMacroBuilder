@@ -19,6 +19,9 @@
  */
 package org.zaproxy.zap.extension.automacrobuilder;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /** @author daike */
 public class ParmGenBeen implements DeepClone {
     // primitive or final mermbers
@@ -29,15 +32,22 @@ public class ParmGenBeen implements DeepClone {
     // ...etc.
     ParmGenBeen() {}
 
+    private void copyparams(ParmGenBeen sobj) {
+        this.v = sobj.v;
+        this.i = sobj.i;
+        this.b = sobj.b;
+    }
+
     @Override
     public ParmGenBeen clone() {
+        ParmGenBeen nobj = null;
         try {
-            ParmGenBeen nobj =
-                    (ParmGenBeen) super.clone(); // this class of which primitive or final member is
-            // olso copied
-            return nobj;
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
+            nobj = (ParmGenBeen) super.clone();
+            nobj.copyparams(this);
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(ParmGenBeen.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+        return nobj;
     }
 }

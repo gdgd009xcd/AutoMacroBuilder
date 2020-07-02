@@ -6,11 +6,10 @@
 
 package org.zaproxy.zap.extension.automacrobuilder.generated;
 
+import java.util.ResourceBundle;
 import org.zaproxy.zap.extension.automacrobuilder.AppValue;
 import org.zaproxy.zap.extension.automacrobuilder.ParmGenSession;
 import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
-import org.zaproxy.zap.extension.automacrobuilder.generated.ParmGenNew;
-import org.zaproxy.zap.extension.automacrobuilder.generated.ParmGenAddParms;
 import org.zaproxy.zap.extension.automacrobuilder.interfaceParmGenWin;
 
 
@@ -21,6 +20,8 @@ import org.zaproxy.zap.extension.automacrobuilder.interfaceParmGenWin;
 @SuppressWarnings("serial")
 public class ParmGenTamperOpt extends javax.swing.JDialog implements interfaceParmGenWin {
     ParmGenNew parentwin;
+    private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
+    
     /**
      * Creates new form ParmGenTamperOpt
      */
@@ -50,7 +51,6 @@ public class ParmGenTamperOpt extends javax.swing.JDialog implements interfacePa
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/zaproxy/zap/extension/automacrobuilder/generated/Bundle"); // NOI18N
         jLabel1.setText(bundle.getString("ParmGenTamperOpt.jLabel1.text")); // NOI18N
 
         PayloadPosition.setModel(new javax.swing.DefaultComboBoxModel(AppValue.makePayloadPositionNames()));
@@ -112,14 +112,14 @@ public class ParmGenTamperOpt extends javax.swing.JDialog implements interfacePa
                                 .addGap(10, 10, 10))))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(20, 20, 20)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 86, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)

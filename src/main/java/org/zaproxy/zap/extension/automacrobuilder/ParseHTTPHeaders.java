@@ -19,6 +19,8 @@
  */
 package org.zaproxy.zap.extension.automacrobuilder;
 
+import static org.zaproxy.zap.extension.automacrobuilder.HashMapDeepCopy.hashMapDeepCopyStrKStrV;
+
 import java.net.HttpCookie;
 import java.net.URLDecoder;
 import java.util.*;
@@ -27,18 +29,20 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.zaproxy.zap.extension.automacrobuilder.HashMapDeepCopy.hashMapDeepCopyStrKStrV;
-
 //
 // HTTP request/response parser
 //
 
 class ParseHTTPHeaders implements DeepClone {
+    private static org.apache.logging.log4j.Logger LOGGER4J =
+            org.apache.logging.log4j.LogManager.getLogger();
     Pattern valueregex;
     // Pattern formdataregex;
     String formdataheader;
+    String formdatacontenttype;
     String formdatafooter;
     Pattern formdataheaderregex;
+    Pattern formdatacontenttyperegex;
     Pattern formdatafooterregex;
     private String[] nv = null; // temporary work parameter. no need copy in constructor.
     boolean crlf;
@@ -113,7 +117,8 @@ class ParseHTTPHeaders implements DeepClone {
                 ParmGenRequestTokenKey.RequestParamSubType.Cookie),
     };
 
-    public static final String CUSTOM_THREAD_ID_HEADERNAME = "X-PARMGEN-CUSTOM-HEADER";
+    public static final String CUSTOM_THREAD_ID_HEADERNAME = "X-PARMGEN-THREAD-HEADER";
+    public static final String CUSTOM_PARAMS_HEADERNAME = "X-PARMGEN-PARAMS-HEADER";
 
     private void init() {
         body = null;
@@ -124,6 +129,8 @@ class ParseHTTPHeaders implements DeepClone {
         // formdataregex = ParmGenUtil.Pattern_compile("-{4,}[a-zA-Z0-9]+(?:\r\n)(?:[A-Z].*
         // name=\"(.*?)\".*(?:\r\n))(?:[A-Z].*(?:\r\n)){0,}(?:\r\n)((?:.|\r|\n)*?)(?:\r\n)-{4,}[a-zA-Z0-9]+");
         formdataheader = "(?:[A-Z].* name=\"(.*?)\".*(?:\r\n))(?:[A-Z].*(?:\r\n)){0,}(?:\r\n)";
+        formdatacontenttype =
+                "(?:[A-Z].* name=\".*?\".*(?:\r|\n|\r\n))(?:Content-Type:[ \t]*([a-zA-Z\\.\\-0-9/]*)(?:\r|\n|\r\n)){1}(?:\r|\n|\r\n)";
         formdatafooter = "(?:\r\n)";
         nv = null;
         isSSL = false;
@@ -168,8 +175,10 @@ class ParseHTTPHeaders implements DeepClone {
         valueregex = pheaders.valueregex;
 
         formdataheader = pheaders.formdataheader;
+        formdatacontenttype = pheaders.formdatacontenttype;
         formdatafooter = pheaders.formdatafooter;
         formdataheaderregex = pheaders.formdataheaderregex;
+        formdatacontenttyperegex = pheaders.formdatacontenttyperegex;
         formdatafooterregex = pheaders.formdatafooterregex;
         nv = null; // tempoary work parameter. no need copy.
         crlf = pheaders.crlf;
@@ -403,12 +412,14 @@ class ParseHTTPHeaders implements DeepClone {
                                     String[] nv = parms[i].trim().split("=");
                                     String[] nvpair = new String[2];
                                     if (nv.length > 0) {
-                                        nvpair[0] = new String(nv[0]);
+                                        nvpair[0] = nv[0]; // nv[0] is not null
+                                    } else {
+                                        nvpair[0] = "";
                                     }
                                     if (nv.length > 1) {
-                                        nvpair[1] = new String(nv[1]);
+                                        nvpair[1] = nv[1]; // nv[1] is not null
                                     } else {
-                                        nvpair[1] = new String("");
+                                        nvpair[1] = "";
                                     }
                                     queryparams.add(nvpair);
                                     hashqueryparams.put(
@@ -469,6 +480,9 @@ class ParseHTTPHeaders implements DeepClone {
                                             boundary = boundaries[1];
                                             formdataheaderregex =
                                                     ParmGenUtil.Pattern_compile(formdataheader);
+                                            formdatacontenttyperegex =
+                                                    ParmGenUtil.Pattern_compile(
+                                                            formdatacontenttype);
                                             formdatafooterregex =
                                                     ParmGenUtil.Pattern_compile(
                                                             formdatafooter + "--" + boundary);
@@ -582,7 +596,23 @@ class ParseHTTPHeaders implements DeepClone {
                     dv = dv.replaceAll("\n", "<LF>");
                     ParmVars.plog.debuglog(1, dv);
                     Matcher fn = formdataheaderregex.matcher(formvalue);
-                    if (fn.find()) {
+                    Matcher contentfn = formdatacontenttyperegex.matcher(formvalue);
+                    boolean isbinarycontents = false;
+                    if (contentfn.find()) {
+                        int cnt = contentfn.groupCount();
+                        if (cnt > 0) {
+                            String contenttype = contentfn.group(1);
+                            isbinarycontents = ParmGenUtil.isBinaryMimeContent(contenttype);
+                            LOGGER4J.debug(
+                                    (isbinarycontents ? "BINARY " : " ")
+                                            + "cnt:"
+                                            + cnt
+                                            + " content-type["
+                                            + contenttype
+                                            + "]");
+                        }
+                    }
+                    if (fn.find() && !isbinarycontents) {
                         try {
                             String[] nvpair = new String[2];
                             int fgcnt = fn.groupCount();
@@ -644,7 +674,7 @@ class ParseHTTPHeaders implements DeepClone {
         isHeaderModified = true;
     }
 
-    void removeHeader(String name) {
+    public void removeHeader(String name) {
         ParmGenHeader phg = getParmGenHeader(name);
         if (phg != null) {
             ListIterator<ParmGenBeen> it = phg.getValuesIter();
@@ -662,7 +692,7 @@ class ParseHTTPHeaders implements DeepClone {
     void setBody(byte[] _bval) {
         bytebody = _bval;
 
-        if(isrequest) {
+        if (isrequest) {
             int bl = bytebody != null ? bytebody.length : 0;
             int hl = content_length;
             if (bl != hl) { // actual body length != header's content-length value
@@ -937,6 +967,11 @@ class ParseHTTPHeaders implements DeepClone {
         return message;
     }
 
+    /**
+     * get Byte message ( header + CRLF + body )
+     *
+     * @return
+     */
     public byte[] getByteMessage() {
 
         if (bytebody != null) { // byte[] bytebodyから
@@ -1357,21 +1392,34 @@ class ParseHTTPHeaders implements DeepClone {
         return alist;
     }
 
-    public void setThreadId2CustomHeader(long tid) {
-        String v = Long.toString(tid);
+    public void setUUID2CustomHeader(UUID uuid) {
+        String v = uuid.toString();
 
         setHeader(CUSTOM_THREAD_ID_HEADERNAME, v);
     }
 
-    public long getThreadId5CustomHeader() {
+    public UUID getUUID5CustomHeader() {
         String v = getHeader(CUSTOM_THREAD_ID_HEADERNAME);
         if (v != null) {
-            Long l = Long.parseLong(v);
-            return l;
+            UUID uuid = UUID.fromString(v);
+            return uuid;
         }
-        return -1;
+        return null;
+    }
+    
+    public void setParamsCustomHeader(ParmGenMacroTraceParams pmtParams) {
+        setHeader(CUSTOM_PARAMS_HEADERNAME, pmtParams.toString());
     }
 
+    public ParmGenMacroTraceParams getParamsCustomHeader() {
+        String v = getHeader(CUSTOM_PARAMS_HEADERNAME);
+        ParmGenMacroTraceParams pmtParams = new ParmGenMacroTraceParams();
+        if (v != null) {
+            pmtParams.setString(v);
+        }
+        return pmtParams;
+    }
+    
     @Override
     public ParseHTTPHeaders clone() {
         try {

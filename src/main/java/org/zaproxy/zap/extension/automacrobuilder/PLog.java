@@ -188,28 +188,4 @@ public class PLog {
             printlog(v, true);
         }
     }
-
-    public void clearComments() {
-        comments = ""; // no null
-    }
-
-    void addComments(String _v) {
-        comments += _v + "\n";
-    }
-
-    void setComments(String _v) {
-        comments = _v;
-    }
-
-    public String getComments() {
-        return comments;
-    }
-
-    public void setError(boolean _b) {
-        iserror = _b;
-    }
-
-    public boolean isError() {
-        return iserror;
-    }
 }

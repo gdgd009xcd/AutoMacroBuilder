@@ -10,3 +10,4 @@
 nb-configuration.xml
 nbactions-release-profile.xml
 nbactions.xml
+*.iml

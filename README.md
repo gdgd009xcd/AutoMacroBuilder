@@ -1,6 +1,10 @@
 AutoMacrobuilder for burpsuite.  
 
-<IMG SRC="https://img.shields.io/github/license/gdgd009xcd/AutoMacroBuilder">
+![LICENSE](https://img.shields.io/github/license/gdgd009xcd/AutoMacroBuilder)
+![VULNERABILITY](https://img.shields.io/snyk/vulnerabilities/github/gdgd009xcd/AutoMacroBuilder)
+![LANG](https://img.shields.io/github/languages/top/gdgd009xcd/AutoMacroBuilder)
+
+
 
 AutoMacroBuilder is an extension of burpsuite. This Extension records the http request sequence of the web application in the macro, tracks the anti-CSRF token, and tests it by burp tools(repeater/scanner/intruder..etc).
 

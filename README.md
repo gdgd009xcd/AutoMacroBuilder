@@ -6,7 +6,7 @@ AutoMacrobuilder for burpsuite.
 
 
 
-AutoMacroBuilder is an extension of burpsuite. You can test applications that need to access pages in a specific order, such as shopping carts and registration of member information.
+AutoMacroBuilder is an extension of burpsuite. You can test applications that need to access pages in a specific order, such as shopping carts or registration of member information.
 This Extension records the http request sequence of the web application in the macro, tracks the anti-CSRF token, and tests it by burp tools(repeater/scanner/intruder..etc).
 
 Click here below:　<BR>

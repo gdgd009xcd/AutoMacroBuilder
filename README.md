@@ -8,7 +8,7 @@ AutoMacrobuilder for burpsuite.
 
 AutoMacroBuilder is an extension of burpsuite. This Extension records the http request sequence of the web application in the macro, tracks the anti-CSRF token, and tests it by burp tools(repeater/scanner/intruder..etc).
 
-* this feature is little bit similar to <A HREF="https://help.hcltechsw.com/appscan/ADAC/10.0.0/en-US/r_ExploreMultiStepOperations063.html">Multi Step Operations</A> in HCL AppScan.:)
+* this feature is similar to "Multi Step Operations" in other Company's Scanner Applications.
 
 Click here below:　<BR>
 　　<A href="https://github.com/gdgd009xcd/AutoMacroBuilder/wiki/1.0.-OverView">English</A><BR>

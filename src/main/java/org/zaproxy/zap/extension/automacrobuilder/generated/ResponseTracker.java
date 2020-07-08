@@ -20,6 +20,7 @@ import org.zaproxy.zap.extension.automacrobuilder.InterfaceRegex;
 import org.zaproxy.zap.extension.automacrobuilder.PRequestResponse;
 import org.zaproxy.zap.extension.automacrobuilder.ParmGenJSONSave;
 import org.zaproxy.zap.extension.automacrobuilder.ParmGenSession;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenTextDoc;
 import org.zaproxy.zap.extension.automacrobuilder.ParmGenUtil;
 import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
 import org.zaproxy.zap.extension.automacrobuilder.StrSelectInfo;
@@ -43,6 +44,7 @@ public class ResponseTracker extends javax.swing.JFrame implements InterfaceRege
     public static final int T_OPTIONTITLE = 2;
     private static final ResourceBundle bundle = ResourceBundle.getBundle("burp/Bundle");
 
+    PRequestResponse currentrequestresponse = null;
     
     // 正規表現適用順序
     // 0-8 
@@ -390,8 +392,6 @@ public class ResponseTracker extends javax.swing.JFrame implements InterfaceRege
         jLabel1 = new javax.swing.JLabel();
         ResponseURL = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        ResponseArea = new javax.swing.JTextArea();
         RegexPattern = new javax.swing.JTextField();
         jButton2 = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
@@ -399,6 +399,8 @@ public class ResponseTracker extends javax.swing.JFrame implements InterfaceRege
         jButton4 = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         FixedValue = new javax.swing.JCheckBox();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        ResponseArea = new javax.swing.JTextPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle(bundle.getString("ResponseTracker.レスポンス追跡.text")); // NOI18N
@@ -416,10 +418,6 @@ public class ResponseTracker extends javax.swing.JFrame implements InterfaceRege
         ResponseURL.setText("jTextField1");
 
         jLabel2.setText(bundle.getString("ResponseTracker.ＵＲＬ.text")); // NOI18N
-
-        ResponseArea.setColumns(20);
-        ResponseArea.setRows(5);
-        jScrollPane1.setViewportView(ResponseArea);
 
         jButton2.setText(bundle.getString("ResponseTracker.1)値選択.text")); // NOI18N
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -446,6 +444,8 @@ public class ResponseTracker extends javax.swing.JFrame implements InterfaceRege
 
         FixedValue.setText(bundle.getString("ResponseTracker.固定長.text")); // NOI18N
 
+        jScrollPane1.setViewportView(ResponseArea);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -456,12 +456,10 @@ public class ResponseTracker extends javax.swing.JFrame implements InterfaceRege
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addGap(58, 58, 58)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                         .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jSeparator1)
-                            .addComponent(jScrollPane1))
+                        .addComponent(jSeparator1)
                         .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -479,14 +477,16 @@ public class ResponseTracker extends javax.swing.JFrame implements InterfaceRege
                                         .addComponent(RegexPattern, javax.swing.GroupLayout.PREFERRED_SIZE, 488, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(18, 18, 18)
                                         .addComponent(RegexTextBtn)))
-                                .addGap(0, 0, Short.MAX_VALUE)))
+                                .addGap(0, 345, Short.MAX_VALUE)))
                         .addGap(12, 12, 12))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(ResponseURL)
-                        .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel3)
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                        .addContainerGap(931, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jScrollPane1)
+                            .addComponent(ResponseURL))
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -499,8 +499,8 @@ public class ResponseTracker extends javax.swing.JFrame implements InterfaceRege
                 .addComponent(ResponseURL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(14, 14, 14)
                 .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 188, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 194, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton2)
@@ -524,8 +524,10 @@ public class ResponseTracker extends javax.swing.JFrame implements InterfaceRege
     public void update(){
         if ( ParmGenJSONSave.selected_messages.size()>0){
             PRequestResponse rs = ParmGenJSONSave.selected_messages.get(0);
+            currentrequestresponse = rs;
             ResponseURL.setText(rs.request.getURL());
-            ResponseArea.setText(rs.response.getMessage());
+            ParmGenTextDoc rdoc = new ParmGenTextDoc(ResponseArea);
+            rdoc.setResponseChunks(rs.response);
             ResponseArea.setCaretPosition(0);   
             headerlength = Integer.parseInt(ParmVars.session.get(ParmGenSession.K_HEADERLENGTH));
         }
@@ -648,14 +650,16 @@ public class ResponseTracker extends javax.swing.JFrame implements InterfaceRege
 
     private void RegexTextBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RegexTextBtnActionPerformed
         // TODO add your handling code here:
-        new ParmGenRegex(this).setVisible(true);
+        new ParmGenRegex(this, false).setVisible(true);
     }//GEN-LAST:event_RegexTextBtnActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
+        if ( currentrequestresponse == null ) return;
         ParmVars.session.put(ParmGenSession.K_RESPONSEREGEX, regexpattern);
         ParmVars.session.put(ParmGenSession.K_RESPONSEPART, respart);
-        int mcnt = ParmGenUtil.getRegexMatchpos(getRegex(), getOriginal());
+       
+        int mcnt = ParmGenUtil.getRegexMatchpos(getRegex(), currentrequestresponse.response.getMessage());
         String poscnt = null;
         
         if(mcnt>0){
@@ -675,7 +679,7 @@ public class ResponseTracker extends javax.swing.JFrame implements InterfaceRege
     private javax.swing.JCheckBox FixedValue;
     private javax.swing.JTextField RegexPattern;
     private javax.swing.JButton RegexTextBtn;
-    private javax.swing.JTextArea ResponseArea;
+    private javax.swing.JTextPane ResponseArea;
     private javax.swing.JTextField ResponseURL;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
@@ -690,5 +694,10 @@ public class ResponseTracker extends javax.swing.JFrame implements InterfaceRege
     @Override
     public void updateMessageAreaInSelectedModel(int panel) {
         //NOP
+    }
+
+    @Override
+    public PRequestResponse getOriginalRequestResponse() {
+        return currentrequestresponse;
     }
 }

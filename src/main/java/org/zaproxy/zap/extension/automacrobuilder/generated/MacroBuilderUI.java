@@ -1479,10 +1479,12 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         int pos = RequestList.getSelectedIndex();
         if(pos<0)return;
         if(pmt!=null){
-            PRequestResponse pqr = pmt.getOriginalRequest(pos);
-            StyledDocument doc = MacroRequest.getStyledDocument();
-            if(pqr!=null){
-                new ParmGenRegex(this, reg, doc).setVisible(true);
+            PRequestResponse pqr = pmt.getRequestResponseCurrentList(pos);
+            if (pqr != null) {
+                String text = MacroRequest.getText();
+                StyledDocumentWithChunk chunkdoc = new StyledDocumentWithChunk(pqr.request);
+                chunkdoc.updateRequestFromText(text);
+                new ParmGenRegex(this, reg, chunkdoc).setVisible(true);
             }
         }
       
@@ -1495,8 +1497,8 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         int pos = RequestList.getSelectedIndex();
         String orig = MacroResponse.getText();
         if (pos != -1) {
-            PRequestResponse prr = rlist.get(pos);
-            new ParmGenRegex(this,reg,prr.response).setVisible(true);
+            StyledDocument doc = MacroResponse.getStyledDocument();
+            new ParmGenRegex(this,reg,doc).setVisible(true);
         }
         
     }//GEN-LAST:event_showActionPerformed
@@ -1637,6 +1639,13 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                 String elem = String.format("%03d",i) + '|' + pqrs.request.getURL();
                 RequestListModel.set(i, elem);
             }
+            int siz = rlist.size();
+            if ( pos == siz - 1 && siz > 1) {
+                int npos = pos - 1;
+                RequestList.setSelectedIndex(npos);
+            }
+            
+            
             hasposlist.stream().forEach(pini -> {
                 int trackfromstep = pini.getTrackFromStep();
                 if ( trackfromstep == pos) {
@@ -1655,6 +1664,7 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
                 ParmGenJSONSave csv = new ParmGenJSONSave(null, pmt);
                 csv.GSONsave();
             }
+            
         }
     }//GEN-LAST:event_deleteRequestActionPerformed
 
@@ -1731,15 +1741,17 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
         int idx = this.getCurrentSelectedRequestIndex();
         if (pmt != null && idx > -1 && rlist != null && idx < rlist.size()) {
             PRequestResponse current = pmt.getRequestResponseCurrentList(idx);
-            StyledDocument doc = MacroRequest.getStyledDocument();
-            PRequest newrequest = ParmGenUtil.createPRequest(doc, current.request);
-            current.request = newrequest;
+            StyledDocumentWithChunk doc = this.getMacroRequestStyledDocument();
+            if (doc != null) {
+                PRequest newrequest = doc.reBuildChunkPRequestFromDocText();
+                current.request = newrequest;
 
-            PRequestResponse original = pmt.getOriginalRequest(idx);
-            original.updateRequestResponse(current.request, current.response);
-            if (ParmVars.isSaved()) { // if you have been saved params. then overwrite. 
-                ParmGenJSONSave csv = new ParmGenJSONSave(null, pmt);
-                csv.GSONsave();
+                PRequestResponse original = pmt.getOriginalRequest(idx);
+                original.updateRequestResponse(current.request, current.response);
+                if (ParmVars.isSaved()) { // if you have been saved params. then overwrite. 
+                    ParmGenJSONSave csv = new ParmGenJSONSave(null, pmt);
+                    csv.GSONsave();
+                }
             }
         }
     }//GEN-LAST:event_updateActionPerformed
@@ -1750,11 +1762,17 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
      * @return int
      */
     public int getCurrentSelectedRequestIndex(){
-        return RequestList.getSelectedIndex();
+        int pos = RequestList.getSelectedIndex();
+        if (pos < rlist.size()) return pos;
+        return -1;
     }
 
-    public StyledDocument getMacroRequestStyledDocument() {
-        return MacroRequest.getStyledDocument();
+    public StyledDocumentWithChunk getMacroRequestStyledDocument() {
+        StyledDocument doc =  MacroRequest.getStyledDocument();
+        if ( doc instanceof StyledDocumentWithChunk) {
+            return CastUtils.castToType(doc);
+        }
+        return null;
     }
     
     public String getMacroRequest() {
@@ -1762,17 +1780,16 @@ public class MacroBuilderUI  extends javax.swing.JPanel implements  InterfacePar
     }
     
     @Override
-    public void ParmGenRegexSaveAction(StyledDocument styledoc) {
+    public void ParmGenRegexSaveAction(StyledDocumentWithChunk doc) {
         int idx = getCurrentSelectedRequestIndex();
         if(rlist != null && idx > -1 &&  idx < rlist.size()){
-            PRequest request;
             try {
-                PRequestResponse pqr = rlist.get(idx);
-                PRequest origrequest = pqr.request;
-                PRequest newrequest = ParmGenUtil.createPRequest(styledoc, origrequest);
-                pmt.updateRequestCurrentList(idx, newrequest);
-                ParmGenTextDoc doc = new ParmGenTextDoc(MacroRequest);
-                doc.setRequestChunks(newrequest);
+                PRequest newrequest = doc.reBuildChunkPRequestFromDocText();
+                if (newrequest != null) {
+                    pmt.updateRequestCurrentList(idx, newrequest);
+                    ParmGenTextDoc ndoc = new ParmGenTextDoc(MacroRequest);
+                    ndoc.setRequestChunks(newrequest);
+                }
             } catch (Exception ex) {
                 Logger.getLogger(MacroBuilderUI.class.getName()).log(Level.SEVERE, null, ex);
             }

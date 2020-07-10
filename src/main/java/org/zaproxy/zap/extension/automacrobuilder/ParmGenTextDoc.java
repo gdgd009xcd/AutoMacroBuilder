@@ -19,7 +19,6 @@
  */
 package org.zaproxy.zap.extension.automacrobuilder;
 
-import java.awt.Insets;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
@@ -27,31 +26,19 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.Style;
-import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
-import org.zaproxy.zap.extension.automacrobuilder.PResponse.ResponseChunk;
 
 /** @author youtube */
 public class ParmGenTextDoc {
-    private static final String RESOURCES =
-            "/org/zaproxy/zap/extension/automacrobuilder/zap/resources";
-
-    private static final URL IMGICONURL =
-            ParmGenTextDoc.class.getResource(RESOURCES + "/binary.png");
 
     private JTextPane tcompo;
     private static org.apache.logging.log4j.Logger LOGGER4J =
@@ -166,121 +153,19 @@ public class ParmGenTextDoc {
      * @param prequest
      */
     public void setRequestChunks(PRequest prequest) {
-        StyledDocument doc = null;
+
         if (tcompo == null) return;
         StyledDocument blank = new DefaultStyledDocument();
 
         // if you change or newly create Document in JEditorPane's Document, JEditorPane cannot
         // display contents. this problem occur only ZAP.
         // Thus you must get original Document from JEditorPane for Setting Text.
-        doc = tcompo.getStyledDocument();
         tcompo.setStyledDocument(blank);
-
-        try {
-            LOGGER4J.debug("before  remove text");
-            doc.remove(0, doc.getLength());
-            LOGGER4J.debug("done remove text");
-        } catch (BadLocationException ex) {
-            Logger.getLogger(ParmGenTextDoc.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        doc = new DefaultStyledDocument();
 
         Style def = StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE);
 
-        List<PRequest.RequestChunk> chunks = prequest.getRequestChunks();
-        Encode pageenc = prequest.getPageEnc();
-        int pos = 0;
-        String displayableimgtype = "";
-        try {
-            for (PRequest.RequestChunk chunk : chunks) {
-                String element = "";
-                switch (chunk.getChunkType()) {
-                    case REQUESTHEADER:
-                        element = new String(chunk.getBytes(), pageenc.getIANACharset());
-                        LOGGER4J.debug(
-                                "@REQUESTHEADER["
-                                        + new String(chunk.getBytes(), pageenc.getIANACharset())
-                                        + "]");
-                        doc.insertString(pos, element, null);
-                        pos = pos + element.length();
-                        break;
-                    case BOUNDARY:
-                        LOGGER4J.debug(
-                                "@BOUNDARY["
-                                        + new String(chunk.getBytes(), pageenc.getIANACharset())
-                                        + "]");
-                        element = new String(chunk.getBytes(), pageenc.getIANACharset());
-                        doc.insertString(pos, element, null);
-                        pos = pos + element.length();
-                        break;
-                    case BOUNDARYHEADER:
-                        LOGGER4J.debug(
-                                "@BOUNDARYHEADER["
-                                        + new String(chunk.getBytes(), pageenc.getIANACharset())
-                                        + "]");
-                        element = new String(chunk.getBytes(), pageenc.getIANACharset());
-                        displayableimgtype = "";
-                        List<String> matches =
-                                ParmGenUtil.getRegexMatchGroups(
-                                        "Content-Type: image/(jpeg|png|gif)", element);
-                        matches.forEach(s -> LOGGER4J.debug(s));
-                        if (!matches.isEmpty()) {
-                            displayableimgtype = matches.get(0);
-                        }
-                        doc.insertString(pos, element, null);
-                        pos = pos + element.length();
-                        break;
-                    case CONTENTS:
-                        element = new String(chunk.getBytes(), pageenc.getIANACharset());
-                        Style s = null;
-                        if (chunk.getBytes().length > 20000) {
-                            // s = doc.getStyle("binary");
-                            String partno = "X-PARMGEN:" + chunk.getPartNo();
-                            ImageIcon icon = null;
-                            if (displayableimgtype.isEmpty()) {
-                                icon = new ImageIcon(IMGICONURL, partno);
-                            } else {
-                                icon = new ImageIcon(chunk.getBytes(), partno);
-                            }
-                            // doc.addStyle(partno, def);
-                            s = makeStyleImageButton(def, icon, partno);
-                            LOGGER4J.debug("@CONTENTS length:" + chunk.getBytes().length);
-                            element = partno;
-                        } else {
-                            s = null;
-                            LOGGER4J.debug(
-                                    "@CONTENTS["
-                                            + new String(chunk.getBytes(), pageenc.getIANACharset())
-                                            + "]");
-                        }
-
-                        doc.insertString(pos, element, s);
-                        pos = pos + element.length();
-                        break;
-                    case CONTENTSEND:
-                        LOGGER4J.debug(
-                                "@CONTENTSSEND["
-                                        + new String(chunk.getBytes(), pageenc.getIANACharset())
-                                        + "]");
-                        element = new String(chunk.getBytes(), pageenc.getIANACharset());
-                        doc.insertString(pos, element, null);
-                        pos = pos + element.length();
-                        break;
-                    case LASTBOUNDARY:
-                        LOGGER4J.debug(
-                                "@LASTBOUNDARY["
-                                        + new String(chunk.getBytes(), pageenc.getIANACharset())
-                                        + "]");
-                        element = new String(chunk.getBytes(), pageenc.getIANACharset());
-                        doc.insertString(pos, element, null);
-                        pos = pos + element.length();
-                        break;
-                }
-            }
-        } catch (BadLocationException ex) {
-            Logger.getLogger(ParmGenTextDoc.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        StyledDocumentWithChunk requestdoc = new StyledDocumentWithChunk(prequest);
+        StyledDocument doc = requestdoc;
         tcompo.setStyledDocument(doc);
     }
 
@@ -290,92 +175,17 @@ public class ParmGenTextDoc {
      * @param presponse
      */
     public void setResponseChunks(PResponse presponse) {
-        LOGGER4J.debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! setResponseChunks");
-        StyledDocument doc = null;
         if (tcompo == null) return;
         StyledDocument blank = new DefaultStyledDocument();
 
         // if you change or newly create Document in JEditorPane's Document, JEditorPane cannot
         // display contents. this problem occur only ZAP.
         // Thus you must get original Document from JEditorPane for Setting Text.
-        doc = tcompo.getStyledDocument();
         tcompo.setStyledDocument(blank);
 
-        try {
-            LOGGER4J.debug("before  remove text");
-            doc.remove(0, doc.getLength());
-            LOGGER4J.debug("done remove text");
-        } catch (BadLocationException ex) {
-            Logger.getLogger(ParmGenTextDoc.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        StyledDocumentWithChunk responsedoc = new StyledDocumentWithChunk(presponse);
+        StyledDocument doc = responsedoc;
 
-        doc = new DefaultStyledDocument();
-
-        Style def = StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE);
-
-        String partno = "X-PARMGEN:0";
-        StyleConstants.setAlignment(def, StyleConstants.ALIGN_CENTER);
-
-        List<PResponse.ResponseChunk> chunks = presponse.getResponseChunks();
-        Charset charset = presponse.getPageEnc().getIANACharset();
-
-        int pos = 0;
-
-        try {
-            for (ResponseChunk chunk : chunks) {
-                Style s = null;
-                String elem;
-                ImageIcon icon = null;
-                switch (chunk.getChunkType()) {
-                    case CONTENTSBINARY:
-                        icon = new ImageIcon(IMGICONURL, partno);
-                        s = makeStyleImageButton(def, icon, partno);
-                        elem = partno;
-                        LOGGER4J.debug("CONTENTSBINARY[" + elem + "]pos:" + pos);
-                        break;
-                    case CONTENTSIMG:
-                        icon = new ImageIcon(chunk.getBytes(), partno);
-                        s = makeStyleImageButton(def, icon, partno);
-                        elem = partno;
-                        LOGGER4J.debug("CONTENTSIMG[" + elem + "]pos:" + pos);
-                        break;
-                    case RESPONSEHEADER:
-                        elem = new String(chunk.getBytes(), charset);
-                        LOGGER4J.debug("RESPONSEHEADER[" + elem + "]pos:" + pos);
-                        break;
-                    default: // CONTENTS
-                        elem = new String(chunk.getBytes(), charset);
-                        LOGGER4J.debug("CONTENTS[" + elem + "]pos:" + pos);
-                        break;
-                }
-                doc.insertString(pos, elem, s);
-                pos += elem.length();
-            }
-        } catch (Exception e) {
-
-        }
         tcompo.setStyledDocument(doc);
-    }
-
-    /**
-     * create button with ImageIcon and add eventhandler.
-     *
-     * @param s
-     * @param icon
-     * @param actioncommand
-     * @return
-     */
-    public Style makeStyleImageButton(Style s, ImageIcon icon, String actioncommand) {
-        StyleConstants.setAlignment(s, StyleConstants.ALIGN_CENTER);
-        JButton button = new JButton();
-        button.setIcon(icon);
-        button.setMargin(new Insets(0, 0, 0, 0));
-        button.setActionCommand(actioncommand);
-        button.addActionListener(
-                e -> {
-                    LOGGER4J.debug("button pressed:" + e.getActionCommand());
-                });
-        StyleConstants.setComponent(s, button);
-        return s;
     }
 }

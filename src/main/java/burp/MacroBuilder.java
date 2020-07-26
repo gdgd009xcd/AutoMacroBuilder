@@ -46,8 +46,8 @@ public class MacroBuilder implements ITab{
     }
 
     //カレントリクエストをRequest/Responseエリアに表示
-    public void updateCurrentReqRes(){
-        ui.updateCurrentReqRes();
+    public void updateCurrentSelectedRequestListDisplayContents(){
+        ui.updateCurrentSelectedRequestListDisplayContents();
     }
 
 }

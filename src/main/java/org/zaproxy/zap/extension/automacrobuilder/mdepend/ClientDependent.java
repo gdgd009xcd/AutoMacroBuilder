@@ -20,7 +20,12 @@ import org.zaproxy.zap.extension.automacrobuilder.*;
  * @author daike
  */
 public class ClientDependent {
-    
+
+    public enum CLIENT_TYPE {
+        BURPSUITE,
+        ZAP
+    }
+
     // below members does not need copy per thread. these parameter is temporary used.
     IScanQueueItem scanque = null;//scanner's queue
     byte[] originalrequest = null;// performAction's IHttpRequestResponse currentrequest bytes
@@ -60,6 +65,15 @@ public class ClientDependent {
         this.uuid = uuid;
     }
 
+    /**
+     * get Client Type
+     *
+     * @return
+     */
+    public CLIENT_TYPE getClientType() {
+        return ClientDependent.CLIENT_TYPE.BURPSUITE;
+    }
+    
     /**
      * get UUID unique that represents this instance
      * @return

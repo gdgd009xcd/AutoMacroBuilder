@@ -3,6 +3,21 @@
 
 session_start();
 
+include 'clearSessionTokens.php';
+
+if (isset($_POST['cancel'])) {
+    clearSessionTokens();
+    unset($_SESSION['subject']);
+    unset($_SESSION['contents']);
+    unset($_SESSION['mailaddr']);
+    unset($_SESSION['imgfile']);
+    unset($_SESSION['tmp_path']);
+    unset($_SESSION['showfile']);
+    unset($_SESSION['filetype']);
+    header('location: mypage.php');
+    exit(-1);
+}
+
 if( isset($_SESSION['user'])){
 	//already logged in..
 	$user = $_SESSION['user'];
@@ -14,7 +29,7 @@ if( isset($_SESSION['user'])){
 $prevtoken = $_GET['token1'];
 $chktoken = $_SESSION['token1'];
 
-if($prevtoken !== $chktoken ){
+if(empty($chktoken) || $prevtoken !== $chktoken ){
     header('location: index.php');
     exit();
 }
@@ -45,7 +60,7 @@ $_SESSION['token2'] = $randomval;
 <html>
 <head>
 <tltle>
-お問い合わせ入力
+inquiry input
 </tltle>
 </head>
 <body>
@@ -54,13 +69,18 @@ $_SESSION['token2'] = $randomval;
 
 <form action="confirm.php" method="POST" enctype="multipart/form-data">
 <input type="hidden" name="token2" value="<?php echo $randomval; ?>">
-件名<input type="text" name="subject" value="<?php echo $subject;?>"><BR>
-お問い合わせ内容<BR>
+Subject<input type="text" name="subject" value="<?php echo $subject;?>"><BR>
+Contents<BR>
 <TEXTAREA name="contents" rows="4" cols="40"><?php echo $contents; ?></textarea><BR>
 mail<BR>
 <input type="text" name="mailaddr" value="<?php echo $mailaddr; ?>" size="10" ><BR>
 <input type="file" name="imgfile" accept="image/*" ><P>
-<input type="submit"  value="確認">
+<input type="submit"  value="Confirm">
+</form>
+<P>
+<form action="inquiry.php" method = "POST">
+<INPUT type="HIDDEN" name="cancel" value="1">
+<input type="submit"  value="Cancel">
 </form>
 
 <P>

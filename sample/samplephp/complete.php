@@ -2,6 +2,26 @@
 
 session_start();
 
+include 'env.php';
+include 'clearSessionTokens.php';
+
+if (isset($_POST['cancel'])) {
+    clearSessionTokens();
+    unset($_SESSION['subject']);
+    unset($_SESSION['contents']);
+    unset($_SESSION['mailaddr']);
+    unset($_SESSION['imgfile']);
+    unset($_SESSION['tmp_path']);
+    unset($_SESSION['showfile']);
+    unset($_SESSION['filetype']);
+    header('location: mypage.php');
+    exit(-1);
+}
+
+if(isset($_SESSION['sqlprint'])) {
+    $sqlprint = 1;
+}
+
 if( isset($_SESSION['user'])){
 	//already logged in..
 	$user = $_SESSION['user'];
@@ -19,6 +39,12 @@ if($prevtoken !== $chktoken ){
 }
 
 $randomval = sha1(uniqid(rand(), true));
+
+if( isset($_SESSION['DB'])){
+    $DB = "1";
+} else {
+    $DB ="";
+}
 
 if(isset($_SESSION['subject'])){
     $subject = $_SESSION['subject'];
@@ -62,40 +88,76 @@ $savepath = session_save_path();
 $mailfile = $savepath . "/mail.txt";
 $oldmail = file_put_contents($mailfile, $mailaddr);
 
+if(!empty($DB) && $DB === "1" ){
+        $link = pg_connect($dbconnectinfo);
 
+        if (!$link) {
+            $ERRORMESS = pg_last_error($link);
+            header('location: index.php?errormess=' . urlencode($ERRORMESS));
+            exit(-1);
+        }
+        $sql = "INSERT INTO uploadlist  VALUES('"
+         . substr($user, 0, 50) . "','"
+         . substr($mailaddr,0,250) . "','"
+         . substr($subject,0,250) . "','"
+         . substr($contents,0,1000) . "','"
+         . substr($oldmail,0,250) . "','"
+         . substr($showfile,0,500) . "','"
+         . substr($imgfile,0,500) . "')";
+                $result = pg_query($link, $sql);
+                if (!$result) {
+                    $ERRORMESS = pg_last_error($link);
+                    header('location: index.php?errormess=' . urlencode($ERRORMESS));
+                    exit(-1);
+                }
+                pg_close($link);
+}
 
 ?>
 <html>
 <head>
 <tltle>
-inquiry completed:お問い合わせ　完了
+inquiry completed
 </tltle>
 </head>
 <body>
 
 <P> user:<?php echo $user; ?>
+
+<?php
+if ($sqlprint == 1) {
+?>
+    <P> SQL[<?php echo $sql; ?>]<P>
+<?php
+}
+?>
 <?php
 echo "<P>fileput result:" . $oldmail . "<P><BR>";
 ?>
-お問い合わせを下記の内容で受け賜りました。We accepted your inquiry with the contents below. <BR>
+We accepted your inquiry with the contents below. <BR>
 <table border="1">
 <tr>
-<th>件名subject</th><td><?php echo $subject; ?></td>
+<th>Subject</th><td><?php echo $subject; ?></td>
 </tr>
 <tr>
-<th>お問い合わせ内容message</th><td><?php echo $contents; ?></td>
+<th>Contents</th><td><?php echo $contents; ?></td>
 </tr>
 <tr>
-<th>宛先mailaddr</th><td><?php echo $mailaddr; ?></td>
+<th>mailaddr</th><td><?php echo $mailaddr; ?></td>
 </tr>
 <tr>
-<th>ファイルfile</th><td><A HREF="<?php echo $showfile; ?>" ><?php echo $imgfile; ?></A></td>
+<th>file</th><td><A HREF="<?php echo $showfile; ?>" ><?php echo $imgfile; ?></A></td>
 </tr>
 </table><BR>
 
-<A HREF="mypage.php">マイページに戻るgo back to mypage</A><BR>
+<form action="complete.php" method = "POST">
+<INPUT type="HIDDEN" name="cancel" value="1">
+<input type="submit"  value="Return to MYPAGE">
+</form><BR>
+
 <P>
 <A HREF="logout.php">logout</A>
+
 </body>
 </html>
 

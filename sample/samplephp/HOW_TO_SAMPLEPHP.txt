@@ -58,7 +58,8 @@ $ create table account ( username varchar(200), password varchar(200) );
 $ insert into account values('test', 'password');
 
 
-
+■　pgadmin3
+yum --enablerepo=epel install pgadmin3
 
 
 

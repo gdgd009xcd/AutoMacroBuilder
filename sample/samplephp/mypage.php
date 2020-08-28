@@ -1,5 +1,7 @@
 <?php 
 
+include 'env.php';
+
 if(isset($_POST['user'])){
     $user = $_POST['user'];
 }else{
@@ -12,20 +14,30 @@ if(isset($_POST['pass'])){
     $pass = "";
 }
 
+
 $DB = $_POST['DB'];
 
 
 session_start();
 
+
+
 if($_SERVER["REQUEST_METHOD"] === "POST"){
+    if(isset($_POST['sqlprint'])){
+        $_SESSION['sqlprint'] = 1;
+    }
+
+    if(isset($_SESSION['sqlprint'])) {
+        $sqlprint = 1;
+    }
+
     unset($_SESSION['user']);
     if(!empty($DB) && $DB === "1" ){
-        $link = pg_connect("host=localhost dbname=testdb user=test password=password");
-
+        $link = pg_connect($dbconnectinfo);
         if (!$link) {
-            print(pg_last_error());
-            header('location: index.php');
-            exit();
+            $ERRORMESS = pg_last_error($link);
+            header('location: index.php?errormess=' . urlencode($ERRORMESS));
+            exit(-1);
         }
 
         // PostgreSQLに対する処理
@@ -34,13 +46,16 @@ if($_SERVER["REQUEST_METHOD"] === "POST"){
         $sql = "SELECT username,password  FROM account where username='" . $username . "' and  password='" . $password . "'" ;
         $result = pg_query($link, $sql);
         if (!$result) {
-          header('location: index.php');
+            $ERRORMESS = pg_last_error($link);
+            header('location: index.php?errormess=' . urlencode($ERRORMESS));
             exit(-1);
         }
         if(pg_num_rows($result) >= 1 ){
             $_SESSION['user'] = $user;
         }
         pg_close($link);
+
+        $_SESSION['DB'] = '1';
 
     }else if ( $user === "test" && $pass === "password"){
             $_SESSION['user'] = $user;
@@ -51,15 +66,16 @@ if( isset($_SESSION['user'])){
 	//already logged in..
 	$user = $_SESSION['user'];
 }else{
-	header('location: index.php');
-	exit();
+	$ERRORMESS = 'SESSION[\'user\'] no exist error.';
+    header('location: index.php?errormess=' . urlencode($ERRORMESS));
+	exit(-1);
 }
 
 if(isset($_GET['token1'])){
     if ( isset($_SESSION['token1'])){
         if($_GET['token1'] === $_SESSION['token1']){
             header('location: inquiry.php?token1=' . $_GET['token1']);
-            exit();
+            exit(0);
         }
     }
 }
@@ -140,18 +156,39 @@ MYPAGE
 </head>
 <body>
 
-<P> welcome user:<?php echo $user; ?>
+<P> welcome user:<?php echo $user; ?><P>
+<?php
+if ($sqlprint == 1) {
+?>
+    <P> SQL[<?php echo $sql; ?>]<P>
+<?php
+}
+?>
+<HR>
+
+<form action="moduser.php" method="GET">
+Modify your account info :
+<input type="submit" value="Modify user">
+</form>
+<HR>
 
 <form action="inquiry.php" method="GET">
 <input type="hidden" name="token1" value="<?php echo $randomval; ?>">
-<input type="submit"  value="inquiry:お問い合わせ">
+Regist your inquiry :
+<input type="submit"  value="Inquiry">
 </form>
+<HR>
 
-<P>
-<A HREF="mypage.php?token1=<?php echo $randomval; ?>">ロケーションでお問い合わせに遷移</A>
+<form action="inquirylist.php" method="GET">
+Show your registered inquiry :
+<input type="submit"  value="Show your registered Inquiry List">
+</form>
+<HR>
+<!-- A HREF="mypage.php?token1=<?php echo $randomval; ?>">inquiry(Location) </A -->
 <P>
 <input id="popup" value="popup" type="submit" /></p>
 <input id="json" value="json" type="submit" /></p>
+<HR>
 <A HREF="logout.php">logout</A>
 </body>
 </html>

@@ -2,6 +2,22 @@
 
 session_start();
 
+include 'clearSessionTokens.php';
+
+if (isset($_POST['cancel'])) {
+    clearSessionTokens();
+    unset($_SESSION['subject']);
+    unset($_SESSION['contents']);
+    unset($_SESSION['mailaddr']);
+    unset($_SESSION['imgfile']);
+    unset($_SESSION['tmp_path']);
+    unset($_SESSION['showfile']);
+    unset($_SESSION['filetype']);
+    header('location: mypage.php');
+    exit(-1);
+}
+
+
 if( isset($_SESSION['user'])){
 	//already logged in..
 	$user = $_SESSION['user'];
@@ -13,7 +29,7 @@ if( isset($_SESSION['user'])){
 $prevtoken = $_POST['token2'];
 $chktoken = $_SESSION['token2'];
 
-if($prevtoken !== $chktoken ){
+if(empty($chktoken) || $prevtoken !== $chktoken ){
     header('location: index.php');
     exit(-1);
 }
@@ -44,7 +60,7 @@ if ( empty($subject) ||
 <html>
 <head>
 <tltle>
-inquiry input:お問い合わせ入力
+inquiry Input
 </tltle>
 </head>
 <body>
@@ -53,19 +69,23 @@ inquiry input:お問い合わせ入力
 
 <form action="confirm.php" method="POST">
 <input type="hidden" name="token2" value="<?php echo $randomval; ?>">
-件名<input type="text" name="subject" value="<?php echo $subject; ?>"><BR>
-お問い合わせ内容your inquiry<BR>
+Subject<input type="text" name="subject" value="<?php echo $subject; ?>"><BR>
+your inquiry contents<BR>
 <TEXTAREA name="contents" rows="4" cols="40"><?php echo $contents; ?></textarea><BR>
 mail<BR>
 <?php
 if ($mailaddr === $oldmail){
-    print "<P> 登録済みメールアドレスです。 mailaddr has already registered.\n"; 
+    print "<P> mailaddr has already registered.\n";
 }
 ?>
 <input type="text" name="mailaddr" value="<?php echo $mailaddr; ?>" size="10" ><BR>
-<input type="submit"  value="confirm:確認">
+<input type="submit"  value="Confirm">
 </form>
-
+<P>
+<form action="confirm.php" method = "POST">
+<INPUT type="HIDDEN" name="cancel" value="1">
+<input type="submit"  value="Cancel">
+</form>
 <P>
 <A HREF="logout.php">logout</A>
 </body>
@@ -81,10 +101,13 @@ $_SESSION['mailaddr'] =  $mailaddr;
 $_SESSION['imgfile'] =  $imgfile;
 $_SESSION['tmp_path'] =  $tmp_path;
 
-$uploadTo = "/tmp/$imgfile";
-if(move_uploaded_file($tmp_path, $uploadTo)==TRUE){
+$uploadTo = "/home/tmp/$imgfile";
+$errmovefile = "";
+if(($sts=move_uploaded_file($tmp_path, $uploadTo))==TRUE){
    $_SESSION['showfile'] = 'showfile.php?path=' . $uploadTo;
    $_SESSION['filetype'] = $filetype;
+} else {
+	$errmovefile = "error move file sts:" . $sts;
 }
 
 
@@ -92,7 +115,7 @@ if(move_uploaded_file($tmp_path, $uploadTo)==TRUE){
 <html>
 <head>
 <tltle>
-inquiry confirm:お問い合わせ確認
+inquiry confirmation
 </tltle>
 </head>
 <body>
@@ -101,26 +124,34 @@ inquiry confirm:お問い合わせ確認
 
 <form action="complete.php" method="POST">
 <input type="hidden" name="token3" value="<?php echo $randomval; ?>">
-下記の内容をご確認の上、送信ボタンを押してください。confirm your input below.<BR>
+confirm your input below.<BR>
 <table border="1">
 <tr>
-<th>件名subject</th><td><?php echo $subject; ?></td>
+<th>Subject</th><td><?php echo $subject; ?></td>
 </tr>
 <tr>
-<th>お問い合わせ内容message</th><td><?php echo $contents; ?></td>
+<th>Contents</th><td><?php echo $contents; ?></td>
 </tr>
 <tr>
-<th>宛先mailaddr</th><td><?php echo $mailaddr; ?></td>
+<th>mailaddr</th><td><?php echo $mailaddr; ?></td>
 </tr>
 <tr>
-<th>ファイルfile</th><td><?php echo $imgfile; ?></td>
+<th>file error</th><td><?php echo $errmovefile; ?></td>
 </tr>
 <tr>
-<th>ファイル格納先file stored path</th><td><?php echo $tmp_path; ?></td>
+<th>imgfile</th><td><?php echo $imgfile; ?></td>
+</tr>
+<tr>
+<th>file stored path</th><td><?php echo $tmp_path; ?></td>
 </tr>
 </table>
 
-<input type="submit"  value="complete">
+<input type="submit"  value="Complete">
+</form>
+<P>
+<form action="confirm.php" method = "POST">
+<INPUT type="HIDDEN" name="cancel" value="1">
+<input type="submit"  value="Cancel">
 </form>
 
 <P>

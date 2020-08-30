@@ -59,11 +59,17 @@ if ($step == 0) {
         $oldpassword = $rows['password'];
         $oldage = $rows['age'];
     }
-    $_SESSION['oldpassword'] = $oldpassword;
-    $_SESSION['oldage'] = $oldage;
+    if (!empty($oldpassword) ){
+        $_SESSION['oldpassword'] = $oldpassword;
+        $_SESSION['oldage'] = $oldage;
+    } else {
+        unset($_SESSION['oldpassword']);
+    }
 
-}else if(!isset($_SESSION['oldpassword'])){
-    $ERRORMESS = "ERROR SESSION oldpassword no exist.";
+}
+
+if(!isset($_SESSION['oldpassword'])){
+    $ERRORMESS = "ERROR SESSION oldpassword has no exist.";
     header('location: index.php?errormess=' . urlencode($ERRORMESS));
     exit(-1);
 } else {

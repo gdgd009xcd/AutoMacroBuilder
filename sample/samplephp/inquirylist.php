@@ -105,7 +105,7 @@ for ($i = 0 ; $i < pg_num_rows($result) ; $i++){
 <P>
 <form action="inquirylist.php" method = "POST">
 <INPUT type="HIDDEN" name="cancel" value="1">
-<input type="submit"  value="Retur to MYPAGE">
+<input type="submit"  value="Return to MYPAGE">
 </form>
 
 <P>

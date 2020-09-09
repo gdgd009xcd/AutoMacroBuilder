@@ -140,7 +140,7 @@ public class BurpExtenderDoAction implements InterfaceDoAction
                             PRequestResponse prs = new PRequestResponse(host, port, isSSL, messageInfo.getRequest(), messageInfo.getResponse(), ParmVars.enc);
                             url = prs.request.getURL();
                             LOGGER4J.debug("=====ResponseRun start====== status:" + prs.response.getStatus());
-                            int updtcnt = pgen.ResponseRun(url, messageInfo.getResponse(), ParmVars.enc);
+                            int updtcnt = pgen.ResponseRun(url, prs);
                             LOGGER4J.debug("=====ResponseRun end======");
                             if(pmt!=null){
                                 pmt.parseSetCookie(prs);//save Set-Cookie values into CookieStore.

@@ -29,6 +29,8 @@ import org.zaproxy.zap.extension.automacrobuilder.generated.LangSelectDialog;
 import org.zaproxy.zap.extension.automacrobuilder.PRequest;
 import org.zaproxy.zap.extension.automacrobuilder.PResponse;
 import org.zaproxy.zap.extension.automacrobuilder.ParmGenJSONSave;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTrace;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTraceParams;
 import org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTraceProvider;
 import org.zaproxy.zap.extension.automacrobuilder.ThreadManagerProvider;
 import org.zaproxy.zap.extension.automacrobuilder.generated.ParmGenTop;
@@ -43,6 +45,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener
     MacroBuilder mbr = null;
     IHttpRequestResponse[] selected_messageInfo = null;
     JMenuItem repeatermodeitem = null;
+    ParmGenMacroTraceProvider pmtProvider = null;
     private static org.apache.logging.log4j.Logger LOGGER4J =
             org.apache.logging.log4j.LogManager.getLogger();
 
@@ -222,7 +225,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener
 
     private BurpExtenderDoActionProvider getProvider(int toolflag, boolean messageIsRequest, IHttpRequestResponse messageInfo){
         if ( this.provider == null ) {
-            this.provider = new BurpExtenderDoActionProvider();
+            this.provider = new BurpExtenderDoActionProvider(this.pmtProvider);
         }
         this.provider.setParameters(toolflag, messageIsRequest, messageInfo);
         return this.provider;
@@ -243,7 +246,9 @@ public class BurpExtender implements IBurpExtender,IHttpListener
     {
 
         IHttpRequestResponse[] messageInfo = null;
-        IHttpRequestResponse[] repeaterbaseline = null;
+        ParmGenMacroTrace pmtBase = null;
+        PRequestResponse newToolBaseLine = null;
+
         int toolflg = -1;
 
         @Override
@@ -256,39 +261,52 @@ public class BurpExtender implements IBurpExtender,IHttpListener
             
             JMenuItem item = new JMenuItem("■Custom■");
             JMenuItem itemmacro = new JMenuItem("■SendTo MacroBuilder■");
-            
-            if(ParmGenMacroTraceProvider.getOriginalBase().isBaseLineMode()){
+
+            newToolBaseLine = null;
+            if (messageInfo != null && messageInfo.length > 0) {
+                newToolBaseLine = convertMessageInfoToPRR(messageInfo[0]);
+            }
+
+            int tabIndex = -1;
+            pmtBase = null;
+            PRequestResponse currentToolBaseLine = null;
+            if (newToolBaseLine != null) {
+                ParmGenMacroTraceParams pmtParams = newToolBaseLine.request.getParamsCustomHeader();
+                tabIndex = pmtParams.getTabIndex();
+                pmtBase = BurpExtender.this.pmtProvider.getBaseInstance(tabIndex);
+                if (pmtBase != null) {
+                    currentToolBaseLine = pmtBase.getToolBaseline();
+                }
+            }
+            if(BurpExtender.this.pmtProvider.isBaseLineMode()){
                 boolean hasMenu = false;
                 String menutitle = "■Update Baseline■";
                 String tooltip = "Update Baseline: You can tamper tracking tokens which is such like CSRF tokens.";
                 switch(toolflg){
                     case IBurpExtenderCallbacks.TOOL_REPEATER:
-                        
-                        repeaterbaseline = messageInfo;
                         hasMenu = true;
                         break;
                     case IBurpExtenderCallbacks.TOOL_SCANNER:
                     case IBurpExtenderCallbacks.TOOL_INTRUDER:
                         menutitle = "■Clear Baseline■";
                         tooltip = "Clear Baseline: You should select this menu when  you used repeater  in baseline mode.";
-                        if(ParmGenMacroTraceProvider.getOriginalBase().getToolBaseline()!=null){
+                        if (currentToolBaseLine != null) {
                             hasMenu = true;
                         }
                     default:
-                        repeaterbaseline = null;
+                        newToolBaseLine = null;
                         break;
                 }
-                if(hasMenu){
+                if(hasMenu && pmtBase != null){
                     repeatermodeitem = new JMenuItem(menutitle);
                     repeatermodeitem.setToolTipText(tooltip);
 
                     repeatermodeitem.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
-
                             String toolname = getToolname(toolflg);
-                            LOGGER4J.debug("updatebaselineAction:" + toolname + ":" + (repeaterbaseline==null?"NULL":"NONULL"));
-                            UpdateToolBaseline(repeaterbaseline);
-                            }
+                            LOGGER4J.debug("updatebaselineAction:" + toolname + ":" + (newToolBaseLine==null?"NULL":"NONULL"));
+                            pmtBase.setToolBaseLine(newToolBaseLine);
+                        }
                     });
                 }else{
                     repeatermodeitem = null;
@@ -330,9 +348,12 @@ public class BurpExtender implements IBurpExtender,IHttpListener
                 //選択したリクエストレスポンス
                 //プロキシヒストリのリクエストレスポンス
                 //IHttpRequestResponse[] allmessages = mCallbacks.getProxyHistory();
-                ParmGen pgen = new ParmGen(ParmGenMacroTraceProvider.getOriginalBase());
+                int tabindex = BurpExtender.this.mbr.getMacroRequestListTabsSelectedIndex();
+                ParmGenMacroTrace pmt = BurpExtender.this.pmtProvider.getBaseInstance(tabindex);
+                
+                ParmGen pgen = new ParmGen(pmt);
                 if(pgen.twin==null){
-                    pgen.twin = new ParmGenTop(ParmGenMacroTraceProvider.getOriginalBase(), new ParmGenJSONSave(ParmGenMacroTraceProvider.getOriginalBase(),
+                    pgen.twin = new ParmGenTop(pmt, new ParmGenJSONSave(pmt,
                         convertMessageInfoToArray(messageInfo, toolflg))
                         );
                 }
@@ -347,8 +368,10 @@ public class BurpExtender implements IBurpExtender,IHttpListener
         
         public void menuAddRequestsClicked( IHttpRequestResponse[] messageInfo)
         {
-            if(ParmGenMacroTraceProvider.getOriginalBase()!=null){
-                if(ParmGenMacroTraceProvider.getOriginalBase().getRlistCount()<=0){
+            int tabindex = BurpExtender.this.mbr.getMacroRequestListTabsSelectedIndex();
+            ParmGenMacroTrace pmt = BurpExtender.this.pmtProvider.getBaseInstance(tabindex);
+            if(pmt!=null){
+                if(pmt.getRlistCount()<=0){
                     Encode lang = analyzeCharset(messageInfo);
                     new LangSelectDialog(null, this, lang, false).setVisible(true);
                 }else{
@@ -357,19 +380,6 @@ public class BurpExtender implements IBurpExtender,IHttpListener
             }
         }
         
-        public void UpdateToolBaseline( IHttpRequestResponse[] messageInfo){
-            if(ParmGenMacroTraceProvider.getOriginalBase()!=null){
-                if(messageInfo!=null&& messageInfo.length>0){
-                    IHttpRequestResponse minfo = messageInfo[0];
-
-                    ParmGenMacroTraceProvider.getOriginalBase().setToolBaseLine(convertMessageInfoToPRR(minfo));
-                }else{
-                    ParmGenMacroTraceProvider.getOriginalBase().setToolBaseLine(null);
-                }
-            }
-                
-        }
-                
         @Override
         public void LangOK() {
             if(messageInfo!=null){
@@ -398,9 +408,9 @@ public class BurpExtender implements IBurpExtender,IHttpListener
         PrintWriter stderr = new PrintWriter(callbacks.getStderr(), true);
         //ParmVars.plog.SetBurpPrintStreams(stdout, stderr);
         //LockInstance locker = new LockInstance();
-        
+        this.pmtProvider = new ParmGenMacroTraceProvider();
         //セッション管理
-        callbacks.registerSessionHandlingAction(new BurpMacroStartAction());
+        callbacks.registerSessionHandlingAction(new BurpMacroStartAction(this.pmtProvider));
         //callbacks.registerSessionHandlingAction(new BurpMacroLogAction());
     	//コンテキストメニューの追加：　マウス右クリックポップアップメニュー->[my menu item]
         callbacks.registerContextMenuFactory(new NewMenu());
@@ -409,7 +419,8 @@ public class BurpExtender implements IBurpExtender,IHttpListener
         // register proxy lister
         //callbacks.registerProxyListener(this);
         //MacroBuilderタブ
-        mbr = new MacroBuilder(ParmGenMacroTraceProvider.getOriginalBase());
+        
+        mbr = new MacroBuilder(pmtProvider);
         callbacks.addSuiteTab(mbr);
         mCallbacks = callbacks;
     }

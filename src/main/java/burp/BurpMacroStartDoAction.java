@@ -25,10 +25,12 @@ public class BurpMacroStartDoAction implements InterfaceDoAction {
     
     // ACTION LIST is per thread instance.
     private ThreadLocal<List<InterfaceAction>> ACTION_LIST = new ThreadLocal<>();
+    
+    ParmGenMacroTraceProvider pmtProvider = null;
         
     
-    public BurpMacroStartDoAction(){
-
+    public BurpMacroStartDoAction(ParmGenMacroTraceProvider pmtProvider){
+        this.pmtProvider = pmtProvider;
     }
     
     /**
@@ -45,7 +47,7 @@ public class BurpMacroStartDoAction implements InterfaceDoAction {
         boolean isSSL = (iserv.getProtocol().toLowerCase().equals("https")?true:false);
         PRequest request = new PRequest(host, port, isSSL, currentrequest.getRequest(), ParmVars.enc);
         ParmGenMacroTraceParams pmtParams = request.getParamsCustomHeader();
-        final ParmGenMacroTrace pmt = ParmGenMacroTraceProvider.getNewParmGenMacroTraceInstance(Thread.currentThread().getId(), pmtParams);
+        final ParmGenMacroTrace pmt = this.pmtProvider.getNewParmGenMacroTraceInstance(Thread.currentThread().getId(), pmtParams);
         
         List<InterfaceAction> actionlist = new CopyOnWriteArrayList<>();
         

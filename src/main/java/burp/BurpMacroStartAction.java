@@ -7,6 +7,7 @@
 package burp;
 
 import static org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTrace.PMT_CURRENT_BEGIN;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTraceProvider;
 
 import org.zaproxy.zap.extension.automacrobuilder.ThreadManagerProvider;
 
@@ -17,12 +18,13 @@ import org.zaproxy.zap.extension.automacrobuilder.ThreadManagerProvider;
  */
 public class BurpMacroStartAction implements ISessionHandlingAction {
 
-    private BurpMacroStartDoActionProvider provider = new BurpMacroStartDoActionProvider();
+    private BurpMacroStartDoActionProvider provider = null;
     
     private static org.apache.logging.log4j.Logger LOGGER4J =
             org.apache.logging.log4j.LogManager.getLogger();
     
-    public BurpMacroStartAction(){
+    public BurpMacroStartAction(ParmGenMacroTraceProvider pmtProvider){
+        provider = new BurpMacroStartDoActionProvider(pmtProvider);
     }
 
     private BurpMacroStartDoActionProvider getProvider(IHttpRequestResponse currentrequest, IHttpRequestResponse[] executedmacros){

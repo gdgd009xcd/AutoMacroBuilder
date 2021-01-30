@@ -9,9 +9,9 @@ package burp;
 import java.awt.Component;
 import java.util.ArrayList;
 
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTrace;
 import org.zaproxy.zap.extension.automacrobuilder.generated.MacroBuilderUI;
 import org.zaproxy.zap.extension.automacrobuilder.PRequestResponse;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTraceProvider;
 
 /**
  *
@@ -19,11 +19,9 @@ import org.zaproxy.zap.extension.automacrobuilder.PRequestResponse;
  */
 public class MacroBuilder implements ITab{
     MacroBuilderUI ui = null;
-    ParmGenMacroTrace pmt = null;
 
-    public MacroBuilder(ParmGenMacroTrace _pmt){
-        pmt = _pmt;
-        ui = new MacroBuilderUI(pmt);
+    public MacroBuilder(ParmGenMacroTraceProvider pmtProvider){
+        ui = new MacroBuilderUI(pmtProvider);
     }
 
     @Override
@@ -48,6 +46,15 @@ public class MacroBuilder implements ITab{
     //カレントリクエストをRequest/Responseエリアに表示
     public void updateCurrentSelectedRequestListDisplayContents(){
         ui.updateCurrentSelectedRequestListDisplayContents();
+    }
+    
+    /**
+     * get tabindex of current top Tab pane on RequestList TabbedPane
+     *
+     * @return 
+     */
+    public int getMacroRequestListTabsSelectedIndex() {
+        return ui.getMacroRequestListTabsSelectedIndex();
     }
 
 }

@@ -27,11 +27,12 @@ public class BurpExtenderDoAction implements InterfaceDoAction
 
     private ThreadLocal<List<InterfaceAction>> ACTION_LIST = new ThreadLocal<>();
     private ThreadLocal<InterfaceEndAction> ENDACTION = new ThreadLocal<>();
-    
+    ParmGenMacroTraceProvider pmtProvider = null;
     private static org.apache.logging.log4j.Logger LOGGER4J =
             org.apache.logging.log4j.LogManager.getLogger();
 
-    BurpExtenderDoAction(){
+    BurpExtenderDoAction(ParmGenMacroTraceProvider pmtProvider){
+        this.pmtProvider = pmtProvider;
     }
 
     /**
@@ -49,18 +50,20 @@ public class BurpExtenderDoAction implements InterfaceDoAction
         boolean tisSSL = (tiserv.getProtocol().toLowerCase().equals("https")?true:false);
         PRequest preq = new PRequest(h, p, tisSSL, messageInfo.getRequest(), ParmVars.enc);
         UUID uuid = preq.getUUID5CustomHeader();
-        ParmGenMacroTrace pmt = ParmGenMacroTraceProvider.getRunningInstance(uuid);
-        if(pmt != null) {
-            long tid = pmt.getThreadId();
+        ParmGenMacroTrace pmtRunning = pmtProvider.getRunningInstance(uuid);
+
+        if(pmtRunning != null) {
+            ParmGenMacroTrace pmtBase = pmtProvider.getBaseInstance(pmtRunning.getTabIndex());
+            long tid = pmtRunning.getThreadId();
 
             actionlist.add((t, o) ->{
-                return processHttpMessage(o, pmt, toolflag, messageIsRequest, messageInfo);
+                return processHttpMessage(o, pmtRunning, toolflag, messageIsRequest, messageInfo);
             });
             ACTION_LIST.set(actionlist);
 
             InterfaceEndAction endaction = () -> {
-                ParmGenMacroTraceProvider.getOriginalBase().updateOriginalBase(pmt);
-                ParmGenMacroTraceProvider.removeEndInstance(pmt.getUUID());
+                pmtBase.updateOriginalBase(pmtRunning);
+                pmtProvider.removeEndInstance(pmtRunning.getUUID());
             };
             ENDACTION.set(endaction);
 
@@ -157,7 +160,7 @@ public class BurpExtenderDoAction implements InterfaceDoAction
                                 switch(pmt.getState()){
                                     case ParmGenMacroTrace.PMT_POSTMACRO_END:
                                         //update current burptool(repeater/scanner/intruder..)'s response by last postmacro response.
-                                        if(pmt.isMBFinalResponse()){
+                                        if(pmt.isCBFinalResponse()){
                                             messageInfo.setResponse(pmt.getPostMacroResponse());
                                         }
                                         pmt.macroEnded();
@@ -189,7 +192,7 @@ public class BurpExtenderDoAction implements InterfaceDoAction
                             if( originalrequestbytes!=null) {
                                 LOGGER4J.debug("REQUEST  RESET To OriginalRequest.");
                                 messageInfo.setRequest(originalrequestbytes);
-                                ParmGenMacroTraceProvider.removeEndInstance(pmt.getUUID());
+                                pmtProvider.removeEndInstance(pmt.getUUID());
                             }
                         }
                     } else {

@@ -7,6 +7,7 @@ package burp;
 
 import org.zaproxy.zap.extension.automacrobuilder.InterfaceDoAction;
 import org.zaproxy.zap.extension.automacrobuilder.InterfaceDoActionProvider;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTraceProvider;
 
 /**
  *
@@ -14,9 +15,10 @@ import org.zaproxy.zap.extension.automacrobuilder.InterfaceDoActionProvider;
  */
 public class BurpMacroStartDoActionProvider implements InterfaceDoActionProvider {
 
-    private BurpMacroStartDoAction doactioninstance = new BurpMacroStartDoAction();
+    private BurpMacroStartDoAction doactioninstance = null;
     
-    BurpMacroStartDoActionProvider(){
+    BurpMacroStartDoActionProvider(ParmGenMacroTraceProvider pmtProvider){
+        doactioninstance = new BurpMacroStartDoAction(pmtProvider);
     }
     
     /**

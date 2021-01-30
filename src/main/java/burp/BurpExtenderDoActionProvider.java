@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.zaproxy.zap.extension.automacrobuilder.InterfaceDoAction;
 import org.zaproxy.zap.extension.automacrobuilder.InterfaceDoActionProvider;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTraceProvider;
 
 /**
  *
@@ -16,7 +17,11 @@ import org.zaproxy.zap.extension.automacrobuilder.InterfaceDoActionProvider;
  */
 public class BurpExtenderDoActionProvider implements InterfaceDoActionProvider {
     
-    private BurpExtenderDoAction doaction = new BurpExtenderDoAction();
+    private BurpExtenderDoAction doaction = null;
+
+    BurpExtenderDoActionProvider(ParmGenMacroTraceProvider pmtProvider) {
+        doaction = new BurpExtenderDoAction(pmtProvider);
+    }
 
     public void setParameters(int toolflag, boolean messageIsRequest, IHttpRequestResponse messageInfo){
         doaction.setParameters(toolflag, messageIsRequest, messageInfo);

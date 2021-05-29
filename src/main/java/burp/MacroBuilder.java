@@ -54,7 +54,7 @@ public class MacroBuilder implements ITab{
      * @return 
      */
     public int getMacroRequestListTabsSelectedIndex() {
-        return ui.getMacroRequestListTabsSelectedIndex();
+        return ui.getMacroRequestListTabsCurrentIndex();
     }
 
 }

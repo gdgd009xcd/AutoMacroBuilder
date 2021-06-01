@@ -954,7 +954,7 @@ public class ParmGenMacroTrace extends ClientDependent {
 
     public void initFetchResponseVal() {
         if (fetchResVal == null) {
-            fetchResVal = new FetchResponseVal(this);
+            fetchResVal = new FetchResponseVal();
         }
     }
 

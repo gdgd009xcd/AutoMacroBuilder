@@ -51,6 +51,7 @@ public class BurpExtenderDoAction implements InterfaceDoAction
         PRequest preq = new PRequest(h, p, tisSSL, messageInfo.getRequest(), ParmVars.enc);
         UUID uuid = preq.getUUID5CustomHeader();
         ParmGenMacroTrace pmtRunning = pmtProvider.getRunningInstance(uuid);
+        LOGGER4J.debug("getRunnningInstance this:" + pmtRunning + " uuid:" + uuid);
 
         if(pmtRunning != null) {
             ParmGenMacroTrace pmtBase = pmtProvider.getBaseInstance(pmtRunning.getTabIndex());

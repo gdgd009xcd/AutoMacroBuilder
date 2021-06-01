@@ -272,10 +272,12 @@ public class BurpExtender implements IBurpExtender,IHttpListener
             PRequestResponse currentToolBaseLine = null;
             if (newToolBaseLine != null) {
                 ParmGenMacroTraceParams pmtParams = newToolBaseLine.request.getParamsCustomHeader();
-                tabIndex = pmtParams.getTabIndex();
-                pmtBase = BurpExtender.this.pmtProvider.getBaseInstance(tabIndex);
-                if (pmtBase != null) {
-                    currentToolBaseLine = pmtBase.getToolBaseline();
+                if (pmtParams != null) {
+                    tabIndex = pmtParams.getTabIndex();
+                    pmtBase = BurpExtender.this.pmtProvider.getBaseInstance(tabIndex);
+                    if (pmtBase != null) {
+                        currentToolBaseLine = pmtBase.getToolBaseline();
+                    }
                 }
             }
             if(BurpExtender.this.pmtProvider.isBaseLineMode()){

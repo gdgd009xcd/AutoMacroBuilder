@@ -518,7 +518,7 @@ public class ParmGen {
             switch (av.getResTypeInt()) {
                 case AppValue.V_REQTRACKBODY:
                     return pmt.getFetchResponseVal()
-                            .reqbodymatch(av, pmt.getStepNo(), url, prequest, row, col, true);
+                            .reqbodymatch(pmt, av, url, prequest, row, col, true);
                 default:
                     break;
             }
@@ -553,8 +553,7 @@ public class ParmGen {
                     // for(String header : headers){
                     rflag =
                             pmt.getFetchResponseVal()
-                                    .headermatch(
-                                            pmt.getStepNo(), url, presponse, row, col, true, av);
+                                    .headermatch(pmt, url, presponse, row, col, true, av);
                     break;
                 case AppValue.V_REQTRACKBODY: // request追跡なのでNOP.
                     break;
@@ -567,14 +566,7 @@ public class ParmGen {
                         rflag =
                                 pmt.getFetchResponseVal()
                                         .bodymatch(
-                                                pmt.getStepNo(),
-                                                url,
-                                                presponse,
-                                                row,
-                                                col,
-                                                true,
-                                                autotrack,
-                                                av);
+                                                pmt, url, presponse, row, col, true, autotrack, av);
                     } catch (UnsupportedEncodingException ex) {
                         Logger.getLogger(ParmGen.class.getName()).log(Level.SEVERE, null, ex);
                     }

@@ -56,20 +56,16 @@ class FetchResponseVal implements DeepClone {
     private ParmGenTrackKeyPerThread trackkeys;
     // ====================== copy per thread members end =================
 
-    private ParmGenMacroTrace pmt;
-
     //
-    FetchResponseVal(ParmGenMacroTrace pmt) {
-        init(pmt);
+    FetchResponseVal() {
+        init();
     }
 
     /**
      * for internal use
      *
-     * @param pmt
      */
-    private void init(ParmGenMacroTrace pmt) {
-        this.pmt = pmt;
+    private void init() {
 
         // pattern = "<AuthUpload>(?:.|\r|\n|\t)*?<password>([a-zA-Z0-9]+)</password>";
         allocLocVal();
@@ -212,7 +208,7 @@ class FetchResponseVal implements DeepClone {
     /**
      * update conditional parameter is valid or not
      *
-     * @param ap
+     * @param av
      * @param b
      */
     void updateCond(AppValue av, boolean b) {
@@ -254,13 +250,14 @@ class FetchResponseVal implements DeepClone {
     // header match
     //
     boolean headermatch(
-            int currentStepNo,
+            ParmGenMacroTrace pmt,
             String url,
             PResponse presponse,
             int r,
             int c,
             boolean overwrite,
             AppValue av) {
+        int currentStepNo = pmt.getStepNo();
         int fromStepNo = av.getFromStepNo();
         String name = av.getToken();
         AppValue.TokenTypeNames _tokentype = av.getTokenType();
@@ -355,7 +352,7 @@ class FetchResponseVal implements DeepClone {
     // body match
     //
     boolean bodymatch(
-            int currentStepNo,
+            ParmGenMacroTrace pmt,
             String url,
             PResponse presponse,
             int r,
@@ -364,6 +361,7 @@ class FetchResponseVal implements DeepClone {
             boolean autotrack,
             AppValue av)
             throws UnsupportedEncodingException {
+        int currentStepNo = pmt.getStepNo();
         int fromStepNo = av.getFromStepNo();
         int fcnt = av.getResRegexPos();
         String name = av.getToken();
@@ -528,13 +526,14 @@ class FetchResponseVal implements DeepClone {
     }
 
     boolean reqbodymatch(
+            ParmGenMacroTrace pmt,
             AppValue av,
-            int currentStepNo,
             String url,
             PRequest prequest,
             int r,
             int c,
             boolean overwrite) {
+        int currentStepNo = pmt.getStepNo();
         int fromStepNo = av.getFromStepNo();
         int fcnt = av.getResRegexPos();
         String name = av.getToken();
@@ -607,7 +606,6 @@ class FetchResponseVal implements DeepClone {
         try {
             nobj = (FetchResponseVal) super.clone();
             nobj._enc = this._enc;
-            nobj.pmt = this.pmt;
             nobj.distances =
                     HashMapDeepCopy.hashMapDeepCopyParmGenTokenKeyKIntegerV(this.distances);
             nobj.trackkeys = this.trackkeys.clone();

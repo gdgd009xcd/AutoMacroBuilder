@@ -21,6 +21,8 @@ import org.zaproxy.zap.extension.automacrobuilder.*;
  */
 public class ClientDependent {
 
+    private static org.apache.logging.log4j.Logger LOGGER4J = org.apache.logging.log4j.LogManager.getLogger();
+
     public enum CLIENT_TYPE {
         BURPSUITE,
         ZAP
@@ -184,10 +186,12 @@ public class ClientDependent {
     }
 
     public void clearComments() {
+        LOGGER4J.debug("clearcomments this:" + this);
         comments = ""; // no null
     }
 
     public void addComments(String _v) {
+        LOGGER4J.debug("addComments[" + _v + "] this:" + this);
         comments += _v + "\n";
     }
 
@@ -196,6 +200,7 @@ public class ClientDependent {
     }
 
     public String getComments() {
+        LOGGER4J.debug("getComments this:" + this);
         return comments;
     }
 

@@ -25,7 +25,6 @@ import java.io.FileReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -240,7 +239,7 @@ public class ParmGen {
                 // for(String header : headers){
                 // int i = 0;
 
-                HashMap<String, ParmGenHeader> headers = prequest.getheadersHash();
+                Map<String, ParmGenHeader> headers = prequest.getheadersHash();
 
                 for (Map.Entry<String, ParmGenHeader> ent : headers.entrySet()) {
                     String hKeyUpperV = ent.getKey();

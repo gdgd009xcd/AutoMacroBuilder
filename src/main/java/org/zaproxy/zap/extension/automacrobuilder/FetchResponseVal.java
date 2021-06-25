@@ -24,6 +24,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,7 +52,7 @@ class FetchResponseVal implements DeepClone {
 
     // ====================== copy per thread members begin ===============
     // Key: String token  int toStepNo Val: distance = responseStepNo - currentStepNo
-    private HashMap<ParmGenTokenKey, Integer> distances;
+    private Map<ParmGenTokenKey, Integer> distances;
 
     private ParmGenTrackKeyPerThread trackkeys;
     // ====================== copy per thread members end =================
@@ -62,8 +63,8 @@ class FetchResponseVal implements DeepClone {
     }
 
     /**
-     * for internal use
-     *
+     * this function<br>
+     * for internal use<br>
      */
     private void init() {
 

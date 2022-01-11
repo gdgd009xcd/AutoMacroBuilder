@@ -2,6 +2,10 @@
 All notable changes to this add-on will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+## 5 - 2022-01-11
+### ver1.47
+- maintenance: Updated log4j to the latest version
+
 ## 4 - 2021-12-18
 ### ver1.46
 - maintenance: Updated log4j to the latest version

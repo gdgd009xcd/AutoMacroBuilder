@@ -7,6 +7,7 @@ package burp;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.zaproxy.zap.extension.automacrobuilder.Encode;
 import org.zaproxy.zap.extension.automacrobuilder.PRequestResponse;
 import org.zaproxy.zap.extension.automacrobuilder.ParmGen;
 import org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTrace;
@@ -48,7 +49,7 @@ public class BurpExtenderDoAction implements InterfaceDoAction
         String h = tiserv.getHost();
         int p = tiserv.getPort();
         boolean tisSSL = (tiserv.getProtocol().toLowerCase().equals("https")?true:false);
-        PRequest preq = new PRequest(h, p, tisSSL, messageInfo.getRequest(), ParmVars.enc);
+        PRequest preq = new PRequest(h, p, tisSSL, messageInfo.getRequest(), Encode.ISO_8859_1);
         UUID uuid = preq.getUUID5CustomHeader();
         ParmGenMacroTrace pmtRunning = pmtProvider.getRunningInstance(uuid);
         LOGGER4J.debug("getRunnningInstance this:" + pmtRunning + " uuid:" + uuid);
@@ -70,7 +71,7 @@ public class BurpExtenderDoAction implements InterfaceDoAction
 
             LOGGER4J.debug("setParameters "+ (messageIsRequest?"REQUEST":"RESPONSE")+" tool:"  + BurpExtender.getToolname(toolflag)+ " threadid:" + Thread.currentThread().getId() + " X-THREAD:" + tid + " UUID:" + uuid.toString());
         } else {
-            LOGGER4J.error("setParameters "+ (messageIsRequest?"REQUEST":"RESPONSE")+" tool:"  + BurpExtender.getToolname(toolflag)+"pmt is null");
+            LOGGER4J.debug("setParameters "+ (messageIsRequest?"REQUEST":"RESPONSE")+" tool:"  + BurpExtender.getToolname(toolflag) + " pmt is null");
         }
     }
     
@@ -79,7 +80,12 @@ public class BurpExtenderDoAction implements InterfaceDoAction
             boolean messageIsRequest,
             IHttpRequestResponse messageInfo)
         {
-            
+
+
+            Encode lastResponseEncode = Encode.ISO_8859_1;
+            if (pmt != null) {
+                lastResponseEncode = pmt.getLastResponseEncode();
+            }
 
                ParmGen pgen = new ParmGen(pmt);
                 String url = null;
@@ -140,8 +146,8 @@ public class BurpExtenderDoAction implements InterfaceDoAction
                             String host = iserv.getHost();
                             int port = iserv.getPort();
                             boolean isSSL = (iserv.getProtocol().toLowerCase().equals("https")?true:false);
-                            //PRequestResponse prs = new PRequestResponse(new String(messageInfo.getRequest(), ParmVars.enc.getIANACharset()), new String(messageInfo.getResponse(), ParmVars.enc.getIANACharset()));
-                            PRequestResponse prs = new PRequestResponse(host, port, isSSL, messageInfo.getRequest(), messageInfo.getResponse(), ParmVars.enc);
+
+                            PRequestResponse prs = new PRequestResponse(host, port, isSSL, messageInfo.getRequest(), messageInfo.getResponse(), lastResponseEncode, lastResponseEncode);
                             url = prs.request.getURL();
                             LOGGER4J.debug("=====ResponseRun start====== status:" + prs.response.getStatus());
                             int updtcnt = pgen.ResponseRun(url, prs);

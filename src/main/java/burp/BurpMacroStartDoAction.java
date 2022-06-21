@@ -45,8 +45,8 @@ public class BurpMacroStartDoAction implements InterfaceDoAction {
         String host = iserv.getHost();
         int port = iserv.getPort();
         boolean isSSL = (iserv.getProtocol().toLowerCase().equals("https")?true:false);
-        PRequest request = new PRequest(host, port, isSSL, currentrequest.getRequest(), ParmVars.enc);
-        ParmGenMacroTraceParams pmtParams = request.getParamsCustomHeader();
+        PRequest request_ISO8859 = new PRequest(host, port, isSSL, currentrequest.getRequest(), Encode.ISO_8859_1);
+        ParmGenMacroTraceParams pmtParams = request_ISO8859.getParamsCustomHeader();
         final ParmGenMacroTrace pmt = this.pmtProvider.getNewParmGenMacroTraceInstance(Thread.currentThread().getId(), pmtParams);
         
         List<InterfaceAction> actionlist = new CopyOnWriteArrayList<>();

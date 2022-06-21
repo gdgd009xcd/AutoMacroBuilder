@@ -11,6 +11,7 @@ import burp.IHttpRequestResponse;
 import burp.IScanQueueItem;
 import java.io.File;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import org.zaproxy.zap.extension.automacrobuilder.*;
@@ -22,6 +23,8 @@ import org.zaproxy.zap.extension.automacrobuilder.*;
 public class ClientDependent {
 
     private static org.apache.logging.log4j.Logger LOGGER4J = org.apache.logging.log4j.LogManager.getLogger();
+
+
 
     public enum CLIENT_TYPE {
         BURPSUITE,
@@ -127,7 +130,7 @@ public class ClientDependent {
                 );
     }
     
-    protected PRequestResponse clientHttpRequest(PRequest request){
+    protected PRequestResponse clientHttpRequest(PRequest request, Encode sequenceEncode){
         PRequestResponse pqrs = null;
         if(request!=null){
             Encode enc_iso8859_1 = Encode.ISO_8859_1;
@@ -145,13 +148,16 @@ public class ClientDependent {
             IHttpRequestResponse IHReqRes = BurpExtender.mCallbacks.makeHttpRequest(bserv, byterequest);
             byte[] bytereq = IHReqRes.getRequest();
             byte[] byteres = IHReqRes.getResponse();
-            if(bytereq==null){//Impossible..
-                bytereq = new String("").getBytes(charset_iso8859_1);//not NULL, length zero bytes.
+            if(bytereq == null){//Impossible..
+                bytereq = "".getBytes(charset_iso8859_1);//not NULL, length zero bytes.
             }
-            if(byteres==null){
-                byteres = new String("").getBytes(charset_iso8859_1);//not NULL, length zero bytes.
+
+            if(byteres == null){
+                byteres = "".getBytes(charset_iso8859_1);//not NULL, length zero bytes.
             }
-            pqrs = new PRequestResponse(host, port, isSSL, bytereq, byteres, _pageenc);
+
+            pqrs = new PRequestResponse(host, port, isSSL, bytereq, byteres, _pageenc, sequenceEncode);
+
             if(pqrs!=null){
                 if(pqrs.response.getBodyContentLength()<=0){
                     noresponse = "\nNo Response(NULL)";

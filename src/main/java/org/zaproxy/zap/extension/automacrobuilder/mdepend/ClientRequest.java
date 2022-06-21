@@ -21,7 +21,7 @@ public class ClientRequest implements InterfaceClientRequest {
      */
     @Override
     public PRequestResponse clientRequest(ParmGenMacroTrace pmt, PRequest request) {
-        return pmt.clientHttpRequest(request);
+        return pmt.clientHttpRequest(request, pmt.getSequenceEncode());
     }
 
 

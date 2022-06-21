@@ -19,8 +19,11 @@ import java.util.stream.Collectors;
 
 import javax.swing.JMenuItem;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LoggerContext;
 import org.zaproxy.zap.extension.automacrobuilder.PRequestResponse;
 import org.zaproxy.zap.extension.automacrobuilder.ParmGen;
+import org.zaproxy.zap.extension.automacrobuilder.ParmGenGSONSaveV2;
 import org.zaproxy.zap.extension.automacrobuilder.ParmGenUtil;
 import org.zaproxy.zap.extension.automacrobuilder.ParmVars;
 import org.zaproxy.zap.extension.automacrobuilder.Encode;
@@ -28,7 +31,6 @@ import org.zaproxy.zap.extension.automacrobuilder.InterfaceLangOKNG;
 import org.zaproxy.zap.extension.automacrobuilder.generated.LangSelectDialog;
 import org.zaproxy.zap.extension.automacrobuilder.PRequest;
 import org.zaproxy.zap.extension.automacrobuilder.PResponse;
-import org.zaproxy.zap.extension.automacrobuilder.ParmGenJSONSave;
 import org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTrace;
 import org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTraceParams;
 import org.zaproxy.zap.extension.automacrobuilder.ParmGenMacroTraceProvider;
@@ -46,8 +48,8 @@ public class BurpExtender implements IBurpExtender,IHttpListener
     IHttpRequestResponse[] selected_messageInfo = null;
     JMenuItem repeatermodeitem = null;
     ParmGenMacroTraceProvider pmtProvider = null;
-    private static org.apache.logging.log4j.Logger LOGGER4J =
-            org.apache.logging.log4j.LogManager.getLogger();
+    private static org.apache.logging.log4j.Logger LOGGER4J = null;
+
 
     private void ProcessHTMLComments(String message, String host, String url)
     {
@@ -154,14 +156,14 @@ public class BurpExtender implements IBurpExtender,IHttpListener
         return Encode.analyzeCharset(resopt);
     }
     
-    private ArrayList <PRequestResponse> convertMessageInfoToArray(IHttpRequestResponse[] messageInfo, int toolflg){
+    private ArrayList <PRequestResponse> convertMessageInfoToArray(IHttpRequestResponse[] messageInfo, Encode sequenceEncode, int toolflg){
         ArrayList <PRequestResponse> messages = new ArrayList<PRequestResponse>() ;
         try {
             
             
             for(int i = 0; i< messageInfo.length; i++){
-                byte[] binreq = new String("").getBytes(Encode.ISO_8859_1.getIANACharset());//length 0 String byte
-                byte[] binres = new String("").getBytes(Encode.ISO_8859_1.getIANACharset());//length 0 String byte
+                byte[] binreq = "".getBytes(Encode.ISO_8859_1.getIANACharset());//length 0 String byte
+                byte[] binres = "".getBytes(Encode.ISO_8859_1.getIANACharset());//length 0 String byte
                 String res = "";
                 IHttpService iserv = null;
                 if (messageInfo[i].getRequest() != null){
@@ -183,9 +185,9 @@ public class BurpExtender implements IBurpExtender,IHttpListener
                             break;
                     }
                     
-                    messages.add(new PRequestResponse(iserv.getHost(), iserv.getPort(), ssl, binreq, binres, ParmVars.enc));
+                    messages.add(new PRequestResponse(iserv.getHost(), iserv.getPort(), ssl, binreq, binres, sequenceEncode, sequenceEncode));
                 }else{
-                    messages.add(new PRequestResponse("", 0, false, binreq, binres, ParmVars.enc));
+                    messages.add(new PRequestResponse("", 0, false, binreq, binres, sequenceEncode, sequenceEncode));
                 }
             }
         }catch(Exception e){
@@ -195,7 +197,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener
         return messages;
     }
 
-   private PRequestResponse convertMessageInfoToPRR(IHttpRequestResponse messageInfo){
+   private PRequestResponse convertMessageInfoToPRR(IHttpRequestResponse messageInfo, Encode sequenceEncode){
        PRequestResponse prr = null;
         try {
 
@@ -211,9 +213,9 @@ public class BurpExtender implements IBurpExtender,IHttpListener
                 }
                 if(iserv !=null){
                     boolean ssl = (iserv.getProtocol().toLowerCase().equals("https")?true:false);
-                    prr = new PRequestResponse(iserv.getHost(), iserv.getPort(), ssl, binreq, binres, ParmVars.enc);
+                    prr = new PRequestResponse(iserv.getHost(), iserv.getPort(), ssl, binreq, binres, sequenceEncode, sequenceEncode);
                 }else{
-                    prr = new PRequestResponse("", 0, false, binreq, binres, ParmVars.enc);
+                    prr = new PRequestResponse("", 0, false, binreq, binres, sequenceEncode, sequenceEncode);
                 }
 
         }catch(Exception e){
@@ -259,24 +261,26 @@ public class BurpExtender implements IBurpExtender,IHttpListener
             toolflg = icmi.getToolFlag();
             messageInfo = icmi.getSelectedMessages();
             
-            JMenuItem item = new JMenuItem("■Custom■");
+            //JMenuItem item = new JMenuItem("■Custom■");
             JMenuItem itemmacro = new JMenuItem("■SendTo MacroBuilder■");
 
+            PRequestResponse newToolBaseLine_ISO8859 = null;
             newToolBaseLine = null;
             if (messageInfo != null && messageInfo.length > 0) {
-                newToolBaseLine = convertMessageInfoToPRR(messageInfo[0]);
+                newToolBaseLine_ISO8859 = convertMessageInfoToPRR(messageInfo[0], Encode.ISO_8859_1);
             }
 
             int tabIndex = -1;
             pmtBase = null;
             PRequestResponse currentToolBaseLine = null;
-            if (newToolBaseLine != null) {
-                ParmGenMacroTraceParams pmtParams = newToolBaseLine.request.getParamsCustomHeader();
+            if (newToolBaseLine_ISO8859 != null) {
+                ParmGenMacroTraceParams pmtParams = newToolBaseLine_ISO8859.request.getParamsCustomHeader();
                 if (pmtParams != null) {
                     tabIndex = pmtParams.getTabIndex();
                     pmtBase = BurpExtender.this.pmtProvider.getBaseInstance(tabIndex);
                     if (pmtBase != null) {
                         currentToolBaseLine = pmtBase.getToolBaseline();
+                        newToolBaseLine = convertMessageInfoToPRR(messageInfo[0], pmtBase.getSequenceEncode());
                     }
                 }
             }
@@ -320,11 +324,13 @@ public class BurpExtender implements IBurpExtender,IHttpListener
             
             
 
+            /**
             item.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     menuItemClicked(messageInfo, toolflg);
                 }
             });
+             **/
             itemmacro.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     menuAddRequestsClicked(messageInfo);
@@ -333,7 +339,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener
             
             
             items.add(itemmacro);
-            items.add(item);
+            //items.add(item);
             if(repeatermodeitem!=null){
                 items.add(repeatermodeitem);
             }
@@ -343,6 +349,12 @@ public class BurpExtender implements IBurpExtender,IHttpListener
             return items;
         }
 
+        /**
+         * action when clicked custom button
+         * @param messageInfo
+         * @param toolflg
+         */
+        @Deprecated
         public void menuItemClicked( IHttpRequestResponse[] messageInfo, int toolflg)
         {
             try
@@ -352,11 +364,12 @@ public class BurpExtender implements IBurpExtender,IHttpListener
                 //IHttpRequestResponse[] allmessages = mCallbacks.getProxyHistory();
                 int tabindex = BurpExtender.this.mbr.getMacroRequestListTabsSelectedIndex();
                 ParmGenMacroTrace pmt = BurpExtender.this.pmtProvider.getBaseInstance(tabindex);
+                Encode sequenceEncode = pmt.getSequenceEncode();
                 
                 ParmGen pgen = new ParmGen(pmt);
                 if(pgen.twin==null){
-                    pgen.twin = new ParmGenTop(pmt, new ParmGenJSONSave(pmt,
-                        convertMessageInfoToArray(messageInfo, toolflg))
+                    pgen.twin = new ParmGenTop(pmt, new ParmGenGSONSaveV2(BurpExtender.this.pmtProvider,
+                        convertMessageInfoToArray(messageInfo, sequenceEncode, toolflg))
                         );
                 }
                 pgen.twin.VisibleWhenJSONSaved(mbr.getUiComponent());
@@ -367,7 +380,11 @@ public class BurpExtender implements IBurpExtender,IHttpListener
             }
         }
 
-        
+
+        /**
+         * action when clicked "send to macrobuilder"
+         * @param messageInfo
+         */
         public void menuAddRequestsClicked( IHttpRequestResponse[] messageInfo)
         {
             int tabindex = BurpExtender.this.mbr.getMacroRequestListTabsSelectedIndex();
@@ -377,18 +394,18 @@ public class BurpExtender implements IBurpExtender,IHttpListener
                     Encode lang = analyzeCharset(messageInfo);
                     new LangSelectDialog(null, this, lang, false).setVisible(true);
                 }else{
-                    LangOK();
+                    LangOK(pmt.getSequenceEncode());
                 }
             }
         }
         
         @Override
-        public void LangOK() {
+        public void LangOK(Encode sequenceEncode) {
             if(messageInfo!=null){
                 if(mbr!=null){
                 //選択したリクエストレスポンス
                     mbr.addNewRequests(
-                        convertMessageInfoToArray(messageInfo, toolflg));
+                        convertMessageInfoToArray(messageInfo, sequenceEncode,toolflg));
                 }
             }
         }
@@ -408,6 +425,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener
         // obtain our output and error streams
         PrintWriter stdout = new PrintWriter(callbacks.getStdout(), true);
         PrintWriter stderr = new PrintWriter(callbacks.getStderr(), true);
+        setupLOG4J(stdout);
         //ParmVars.plog.SetBurpPrintStreams(stdout, stderr);
         //LockInstance locker = new LockInstance();
         this.pmtProvider = new ParmGenMacroTraceProvider();
@@ -425,6 +443,30 @@ public class BurpExtender implements IBurpExtender,IHttpListener
         mbr = new MacroBuilder(pmtProvider);
         callbacks.addSuiteTab(mbr);
         mCallbacks = callbacks;
+    }
+
+    private void setupLOG4J(PrintWriter stdout) {
+        File log4jdir = new File(System.getProperty("user.home"), ".BurpSuite");//.ZAP or .BurpSuite
+        String fileName = "log4j2.xml";
+        File logFile = new File(log4jdir, fileName);
+        if (!logFile.exists()) {
+            try {
+                ParmGenUtil.copyFileToHome(
+                        logFile.toPath(), "xml/" + fileName, "/burp/" + fileName);
+            } catch (IOException ex) {
+                stdout.println("can't copy log4j2.xml");
+            }
+        }
+
+
+        if(logFile.exists()){
+            LoggerContext context  = (LoggerContext) LogManager.getContext(false);
+            context.setConfigLocation(logFile.toURI());
+            stdout.println("configured log4j:" + logFile.getPath());
+        }else{
+            stdout.println("log4j file not found.:" + logFile.getPath());
+        }
+        LOGGER4J = org.apache.logging.log4j.LogManager.getLogger();
     }
 
 }

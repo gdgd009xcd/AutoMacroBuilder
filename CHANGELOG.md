@@ -2,6 +2,12 @@
 All notable changes to this add-on will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+## 6 - 2022-06-05
+### ver2.00
+- new feature: [supported simultaneous multiple sequence scanning](https://github.com/gdgd009xcd/AutoMacroBuilder/wiki/1.7.-Simultaneous-multiple-sequence-scanning)
+- improve: changed to new version JSON file format
+- maintenance: updated gson library to the latest version
+
 ## 5 - 2022-01-11
 ### ver1.47
 - maintenance: Updated log4j to the latest version

@@ -2,6 +2,12 @@
 All notable changes to this add-on will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+
+## 7 - 2022-08-02
+### ver2.01
+- improve: improve performance for "Track"(auto generating parameter tracking) button action.
+- bugfix: fixed some "track" button action problems.
+
 ## 6 - 2022-06-05
 ### ver2.00
 - new feature: [supported simultaneous multiple sequence scanning](https://github.com/gdgd009xcd/AutoMacroBuilder/wiki/1.7.-Simultaneous-multiple-sequence-scanning)

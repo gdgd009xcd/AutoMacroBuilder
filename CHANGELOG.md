@@ -3,6 +3,11 @@ All notable changes to this add-on will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## 8 - 2022-09-15
+### ver2.02
+- maintenance: updated jsoup library to the latest version
+- maintenance: deleted some unnecessary codes.
+
 ## 7 - 2022-08-02
 ### ver2.01
 - improve: improve performance for "Track"(auto generating parameter tracking) button action.

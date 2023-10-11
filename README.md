@@ -1,6 +1,6 @@
 AutoMacrobuilder for burpsuite.  
 
-[***Questionnaire](https://docs.google.com/forms/d/e/1FAIpQLScwRM5w5wXzkgEbOlItzKPCu3ZJjxTac7dGo2lOtEWLCsPlhw/viewform?hl=en): Please answer the questionnaire if you like.
+#### *Sorry, This repositry maintenance ended today(2023/10/11). the reason is my main task focus to ZAPROXY addons.*
 
 ![LICENSE](https://img.shields.io/github/license/gdgd009xcd/AutoMacroBuilder)
 ![LANG](https://img.shields.io/github/languages/top/gdgd009xcd/AutoMacroBuilder)
